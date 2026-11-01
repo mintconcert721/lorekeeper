@@ -30,6 +30,7 @@
   --danger-soft: #F3DEDA;
   --user-bubble: #DCE5EC;
   --backdrop: rgba(12, 20, 22, .45);
+  --shadow: 0 6px 24px rgba(20, 32, 34, .14);
   --t-character: #8B4A7E;
   --t-place: #33689A;
   --t-faction: #A24E2A;
@@ -59,6 +60,7 @@
     --danger-soft: #3A2220;
     --user-bubble: #22313B;
     --backdrop: rgba(0, 0, 0, .6);
+    --shadow: 0 6px 24px rgba(0, 0, 0, .5);
     --t-character: #D493C6;
     --t-place: #86B6E3;
     --t-faction: #E79A72;
@@ -131,7 +133,7 @@ main { min-height: 0; min-width: 0; position: relative; }
 
 /* 하단 탭 */
 .tabbar {
-  display: grid; grid-template-columns: repeat(3, 1fr);
+  display: grid; grid-template-columns: repeat(4, 1fr);
   border-top: 1px solid var(--line); background: var(--surface);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -393,6 +395,72 @@ main { min-height: 0; min-width: 0; position: relative; }
 .kv-row { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) auto; gap: 6px; margin-bottom: 6px; }
 .icon-btn { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; width: 40px; min-height: 40px; color: var(--muted); }
 
+/* 관계도 */
+.graph-tools { display: flex; gap: 8px; align-items: center; padding: 10px var(--gutter-r) 8px var(--gutter-l); }
+.graph-tools input {
+  flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--surface); padding: 7px 12px; font-size: 16px;
+}
+.graph-types { padding: 0 var(--gutter-r) 8px var(--gutter-l); }
+.graph-types .type-chip { display: inline-flex; align-items: center; gap: 6px; }
+.graph-types .type-chip[aria-pressed="true"] { background: var(--surface); color: var(--ink); border-color: var(--line); }
+.graph-types .type-chip[aria-pressed="false"] { opacity: .5; text-decoration: line-through; }
+.tdot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+.type-chip.isolated { border-style: dashed; }
+.graph-stage {
+  position: relative; flex: 1; min-height: 0; overflow: hidden; touch-action: none;
+  border-top: 1px solid var(--line);
+  background-color: var(--bg);
+  background-image: radial-gradient(var(--line) 1px, transparent 1.2px);
+  background-size: 22px 22px;
+}
+.graph-stage svg { width: 100%; height: 100%; display: block; user-select: none; -webkit-user-select: none; }
+.g-edge { stroke: var(--muted); stroke-width: 1.4; opacity: .6; fill: none; }
+.g-edge.hl { stroke: var(--accent); stroke-width: 2.4; opacity: 1; }
+.g-edge.dim { opacity: .12; }
+.g-arrow { fill: var(--muted); }
+.g-arrow-hl { fill: var(--accent); }
+.g-elabel {
+  display: none; pointer-events: none;
+  font: 600 11px var(--font-body); fill: var(--accent); text-anchor: middle;
+  stroke: var(--bg); stroke-width: 4px; paint-order: stroke; stroke-linejoin: round;
+}
+.g-elabel.show { display: inline; }
+.g-node { cursor: pointer; }
+.g-node .dot { stroke: var(--bg); stroke-width: 2.5; }
+.g-node .halo { fill: none; stroke: var(--accent); stroke-width: 3; display: none; }
+.g-node.sel .halo, .g-node.link-src .halo { display: inline; }
+.g-node.link-src .halo { stroke-dasharray: 4 3; }
+.g-node text {
+  pointer-events: none; font: 500 12px var(--font-body); fill: var(--ink); text-anchor: middle;
+  stroke: var(--bg); stroke-width: 4px; paint-order: stroke; stroke-linejoin: round;
+}
+.g-node.sel text { font-weight: 700; }
+.g-node.dim { opacity: .18; }
+.zoom-ctrl { position: absolute; top: 10px; right: var(--gutter-r); display: flex; flex-direction: column; gap: 6px; }
+.zoom-ctrl .icon-btn { width: 38px; min-height: 38px; font-size: 18px; background: var(--surface); box-shadow: var(--shadow); }
+.graph-hint {
+  position: absolute; top: 10px; left: var(--gutter-l); right: calc(var(--gutter-r) + 48px);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  padding: 8px 10px; font-size: 13px; box-shadow: var(--shadow);
+}
+.graph-hint span { flex: 1; min-width: 140px; }
+.graph-empty {
+  position: absolute; inset: 0; display: grid; place-items: center; text-align: center;
+  padding: 24px; color: var(--muted); pointer-events: none;
+}
+.graph-empty strong { display: block; color: var(--ink); font: 700 18px var(--font-display); margin-bottom: 6px; }
+.graph-card {
+  position: absolute; left: var(--gutter-l); right: var(--gutter-r); bottom: 12px;
+  display: flex; flex-direction: column; gap: 4px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  padding: 12px 14px; box-shadow: var(--shadow);
+}
+.graph-card .gc-name { font: 700 18px/1.3 var(--font-display); }
+.graph-card .gc-sum { margin: 0 0 6px; font-size: 13.5px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.label-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
 /* 설정 화면 */
 .settings { display: flex; flex-direction: column; gap: 14px; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
@@ -475,6 +543,31 @@ main { min-height: 0; min-width: 0; position: relative; }
       <div class="scroll"><div class="pad" id="codex"></div></div>
     </section>
 
+    <section id="view-graph" class="view" aria-label="관계도" hidden>
+      <div class="graph-tools">
+        <input id="graphSearch" type="search" placeholder="항목 찾기" aria-label="관계도에서 항목 찾기">
+        <button class="btn btn-small" type="button" data-g="fit">화면 맞춤</button>
+        <button class="btn btn-small" type="button" data-g="relayout">다시 배치</button>
+      </div>
+      <div class="type-chips graph-types" id="graphTypes" role="toolbar" aria-label="보일 종류"></div>
+      <div class="graph-stage" id="graphStage">
+        <svg id="graphSvg" aria-label="항목 관계도">
+          <defs>
+            <marker id="gArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="g-arrow" d="M0,1 L9,5 L0,9 z"/></marker>
+            <marker id="gArrowHl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="g-arrow-hl" d="M0,1 L9,5 L0,9 z"/></marker>
+          </defs>
+          <g id="gViewport"><g id="gEdges"></g><g id="gLabels"></g><g id="gNodes"></g></g>
+        </svg>
+        <div class="zoom-ctrl">
+          <button class="icon-btn" type="button" data-g="zoom-in" aria-label="확대">+</button>
+          <button class="icon-btn" type="button" data-g="zoom-out" aria-label="축소">−</button>
+        </div>
+        <div class="graph-hint" id="graphHint" hidden></div>
+        <div class="graph-empty" id="graphEmpty" hidden></div>
+        <div class="graph-card" id="graphCard" hidden></div>
+      </div>
+    </section>
+
     <section id="view-settings" class="view" aria-label="설정" hidden>
       <div class="scroll"><div class="pad settings" id="settings"></div></div>
     </section>
@@ -486,6 +579,9 @@ main { min-height: 0; min-width: 0; position: relative; }
     </button>
     <button type="button" data-view="codex">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/><path d="M9 8h6"/></svg>설정집
+    </button>
+    <button type="button" data-view="graph">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="7" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8.4 6.6l7.1-.4M7.3 9.3l3.5 6.4M16.8 8.3l-3.6 7.4"/></svg>관계도
     </button>
     <button type="button" data-view="settings">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/></svg>설정
@@ -1629,10 +1725,11 @@ function closeSheet() {
 }
 function switchView(view) {
   state.view = view;
-  for (const v of ["chat", "codex", "settings"]) $(`#view-${v}`).hidden = v !== view;
+  for (const v of ["chat", "codex", "graph", "settings"]) $(`#view-${v}`).hidden = v !== view;
   $$(".tabbar button").forEach((b) => (b.dataset.view === view ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
   LS.set("lk.view", view);
   if (view === "codex") renderCodex();
+  if (view === "graph") renderGraph();
   if (view === "settings") renderSettings();
   if (view === "chat") scrollChatToBottom(true);
 }
@@ -1887,6 +1984,8 @@ function entryCard(e) {
   </button>`;
 }
 function renderCodex() {
+  // 설정집이 바뀔 때마다 불리므로, 관계도를 보고 있으면 함께 다시 그린다.
+  if (state.view === "graph") queueGraphRender();
   const root = $("#codex");
   const w = currentWorld();
   if (!w) {
@@ -1966,15 +2065,18 @@ function openEntry(ref) {
     <div class="sheet-actions">
       ${e.deleted
         ? `<button class="btn btn-primary" type="button" data-act="restore">되살리기</button><button class="btn" type="button" data-act="history">이력</button><button class="btn btn-danger" type="button" data-act="purge">완전히 지우기</button>`
-        : `<button class="btn btn-primary" type="button" data-act="develop">대화로 발전시키기</button><button class="btn" type="button" data-act="edit">편집</button><button class="btn" type="button" data-act="history">이력</button><button class="btn btn-danger" type="button" data-act="trash-entry">삭제</button>`}
+        : `<button class="btn btn-primary" type="button" data-act="develop">대화로 발전시키기</button><button class="btn" type="button" data-act="edit">편집</button><button class="btn" type="button" data-act="graph">관계도</button><button class="btn" type="button" data-act="history">이력</button><button class="btn btn-danger" type="button" data-act="trash-entry">삭제</button>`}
     </div>`, (root) => {
     root.onclick = async (ev) => {
       const refBtn = ev.target.closest("[data-ref]");
       if (refBtn) { openEntry(refBtn.dataset.ref); return; }
       const act = ev.target.closest("[data-act]")?.dataset.act;
       if (!act) return;
-      if (act !== "develop" && act !== "history" && state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 고쳐 주세요"); return; }
-      if (act === "develop") {
+      if (act !== "develop" && act !== "history" && act !== "graph" && state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 고쳐 주세요"); return; }
+      if (act === "graph") {
+        closeSheet();
+        showInGraph(e.id);
+      } else if (act === "develop") {
         closeSheet();
         switchView("chat");
         const input = $("#input");
@@ -2193,7 +2295,7 @@ function openWorldForm(existing) {
         if (!(await confirmBox(`'${w.name}' 세계관과 모든 항목, 대화를 지웁니다. 되돌릴 수 없습니다. 먼저 백업을 받아 두세요.`, "모두 지우기", true))) return;
         const id = w.id;
         const threads = (await idb.get("threads:" + id)) || [];
-        await Promise.all([idb.del("entries:" + id), idb.del("log:" + id), idb.del("threads:" + id), ...threads.map((t) => idb.del("conv:" + t.id))]);
+        await Promise.all([idb.del("entries:" + id), idb.del("log:" + id), idb.del("threads:" + id), idb.del("graph:" + id), ...threads.map((t) => idb.del("conv:" + t.id))]);
         state.worlds = state.worlds.filter((x) => x.id !== id);
         await persist.worlds();
         closeSheet();
@@ -2234,6 +2336,629 @@ async function loadSample() {
   await addWorld(w, entries);
   switchView("codex");
   toast("예시 세계관을 불러왔습니다");
+}
+
+/* ============================================================
+   12-1. 관계도
+   ============================================================ */
+const SVG_NS = "http://www.w3.org/2000/svg";
+const graph = {
+  worldId: undefined,       // 위치를 불러온 세계관
+  nodes: new Map(),         // id → { id, entry, x, y, pinned, degree, isNew, r, el }
+  edges: [],                // { a, b, rels:[{from,to,label}], el, labels:[{el, from}] }
+  pos: {},                  // 저장된 위치 { id: [x, y, pinned] }
+  vis: new Set(),
+  visEdges: [],
+  view: { tx: 0, ty: 0, s: 1 },
+  fitted: false,
+  selected: null,
+  focusHops: 0,             // 0: 전체, 1~2: 선택 항목 주변만
+  hiddenTypes: new Set(),
+  hideIsolated: false,
+  linkFrom: null,           // 관계 잇기 시작 항목
+  pendingSelect: null,
+  labelsAll: false,
+  saveTimer: 0,
+};
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+function hashNum(str) {
+  let h = 2166136261;
+  for (const ch of String(str)) { h ^= ch.codePointAt(0); h = Math.imul(h, 16777619); }
+  return (h >>> 0) / 4294967295;
+}
+function resetGraphCache() { graph.worldId = undefined; }
+
+async function loadGraphPositions() {
+  if (graph.worldId === state.worldId) return;
+  graph.worldId = state.worldId;
+  graph.pos = (state.worldId && (await idb.get("graph:" + state.worldId)))?.pos || {};
+  graph.nodes = new Map();
+  graph.edges = [];
+  graph.view = { tx: 0, ty: 0, s: 1 };
+  graph.fitted = false;
+  graph.selected = null;
+  graph.focusHops = 0;
+  graph.linkFrom = null;
+  graph.hiddenTypes.clear();
+  graph.hideIsolated = false;
+}
+function saveGraphPositions() {
+  clearTimeout(graph.saveTimer);
+  const wid = graph.worldId;
+  graph.saveTimer = setTimeout(() => {
+    if (!wid || wid !== state.worldId) return;
+    const pos = {};
+    for (const n of graph.nodes.values()) pos[n.id] = [Math.round(n.x * 10) / 10, Math.round(n.y * 10) / 10, n.pinned ? 1 : 0];
+    graph.pos = pos;
+    idb.set("graph:" + wid, { pos });
+  }, 300);
+}
+
+function buildGraphModel() {
+  const entries = activeEntries();
+  const ids = new Set(entries.map((e) => e.id));
+  const old = graph.nodes;
+  const nodes = new Map();
+  for (const e of entries) {
+    const prev = old.get(e.id);
+    const saved = graph.pos[e.id];
+    nodes.set(e.id, {
+      id: e.id, entry: e,
+      x: prev ? prev.x : saved ? saved[0] : null,
+      y: prev ? prev.y : saved ? saved[1] : null,
+      pinned: prev ? prev.pinned : !!saved?.[2],
+      degree: 0, isNew: !prev && !saved, r: 10, el: null,
+    });
+  }
+  const pairs = new Map();
+  for (const e of entries) {
+    for (const r of e.relations || []) {
+      if (!ids.has(r.to) || r.to === e.id) continue;
+      const [a, b] = e.id < r.to ? [e.id, r.to] : [r.to, e.id];
+      const key = `${a}|${b}`;
+      if (!pairs.has(key)) pairs.set(key, { a, b, rels: [], el: null, labels: [] });
+      pairs.get(key).rels.push({ from: e.id, to: r.to, label: r.label });
+    }
+  }
+  graph.nodes = nodes;
+  graph.edges = [...pairs.values()];
+  for (const ed of graph.edges) { nodes.get(ed.a).degree++; nodes.get(ed.b).degree++; }
+  const anyPlaced = [...nodes.values()].some((n) => n.x != null);
+  const spread = Math.max(80, Math.sqrt(nodes.size) * 45);
+  for (const n of nodes.values()) {
+    if (n.x != null) continue;
+    const ang = hashNum(n.id) * Math.PI * 2;
+    const near = graph.edges
+      .filter((ed) => ed.a === n.id || ed.b === n.id)
+      .map((ed) => nodes.get(ed.a === n.id ? ed.b : ed.a))
+      .filter((m) => m.x != null);
+    if (near.length) {
+      n.x = near.reduce((s, m) => s + m.x, 0) / near.length + Math.cos(ang) * 60;
+      n.y = near.reduce((s, m) => s + m.y, 0) / near.length + Math.sin(ang) * 60;
+    } else {
+      const rad = anyPlaced ? spread * 0.9 : spread * (0.3 + hashNum(n.id + "r") * 0.7);
+      n.x = Math.cos(ang) * rad;
+      n.y = Math.sin(ang) * rad;
+    }
+  }
+  if (graph.selected && !nodes.has(graph.selected)) { graph.selected = null; graph.focusHops = 0; }
+  if (graph.linkFrom && !nodes.has(graph.linkFrom)) graph.linkFrom = null;
+}
+
+// 힘 기반 배치(Fruchterman-Reingold). full이면 전체를, 아니면 새로 생긴 항목만 움직인다.
+function runLayout(full) {
+  const ns = [...graph.nodes.values()];
+  const n = ns.length;
+  if (!n) return;
+  const movable = ns.map((v) => !v.pinned && (full || v.isNew));
+  if (!movable.some(Boolean)) return;
+  const k = 110; // 선 길이 기준. 관계 이름이 들어갈 여유를 둔다.
+  const iters = full ? (n > 200 ? 160 : 320) : 120;
+  let temp = full ? 120 : 45;
+  const index = new Map(ns.map((v, i) => [v.id, i]));
+  const E = graph.edges.map((ed) => [index.get(ed.a), index.get(ed.b)]);
+  const dx = new Float64Array(n);
+  const dy = new Float64Array(n);
+  for (let it = 0; it < iters; it++) {
+    dx.fill(0); dy.fill(0);
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        let ddx = ns[i].x - ns[j].x;
+        let ddy = ns[i].y - ns[j].y;
+        let d2 = ddx * ddx + ddy * ddy;
+        if (d2 < 0.01) { ddx = hashNum(ns[i].id + j) - 0.5; ddy = hashNum(ns[j].id + i) - 0.5; d2 = ddx * ddx + ddy * ddy + 0.01; }
+        const f = (k * k) / d2;
+        dx[i] += ddx * f; dy[i] += ddy * f;
+        dx[j] -= ddx * f; dy[j] -= ddy * f;
+      }
+    }
+    for (const [a, b] of E) {
+      const ddx = ns[a].x - ns[b].x;
+      const ddy = ns[a].y - ns[b].y;
+      const f = Math.sqrt(ddx * ddx + ddy * ddy) / k;
+      dx[a] -= ddx * f; dy[a] -= ddy * f;
+      dx[b] += ddx * f; dy[b] += ddy * f;
+    }
+    for (let i = 0; i < n; i++) {
+      if (!movable[i]) continue;
+      dx[i] -= ns[i].x * 0.06;
+      dy[i] -= ns[i].y * 0.06;
+      const len = Math.sqrt(dx[i] * dx[i] + dy[i] * dy[i]) || 1;
+      const step = Math.min(len, temp);
+      ns[i].x += (dx[i] / len) * step;
+      ns[i].y += (dy[i] / len) * step;
+    }
+    temp = Math.max(1, temp * (full ? 0.985 : 0.965));
+  }
+  for (const v of ns) v.isNew = false;
+}
+
+function visibleSets() {
+  let vis = new Set();
+  for (const n of graph.nodes.values()) {
+    if (graph.hiddenTypes.has(n.entry.type)) continue;
+    if (graph.hideIsolated && n.degree === 0) continue;
+    vis.add(n.id);
+  }
+  if (graph.focusHops && graph.selected) {
+    const keep = new Set([graph.selected]);
+    let frontier = [graph.selected];
+    for (let h = 0; h < graph.focusHops; h++) {
+      const next = [];
+      for (const id of frontier) {
+        for (const ed of graph.edges) {
+          const other = ed.a === id ? ed.b : ed.b === id ? ed.a : null;
+          if (other && !keep.has(other)) { keep.add(other); next.push(other); }
+        }
+      }
+      frontier = next;
+    }
+    vis = new Set([...vis].filter((id) => keep.has(id)));
+    vis.add(graph.selected);
+  }
+  return { vis, edges: graph.edges.filter((ed) => vis.has(ed.a) && vis.has(ed.b)) };
+}
+const nodeRadius = (n) => Math.min(18, 9 + Math.sqrt(n.degree) * 3);
+
+function buildGraphDOM() {
+  const { vis, edges } = visibleSets();
+  graph.vis = vis;
+  graph.visEdges = edges;
+  const eG = $("#gEdges");
+  const lG = $("#gLabels");
+  const nG = $("#gNodes");
+  eG.textContent = "";
+  lG.textContent = "";
+  nG.textContent = "";
+  for (const ed of edges) {
+    const line = document.createElementNS(SVG_NS, "line");
+    line.setAttribute("class", "g-edge");
+    eG.appendChild(line);
+    ed.el = line;
+    ed.labels = [];
+    for (const from of [ed.a, ed.b]) {
+      const names = ed.rels.filter((r) => r.from === from).map((r) => r.label);
+      if (!names.length) continue;
+      const t = document.createElementNS(SVG_NS, "text");
+      t.setAttribute("class", "g-elabel");
+      t.textContent = cut(names.join(", "), 10);
+      lG.appendChild(t);
+      ed.labels.push({ el: t, from });
+    }
+  }
+  for (const n of graph.nodes.values()) n.el = null;
+  for (const id of vis) {
+    const n = graph.nodes.get(id);
+    n.r = nodeRadius(n);
+    const g = document.createElementNS(SVG_NS, "g");
+    g.setAttribute("class", "g-node");
+    g.dataset.id = id;
+    g.innerHTML = `<circle class="halo" r="${n.r + 5}"></circle><circle class="dot" r="${n.r}" style="fill:${typeColor(n.entry.type)}"></circle><text y="${n.r + 15}">${esc(cut(n.entry.name, 12))}</text>`;
+    nG.appendChild(g);
+    n.el = g;
+  }
+  updateGraphPositions();
+  applyGraphHighlight();
+  renderGraphChrome();
+}
+function updateGraphPositions() {
+  for (const ed of graph.visEdges) {
+    const A = graph.nodes.get(ed.a);
+    const B = graph.nodes.get(ed.b);
+    const ddx = B.x - A.x;
+    const ddy = B.y - A.y;
+    const d = Math.hypot(ddx, ddy) || 1;
+    const ux = ddx / d;
+    const uy = ddy / d;
+    const fwd = ed.rels.some((r) => r.from === ed.a);
+    const back = ed.rels.some((r) => r.from === ed.b);
+    const sa = Math.min(d / 2, A.r + (back ? 6 : 3));
+    const sb = Math.min(d / 2, B.r + (fwd ? 6 : 3));
+    ed.el.setAttribute("x1", A.x + ux * sa);
+    ed.el.setAttribute("y1", A.y + uy * sa);
+    ed.el.setAttribute("x2", B.x - ux * sb);
+    ed.el.setAttribute("y2", B.y - uy * sb);
+    for (const lb of ed.labels) {
+      // 한쪽 관계면 선 가운데, 양쪽이면 각 관계가 가리키는 쪽(대상)으로 조금 치우쳐 둔다.
+      // 선 위에 겹치지 않도록 선과 수직 방향으로 살짝 띄운다.
+      const t = ed.labels.length === 1 ? 0.5 : lb.from === ed.a ? 0.62 : 0.38;
+      const side = ed.labels.length === 1 ? 1 : lb.from === ed.a ? 1 : -1;
+      lb.el.setAttribute("x", A.x + ddx * t - uy * 9 * side);
+      lb.el.setAttribute("y", A.y + ddy * t + ux * 9 * side + 4);
+    }
+  }
+  for (const n of graph.nodes.values()) if (n.el) n.el.setAttribute("transform", `translate(${n.x.toFixed(1)},${n.y.toFixed(1)})`);
+}
+function applyGraphHighlight() {
+  const sel = graph.selected && graph.vis.has(graph.selected) ? graph.selected : null;
+  const near = new Set();
+  if (sel) {
+    near.add(sel);
+    for (const ed of graph.visEdges) { if (ed.a === sel) near.add(ed.b); if (ed.b === sel) near.add(ed.a); }
+  }
+  for (const n of graph.nodes.values()) {
+    if (!n.el) continue;
+    n.el.classList.toggle("sel", n.id === sel);
+    n.el.classList.toggle("dim", !!sel && !near.has(n.id) && !graph.linkFrom);
+    n.el.classList.toggle("link-src", n.id === graph.linkFrom);
+  }
+  for (const ed of graph.visEdges) {
+    const hl = !!sel && (ed.a === sel || ed.b === sel);
+    ed.el.classList.toggle("hl", hl);
+    ed.el.classList.toggle("dim", !!sel && !hl);
+    const marker = hl ? "url(#gArrowHl)" : "url(#gArrow)";
+    if (ed.rels.some((r) => r.from === ed.a)) ed.el.setAttribute("marker-end", marker); else ed.el.removeAttribute("marker-end");
+    if (ed.rels.some((r) => r.from === ed.b)) ed.el.setAttribute("marker-start", marker); else ed.el.removeAttribute("marker-start");
+    for (const lb of ed.labels) lb.el.classList.toggle("show", hl || (!sel && graph.labelsAll));
+  }
+}
+function applyGraphTransform() {
+  const { tx, ty, s } = graph.view;
+  $("#gViewport").setAttribute("transform", `translate(${tx.toFixed(1)},${ty.toFixed(1)}) scale(${s.toFixed(3)})`);
+  const stage = $("#graphStage");
+  stage.style.backgroundSize = `${22 * s}px ${22 * s}px`;
+  stage.style.backgroundPosition = `${tx}px ${ty}px`;
+  const all = s >= 1.35;
+  if (all !== graph.labelsAll) { graph.labelsAll = all; applyGraphHighlight(); }
+}
+function stageInnerHeight() {
+  const stage = $("#graphStage");
+  const card = $("#graphCard");
+  return stage.clientHeight - (card.hidden ? 0 : card.offsetHeight + 16);
+}
+function fitGraph() {
+  const stage = $("#graphStage");
+  const W = stage.clientWidth;
+  const H = stageInnerHeight();
+  if (!W || H <= 0) return;
+  const list = [...graph.vis].map((id) => graph.nodes.get(id));
+  if (!list.length) { graph.view = { tx: W / 2, ty: H / 2, s: 1 }; applyGraphTransform(); return; }
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const n of list) { x0 = Math.min(x0, n.x - 60); x1 = Math.max(x1, n.x + 60); y0 = Math.min(y0, n.y - 30); y1 = Math.max(y1, n.y + 40); }
+  const s = clamp(Math.min(W / (x1 - x0), (H - 56) / (y1 - y0)), 0.3, 1.5);
+  graph.view = { s, tx: W / 2 - ((x0 + x1) / 2) * s, ty: 56 + (H - 56) / 2 - ((y0 + y1) / 2) * s };
+  applyGraphTransform();
+}
+function centerOn(id) {
+  const n = graph.nodes.get(id);
+  if (!n) return;
+  const stage = $("#graphStage");
+  const s = Math.max(graph.view.s, 1);
+  graph.view = { s, tx: stage.clientWidth / 2 - n.x * s, ty: Math.max(120, stageInnerHeight() / 2) - n.y * s };
+  applyGraphTransform();
+}
+function zoomAt(cx, cy, factor) {
+  const rect = $("#graphStage").getBoundingClientRect();
+  const mx = cx - rect.left;
+  const my = cy - rect.top;
+  const { tx, ty, s } = graph.view;
+  const ns = clamp(s * factor, 0.25, 3);
+  const wx = (mx - tx) / s;
+  const wy = (my - ty) / s;
+  graph.view = { s: ns, tx: mx - wx * ns, ty: my - wy * ns };
+  applyGraphTransform();
+}
+
+function renderGraphChrome() {
+  // 종류 필터
+  const counts = {};
+  for (const n of graph.nodes.values()) counts[n.entry.type] = (counts[n.entry.type] || 0) + 1;
+  const isolated = [...graph.nodes.values()].filter((n) => n.degree === 0).length;
+  $("#graphTypes").innerHTML = TYPE_KEYS.filter((k) => counts[k]).map((k) => `<button class="type-chip" type="button" data-gtype="${k}" aria-pressed="${!graph.hiddenTypes.has(k)}"><span class="tdot" style="background:${typeColor(k)}"></span>${TYPES[k].label}<span class="n">${counts[k]}</span></button>`).join("")
+    + (isolated ? `<button class="type-chip isolated" type="button" data-gtype="__isolated" aria-pressed="${!graph.hideIsolated}">연결 없는 항목<span class="n">${isolated}</span></button>` : "");
+
+  // 빈 화면 안내
+  const empty = $("#graphEmpty");
+  const w = currentWorld();
+  if (!w) { empty.hidden = false; empty.innerHTML = "<div><strong>세계관이 없습니다</strong>대화 탭에서 새 세계관을 만들어 보세요.</div>"; }
+  else if (!graph.nodes.size) { empty.hidden = false; empty.innerHTML = "<div><strong>설정집이 비어 있습니다</strong>항목이 생기면 여기에 관계도가 그려집니다.</div>"; }
+  else if (!graph.vis.size) { empty.hidden = false; empty.innerHTML = "<div><strong>보이는 항목이 없습니다</strong>위의 종류 필터를 켜 보세요.</div>"; }
+  else empty.hidden = true;
+
+  // 상단 안내(관계 잇기 / 주변만 보기 / 관계 없음)
+  const hint = $("#graphHint");
+  const sel = graph.selected ? graph.nodes.get(graph.selected) : null;
+  if (graph.linkFrom) {
+    const from = graph.nodes.get(graph.linkFrom);
+    hint.hidden = false;
+    hint.innerHTML = `<span><b>${esc(from.entry.name)}</b>와(과) 이을 항목을 누르세요</span><button class="btn btn-small" type="button" data-g="cancel-link">취소</button>`;
+  } else if (graph.focusHops && sel) {
+    hint.hidden = false;
+    hint.innerHTML = `<span><b>${esc(sel.entry.name)}</b> 주변 ${graph.focusHops}단계만 보는 중</span><button class="btn btn-small" type="button" data-g="hops">${graph.focusHops === 1 ? "2단계까지" : "1단계만"}</button><button class="btn btn-small" type="button" data-g="unfocus">전체 보기</button>`;
+  } else if (graph.nodes.size && !graph.edges.length) {
+    hint.hidden = false;
+    hint.innerHTML = "<span>아직 관계가 없습니다. 항목을 누르고 '관계 잇기'를 쓰거나, 대화에서 관계를 정해 달라고 해 보세요.</span>";
+  } else hint.hidden = true;
+
+  // 선택 카드
+  const card = $("#graphCard");
+  if (sel && graph.vis.has(sel.id) && !graph.linkFrom) {
+    const e = sel.entry;
+    card.hidden = false;
+    card.innerHTML = `<div class="entry-head" style="--tc:${typeColor(e.type)}"><span class="catno">${e.id}</span><span>${TYPES[e.type]?.label || e.type}</span><span class="pill">연결 ${sel.degree}</span></div>
+      <strong class="gc-name">${esc(e.name)}</strong>
+      <p class="gc-sum">${esc(e.summary || "요약 없음")}</p>
+      <div class="row">
+        <button class="btn btn-small btn-primary" type="button" data-g="open">자세히</button>
+        <button class="btn btn-small" type="button" data-g="link">관계 잇기</button>
+        <button class="btn btn-small" type="button" data-g="focus">${graph.focusHops ? "전체 보기" : "주변만 보기"}</button>
+        <button class="btn btn-small" type="button" data-g="chat">대화로</button>
+      </div>`;
+  } else card.hidden = true;
+}
+
+let graphQueued = false;
+function queueGraphRender() {
+  if (graphQueued) return;
+  graphQueued = true;
+  requestAnimationFrame(() => { graphQueued = false; renderGraph(); });
+}
+async function renderGraph() {
+  if (state.view !== "graph") return;
+  await loadGraphPositions();
+  const hadLayout = graph.nodes.size > 0 || Object.keys(graph.pos).length > 0;
+  buildGraphModel();
+  runLayout(!hadLayout);
+  buildGraphDOM();
+  if (graph.pendingSelect && graph.nodes.has(graph.pendingSelect)) {
+    graph.selected = graph.pendingSelect;
+    graph.hiddenTypes.delete(graph.nodes.get(graph.pendingSelect).entry.type);
+    graph.pendingSelect = null;
+    buildGraphDOM();
+    graph.fitted = true;
+    centerOn(graph.selected);
+  } else if (!graph.fitted) {
+    fitGraph();
+    graph.fitted = true;
+  } else applyGraphTransform();
+  saveGraphPositions();
+}
+function showInGraph(id) {
+  graph.pendingSelect = id;
+  graph.focusHops = 0;
+  graph.linkFrom = null;
+  switchView("graph");
+}
+function selectGraphNode(id) {
+  graph.selected = id;
+  if (graph.focusHops) buildGraphDOM();
+  else { applyGraphHighlight(); renderGraphChrome(); }
+}
+
+function openLinkForm(fromId, toId) {
+  const a = findEntry(fromId);
+  const b = findEntry(toId);
+  if (!a || !b) return;
+  const common = ["스승", "제자", "가족", "연인", "친구", "동료", "경쟁", "적대", "소속", "지도자", "거주지", "출신", "소유", "원인"];
+  openSheet(`<h2 class="sheet-title">관계 잇기</h2>
+    <p class="meta" style="margin:0 0 12px">${esc(a.name)} ⇄ ${esc(b.name)}</p>
+    <form class="form" id="linkForm">
+      <label>${esc(a.name)}에게 ${esc(b.name)}은(는)<input id="l-label" required placeholder="예: 스승" autocomplete="off"></label>
+      <label>반대로 ${esc(b.name)}에게 ${esc(a.name)}은(는) <small>비워 두면 한쪽만</small><input id="l-reverse" placeholder="예: 제자" autocomplete="off"></label>
+      <div class="label-chips">${common.map((c) => `<button type="button" class="action-chip" data-fill="${c}"><span>${c}</span></button>`).join("")}</div>
+      <div class="sheet-actions">
+        <button class="btn" type="button" data-act="cancel">취소</button>
+        <button class="btn btn-primary" type="submit">잇기</button>
+      </div>
+    </form>`, (root) => {
+    let target = $("#l-label", root);
+    root.addEventListener("focusin", (ev) => { if (ev.target.matches("#l-label, #l-reverse")) target = ev.target; });
+    target.focus(); // 시트가 열리는 즉시 첫 칸에 커서를 둔다(나중에 옮기면 입력 중인 칸을 빼앗을 수 있다)
+    root.onclick = (ev) => {
+      const fill = ev.target.closest("[data-fill]");
+      if (fill) {
+        const label = $("#l-label", root);
+        const rev = $("#l-reverse", root);
+        const box = target === rev || (label.value && !rev.value) ? rev : label;
+        box.value = fill.dataset.fill;
+        target = box === label ? rev : label;
+        return;
+      }
+      if (ev.target.closest('[data-act="cancel"]')) closeSheet();
+    };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      if (state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 이어 주세요"); return; }
+      const label = $("#l-label", root).value.trim();
+      const rev = $("#l-reverse", root).value.trim();
+      if (!label) { toast("관계 이름을 넣어 주세요"); return; }
+      const added = addRelation(a, b.id, label, "user");
+      if (rev) addRelation(b, a.id, rev, "user");
+      await persist.world();
+      graph.linkFrom = null;
+      graph.selected = a.id;
+      closeSheet();
+      renderCodex();
+      toast(added || rev ? "관계를 이었습니다" : "이미 있는 관계입니다");
+    };
+  });
+}
+
+function bindGraph() {
+  const view = $("#view-graph");
+  const stage = $("#graphStage");
+  const gp = { pointers: new Map(), mode: null, node: null, moved: false, start: null, nodeStart: null, pinch: null };
+  let frame = 0;
+  const scheduleFrame = () => { if (!frame) frame = requestAnimationFrame(() => { frame = 0; updateGraphPositions(); }); };
+
+  stage.addEventListener("pointerdown", (e) => {
+    if (e.target.closest(".graph-card, .graph-hint, .zoom-ctrl")) return;
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    stage.setPointerCapture(e.pointerId);
+    gp.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (gp.pointers.size === 2) {
+      const [p1, p2] = [...gp.pointers.values()];
+      gp.mode = "pinch";
+      gp.node = null;
+      gp.moved = true;
+      gp.pinch = { d: Math.hypot(p1.x - p2.x, p1.y - p2.y) || 1, mid: { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 }, view: { ...graph.view } };
+      return;
+    }
+    gp.moved = false;
+    gp.start = { x: e.clientX, y: e.clientY, view: { ...graph.view } };
+    const nodeEl = e.target.closest(".g-node");
+    if (nodeEl) {
+      gp.mode = "node";
+      gp.node = graph.nodes.get(nodeEl.dataset.id);
+      gp.nodeStart = { x: gp.node.x, y: gp.node.y };
+    } else gp.mode = "pan";
+  });
+  stage.addEventListener("pointermove", (e) => {
+    if (!gp.pointers.has(e.pointerId)) return;
+    gp.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (gp.mode === "pinch" && gp.pointers.size >= 2) {
+      const [p1, p2] = [...gp.pointers.values()];
+      const d = Math.hypot(p1.x - p2.x, p1.y - p2.y) || 1;
+      const mid = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
+      const rect = stage.getBoundingClientRect();
+      const v0 = gp.pinch.view;
+      const s = clamp(v0.s * (d / gp.pinch.d), 0.25, 3);
+      const wx = (gp.pinch.mid.x - rect.left - v0.tx) / v0.s;
+      const wy = (gp.pinch.mid.y - rect.top - v0.ty) / v0.s;
+      graph.view = { s, tx: mid.x - rect.left - wx * s, ty: mid.y - rect.top - wy * s };
+      applyGraphTransform();
+      return;
+    }
+    if (!gp.start) return;
+    const dx = e.clientX - gp.start.x;
+    const dy = e.clientY - gp.start.y;
+    if (!gp.moved && Math.hypot(dx, dy) < 6) return;
+    gp.moved = true;
+    if (gp.mode === "node" && gp.node) {
+      gp.node.x = gp.nodeStart.x + dx / graph.view.s;
+      gp.node.y = gp.nodeStart.y + dy / graph.view.s;
+      gp.node.pinned = true;
+      scheduleFrame();
+    } else if (gp.mode === "pan") {
+      graph.view = { ...gp.start.view, tx: gp.start.view.tx + dx, ty: gp.start.view.ty + dy };
+      applyGraphTransform();
+    }
+  });
+  const endPointer = (e) => {
+    if (!gp.pointers.has(e.pointerId)) return;
+    gp.pointers.delete(e.pointerId);
+    if (gp.mode === "pinch") {
+      if (gp.pointers.size === 1) {
+        const p = [...gp.pointers.values()][0];
+        gp.mode = "pan";
+        gp.start = { x: p.x, y: p.y, view: { ...graph.view } };
+      } else if (!gp.pointers.size) gp.mode = null;
+      return;
+    }
+    if (gp.pointers.size) return;
+    if (e.type !== "pointercancel") {
+      if (!gp.moved && gp.mode === "node" && gp.node) onGraphNodeTap(gp.node.id);
+      else if (!gp.moved && gp.mode === "pan") onGraphBackgroundTap();
+      else if (gp.moved && gp.mode === "node") saveGraphPositions();
+    }
+    gp.mode = null;
+    gp.node = null;
+    gp.start = null;
+  };
+  stage.addEventListener("pointerup", endPointer);
+  stage.addEventListener("pointercancel", endPointer);
+  stage.addEventListener("wheel", (e) => { e.preventDefault(); zoomAt(e.clientX, e.clientY, Math.exp(-e.deltaY * 0.0015)); }, { passive: false });
+
+  view.addEventListener("click", async (e) => {
+    const chip = e.target.closest("[data-gtype]");
+    if (chip) {
+      const t = chip.dataset.gtype;
+      if (t === "__isolated") graph.hideIsolated = !graph.hideIsolated;
+      else if (graph.hiddenTypes.has(t)) graph.hiddenTypes.delete(t);
+      else graph.hiddenTypes.add(t);
+      buildGraphDOM();
+      return;
+    }
+    const g = e.target.closest("[data-g]")?.dataset.g;
+    if (!g) return;
+    const rect = stage.getBoundingClientRect();
+    if (g === "fit") fitGraph();
+    else if (g === "zoom-in") zoomAt(rect.left + rect.width / 2, rect.top + rect.height / 2, 1.3);
+    else if (g === "zoom-out") zoomAt(rect.left + rect.width / 2, rect.top + rect.height / 2, 1 / 1.3);
+    else if (g === "relayout") {
+      if (!graph.nodes.size) return;
+      if (!(await confirmBox("모든 항목의 자리를 다시 잡을까요? 직접 옮겨 둔 위치도 처음부터 다시 배치됩니다.", "다시 배치"))) return;
+      for (const n of graph.nodes.values()) { n.x = null; n.y = null; n.pinned = false; }
+      graph.pos = {};
+      buildGraphModel();
+      runLayout(true);
+      buildGraphDOM();
+      fitGraph();
+      saveGraphPositions();
+    } else if (g === "open" && graph.selected) openEntry(graph.selected);
+    else if (g === "link" && graph.selected) {
+      if (state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 이어 주세요"); return; }
+      graph.linkFrom = graph.selected;
+      applyGraphHighlight();
+      renderGraphChrome();
+      fitGraph(); // 이을 대상이 화면 밖에 있지 않도록 전체를 보여 준다
+    } else if (g === "cancel-link") { graph.linkFrom = null; applyGraphHighlight(); renderGraphChrome(); }
+    else if (g === "focus" && graph.selected) {
+      graph.focusHops = graph.focusHops ? 0 : 1;
+      buildGraphDOM();
+      if (graph.focusHops) fitGraph(); else centerOn(graph.selected);
+    } else if (g === "hops") { graph.focusHops = graph.focusHops === 1 ? 2 : 1; buildGraphDOM(); fitGraph(); }
+    else if (g === "unfocus") { graph.focusHops = 0; buildGraphDOM(); centerOn(graph.selected); }
+    else if (g === "chat" && graph.selected) {
+      const ent = findEntry(graph.selected);
+      switchView("chat");
+      fillInput(`${ent.name}(${ent.id})의 인간관계와 연결을 더 만들어 줘. `);
+    }
+  });
+
+  let searchTimer = 0;
+  $("#graphSearch").addEventListener("input", (e) => {
+    clearTimeout(searchTimer);
+    const q = e.target.value.trim().toLowerCase();
+    searchTimer = setTimeout(() => {
+      if (!q) return;
+      const terms = q.split(/\s+/);
+      const best = [...graph.nodes.values()].map((n) => ({ n, s: scoreEntry(n.entry, terms) })).filter((x) => x.s > 0).sort((a, b) => b.s - a.s)[0];
+      if (!best) return;
+      graph.linkFrom = null;
+      graph.focusHops = 0;
+      graph.hiddenTypes.delete(best.n.entry.type);
+      if (graph.hideIsolated && best.n.degree === 0) graph.hideIsolated = false;
+      graph.selected = best.n.id;
+      buildGraphDOM();
+      centerOn(best.n.id);
+    }, 250);
+  });
+}
+function onGraphNodeTap(id) {
+  if (graph.linkFrom) {
+    if (id === graph.linkFrom) { graph.linkFrom = null; applyGraphHighlight(); renderGraphChrome(); return; }
+    openLinkForm(graph.linkFrom, id);
+    return;
+  }
+  selectGraphNode(id);
+}
+function onGraphBackgroundTap() {
+  if (graph.linkFrom || graph.focusHops) return;
+  if (!graph.selected) return;
+  graph.selected = null;
+  applyGraphHighlight();
+  renderGraphChrome();
 }
 
 /* ============================================================
@@ -2370,6 +3095,7 @@ async function exportAll() {
       world: w,
       entries: (await idb.get("entries:" + w.id)) || [],
       log: (await idb.get("log:" + w.id)) || [],
+      graph: (await idb.get("graph:" + w.id)) || null,
       threads,
       convs,
     });
@@ -2392,11 +3118,13 @@ async function importBackup(file) {
     await Promise.all([
       idb.set("entries:" + id, x.entries || []),
       idb.set("log:" + id, x.log || []),
+      x.graph ? idb.set("graph:" + id, x.graph) : idb.del("graph:" + id),
       idb.set("threads:" + id, x.threads || []),
       ...Object.entries(x.convs || {}).filter(([, v]) => v).map(([tid, v]) => idb.set("conv:" + tid, v)),
     ]);
   }
   await persist.worlds();
+  resetGraphCache(); // 불러온 관계도 위치를 다시 읽게 한다
   await openWorld(state.worldId && state.worlds.some((w) => w.id === state.worldId) ? state.worldId : state.worlds[0].id);
   renderSettings();
   toast("백업을 불러왔습니다");
@@ -2537,6 +3265,7 @@ function bindGlobal() {
 
 async function init() {
   bindGlobal();
+  bindGraph();
   updateCostBadge();
   state.worlds = (await idb.get("worlds")) || [];
   const want = LS.get("lk.world", null);
