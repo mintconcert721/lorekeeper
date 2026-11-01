@@ -176,6 +176,13 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
   border: 0; border-radius: 999px; background: var(--surface-2); color: var(--ink);
 }
 .theme-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.sync-btn.running svg { animation: spin 1s linear infinite; }
+.sync-btn.error { background: var(--danger-soft); color: var(--danger); }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .sync-btn.running svg { animation: none; } }
+.sync-status { display: flex; flex-direction: column; gap: 2px; font-size: 13px; color: var(--muted); }
+.sync-err { color: var(--danger); }
+.steps { margin: 0; padding-left: 1.3em; font-size: 13.5px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
 .cost-badge {
   border: 0; border-radius: 999px; padding: 4px 10px;
   background: var(--surface-2); color: var(--muted);
@@ -627,6 +634,7 @@ main { min-height: 0; min-width: 0; position: relative; }
       <span class="eyebrow">세계관</span>
       <span class="name" id="worldName">로어키퍼</span>
     </button>
+    <button id="syncBtn" class="theme-btn sync-btn" type="button" aria-label="지금 동기화" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8"/><path d="M4 3v5h5"/><path d="M4 13a8 8 0 0 0 14.3 4.9L20 16"/><path d="M20 21v-5h-5"/></svg></button>
     <button id="themeBtn" class="theme-btn" type="button" aria-label="테마 바꾸기"></button>
     <button id="costBadge" class="cost-badge" type="button" aria-label="이번 달 사용 비용">$0.000</button>
   </header>
@@ -1191,8 +1199,8 @@ const idb = (() => {
   };
   return {
     get: (k) => run("readonly", (s) => s.get(k), () => mem.get(k)),
-    set: (k, v) => run("readwrite", (s) => s.put(v, k), () => { mem.set(k, v); }),
-    del: (k) => run("readwrite", (s) => s.delete(k), () => { mem.delete(k); }),
+    set: (k, v) => run("readwrite", (s) => s.put(v, k), () => { mem.set(k, v); }).then((r) => { noteLocalChange(k); return r; }),
+    del: (k) => run("readwrite", (s) => s.delete(k), () => { mem.delete(k); }).then((r) => { noteLocalChange(k); return r; }),
     get broken() { return broken; },
   };
 })();
@@ -1536,6 +1544,7 @@ function restoreEntry(e) {
   logChange("user", "restore", e);
 }
 function purgeEntry(e) {
+  addTombstone("entries", `${state.worldId}:${e.id}`);
   state.entries = state.entries.filter((x) => x !== e);
   for (const o of state.entries) o.relations = (o.relations || []).filter((r) => r.to !== e.id);
   logChange("user", "purge", e);
@@ -2634,6 +2643,7 @@ function openThreadsSheet() {
         const t = state.threads.find((x) => x.id === del.dataset.delThread);
         if (!t || !(await confirmBox(`'${t.title}' 대화를 지울까요? 설정집은 지워지지 않습니다.`, "지우기", true))) return;
         state.threads = state.threads.filter((x) => x !== t);
+        await addTombstone("threads", t.id);
         await Promise.all([idb.del("conv:" + t.id), persist.threads()]);
         if (state.threadId === t.id) newThread();
         openThreadsSheet();
@@ -3040,6 +3050,7 @@ function openWorldForm(existing) {
       if (act === "delete-world") {
         if (!(await confirmBox(`'${w.name}' 세계관과 모든 항목, 대화를 지웁니다. 되돌릴 수 없습니다. 먼저 백업을 받아 두세요.`, "모두 지우기", true))) return;
         const id = w.id;
+        await addTombstone("worlds", id);
         const threads = (await idb.get("threads:" + id)) || [];
         await Promise.all([idb.del("entries:" + id), idb.del("log:" + id), idb.del("threads:" + id), idb.del("graph:" + id), ...threads.map((t) => idb.del("conv:" + t.id))]);
         state.worlds = state.worlds.filter((x) => x.id !== id);
@@ -3137,7 +3148,7 @@ function saveGraphPositions() {
     const pos = {};
     for (const n of graph.nodes.values()) pos[n.id] = [Math.round(n.x * 10) / 10, Math.round(n.y * 10) / 10, n.pinned ? 1 : 0];
     graph.pos = pos;
-    idb.set("graph:" + wid, { pos });
+    idb.set("graph:" + wid, { pos, savedAt: Date.now() });
   }, 300);
 }
 
@@ -4362,13 +4373,537 @@ function bindTheme() {
 }
 
 /* ============================================================
+   12-5. GitHub 동기화
+   비공개 저장소의 lorekeeper/ 폴더에 데이터를 나눠 저장하고, 기기끼리 합친다.
+   - lorekeeper/index.json   : 세계관 목록과 삭제 기록(tombstones)
+   - lorekeeper/w/<세계관>.json : 항목, 변경 기록, 대화 목록, 관계도 위치
+   - lorekeeper/c/<대화>.json  : 대화 기록
+   한 번 동기화할 때 바뀐 파일만 모아 커밋 하나로 올리고, 그 사이 다른 기기가
+   먼저 올렸으면(fast-forward 실패) 다시 받아 합친 뒤 올린다.
+   ============================================================ */
+const SYNC_DIR = "lorekeeper";
+const SYNC_KEY_RE = /^(worlds$|entries:|log:|threads:|graph:|conv:|sync:tombstones$)/;
+const syncCfg = Object.assign(
+  { enabled: false, repo: "", token: "", device: "", auto: true, lastSyncAt: 0, lastCommit: "", shas: {}, lastError: "" },
+  LS.get("lk.sync", {}),
+);
+const saveSyncCfg = () => LS.set("lk.sync", syncCfg);
+const syncState = { running: false, queued: false, timer: 0, applying: false, poller: 0 };
+const textEnc = new TextEncoder();
+
+function defaultDeviceName() {
+  const ua = navigator.userAgent || "";
+  if (/iPhone/.test(ua)) return "아이폰";
+  if (/iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) return "아이패드";
+  if (/Android/.test(ua)) return /Mobile/.test(ua) ? "안드로이드 폰" : "안드로이드 태블릿";
+  if (/Macintosh/.test(ua)) return "맥";
+  if (/Windows/.test(ua)) return "윈도우 PC";
+  return "브라우저";
+}
+// 로컬 데이터가 바뀌면 잠시 뒤 동기화한다(idb.set/del에서 부른다).
+function noteLocalChange(key) {
+  if (!syncCfg.enabled || syncState.applying || !SYNC_KEY_RE.test(key)) return;
+  scheduleSync(15000);
+}
+async function addTombstone(kind, key) {
+  const tomb = (await idb.get("sync:tombstones")) || { worlds: {}, threads: {}, entries: {} };
+  tomb[kind] = tomb[kind] || {};
+  tomb[kind][key] = Date.now();
+  await idb.set("sync:tombstones", tomb);
+}
+
+// ---- GitHub API ----
+async function gh(method, path, body) {
+  const url = `https://api.github.com/repos/${syncCfg.repo}${path}`;
+  let res;
+  try {
+    res = await fetch(url, {
+      method,
+      cache: "no-store",
+      headers: {
+        Authorization: `Bearer ${syncCfg.token}`,
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        ...(body ? { "Content-Type": "application/json" } : {}),
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  } catch (e) {
+    const err = new Error("network");
+    err.status = 0;
+    throw err;
+  }
+  if (!res.ok) {
+    let msg = "";
+    try { msg = (await res.json()).message || ""; } catch { /* 본문 없음 */ }
+    const err = new Error(msg || `HTTP ${res.status}`);
+    err.status = res.status;
+    throw err;
+  }
+  return res.status === 204 ? null : res.json();
+}
+function describeSyncError(err) {
+  if (err?.status === 0) return "네트워크에 연결할 수 없습니다.";
+  if (err?.status === 401) return "토큰이 올바르지 않거나 만료되었습니다. 새 토큰을 넣어 주세요.";
+  if (err?.status === 403) return /rate limit/i.test(err.message) ? "GitHub 요청 한도에 걸렸습니다. 잠시 후 다시 시도합니다." : "토큰에 이 저장소의 Contents 읽기·쓰기 권한이 없습니다.";
+  if (err?.status === 404) return "저장소를 찾을 수 없습니다. 저장소 이름과, 토큰이 그 저장소에 접근할 수 있는지 확인하세요.";
+  return `동기화 오류: ${err?.message || err}`;
+}
+async function gitBlobSha(text) {
+  const body = textEnc.encode(text);
+  const head = textEnc.encode(`blob ${body.length}\0`);
+  const buf = new Uint8Array(head.length + body.length);
+  buf.set(head);
+  buf.set(body, head.length);
+  const d = await crypto.subtle.digest("SHA-1", buf);
+  return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+function b64ToText(b64) {
+  const bin = atob(String(b64).replace(/\s/g, ""));
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder("utf-8").decode(bytes);
+}
+function textToB64(text) {
+  const bytes = textEnc.encode(text);
+  let bin = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+// 원격 저장소의 현재 상태: 브랜치 머리 커밋과 lorekeeper/ 아래 파일들의 blob sha
+async function remoteHead() {
+  const repo = await gh("GET", "");
+  const branch = repo.default_branch || "main";
+  let ref;
+  try {
+    ref = await gh("GET", `/git/ref/heads/${encodeURIComponent(branch)}`);
+  } catch (err) {
+    if (err.status !== 409 && err.status !== 404) throw err;
+    // 빈 저장소: 첫 커밋을 만든다
+    await gh("PUT", "/contents/README.md", { message: "로어키퍼 동기화 시작", content: textToB64("# 로어키퍼 데이터\n\n로어키퍼 앱이 동기화에 쓰는 저장소입니다. 직접 고치지 마세요.\n") });
+    ref = await gh("GET", `/git/ref/heads/${encodeURIComponent(branch)}`);
+  }
+  const head = ref.object.sha;
+  const commit = await gh("GET", `/git/commits/${head}`);
+  const tree = await gh("GET", `/git/trees/${commit.tree.sha}?recursive=1`);
+  const files = {};
+  for (const t of tree.tree || []) if (t.type === "blob" && t.path.startsWith(SYNC_DIR + "/")) files[t.path] = t.sha;
+  return { branch, head, treeSha: commit.tree.sha, files };
+}
+
+// ---- 로컬 스냅숏 ----
+async function flushLocal() {
+  if (!state.worldId) return;
+  syncState.applying = true;
+  try { await Promise.all([persist.world(), persist.threads(), persist.worlds(), persist.conv()]); }
+  finally { syncState.applying = false; }
+}
+async function loadLocalSnapshot() {
+  const worlds = (await idb.get("worlds")) || [];
+  const tomb = (await idb.get("sync:tombstones")) || { worlds: {}, threads: {}, entries: {} };
+  const data = {};
+  const convs = {};
+  for (const w of worlds) {
+    const threads = (await idb.get("threads:" + w.id)) || [];
+    data[w.id] = {
+      entries: (await idb.get("entries:" + w.id)) || [],
+      log: (await idb.get("log:" + w.id)) || [],
+      threads,
+      graph: (await idb.get("graph:" + w.id)) || null,
+    };
+    for (const t of threads) convs[t.id] = (await idb.get("conv:" + t.id)) || null;
+  }
+  return { worlds, tomb: { worlds: {}, threads: {}, entries: {}, ...tomb }, data, convs };
+}
+const worldPath = (id) => `${SYNC_DIR}/w/${id}.json`;
+const convPath = (id) => `${SYNC_DIR}/c/${id}.json`;
+const INDEX_PATH = `${SYNC_DIR}/index.json`;
+function serializeSnapshot(snap) {
+  const files = {};
+  files[INDEX_PATH] = JSON.stringify({ app: "lorekeeper-sync", version: 1, worlds: snap.worlds, tombstones: snap.tomb });
+  for (const w of snap.worlds) {
+    const d = snap.data[w.id] || { entries: [], log: [], threads: [], graph: null };
+    files[worldPath(w.id)] = JSON.stringify({ entries: d.entries, log: d.log, threads: d.threads, graph: d.graph });
+    for (const t of d.threads) if (snap.convs[t.id]) files[convPath(t.id)] = JSON.stringify(snap.convs[t.id]);
+  }
+  return files;
+}
+
+// ---- 합치기 ----
+function mergeTombstones(a, b) {
+  const out = { worlds: {}, threads: {}, entries: {} };
+  for (const src of [a, b]) for (const k of ["worlds", "threads", "entries"]) for (const [id, at] of Object.entries(src?.[k] || {})) out[k][id] = Math.max(out[k][id] || 0, at);
+  const cutoff = Date.now() - 90 * 24 * 3600 * 1000; // 90일 지난 삭제 기록은 정리
+  for (const k of Object.keys(out)) for (const [id, at] of Object.entries(out[k])) if (at < cutoff) delete out[k][id];
+  return out;
+}
+function mergeCounters(a = {}, b = {}) {
+  const out = { ...a };
+  for (const [k, v] of Object.entries(b)) out[k] = Math.max(out[k] || 0, v);
+  return out;
+}
+function mergeWorldList(local, remote) {
+  const out = new Map(local.map((w) => [w.id, w]));
+  for (const r of remote) {
+    const l = out.get(r.id);
+    if (!l) { out.set(r.id, r); continue; }
+    const win = (r.updatedAt || 0) > (l.updatedAt || 0) ? r : l;
+    out.set(r.id, { ...win, counters: mergeCounters(l.counters, r.counters) });
+  }
+  return [...out.values()];
+}
+function nextFreeId(code, taken) {
+  let n = 0;
+  for (const id of taken) {
+    const m = id.match(/^([A-Z][A-Z0-9]{0,2})-(\d+)$/);
+    if (m && m[1] === code) n = Math.max(n, Number(m[2]));
+  }
+  return `${code}-${String(n + 1).padStart(3, "0")}`;
+}
+function mergeWorldData(local, remote) {
+  const out = new Map(local.entries.map((e) => [e.id, e]));
+  const localOrigin = new Set(local.entries.map((e) => e.id));
+  const collided = [];
+  for (const r of remote.entries || []) {
+    const l = out.get(r.id);
+    if (!l) { out.set(r.id, r); continue; }
+    if (l.createdAt === r.createdAt) {
+      if ((r.updatedAt || 0) > (l.updatedAt || 0)) { out.set(r.id, r); localOrigin.delete(r.id); }
+      continue;
+    }
+    // 두 기기가 같은 번호로 서로 다른 항목을 만들었다: 원격이 번호를 갖고, 이 기기 항목은 새 번호로 옮긴다
+    collided.push(l);
+    out.set(r.id, r);
+    localOrigin.delete(r.id);
+  }
+  const renames = {};
+  for (const l of collided) {
+    const code = l.id.split("-")[0];
+    const newId = nextFreeId(code, out.keys());
+    renames[l.id] = newId;
+    const moved = { ...l, id: newId };
+    out.set(newId, moved);
+    localOrigin.add(newId);
+  }
+  if (Object.keys(renames).length) {
+    for (const id of localOrigin) {
+      const e = out.get(id);
+      if (e?.relations?.some((rel) => renames[rel.to])) out.set(id, { ...e, relations: e.relations.map((rel) => (renames[rel.to] ? { ...rel, to: renames[rel.to] } : rel)) });
+    }
+  }
+  const seenLog = new Set();
+  const log = [...(local.log || []), ...(remote.log || [])]
+    .filter((c) => { const k = `${c.at}|${c.by}|${c.action}|${c.id}|${c.note}`; if (seenLog.has(k)) return false; seenLog.add(k); return true; })
+    .sort((a, b) => a.at - b.at)
+    .slice(-500);
+  const threads = new Map((local.threads || []).map((t) => [t.id, t]));
+  for (const r of remote.threads || []) {
+    const l = threads.get(r.id);
+    if (!l || (r.updatedAt || 0) > (l.updatedAt || 0)) threads.set(r.id, r);
+  }
+  const lg = local.graph;
+  const rg = remote.graph;
+  const graphData = !lg ? rg || null : !rg ? lg : (rg.savedAt || 0) > (lg.savedAt || 0) ? rg : lg;
+  return { entries: [...out.values()], log, threads: [...threads.values()], graph: graphData, renames };
+}
+const isPrefix = (a, b) => a.length <= b.length && JSON.stringify(a) === JSON.stringify(b.slice(0, a.length));
+function mergeConv(local, remote) {
+  if (!local) return { conv: remote };
+  if (!remote) return { conv: local };
+  const la = local.api || [];
+  const ra = remote.api || [];
+  if (isPrefix(la, ra)) return { conv: ra.length === la.length && (local.display?.length || 0) > (remote.display?.length || 0) ? local : remote };
+  if (isPrefix(ra, la)) return { conv: local };
+  return { conv: remote, copy: local }; // 두 기기에서 서로 다르게 이어졌다: 둘 다 남긴다
+}
+function applyTombstones(snap) {
+  const t = snap.tomb;
+  snap.worlds = snap.worlds.filter((w) => !(t.worlds[w.id] && t.worlds[w.id] >= (w.updatedAt || 0)));
+  for (const w of snap.worlds) {
+    const d = snap.data[w.id];
+    if (!d) continue;
+    d.threads = d.threads.filter((x) => !(t.threads[x.id] && t.threads[x.id] >= (x.updatedAt || 0)));
+    d.entries = d.entries.filter((e) => {
+      const at = t.entries[`${w.id}:${e.id}`];
+      return !(at && at >= (e.updatedAt || 0) && (e.createdAt || 0) <= at);
+    });
+    const ids = new Set(d.entries.map((e) => e.id));
+    for (const e of d.entries) if (e.relations?.some((r) => !ids.has(r.to))) e.relations = e.relations.filter((r) => ids.has(r.to));
+    const counters = { ...(w.counters || {}) };
+    for (const e of d.entries) {
+      const m = e.id.match(/^([A-Z][A-Z0-9]{0,2})-(\d+)$/);
+      if (m) counters[m[1]] = Math.max(counters[m[1]] || 0, Number(m[2]));
+    }
+    w.counters = counters;
+    w.entryCount = d.entries.filter((e) => !e.deleted).length;
+  }
+}
+
+// ---- 한 번의 동기화 ----
+async function syncOnce() {
+  await flushLocal();
+  const remote = await remoteHead();
+  const local = await loadLocalSnapshot();
+  const before = serializeSnapshot(local);
+
+  // 지난 동기화 뒤 원격에서 바뀐 파일만 받는다
+  const changed = Object.keys(remote.files).filter((p) => remote.files[p] !== syncCfg.shas[p]);
+  const localShas = {};
+  for (const p of changed) if (before[p] !== undefined) localShas[p] = await gitBlobSha(before[p]);
+  const toFetch = changed.filter((p) => remote.files[p] !== localShas[p]);
+  const got = {};
+  for (const p of toFetch) got[p] = JSON.parse(b64ToText((await gh("GET", `/git/blobs/${remote.files[p]}`)).content));
+
+  const merged = { worlds: local.worlds, tomb: local.tomb, data: local.data, convs: local.convs };
+  const changedConvs = new Set();
+  if (got[INDEX_PATH]) {
+    merged.worlds = mergeWorldList(local.worlds, got[INDEX_PATH].worlds || []);
+    merged.tomb = mergeTombstones(local.tomb, got[INDEX_PATH].tombstones);
+  }
+  for (const w of merged.worlds) {
+    const r = got[worldPath(w.id)];
+    if (!merged.data[w.id]) merged.data[w.id] = r ? { entries: r.entries || [], log: r.log || [], threads: r.threads || [], graph: r.graph || null } : { entries: [], log: [], threads: [], graph: null };
+    else if (r) merged.data[w.id] = mergeWorldData(merged.data[w.id], r);
+  }
+  for (const p of Object.keys(got)) {
+    if (!p.startsWith(`${SYNC_DIR}/c/`)) continue;
+    const id = p.slice(`${SYNC_DIR}/c/`.length, -".json".length);
+    const res = mergeConv(local.convs[id], got[p]);
+    merged.convs[id] = res.conv;
+    changedConvs.add(id);
+    if (res.copy) {
+      // 이 기기에서 이어진 쪽을 사본 대화로 남긴다
+      const wid = Object.keys(merged.data).find((k) => merged.data[k].threads.some((t) => t.id === id));
+      if (wid) {
+        const meta = merged.data[wid].threads.find((t) => t.id === id);
+        const copyId = uid();
+        merged.data[wid].threads.push({ ...meta, id: copyId, title: `${meta.title} (${syncCfg.device || "이 기기"} 사본)`, updatedAt: Date.now() });
+        merged.convs[copyId] = res.copy;
+        changedConvs.add(copyId);
+      }
+    }
+  }
+  applyTombstones(merged);
+
+  // 합친 결과를 이 기기에 저장
+  const after = serializeSnapshot(merged);
+  syncState.applying = true;
+  let localChanged = false;
+  try {
+    if (after[INDEX_PATH] !== before[INDEX_PATH]) { await idb.set("worlds", merged.worlds); await idb.set("sync:tombstones", merged.tomb); localChanged = true; }
+    const liveWorlds = new Set(merged.worlds.map((w) => w.id));
+    for (const w of merged.worlds) {
+      if (after[worldPath(w.id)] !== before[worldPath(w.id)]) {
+        const d = merged.data[w.id];
+        await Promise.all([idb.set("entries:" + w.id, d.entries), idb.set("log:" + w.id, d.log), idb.set("threads:" + w.id, d.threads), d.graph ? idb.set("graph:" + w.id, d.graph) : idb.del("graph:" + w.id)]);
+        localChanged = true;
+      }
+    }
+    for (const w of local.worlds) if (!liveWorlds.has(w.id)) { await Promise.all(["entries:", "log:", "threads:", "graph:"].map((k) => idb.del(k + w.id))); localChanged = true; }
+    const liveThreads = new Set(merged.worlds.flatMap((w) => merged.data[w.id].threads.map((t) => t.id)));
+    for (const id of Object.keys(merged.convs)) {
+      if (!liveThreads.has(id)) { if (local.convs[id] !== undefined) { await idb.del("conv:" + id); localChanged = true; } continue; }
+      if (after[convPath(id)] !== before[convPath(id)] && merged.convs[id]) { await idb.set("conv:" + id, merged.convs[id]); localChanged = true; }
+    }
+  } finally {
+    syncState.applying = false;
+  }
+
+  // 원격과 다른 파일을 올린다
+  const finalShas = {};
+  for (const [p, text] of Object.entries(after)) finalShas[p] = await gitBlobSha(text);
+  const uploads = Object.keys(after).filter((p) => remote.files[p] !== finalShas[p]);
+  const deletions = Object.keys(remote.files).filter((p) => !(p in after));
+  let head = remote.head;
+  if (uploads.length || deletions.length) {
+    const items = [];
+    for (const p of uploads) {
+      const blob = await gh("POST", "/git/blobs", { content: after[p], encoding: "utf-8" });
+      items.push({ path: p, mode: "100644", type: "blob", sha: blob.sha });
+    }
+    for (const p of deletions) items.push({ path: p, mode: "100644", type: "blob", sha: null });
+    const tree = await gh("POST", "/git/trees", { base_tree: remote.treeSha, tree: items });
+    const commit = await gh("POST", "/git/commits", { message: `로어키퍼 동기화 · ${syncCfg.device || defaultDeviceName()}`, tree: tree.sha, parents: [remote.head] });
+    try {
+      await gh("PATCH", `/git/refs/heads/${encodeURIComponent(remote.branch)}`, { sha: commit.sha, force: false });
+    } catch (err) {
+      if (err.status === 422 || err.status === 409) { if (localChanged) await reloadAfterSync(changedConvs); return false; } // 그 사이 다른 기기가 올렸다: 다시 받아서 합친다
+      throw err;
+    }
+    head = commit.sha;
+  }
+  syncCfg.shas = finalShas;
+  syncCfg.lastCommit = head;
+  if (localChanged) await reloadAfterSync(changedConvs);
+  return true;
+}
+async function reloadAfterSync(changedConvs) {
+  state.worlds = (await idb.get("worlds")) || [];
+  resetGraphCache();
+  if (!state.worlds.length) {
+    state.worldId = null; state.entries = []; state.log = []; state.threads = []; state.threadId = null; state.conv = { api: [], display: [] };
+    renderWorldName(); renderChat(); renderCodex();
+    return;
+  }
+  if (!state.worlds.some((w) => w.id === state.worldId)) { await openWorld(state.worlds[0].id); return; }
+  state.entries = (await idb.get("entries:" + state.worldId)) || [];
+  state.log = (await idb.get("log:" + state.worldId)) || [];
+  state.threads = (await idb.get("threads:" + state.worldId)) || [];
+  if (state.threadId && !state.threads.some((t) => t.id === state.threadId)) { state.threadId = null; state.conv = { api: [], display: [] }; }
+  else if (state.threadId && changedConvs.has(state.threadId)) state.conv = (await idb.get("conv:" + state.threadId)) || { api: [], display: [] };
+  renderWorldName();
+  renderChat();
+  renderCodex();
+}
+
+function scheduleSync(delay = 15000) {
+  if (!syncCfg.enabled || !syncCfg.auto) return;
+  clearTimeout(syncState.timer);
+  syncState.timer = setTimeout(() => runSync("auto"), delay);
+}
+async function runSync(reason) {
+  if (!syncCfg.enabled) return false;
+  if (syncState.running) { syncState.queued = true; return false; }
+  // Claude가 답하는 중이거나 편집 창이 열려 있으면 잠시 뒤에 한다(열린 화면의 데이터를 바꾸지 않도록)
+  if (state.busy || !$("#sheet").hidden || !$("#dialog").hidden) {
+    clearTimeout(syncState.timer);
+    syncState.timer = setTimeout(() => runSync(reason), 5000);
+    return false;
+  }
+  clearTimeout(syncState.timer);
+  syncState.running = true;
+  renderSyncIndicator();
+  let ok = false;
+  try {
+    for (let i = 0; i < 4 && !ok; i++) ok = await syncOnce();
+    if (!ok) throw new Error("다른 기기와 동시에 올리는 중입니다. 잠시 후 다시 시도합니다.");
+    syncCfg.lastError = "";
+    syncCfg.lastSyncAt = Date.now();
+  } catch (err) {
+    console.warn("동기화 실패", err);
+    syncCfg.lastError = describeSyncError(err);
+  } finally {
+    saveSyncCfg();
+    syncState.running = false;
+    renderSyncIndicator();
+    if (syncState.queued) { syncState.queued = false; scheduleSync(2000); }
+  }
+  return ok;
+}
+function renderSyncIndicator() {
+  const btn = $("#syncBtn");
+  btn.hidden = !syncCfg.enabled;
+  btn.classList.toggle("running", syncState.running);
+  btn.classList.toggle("error", !!syncCfg.lastError && !syncState.running);
+  btn.setAttribute("aria-label", syncState.running ? "동기화 중" : syncCfg.lastError ? `동기화 오류: ${syncCfg.lastError}` : "지금 동기화");
+  const st = $("#syncStatus");
+  if (st) st.innerHTML = syncStatusHTML();
+}
+function syncStatusHTML() {
+  if (!syncCfg.enabled) return "";
+  const when = syncCfg.lastSyncAt ? fmtDate(syncCfg.lastSyncAt) : "아직 안 함";
+  return `<span>${syncState.running ? "동기화하는 중…" : `마지막 동기화: ${esc(when)}`}</span>${syncCfg.lastError && !syncState.running ? `<span class="sync-err">${esc(syncCfg.lastError)}</span>` : ""}`;
+}
+async function connectSync(repo, token, device) {
+  const m = repo.trim().replace(/^https?:\/\/github\.com\//, "").replace(/\.git$/, "").replace(/\/+$/, "");
+  if (!/^[\w.-]+\/[\w.-]+$/.test(m)) { toast("저장소는 '아이디/저장소이름' 형식으로 넣어 주세요"); return; }
+  if (!token.trim()) { toast("토큰을 넣어 주세요"); return; }
+  const prev = { ...syncCfg };
+  Object.assign(syncCfg, { repo: m, token: token.trim(), device: device.trim() || defaultDeviceName() });
+  let info;
+  try {
+    info = await gh("GET", "");
+  } catch (err) {
+    Object.assign(syncCfg, { repo: prev.repo, token: prev.token, device: prev.device });
+    toast(describeSyncError(err));
+    return;
+  }
+  if (info.private === false && !(await confirmBox("이 저장소는 공개 저장소입니다. 세계관과 대화 내용이 누구에게나 보이게 됩니다. 그래도 연결할까요?", "그래도 연결", true))) {
+    Object.assign(syncCfg, { repo: prev.repo, token: prev.token, device: prev.device });
+    return;
+  }
+  if (info.permissions && info.permissions.push === false) {
+    Object.assign(syncCfg, { repo: prev.repo, token: prev.token, device: prev.device });
+    toast("토큰에 이 저장소의 쓰기 권한이 없습니다");
+    return;
+  }
+  Object.assign(syncCfg, { enabled: true, auto: true, shas: prev.repo === m ? prev.shas : {}, lastError: "" });
+  saveSyncCfg();
+  renderSyncIndicator();
+  renderSettings();
+  toast("연결했습니다. 동기화를 시작합니다");
+  const ok = await runSync("connect");
+  toast(ok ? "동기화했습니다" : syncCfg.lastError || "동기화하지 못했습니다");
+  renderSettings();
+}
+function bindSync() {
+  if (!syncCfg.device) syncCfg.device = defaultDeviceName();
+  $("#syncBtn").onclick = async () => {
+    const ok = await runSync("manual");
+    toast(ok ? "동기화했습니다" : syncCfg.lastError || "잠시 후 다시 시도합니다");
+  };
+  document.addEventListener("visibilitychange", () => {
+    if (!syncCfg.enabled) return;
+    if (document.visibilityState === "visible" && Date.now() - syncCfg.lastSyncAt > 30000) runSync("visible");
+    if (document.visibilityState === "hidden" && syncState.timer) runSync("hidden");
+  });
+  syncState.poller = setInterval(() => {
+    if (syncCfg.enabled && syncCfg.auto && document.visibilityState === "visible" && Date.now() - syncCfg.lastSyncAt > 60000) runSync("poll");
+  }, 90000);
+  renderSyncIndicator();
+}
+
+/* ============================================================
    13. 화면: 설정
    ============================================================ */
+function syncCardHTML() {
+  if (syncCfg.enabled) {
+    return `<section class="card">
+      <h2>다른 기기와 동기화</h2>
+      <p>연결됨: <code>${esc(syncCfg.repo)}</code> · 이 기기: ${esc(syncCfg.device || defaultDeviceName())}</p>
+      <div class="sync-status" id="syncStatus">${syncStatusHTML()}</div>
+      <label class="switch">자동 동기화<input type="checkbox" id="syncAuto"${syncCfg.auto ? " checked" : ""}></label>
+      <p>켜 두면 앱을 열 때, 고친 뒤 잠시 후, 화면으로 돌아올 때 자동으로 맞춥니다.</p>
+      <div class="row">
+        <button class="btn btn-primary" type="button" data-act="sync-now">지금 동기화</button>
+        <button class="btn btn-danger" type="button" data-act="sync-off">연결 끊기</button>
+      </div>
+      <p>토큰은 이 기기의 브라우저에만 저장됩니다. API 키와 모델·테마 설정은 기기마다 따로입니다.</p>
+    </section>`;
+  }
+  return `<section class="card">
+    <h2>다른 기기와 동기화</h2>
+    <p>GitHub 비공개 저장소에 데이터를 저장해 휴대폰, 태블릿, 컴퓨터에서 이어 작업합니다.</p>
+    <details class="help-box"${syncCfg.repo ? "" : " open"}>
+      <summary>처음 한 번 준비하기</summary>
+      <ol class="steps">
+        <li>GitHub에서 <b>Private(비공개)</b> 저장소를 하나 만듭니다. 예: lorekeeper-data</li>
+        <li>GitHub 프로필 사진 → Settings → Developer settings → Personal access tokens → <b>Fine-grained tokens</b> → Generate new token</li>
+        <li>Repository access는 <b>Only select repositories</b>에서 방금 만든 저장소만 고릅니다.</li>
+        <li>Permissions → Repository permissions에서 <b>Contents</b>를 <b>Read and write</b>로 바꿉니다.</li>
+        <li>만든 토큰을 복사해 아래에 붙여 넣습니다. 다른 기기에서도 같은 저장소와 토큰을 넣으면 됩니다.</li>
+      </ol>
+    </details>
+    <form class="form" id="syncForm">
+      <label>저장소 <small>아이디/저장소이름</small><input id="syncRepo" value="${esc(syncCfg.repo)}" placeholder="mintconcert721/lorekeeper-data" autocapitalize="off" autocomplete="off" spellcheck="false"></label>
+      <label>토큰<input id="syncToken" type="password" autocomplete="off" placeholder="github_pat_…"></label>
+      <label>이 기기 이름 <small>커밋 기록에 남습니다</small><input id="syncDevice" value="${esc(syncCfg.device || defaultDeviceName())}"></label>
+      <div class="row"><button class="btn btn-primary" type="submit">연결하고 동기화</button></div>
+    </form>
+    <p>처음 연결하면 이 기기의 세계관과 저장소의 세계관이 합쳐집니다. 토큰은 이 기기의 브라우저에만 저장됩니다.</p>
+  </section>`;
+}
+let settingsRenderSeq = 0;
 async function renderSettings() {
   const root = $("#settings");
+  const seq = ++settingsRenderSeq;
   const month = cost.months[monthKey()] || 0;
   let persisted = null;
   try { persisted = await navigator.storage?.persisted?.(); } catch { persisted = null; }
+  if (seq !== settingsRenderSeq) return; // 더 나중에 시작한 그리기가 있으면 그쪽에 맡긴다
+  // 다시 그려도 입력 중인 글은 지키기
+  const typed = {};
+  for (const id of ["apiKey", "syncRepo", "syncToken", "syncDevice"]) { const el = root.querySelector("#" + id); if (el && el.value) typed[id] = el.value; }
   const masked = settings.apiKey ? settings.apiKey.slice(0, 10) + "…" + settings.apiKey.slice(-4) : "";
   root.innerHTML = `
     <section class="card">
@@ -4384,6 +4919,8 @@ async function renderSettings() {
       </form>
       <p>이 앱 전용 키를 만들고, Console에서 월 사용 한도를 걸어 두는 것을 권합니다.</p>
     </section>
+
+    ${syncCardHTML()}
 
     <section class="card">
       <h2>화면 테마</h2>
@@ -4423,7 +4960,7 @@ async function renderSettings() {
 
     <section class="card">
       <h2>백업</h2>
-      <p>데이터는 이 기기 브라우저에만 있습니다. 브라우저 데이터를 지우거나 기기를 바꾸면 사라지므로 자주 내보내 두세요.${persisted === true ? " 이 브라우저는 저장 공간을 보존하도록 설정되어 있습니다." : persisted === false ? " 아이폰은 홈 화면에 추가해서 쓰면 데이터가 더 오래 보존됩니다." : ""}</p>
+      <p>${syncCfg.enabled ? "동기화 중인 데이터는 GitHub 저장소에도 있습니다. 그래도 가끔 백업 파일을 받아 두세요." : "데이터는 이 기기 브라우저에만 있습니다. 브라우저 데이터를 지우거나 기기를 바꾸면 사라지므로 자주 내보내 두세요."}${persisted === true ? " 이 브라우저는 저장 공간을 보존하도록 설정되어 있습니다." : persisted === false ? " 아이폰은 홈 화면에 추가해서 쓰면 데이터가 더 오래 보존됩니다." : ""}</p>
       <div class="row">
         <button class="btn" type="button" data-act="export-all">전체 백업 내보내기</button>
         <button class="btn" type="button" data-act="import">백업 불러오기</button>
@@ -4439,7 +4976,13 @@ async function renderSettings() {
       <p>아이폰 Safari: 공유 버튼 → 홈 화면에 추가. 안드로이드 Chrome: 메뉴 → 홈 화면에 추가. 앱처럼 전체 화면으로 열립니다.</p>
     </section>`;
 
+  for (const [id, v] of Object.entries(typed)) { const el = root.querySelector("#" + id); if (el && el.value !== v && (id !== "syncRepo" || !syncCfg.enabled)) el.value = v; }
   root.onsubmit = (ev) => {
+    if (ev.target.id === "syncForm") {
+      ev.preventDefault();
+      connectSync($("#syncRepo", root).value, $("#syncToken", root).value, $("#syncDevice", root).value);
+      return;
+    }
     if (ev.target.id !== "keyForm") return;
     ev.preventDefault();
     const v = $("#apiKey", root).value.trim();
@@ -4456,12 +4999,25 @@ async function renderSettings() {
     else if (t.name === "theme") { settings.theme = t.value; saveSettings(); applyTheme(); }
     else if (t.name === "effort") { settings.effort = t.value; saveSettings(); }
     else if (t.id === "showThinking") { settings.showThinking = t.checked; saveSettings(); }
+    else if (t.id === "syncAuto") { syncCfg.auto = t.checked; saveSyncCfg(); if (t.checked) scheduleSync(1000); }
     else if (t.id === "importFile" && t.files?.[0]) importBackup(t.files[0]);
   };
   root.onclick = async (ev) => {
     const act = ev.target.closest("[data-act]")?.dataset.act;
     if (!act) return;
     if (act === "test-key") testKey();
+    else if (act === "sync-now") {
+      const ok = await runSync("manual");
+      toast(ok ? "동기화했습니다" : syncCfg.lastError || "잠시 후 다시 시도합니다");
+    } else if (act === "sync-off") {
+      if (!(await confirmBox("동기화 연결을 끊을까요? 이 기기와 저장소의 데이터는 그대로 남고, 이 기기에 저장된 토큰만 지웁니다.", "연결 끊기", true))) return;
+      Object.assign(syncCfg, { enabled: false, token: "", lastError: "" });
+      clearTimeout(syncState.timer);
+      saveSyncCfg();
+      renderSyncIndicator();
+      renderSettings();
+      toast("연결을 끊었습니다");
+    }
     else if (act === "clear-key") {
       if (!(await confirmBox("저장된 API 키를 지울까요?", "지우기", true))) return;
       settings.apiKey = ""; saveSettings(); updateComposer(); renderSettings();
@@ -4691,6 +5247,7 @@ async function init() {
   bindGraph();
   bindTimeline();
   bindTheme();
+  bindSync();
   updateCostBadge();
   state.worlds = (await idb.get("worlds")) || [];
   const want = LS.get("lk.world", null);
@@ -4699,6 +5256,7 @@ async function init() {
   else { renderWorldName(); renderChat(); renderCodex(); }
   switchView(LS.get("lk.view", "chat"));
   if (idb.broken) toast("이 브라우저에서는 데이터가 저장되지 않습니다. 개인정보 보호 모드를 끄세요");
+  if (syncCfg.enabled) runSync("startup");
 }
 init();
 </script>
