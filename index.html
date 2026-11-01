@@ -785,6 +785,88 @@ main { min-height: 0; min-width: 0; position: relative; }
 .life-chip { border: 1px solid var(--line); border-left: 4px solid var(--tc, var(--t-event)); border-radius: 10px; background: var(--bg); padding: 5px 10px; font-size: 13px; color: var(--ink); }
 .life-chip b { font-weight: 700; }
 .life-hint { margin-top: 10px; }
+
+/* 인물 항목 탭 */
+.entry-tabs { margin: 10px 0 4px; }
+.entry-tabs button small { margin-left: 3px; font: 600 10px var(--font-mono); color: var(--accent); }
+.sec-actions { margin: 10px 0 4px; }
+.inner-flow { display: flex; flex-direction: column; align-items: stretch; gap: 2px; }
+.inner-pair { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 6px; align-items: stretch; }
+.inner-pair.two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.inner-cell { border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; background: var(--surface); }
+.inner-cell .lbl { display: block; font-size: 11.5px; letter-spacing: .04em; color: var(--accent); font-weight: 700; }
+.inner-cell p { margin: 2px 0 0; font-size: 14px; }
+.inner-cell.blank { border-style: dashed; background: transparent; }
+.inner-cell.blank p { color: var(--muted); }
+.inner-arrow, .inner-vs { align-self: center; color: var(--muted); font-size: 14px; text-align: center; }
+.arc-chart { width: 100%; max-width: 420px; height: auto; display: block; margin: 4px 0 8px; }
+.arc-zero { stroke: var(--line); stroke-dasharray: 3 3; }
+.arc-ax { font: 500 9.5px var(--font-body); fill: var(--muted); }
+.arc-line { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linejoin: round; }
+.arc-dot { fill: var(--surface); stroke: var(--accent); stroke-width: 2.5; }
+.arc-n { font: 700 10px var(--font-mono); fill: var(--ink); text-anchor: middle; }
+.arc-steps { list-style: none; margin: 0; padding: 0 0 0 14px; border-left: 2px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+.arc-steps li { position: relative; }
+.arc-steps li::before { content: ""; position: absolute; left: -20px; top: 6px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.arc-head { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; }
+.arc-steps p { margin: 2px 0 0; }
+.arc-steps .meta { margin: 2px 0 0; }
+.arc-row { border: 1px solid var(--line); border-radius: 12px; padding: 8px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 6px; }
+.arc-row-top { display: grid; grid-template-columns: minmax(0, 1fr) 64px 64px auto auto; gap: 4px; }
+.arc-row-top .icon-btn { width: 34px; min-height: 36px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; font-size: 13px; background: var(--surface); }
+.chip.never { text-decoration: line-through; color: var(--muted); border-style: dashed; }
+.sample { margin: 6px 0; padding: 6px 12px; border-left: 3px solid var(--accent); background: var(--surface-2); border-radius: 0 10px 10px 0; font-size: 14.5px; }
+.addr-list li { padding: 5px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 6px; }
+.gal-item, .gal-add { aspect-ratio: 1; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); padding: 0; background: var(--surface-2); }
+.gal-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gal-item.missing::after { content: "그림 없음"; font-size: 11px; color: var(--muted); }
+.gal-add { font-size: 26px; color: var(--muted); border-style: dashed; background: transparent; }
+.gal-full { display: block; width: 100%; max-height: 70vh; object-fit: contain; border-radius: 12px; background: var(--surface-2); }
+.prompt-box { margin-top: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.prompt-head { display: flex; align-items: center; justify-content: space-between; }
+.prompt-box p { margin: 4px 0 0; font-size: 13.5px; line-height: 1.55; user-select: text; -webkit-user-select: text; }
+#lpStyle { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); padding: 6px 10px; font-size: 15px; color: var(--ink); }
+.ability-list { display: flex; flex-direction: column; gap: 8px; }
+.ability { border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; background: var(--surface); }
+.ability.no-cost { border-color: var(--danger); }
+.ability-head { display: flex; align-items: center; justify-content: space-between; }
+.ability p { margin: 2px 0 6px; font-size: 14px; }
+.ab-dl { margin: 0; display: grid; gap: 2px; }
+.ab-dl > div { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 8px; font-size: 13.5px; }
+.ab-dl dt { color: var(--muted); }
+.ab-dl dd { margin: 0; }
+.inline-label.wide { grid-template-columns: 64px minmax(0, 1fr); }
+/* 호칭표 */
+.addr-mx td.mx-cell button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+.addr-mx .call { font-weight: 700; }
+.addr-mx td.want button { color: var(--danger) !important; font-weight: 700; }
+.sp { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 6px; font: 700 10.5px/16px var(--font-body); background: var(--surface-2); color: var(--muted); }
+.sp-반 { background: color-mix(in srgb, var(--t-faction) 22%, var(--surface)); color: var(--ink); }
+.sp-존 { background: color-mix(in srgb, var(--t-place) 22%, var(--surface)); color: var(--ink); }
+.pick-list { display: flex; flex-direction: column; gap: 2px; max-height: 55vh; overflow-y: auto; }
+.pick { display: flex; align-items: center; gap: 10px; padding: 8px 4px; border-bottom: 1px solid var(--line); }
+.pick input { width: 20px; height: 20px; flex: none; }
+/* 인물 비교 */
+.cmp-wrap { max-height: 62vh; }
+.cmp { font-size: 13px; }
+.cmp th.cmp-head button { border-left: 0; border-top: 3px solid var(--tc); white-space: nowrap; }
+.cmp td.cmp-cell { padding: 6px 8px; min-width: 110px; max-width: 200px; vertical-align: top; line-height: 1.45; }
+.cmp td.blank { color: var(--muted); text-align: center; }
+.cmp td.same, .same-mark { background: color-mix(in srgb, var(--t-event) 22%, var(--surface)); }
+.same-mark { padding: 0 6px; border-radius: 6px; }
+.cmp tr.cmp-group th { position: sticky; left: 0; text-align: left; padding: 6px 8px; font: 700 11.5px var(--font-body); letter-spacing: .06em; color: var(--accent); background: var(--surface); }
+.cmp th.mx-row { font: 600 12px var(--font-body); padding: 6px 8px; color: var(--muted); min-width: 76px; }
+/* 등장 비중 */
+.presence { display: flex; flex-direction: column; gap: 4px; }
+.pres-row { display: grid; grid-template-columns: 76px minmax(0, 1fr) 32px; grid-template-rows: auto auto; gap: 2px 8px; align-items: center; width: 100%; text-align: left; border: 0; border-bottom: 1px solid var(--line); background: none; padding: 6px 0; color: var(--ink); }
+.pres-name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pres-bar { height: 10px; border-radius: 5px; background: var(--surface-2); overflow: hidden; }
+.pres-bar span { display: block; height: 100%; background: var(--tc); border-radius: 5px; min-width: 2px; }
+.pres-n { font: 700 13px var(--font-mono); text-align: right; }
+.pres-sub { grid-column: 1 / -1; font-size: 12px; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -838,7 +920,7 @@ main { min-height: 0; min-width: 0; position: relative; }
 
     <section id="view-graph" class="view" aria-label="관계도와 지도" hidden>
       <div class="seg-tabs view-modes" id="graphModes" role="tablist">
-        <button type="button" role="tab" data-gmode="graph">관계도</button><button type="button" role="tab" data-gmode="tree">계보</button><button type="button" role="tab" data-gmode="matrix">세력표</button><button type="button" role="tab" data-gmode="map">지도</button>
+        <button type="button" role="tab" data-gmode="graph">관계도</button><button type="button" role="tab" data-gmode="tree">계보</button><button type="button" role="tab" data-gmode="matrix">세력표</button><button type="button" role="tab" data-gmode="addr">호칭</button><button type="button" role="tab" data-gmode="map">지도</button>
       </div>
       <div class="graph-tools gm-graph">
         <input id="graphSearch" type="search" placeholder="항목 찾기" aria-label="관계도에서 항목 찾기">
@@ -876,6 +958,9 @@ main { min-height: 0; min-width: 0; position: relative; }
       </div>
       <div class="gm-pane" id="matrixPane" hidden>
         <div class="scroll"><div class="pad" id="matrix"></div></div>
+      </div>
+      <div class="gm-pane" id="addrPane" hidden>
+        <div class="scroll"><div class="pad" id="addr"></div></div>
       </div>
       <div class="gm-pane" id="mapPane" hidden>
         <div class="graph-tools map-tools" id="mapTools"></div>
@@ -1476,6 +1561,128 @@ const TOOLS_V7 = [
   },
   toolV6("respond"),
 ];
+// v8: 인물 깊이 — 내면 엔진, 성장 곡선, 말투 카드, 외모, 능력과 대가, 호칭, 인물 일관성 검사.
+const SYSTEM_V8 = SYSTEM_V7 + `
+
+## 인물 깊이
+- 인물 항목에는 내면(inner: 원하는 것, 진짜 필요한 것, 상처, 믿고 있는 거짓말, 두려움, 비밀), 말투 카드(voice), 외모(looks), 능력과 대가(set_ability), 성장 곡선(set_arc), 호칭(set_address)을 둔다. 모두 get_entries로 읽는다.
+- 내면의 칸은 서로 맞물리게 정한다. 상처에서 믿고 있는 거짓말이 생기고, 그 거짓말 때문에 원하는 것과 진짜 필요한 것이 어긋난다.
+- 성장 곡선에는 이야기의 시점마다 인물의 모습(state), 믿음(belief), 그것을 바꾼 계기(turn)를 적고, level로 그때의 처지를 -5(바닥)부터 5(정점)까지 매긴다. 곡선은 믿고 있는 거짓말이 깨지거나 굳어지는 과정과 맞물리게 한다.
+- 능력에는 한계, 약점, 대가를 함께 정한다. 세계 규칙과 어긋나는 능력은 짚는다.
+- 대사를 쓰거나 인물이 되어 말할 때는 그 인물의 말투 카드와 호칭을 지킨다. 호칭은 '부르는 사람 → 듣는 사람'마다 부르는 말(call)과 말씨(speech: 반말, 존댓말, 하오체 등)다. 정해지지 않은 호칭이 필요하면 관계와 성격에 맞게 정해 쓰고, 사용자가 받아들이면 set_address로 저장한다.
+
+## 인물 일관성 검사
+- 인물 일관성 검사를 부탁받으면 get_entries로 인물을, get_manuscripts로 그 인물이 나오는 원고를 읽는다. 성격·내면·말투·호칭·나이·능력과 대가와 어긋나는 언행을 원고 제목과 짧은 인용을 근거로 보고한다. 원고를 고칠지 설정을 고칠지는 사용자에게 묻고, 마음대로 고치지 않는다.`;
+const toolV7 = (name) => TOOLS_V7.find((t) => t.name === name);
+const INNER_KEYS = [["want", "원하는 것"], ["need", "진짜 필요한 것"], ["wound", "상처"], ["lie", "믿고 있는 거짓말"], ["fear", "두려움"], ["secret", "비밀"]];
+const LOOK_KEYS = ["키·체격", "얼굴", "머리", "눈", "피부", "옷차림", "특징", "분위기"];
+const INNER_PARAM = {
+  type: "object",
+  description: "인물의 내면. 넣은 칸만 덮어쓰고 빈 문자열이면 지운다.",
+  properties: {
+    want: { type: "string", description: "원하는 것(겉으로 좇는 목표)" },
+    need: { type: "string", description: "진짜 필요한 것(본인은 모를 수 있다)" },
+    wound: { type: "string", description: "상처(인물을 만든 과거의 사건)" },
+    lie: { type: "string", description: "상처 때문에 믿고 있는 거짓말" },
+    fear: { type: "string", description: "가장 두려워하는 것" },
+    secret: { type: "string", description: "남에게 숨기는 것" },
+  },
+};
+const VOICE_PARAM = {
+  type: "object",
+  description: "인물의 말투 카드. 넣은 칸만 덮어쓰고(배열은 통째로 바꾼다) 빈 문자열이나 빈 배열이면 지운다.",
+  properties: {
+    tone: { type: "string", description: "어조와 말씨. 예: 짧게 끊어 말하는 반말, 바닷가 사투리" },
+    habits: { type: "string", description: "말버릇과 말할 때의 습관" },
+    phrases: { ...STR_ARR, description: "자주 쓰는 표현" },
+    never: { ...STR_ARR, description: "절대 쓰지 않는 말" },
+    samples: { ...STR_ARR, description: "그 인물다운 예시 대사" },
+  },
+};
+const LOOKS_PARAM = { type: "object", additionalProperties: { type: "string" }, description: `외모. 키는 ${LOOK_KEYS.join(", ")}. 넣은 칸만 덮어쓰고 빈 문자열이면 지운다.` };
+const TOOLS_V8 = [
+  toolV7("search_entries"),
+  toolV7("get_entries"),
+  {
+    name: "create_entry",
+    description: toolV7("create_entry").description + " 인물은 inner(내면), voice(말투 카드), looks(외모)를 함께 넣을 수 있다.",
+    input_schema: { type: "object", properties: { ...toolV7("create_entry").input_schema.properties, inner: INNER_PARAM, voice: VOICE_PARAM, looks: LOOKS_PARAM }, required: ["type", "name", "summary"] },
+    eager_input_streaming: true,
+  },
+  {
+    name: "update_entry",
+    description: toolV7("update_entry").description + " inner, voice, looks도 넣은 칸만 덮어쓴다.",
+    input_schema: { type: "object", properties: { ...toolV7("update_entry").input_schema.properties, inner: INNER_PARAM, voice: VOICE_PARAM, looks: LOOKS_PARAM }, required: ["id"] },
+    eager_input_streaming: true,
+  },
+  ...TOOLS_V7.filter((t) => !["search_entries", "get_entries", "create_entry", "update_entry", "respond"].includes(t.name)),
+  {
+    name: "set_arc",
+    description: "인물의 성장 곡선을 통째로 저장한다(이야기 순서대로 단계 2~8개). 빈 배열이면 지운다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        id: { type: "string", description: "인물 항목 id" },
+        stages: {
+          type: "array",
+          description: "이야기 순서대로의 단계",
+          items: {
+            type: "object",
+            properties: {
+              label: { type: "string", description: "단계 이름. 예: 1부 시작, 등대가 꺼진 밤" },
+              when: { type: "number", description: "그 시점의 연도(이 세계 달력, 선택)" },
+              state: { type: "string", description: "그때 인물의 모습과 처지" },
+              belief: { type: "string", description: "그때 믿는 것" },
+              turn: { type: "string", description: "이 단계로 바꾼 계기(사건 id나 설명)" },
+              level: { type: "number", description: "처지 -5(바닥)~5(정점)" },
+            },
+            required: ["state"],
+          },
+        },
+      },
+      required: ["id", "stages"],
+    },
+    eager_input_streaming: true,
+  },
+  {
+    name: "set_ability",
+    description: "인물(또는 종족·사물)의 능력을 만들거나 고친다. 같은 name이면 넣은 칸만 덮어쓴다. remove가 true면 지운다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        id: { type: "string", description: "항목 id" },
+        name: { type: "string", description: "능력 이름" },
+        desc: { type: "string", description: "무엇을 할 수 있는지" },
+        limit: { type: "string", description: "한계(범위, 횟수, 조건)" },
+        weakness: { type: "string", description: "약점" },
+        cost: { type: "string", description: "쓸 때 치르는 대가" },
+        remove: { type: "boolean" },
+      },
+      required: ["id", "name"],
+    },
+    eager_input_streaming: true,
+  },
+  {
+    name: "set_address",
+    description: "호칭을 정한다: from이 to를 부르는 말(call)과 말씨(speech). reverse_call·reverse_speech를 주면 반대 방향도 함께 정한다. remove가 true면 from→to 호칭을 지운다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        from_id: { type: "string", description: "부르는 인물 id" },
+        to_id: { type: "string", description: "불리는 인물 id" },
+        call: { type: "string", description: "부르는 말. 예: 언니, 선생님, 이름만, 야" },
+        speech: { type: "string", description: "말씨. 예: 반말, 존댓말, 하오체, 하게체" },
+        note: { type: "string", description: "덧붙일 점. 예: 둘만 있을 때는 반말" },
+        reverse_call: { type: "string" },
+        reverse_speech: { type: "string" },
+        remove: { type: "boolean" },
+      },
+      required: ["from_id", "to_id"],
+    },
+    eager_input_streaming: true,
+  },
+  toolV7("respond"),
+];
 const PROMPT_SETS = {
   1: { system: SYSTEM_V1, tools: TOOLS_V1 },
   2: { system: SYSTEM_V2, tools: TOOLS_V2 },
@@ -1484,8 +1691,9 @@ const PROMPT_SETS = {
   5: { system: SYSTEM_V5, tools: TOOLS_V5 },
   6: { system: SYSTEM_V6, tools: TOOLS_V6 },
   7: { system: SYSTEM_V7, tools: TOOLS_V7 },
+  8: { system: SYSTEM_V8, tools: TOOLS_V8 },
 };
-const PROMPT_CURRENT = 7;
+const PROMPT_CURRENT = 8;
 // 버전 정보가 없는 예전 대화는 만든 시각으로 버전을 추정한다(각 버전의 배포 완료 시각, UTC).
 const PROMPT_RELEASES = [
   { v: 2, at: Date.parse("2026-11-01T15:35:14Z") },
@@ -1544,6 +1752,9 @@ const TOOL_STATUS = {
   get_manuscripts: "원고함을 읽는 중…",
   set_naming_rule: "이름 규칙을 정리하는 중…",
   set_calendar: "달력을 정리하는 중…",
+  set_arc: "성장 곡선을 그리는 중…",
+  set_ability: "능력과 대가를 정리하는 중…",
+  set_address: "호칭을 정리하는 중…",
 };
 
 /* ============================================================
@@ -1635,6 +1846,7 @@ const state = {
   msKind: "all",
   msQuery: "",
   pendingMode: null,
+  entryTab: "base",     // 인물 항목 화면의 탭: base | inner | arc | voice | looks | ability
   gmode: LS.get("lk.gmode", "graph"), // 관계도 탭의 보기: graph | tree | matrix | map
   treeRoot: null,
   maps: [],             // 현재 세계관의 지도 [{ id, name, img, w, h, pins: [{ ref, x, y }], at }]
@@ -1642,6 +1854,7 @@ const state = {
   mapId: null,
   mapSel: null,
   mapMode: null,        // { type: "add" } | { type: "move", ref }
+  addrIds: null,        // 호칭표에 보일 인물(null이면 자동)
   tlMode: LS.get("lk.tlmode", "list"), // 연표 탭의 보기: list | life
   lifeYear: null,
   lifeZoom: 1,
@@ -1899,6 +2112,42 @@ function assertUniqueName(type, name, exceptId) {
   const dup = activeEntries().find((e) => e.type === type && e.name === name && e.id !== exceptId);
   if (dup) throw new Error(`같은 이름의 ${typeInfo(type).label} 항목이 이미 있습니다: ${dup.id}`);
 }
+/* ---- 인물 깊이: 내면 · 말투 · 외모 · 성장 곡선 · 능력 · 호칭 ---- */
+const INNER_IDS = INNER_KEYS.map(([k]) => k);
+const innerLabel = (k) => (INNER_KEYS.find(([x]) => x === k) || [k, k])[1];
+const VOICE_ARRAYS = ["phrases", "never", "samples"];
+function mergeStrMap(cur, patch, allowed) {
+  const next = { ...(cur || {}) };
+  for (const [k, v] of Object.entries(patch || {})) {
+    if (allowed && !allowed.includes(k)) throw new Error(`'${k}'는 쓸 수 없는 칸입니다. 쓸 수 있는 칸: ${allowed.join(", ")}`);
+    const t = String(v ?? "").trim();
+    if (t) next[k] = t; else delete next[k];
+  }
+  return next;
+}
+function mergeVoice(cur, patch) {
+  const next = { ...(cur || {}) };
+  for (const [k, v] of Object.entries(patch || {})) {
+    if (!["tone", "habits", ...VOICE_ARRAYS].includes(k)) throw new Error(`voice에 '${k}' 칸은 없습니다. 쓸 수 있는 칸: tone, habits, phrases, never, samples`);
+    if (VOICE_ARRAYS.includes(k)) {
+      const arr = (Array.isArray(v) ? v : String(v || "").split("\n")).map((x) => String(x).trim()).filter(Boolean);
+      if (arr.length) next[k] = arr; else delete next[k];
+    } else { const t = String(v ?? "").trim(); if (t) next[k] = t; else delete next[k]; }
+  }
+  return next;
+}
+function normalizeArc(stages) {
+  return (stages || []).map((x) => ({
+    id: x.id || uid().slice(-6),
+    label: String(x.label || "").trim(),
+    when: x.when === undefined || x.when === null || x.when === "" ? null : parseYear(x.when),
+    state: String(x.state || "").trim(),
+    belief: String(x.belief || "").trim(),
+    turn: String(x.turn || "").trim(),
+    level: x.level === undefined || x.level === null || x.level === "" || !Number.isFinite(Number(x.level)) ? null : clamp(Math.round(Number(x.level)), -5, 5),
+  })).filter((x) => x.state || x.label || x.belief);
+}
+const hasKeys = (o) => !!o && Object.keys(o).length > 0;
 function createEntry(d, by) {
   const name = String(d.name || "").trim();
   if (!name) throw new Error("이름이 비어 있습니다.");
@@ -1913,6 +2162,12 @@ function createEntry(d, by) {
     status: statusKey(d.status) || "canon",
     ...(d.senses && Object.keys(d.senses).length ? { senses: Object.fromEntries(Object.entries(d.senses).filter(([, v]) => String(v).trim())) } : {}),
     ...(d.perspectives?.length ? { perspectives: d.perspectives } : {}),
+    ...(hasKeys(d.inner) ? { inner: mergeStrMap({}, d.inner, INNER_IDS) } : {}),
+    ...(hasKeys(d.voice) ? { voice: mergeVoice({}, d.voice) } : {}),
+    ...(hasKeys(d.looks) ? { looks: mergeStrMap({}, d.looks) } : {}),
+    ...(d.arc?.length ? { arc: normalizeArc(d.arc) } : {}),
+    ...(d.abilities?.length ? { abilities: d.abilities } : {}),
+    ...(hasKeys(d.address) ? { address: d.address } : {}),
     ...(normalizeWhen(d.when) ? { when: normalizeWhen(d.when) } : {}),
     createdAt: now, updatedAt: now, updatedBy: by, history: [],
   };
@@ -1945,6 +2200,19 @@ function updateEntry(e, p, by, reason) {
     e.senses = next;
   }
   if (p.when !== undefined) { const w = normalizeWhen(p.when); if (w) e.when = w; else delete e.when; }
+  // 인물 깊이: *All은 통째로 바꾸고(직접 편집), 나머지는 넣은 칸만 덮어쓴다(Claude)
+  const setOrDrop = (k, v) => { if (v && (Array.isArray(v) ? v.length : Object.keys(v).length)) e[k] = v; else delete e[k]; };
+  if (p.innerAll !== undefined) setOrDrop("inner", mergeStrMap({}, p.innerAll, INNER_IDS));
+  if (p.inner) setOrDrop("inner", mergeStrMap(e.inner, p.inner, INNER_IDS));
+  if (p.voiceAll !== undefined) setOrDrop("voice", mergeVoice({}, p.voiceAll));
+  if (p.voice) setOrDrop("voice", mergeVoice(e.voice, p.voice));
+  if (p.looksAll !== undefined) setOrDrop("looks", mergeStrMap({}, p.looksAll));
+  if (p.looks) setOrDrop("looks", mergeStrMap(e.looks, p.looks));
+  if (p.arc !== undefined) setOrDrop("arc", normalizeArc(p.arc));
+  if (p.abilities !== undefined) setOrDrop("abilities", p.abilities);
+  if (p.address !== undefined) setOrDrop("address", p.address);
+  if (p.gallery !== undefined) setOrDrop("gallery", p.gallery);
+  if (p.lookPrompt !== undefined) { if (p.lookPrompt) e.lookPrompt = p.lookPrompt; else delete e.lookPrompt; }
   e.updatedAt = Date.now();
   e.updatedBy = by;
   logChange(by, "update", e, reason);
@@ -1992,6 +2260,7 @@ function restoreVersion(e, h) {
   e.status = statusOf(data);
   if (data.senses) e.senses = data.senses; else delete e.senses;
   if (data.perspectives) e.perspectives = data.perspectives; else delete e.perspectives;
+  for (const k of ["inner", "voice", "looks", "arc", "abilities", "address", "gallery", "lookPrompt"]) { if (data[k]) e[k] = data[k]; else delete e[k]; }
   e.updatedAt = Date.now(); e.updatedBy = "user";
   logChange("user", "update", e, "이전 버전으로 되돌림");
 }
@@ -2040,8 +2309,33 @@ function entryToText(e) {
   if (senses.length) lines.push("감각:", ...senses.map(([k, v]) => `- ${k}: ${v}`));
   if (e.perspectives?.length) lines.push("관점별 서술:", ...e.perspectives.map((x) => `- ${perspectiveName(x.by)}: ${x.text}`));
   if (state.images[e.id]?.data) lines.push("그림: 있음");
+  lines.push(...characterText(e));
   lines.push(`최종 수정: ${fmtDate(e.updatedAt)} (${e.updatedBy === "user" ? "사용자 직접" : "Claude"})`);
   return lines.join("\n");
+}
+function characterText(e) {
+  const out = [];
+  const inner = INNER_KEYS.filter(([k]) => e.inner?.[k]);
+  if (inner.length) out.push("내면:", ...inner.map(([k, l]) => `- ${l}: ${e.inner[k]}`));
+  const v = e.voice || {};
+  if (hasKeys(v)) {
+    out.push("말투:");
+    if (v.tone) out.push(`- 어조·말씨: ${v.tone}`);
+    if (v.habits) out.push(`- 말버릇: ${v.habits}`);
+    if (v.phrases?.length) out.push(`- 자주 쓰는 표현: ${v.phrases.join(" / ")}`);
+    if (v.never?.length) out.push(`- 쓰지 않는 말: ${v.never.join(" / ")}`);
+    if (v.samples?.length) out.push(`- 예시 대사: ${v.samples.map((x) => `"${x}"`).join(" ")}`);
+  }
+  const looks = Object.entries(e.looks || {});
+  if (looks.length) out.push("외모:", ...looks.map(([k, x]) => `- ${k}: ${x}`));
+  if (e.abilities?.length) out.push("능력과 대가:", ...e.abilities.map((a) => `- ${a.name}: ${a.desc || "(설명 없음)"}${a.limit ? ` · 한계: ${a.limit}` : ""}${a.weakness ? ` · 약점: ${a.weakness}` : ""} · 대가: ${a.cost || "(미정)"}`));
+  if (e.arc?.length) out.push("성장 곡선:", ...e.arc.map((x, i) => `${i + 1}. ${x.label || "단계"}${x.when != null ? ` (${fmtYear(x.when)})` : ""}${x.level != null ? ` [처지 ${x.level}]` : ""}: ${x.state}${x.belief ? ` · 믿음: ${x.belief}` : ""}${x.turn ? ` · 계기: ${x.turn}` : ""}`));
+  const addr = Object.entries(e.address || {}).filter(([to]) => findEntry(to));
+  const addrIn = state.entries.filter((x) => !x.deleted && x.address?.[e.id]).map((x) => [x, x.address[e.id]]);
+  if (addr.length || addrIn.length) out.push("호칭:",
+    ...addr.map(([to, a]) => `- ${e.name} → ${nameOf(to)}(${to}): "${a.call || "?"}"${a.speech ? `, ${a.speech}` : ""}${a.note ? ` (${a.note})` : ""}`),
+    ...addrIn.map(([x, a]) => `- ${x.name}(${x.id}) → ${e.name}: "${a.call || "?"}"${a.speech ? `, ${a.speech}` : ""}${a.note ? ` (${a.note})` : ""}`));
+  return out;
 }
 function worldOverviewText(w) {
   return [
@@ -2075,7 +2369,11 @@ function validateInput(schema, input) {
         }
       } else if (v.some((x) => typeof x !== "string")) return `'${k}'는 문자열 배열이어야 합니다.`;
     }
-    if (p.type === "object" && (typeof v !== "object" || v === null || Array.isArray(v) || Object.values(v).some((x) => typeof x !== "string"))) return `'${k}'는 문자열 값을 가진 객체여야 합니다.`;
+    if (p.type === "object") {
+      if (typeof v !== "object" || v === null || Array.isArray(v)) return `'${k}'는 객체여야 합니다.`;
+      if (p.properties) { const problem = validateInput(p, v); if (problem) return `'${k}' 안: ${problem}`; }
+      else if (Object.values(v).some((x) => typeof x !== "string")) return `'${k}'는 문자열 값을 가진 객체여야 합니다.`;
+    }
   }
   return null;
 }
@@ -2232,6 +2530,58 @@ const TOOL_IMPL = {
     w.updatedAt = Date.now();
     logChange("claude", "calendar", null, "달력·시대 수정");
     return { content: "달력을 고쳤다.\n" + calendarText(), action: { kind: "world", text: "달력·시대" }, changed: true };
+  },
+  set_arc({ id, stages }) {
+    const e = findEntry(id);
+    if (!e || e.deleted) throw new Error(`${id} 항목이 없습니다.`);
+    const arc = normalizeArc(stages);
+    updateEntry(e, { arc }, "claude", "성장 곡선");
+    return { content: arc.length ? `성장 곡선 ${arc.length}단계 저장: ${e.id} ${e.name}` : `성장 곡선 지움: ${e.id} ${e.name}`, action: { kind: "update", text: `${e.name} · 성장 곡선 ${arc.length}단계`, ref: e.id }, changed: true };
+  },
+  set_ability({ id, name, desc, limit, weakness, cost, remove }) {
+    const e = findEntry(id);
+    if (!e || e.deleted) throw new Error(`${id} 항목이 없습니다.`);
+    const key = String(name || "").trim();
+    if (!key) throw new Error("name이 필요합니다.");
+    const list = (e.abilities || []).map((a) => ({ ...a }));
+    const i = list.findIndex((a) => a.name === key);
+    if (remove) {
+      if (i < 0) throw new Error(`'${key}' 능력이 없습니다.`);
+      list.splice(i, 1);
+    } else {
+      const cur = i >= 0 ? list[i] : { name: key };
+      const patch = mergeStrMap({}, Object.fromEntries(Object.entries({ desc, limit, weakness, cost }).filter(([, v]) => v !== undefined)));
+      for (const k of ["desc", "limit", "weakness", "cost"]) if ({ desc, limit, weakness, cost }[k] !== undefined) { if (patch[k]) cur[k] = patch[k]; else delete cur[k]; }
+      if (i >= 0) list[i] = cur; else list.push(cur);
+    }
+    updateEntry(e, { abilities: list }, "claude", remove ? "능력 삭제" : "능력과 대가");
+    const a = list.find((x) => x.name === key);
+    const warn = a && !a.cost ? " (대가가 아직 없다)" : "";
+    return { content: `${remove ? "능력 삭제" : "능력 저장"}: ${e.name} · ${key}${warn}`, action: { kind: "update", text: `${e.name} · 능력 ${key}`, ref: e.id }, changed: true };
+  },
+  set_address({ from_id, to_id, call, speech, note, reverse_call, reverse_speech, remove }) {
+    const a = findEntry(from_id);
+    const b = findEntry(to_id);
+    if (!a || a.deleted) throw new Error(`${from_id} 항목이 없습니다.`);
+    if (!b || b.deleted) throw new Error(`${to_id} 항목이 없습니다.`);
+    if (a.id === b.id) throw new Error("자기 자신의 호칭은 정할 수 없습니다.");
+    const put = (x, y, c, sp, nt) => {
+      const next = { ...(x.address || {}) };
+      const cur = { ...(next[y.id] || {}) };
+      for (const [k, v] of Object.entries({ call: c, speech: sp, note: nt })) if (v !== undefined) { const t = String(v).trim(); if (t) cur[k] = t; else delete cur[k]; }
+      if (Object.keys(cur).length) next[y.id] = cur; else delete next[y.id];
+      updateEntry(x, { address: next }, "claude", `호칭: ${y.name}`);
+    };
+    if (remove) {
+      const next = { ...(a.address || {}) };
+      delete next[b.id];
+      updateEntry(a, { address: next }, "claude", `호칭 삭제: ${b.name}`);
+    } else {
+      put(a, b, call, speech, note);
+      if (reverse_call !== undefined || reverse_speech !== undefined) put(b, a, reverse_call, reverse_speech, undefined);
+    }
+    const fmt = (x, y) => { const v = x.address?.[y.id]; return v ? `${x.name}→${y.name} "${v.call || "?"}"${v.speech ? ` ${v.speech}` : ""}` : `${x.name}→${y.name} 없음`; };
+    return { content: `호칭 ${remove ? "삭제" : "저장"}: ${fmt(a, b)}${reverse_call !== undefined || reverse_speech !== undefined ? ` / ${fmt(b, a)}` : ""}`, action: { kind: "relation", text: `호칭 ${a.name} → ${b.name}` }, changed: true };
   },
   set_perspective({ id, by, text, remove }) {
     const e = findEntry(id);
@@ -3361,7 +3711,7 @@ function renderCodexResults() {
       ${typeKeys().map((k) => `<button class="type-chip" type="button" data-type="${k}" aria-pressed="${state.codexType === k}">${esc(typeInfo(k).label)}<span class="n">${counts[k] || 0}</span></button>`).join("")}
     </div>
     <div class="type-chips status-chips" role="toolbar" aria-label="상태">${STATUS_KEYS.map((k) => `<button class="type-chip" type="button" data-status="${k}" aria-pressed="${state.codexStatus.has(k)}">${STATUS[k]}<span class="n">${stCounts[k]}</span></button>`).join("")}</div>
-    <div class="row"><button class="btn btn-ghost btn-small" type="button" data-act="types">분류·템플릿 관리</button><button class="btn btn-ghost btn-small" type="button" data-act="checks">설정 점검</button></div>
+    <div class="row"><button class="btn btn-ghost btn-small" type="button" data-act="types">분류·템플릿 관리</button><button class="btn btn-ghost btn-small" type="button" data-act="checks">설정 점검</button><button class="btn btn-ghost btn-small" type="button" data-act="compare">인물 비교</button><button class="btn btn-ghost btn-small" type="button" data-act="presence">등장 비중</button></div>
     ${groups.length ? groups.map((g) => `<h3 class="group-title">${esc(typeInfo(g.k).label)} · ${g.items.length}</h3><div class="entry-list">${g.items.map(entryCard).join("")}</div>`).join("")
       : `<div class="empty-state"><h3>${q || state.codexType !== "all" ? "조건에 맞는 항목이 없습니다" : "설정집이 비어 있습니다"}</h3><p>대화 탭에서 Claude와 이야기하면 항목이 여기에 쌓입니다.</p></div>`}
     ${trashCount ? `<div class="row" style="margin-top:20px"><button class="btn btn-small" type="button" data-act="trash">휴지통 ${trashCount}</button></div>` : ""}`;
@@ -3413,6 +3763,20 @@ function computeChecks() {
   const linked = new Set();
   for (const e of list) for (const r of e.relations || []) if (byId.get(r.to) && statusOf(byId.get(r.to)) !== "discarded") { linked.add(e.id); linked.add(r.to); }
   for (const e of list) if (!linked.has(e.id)) add("관계 없는 항목", "info", e.name, [e.id]);
+  // 인물 깊이
+  for (const e of list) for (const ab of e.abilities || []) if (!ab.cost) add("대가 없는 능력", "warn", `${e.name}의 '${ab.name}'에 대가가 없습니다.`, [e.id]);
+  const chars = list.filter((e) => isCharacterType(e.type));
+  for (const e of chars) {
+    const deg = (e.relations || []).length + incoming(e.id).length;
+    const filled = INNER_KEYS.filter(([k]) => e.inner?.[k]).length;
+    if (deg >= 2 && filled < 3) add("내면이 빈 주요 인물", "info", `${e.name}: 관계 ${deg}개인데 내면은 ${filled}/6칸`, [e.id]);
+    const lv = (e.arc || []).map((x) => x.level).filter((x) => x != null);
+    if ((e.arc || []).length >= 2 && lv.length >= 2 && Math.max(...lv) - Math.min(...lv) <= 1) add("평평한 성장 곡선", "info", `${e.name}: 처지가 거의 바뀌지 않습니다`, [e.id]);
+  }
+  for (const a of chars) for (const b of chars) {
+    if (a.id >= b.id) continue;
+    if (!!a.address?.[b.id] !== !!b.address?.[a.id]) { const [x, y] = a.address?.[b.id] ? [b, a] : [a, b]; add("한쪽만 정한 호칭", "info", `${x.name}이(가) ${y.name}을(를) 부르는 말이 없습니다`, [x.id, y.id]); }
+  }
   const drafts = list.filter((e) => statusOf(e) === "draft");
   if (drafts.length) add("확정을 기다리는 초안", "info", `${drafts.length}개: ${drafts.slice(0, 8).map((e) => e.name).join(", ")}${drafts.length > 8 ? " …" : ""}`, drafts.map((e) => e.id));
   return issues;
@@ -3864,12 +4228,349 @@ function relationsHTML(e) {
   if (!out.length && !inc.length) return "";
   return `<p class="section-label">관계</p><div class="rel-list">${out.join("")}${inc.join("")}</div>`;
 }
+/* ---- 인물 항목 화면: 기본 · 내면 · 성장 · 말투 · 외모 · 능력 ---- */
+const CHAR_TABS = [["base", "기본"], ["inner", "내면"], ["arc", "성장"], ["voice", "말투"], ["looks", "외모"], ["ability", "능력"]];
+function charTabsHTML(e) {
+  if (!isCharacterType(e.type) || e.deleted) return "";
+  const n = {
+    inner: `${INNER_KEYS.filter(([k]) => e.inner?.[k]).length}/6`,
+    arc: e.arc?.length || "",
+    voice: hasKeys(e.voice) ? "✓" : "",
+    looks: hasKeys(e.looks) || e.gallery?.length ? "✓" : "",
+    ability: e.abilities?.length || "",
+  };
+  return `<div class="seg-tabs entry-tabs" role="tablist">${CHAR_TABS.map(([k, l]) => `<button type="button" role="tab" data-etab="${k}" aria-selected="${state.entryTab === k}">${l}${n[k] ? `<small>${n[k]}</small>` : ""}</button>`).join("")}</div>`;
+}
+const askRow = (edit, ask, editLabel = "편집", askLabel = "Claude와 채우기") => `<div class="row sec-actions"><button class="btn btn-small" type="button" data-act="${edit}">${editLabel}</button><button class="btn btn-small btn-primary" type="button" data-act="${ask}">${askLabel}</button></div>`;
+function charSectionHTML(e, tab) {
+  if (tab === "inner") return innerHTML(e);
+  if (tab === "arc") return arcHTML(e);
+  if (tab === "voice") return voiceHTML(e);
+  if (tab === "looks") return looksHTML(e);
+  if (tab === "ability") return abilitiesHTML(e);
+  return entryBaseHTML(e);
+}
+function innerHTML(e) {
+  const v = e.inner || {};
+  const cell = (k) => `<div class="inner-cell${v[k] ? "" : " blank"}"><span class="lbl">${innerLabel(k)}</span><p>${v[k] ? esc(v[k]) : "미정"}</p></div>`;
+  return `<p class="section-label">내면 엔진</p>
+    <p class="meta" style="margin:0 0 8px">상처에서 믿고 있는 거짓말이 생기고, 그 거짓말 때문에 원하는 것과 진짜 필요한 것이 어긋납니다.</p>
+    <div class="inner-flow">${cell("wound")}<span class="inner-arrow" aria-hidden="true">↓</span>${cell("lie")}<span class="inner-arrow" aria-hidden="true">↓</span>
+      <div class="inner-pair">${cell("want")}<span class="inner-vs" aria-hidden="true">↔</span>${cell("need")}</div></div>
+    <div class="inner-pair two" style="margin-top:8px">${cell("fear")}${cell("secret")}</div>
+    ${askRow("inner-edit", "inner-ask")}`;
+}
+function arcChartSVG(arc) {
+  const pts = arc.map((x, i) => ({ i, x, lv: x.level })).filter((p) => p.lv != null);
+  if (pts.length < 2) return "";
+  const W = 320;
+  const H = 120;
+  const X = (i) => 20 + (arc.length === 1 ? 0 : (i / (arc.length - 1)) * (W - 40));
+  const Y = (lv) => 60 - lv * 9.5;
+  const path = pts.map((p, j) => `${j ? "L" : "M"}${X(p.i).toFixed(1)},${Y(p.lv).toFixed(1)}`).join(" ");
+  return `<svg class="arc-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="성장 곡선 그래프">
+    <line class="arc-zero" x1="10" x2="${W - 10}" y1="60" y2="60"/><text class="arc-ax" x="4" y="14">정점</text><text class="arc-ax" x="4" y="${H - 4}">바닥</text>
+    <path class="arc-line" d="${path}"/>
+    ${pts.map((p) => `<circle class="arc-dot" cx="${X(p.i)}" cy="${Y(p.lv)}" r="5"/><text class="arc-n" x="${X(p.i)}" y="${Y(p.lv) - 9}">${p.i + 1}</text>`).join("")}
+  </svg>`;
+}
+function arcHTML(e) {
+  const arc = e.arc || [];
+  const levels = arc.map((x) => x.level).filter((x) => x != null);
+  const flat = arc.length >= 2 && levels.length >= 2 && Math.max(...levels) - Math.min(...levels) <= 1;
+  const sameBelief = arc.length >= 2 && arc.every((x) => x.belief && x.belief === arc[0].belief);
+  const turnRef = (t) => { const ent = t && findEntry(t.split(/\s/)[0]); return ent ? `<button type="button" class="ref" data-ref="${ent.id}">${ent.id}</button> ${esc(ent.name)}${t.includes(" ") ? esc(t.slice(t.indexOf(" "))) : ""}` : esc(t); };
+  return `<p class="section-label">성장 곡선</p>
+    ${arc.length ? `${arcChartSVG(arc)}
+      ${flat || sameBelief ? `<p class="note">${flat ? "처지의 변화가 거의 없습니다." : ""}${sameBelief ? " 믿음이 처음부터 끝까지 같습니다." : ""} 평면적인 인물일 수 있습니다.</p>` : ""}
+      <ol class="arc-steps">${arc.map((x, i) => `<li><div class="arc-head"><b>${i + 1}. ${esc(x.label || "단계")}</b>${x.when != null ? `<span class="meta">${esc(fmtYear(x.when))}${e.when && isCharacterType(e.type) ? ` · ${Math.trunc(x.when - e.when.start)}세` : ""}</span>` : ""}${x.level != null ? `<span class="pill">처지 ${x.level > 0 ? "+" : ""}${x.level}</span>` : ""}</div>
+        <p>${esc(x.state)}</p>${x.belief ? `<p class="meta">믿음: ${esc(x.belief)}</p>` : ""}${x.turn ? `<p class="meta">계기: ${turnRef(x.turn)}</p>` : ""}</li>`).join("")}</ol>`
+      : `<p class="meta">이야기가 흐르며 이 인물이 어떻게 바뀌는지 단계별로 적어 두세요. 각 단계의 모습, 믿음, 바뀐 계기, 처지(-5~5)를 적으면 곡선으로 그려집니다.</p>`}
+    ${askRow("arc-edit", "arc-ask", "편집", "Claude와 그리기")}`;
+}
+function voiceHTML(e) {
+  const v = e.voice || {};
+  const addrOut = Object.entries(e.address || {}).filter(([to]) => findEntry(to) && !findEntry(to).deleted);
+  const addrIn = state.entries.filter((x) => !x.deleted && x.address?.[e.id]);
+  return `<p class="section-label">말투 카드</p>
+    ${hasKeys(v) ? `<dl class="fields">
+        ${v.tone ? `<div><dt>어조·말씨</dt><dd>${esc(v.tone)}</dd></div>` : ""}
+        ${v.habits ? `<div><dt>말버릇</dt><dd>${esc(v.habits)}</dd></div>` : ""}
+      </dl>
+      ${v.phrases?.length ? `<p class="meta" style="margin:8px 0 4px">자주 쓰는 표현</p><div class="chips">${v.phrases.map((x) => `<span class="chip">${esc(x)}</span>`).join("")}</div>` : ""}
+      ${v.never?.length ? `<p class="meta" style="margin:8px 0 4px">절대 쓰지 않는 말</p><div class="chips">${v.never.map((x) => `<span class="chip never">${esc(x)}</span>`).join("")}</div>` : ""}
+      ${v.samples?.length ? `<p class="meta" style="margin:10px 0 4px">예시 대사</p>${v.samples.map((x) => `<blockquote class="sample">“${esc(x)}”</blockquote>`).join("")}` : ""}`
+      : `<p class="meta">어조, 말버릇, 자주 쓰는 표현, 절대 쓰지 않는 말, 예시 대사를 모아 두면 Claude가 대사와 인터뷰에서 따릅니다.</p>`}
+    ${askRow("voice-edit", "voice-ask")}
+    <p class="section-label">호칭</p>
+    ${addrOut.length || addrIn.length ? `<ul class="list-plain addr-list">
+      ${addrOut.map(([to, a]) => `<li><b>${esc(e.name)}</b> → <button type="button" class="ref" data-ref="${to}">${esc(nameOf(to))}</button> “${esc(a.call || "?")}”${a.speech ? ` <span class="pill">${esc(a.speech)}</span>` : ""}${a.note ? ` <span class="meta">${esc(a.note)}</span>` : ""}</li>`).join("")}
+      ${addrIn.map((x) => `<li><button type="button" class="ref" data-ref="${x.id}">${esc(x.name)}</button> → <b>${esc(e.name)}</b> “${esc(x.address[e.id].call || "?")}”${x.address[e.id].speech ? ` <span class="pill">${esc(x.address[e.id].speech)}</span>` : ""}</li>`).join("")}</ul>`
+      : `<p class="meta">아직 정한 호칭이 없습니다.</p>`}
+    <div class="row sec-actions"><button class="btn btn-small" type="button" data-act="addr-table">호칭표에서 보기</button></div>`;
+}
+function looksHTML(e) {
+  const looks = Object.entries(e.looks || {});
+  const gal = e.gallery || [];
+  const lp = e.lookPrompt;
+  return `<p class="section-label">외모 카드</p>
+    ${looks.length ? `<dl class="fields">${[...LOOK_KEYS.filter((k) => e.looks[k]), ...Object.keys(e.looks).filter((k) => !LOOK_KEYS.includes(k))].map((k) => `<div><dt>${esc(k)}</dt><dd>${esc(e.looks[k])}</dd></div>`).join("")}</dl>`
+      : `<p class="meta">키·체격, 얼굴, 머리, 눈, 피부, 옷차림, 특징, 분위기를 적어 두세요.</p>`}
+    ${askRow("looks-edit", "looks-ask")}
+    <p class="section-label">무드보드 <small class="meta">${gal.length}/12</small></p>
+    <div class="gallery">${gal.map((g) => `<button type="button" class="gal-item" data-act="gal-view" data-gal="${g.img}"><img data-blob="${g.img}" alt=""></button>`).join("")}
+      ${gal.length < 12 ? `<button type="button" class="gal-add" data-act="gal-add" aria-label="그림 더하기">＋</button>` : ""}</div>
+    <input type="file" id="galFile" accept="image/*" multiple hidden>
+    <p class="section-label">그림 생성 프롬프트</p>
+    <div class="row"><select id="lpStyle" aria-label="그림 스타일">${["판타지 일러스트", "수채화", "애니메이션", "사실적인 인물 사진풍", "유화", "컨셉 아트"].map((x) => `<option${lp?.style === x ? " selected" : ""}>${x}</option>`).join("")}</select><button class="btn btn-small btn-primary" type="button" data-act="looks-prompt">${lp ? "다시 만들기" : "만들기"}</button></div>
+    ${lp ? `<div class="prompt-box"><div class="prompt-head"><b>영어</b><button class="btn btn-ghost btn-small" type="button" data-act="copy-prompt" data-lang="en">복사</button></div><p>${esc(lp.en)}</p></div>
+      <div class="prompt-box"><div class="prompt-head"><b>한국어</b><button class="btn btn-ghost btn-small" type="button" data-act="copy-prompt" data-lang="ko">복사</button></div><p>${esc(lp.ko)}</p></div>
+      <p class="meta">미드저니, DALL·E 같은 그림 생성 도구에 붙여 넣어 쓰세요. ${fmtDate(lp.at)} 만듦</p>`
+      : `<p class="meta">외모 카드와 세계관 분위기로 그림 생성 도구용 프롬프트를 만듭니다(짧은 요청 한 번).</p>`}`;
+}
+function abilitiesHTML(e) {
+  const list = e.abilities || [];
+  return `<p class="section-label">능력과 대가</p>
+    ${list.length ? `<div class="ability-list">${list.map((a, i) => `<section class="ability${a.cost ? "" : " no-cost"}">
+        <div class="ability-head"><b>${esc(a.name)}</b><button class="btn btn-ghost btn-small" type="button" data-act="ab-edit" data-ab="${i}">편집</button></div>
+        ${a.desc ? `<p>${esc(a.desc)}</p>` : ""}
+        <dl class="ab-dl">${a.limit ? `<div><dt>한계</dt><dd>${esc(a.limit)}</dd></div>` : ""}${a.weakness ? `<div><dt>약점</dt><dd>${esc(a.weakness)}</dd></div>` : ""}<div><dt>대가</dt><dd>${a.cost ? esc(a.cost) : `<span class="sev-warn">아직 없음</span>`}</dd></div></dl>
+      </section>`).join("")}</div>`
+      : `<p class="meta">능력마다 한계, 약점, 쓸 때 치르는 대가를 정해 두면 이야기가 쉽게 풀리지 않습니다.</p>`}
+    <div class="row sec-actions"><button class="btn btn-small" type="button" data-act="ab-add">능력 추가</button><button class="btn btn-small btn-primary" type="button" data-act="ab-ask">Claude와 정하기</button>${list.length ? `<button class="btn btn-small" type="button" data-act="ab-rule">세계 규칙과 맞춰 보기</button>` : ""}</div>`;
+}
+
+/* ---- 그림 덩어리(무드보드·지도): mapimg:<id>에 따로 두고 동기화한다 ---- */
+async function blobPut(data) { const id = uid(); await idb.set("mapimg:" + id, data); state.mapImgs[id] = data; return id; }
+async function blobGet(id) { if (state.mapImgs[id] === undefined) state.mapImgs[id] = (await idb.get("mapimg:" + id)) || ""; return state.mapImgs[id]; }
+async function hydrateBlobs(root) { for (const img of $$("img[data-blob]", root)) { const d = await blobGet(img.dataset.blob); if (d) img.src = d; else img.closest(".gal-item")?.classList.add("missing"); } }
+
+const CHAR_ASK = {
+  "inner-ask": (e) => `${e.name}(${e.id})의 내면을 같이 정해 보자. 원하는 것, 진짜 필요한 것, 상처, 믿고 있는 거짓말, 두려움, 비밀이 서로 맞물리게 제안해 줘. 이미 정한 칸은 살리고, 내가 고르면 update_entry의 inner로 저장해 줘. `,
+  "arc-ask": (e) => `${e.name}(${e.id})의 성장 곡선을 그려 줘. 연표와 내면(특히 믿고 있는 거짓말)을 바탕으로 이야기 순서대로 3~6단계를 제안하고, 각 단계의 처지를 -5~5로 매겨 줘. 내가 받아들이면 set_arc로 저장해 줘. `,
+  "voice-ask": (e) => `${e.name}(${e.id})의 말투 카드를 만들어 줘. 성격과 출신에 맞는 어조, 말버릇, 자주 쓰는 표현, 절대 쓰지 않는 말, 예시 대사 5개를 제안하고, 내가 고르면 update_entry의 voice로 저장해 줘. `,
+  "looks-ask": (e) => `${e.name}(${e.id})의 외모를 정해 줘. 키·체격, 얼굴, 머리, 눈, 피부, 옷차림, 특징, 분위기를 세계관과 인물이 살아온 삶에 맞게 제안하고, 내가 고르면 update_entry의 looks로 저장해 줘. `,
+  "ab-ask": (e) => `${e.name}(${e.id})의 능력을 정리해 줘. 능력마다 한계, 약점, 쓸 때 치르는 대가를 세계 규칙에 맞게 제안하고, 내가 고르면 set_ability로 저장해 줘. `,
+  "ab-rule": (e) => `${e.name}(${e.id})의 능력과 대가가 세계 규칙(마법 체계 등)과 맞는지 점검해 줘. 어긋나는 점, 너무 쉬운 능력, 대가가 약한 능력을 짚고 고칠 방향을 제안해 줘. `,
+};
+async function handleCharAct(act, e, ev, root) {
+  if (CHAR_ASK[act]) { closeSheet(); startInNewThread(CHAR_ASK[act](e)); return true; }
+  if (act === "inner-edit") { openInnerEditor(e); return true; }
+  if (act === "arc-edit") { openArcEditor(e); return true; }
+  if (act === "voice-edit") { openVoiceEditor(e); return true; }
+  if (act === "looks-edit") { openLooksEditor(e); return true; }
+  if (act === "ab-add") { openAbilityEditor(e, -1); return true; }
+  if (act === "ab-edit") { openAbilityEditor(e, Number(ev.target.closest("[data-ab]").dataset.ab)); return true; }
+  if (act === "addr-table") { closeSheet(); showAddressTable(e.id); return true; }
+  if (act === "compare-one") { openCompare([e.id]); return true; }
+  if (act === "consistency") {
+    const ms = state.manuscripts.filter((m) => (m.refs || []).includes(e.id) || `${m.title}\n${m.body}`.includes(e.name));
+    closeSheet();
+    startInNewThread(`${e.name}(${e.id})의 인물 일관성 검사를 해 줘. ${ms.length ? `이 인물이 나오는 원고: ${ms.slice(0, 12).map((m) => `'${m.title}'(${m.id})`).join(", ")}. ` : "원고함에서 이 인물이 나오는 글을 찾아 읽고, "}설정된 성격·내면·말투·호칭·나이·능력과 대가와 어긋나는 언행을 원고 제목과 짧은 인용을 근거로 알려 줘. 고칠지는 내가 정할게. `);
+    return true;
+  }
+  if (act === "gal-add") { $("#galFile", root).click(); return true; }
+  if (act === "gal-view") { openGalleryImage(e, ev.target.closest("[data-gal]").dataset.gal); return true; }
+  if (act === "copy-prompt") {
+    const lang = ev.target.closest("[data-lang]").dataset.lang;
+    try { await navigator.clipboard.writeText(e.lookPrompt?.[lang] || ""); toast("복사했습니다"); } catch { toast("복사하지 못했습니다"); }
+    return true;
+  }
+  if (act === "looks-prompt") { await makeLookPrompt(e, $("#lpStyle", root).value, ev.target.closest("button")); return true; }
+  return false;
+}
+async function saveCharEdit(e, patch, reason) {
+  if (state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 저장해 주세요"); return false; }
+  try { updateEntry(e, patch, "user", reason); } catch (err) { toast(err.message); return false; }
+  await persist.world();
+  renderCodex();
+  openEntry(e.id);
+  toast("저장했습니다");
+  return true;
+}
+function openInnerEditor(e) {
+  const v = e.inner || {};
+  const hints = { want: "예: 등대지기가 되어 어머니에게 인정받고 싶다", need: "예: 남의 인정 없이 스스로를 믿는 것", wound: "예: 어머니가 안개 속으로 사라진 밤", lie: "예: 불을 지키지 못하면 사랑받을 자격이 없다", fear: "예: 혼자 남겨지는 것", secret: "예: 그날 불을 끈 사람이 자신이다" };
+  openSheet(`<h2 class="sheet-title">${esc(e.name)} · 내면</h2>
+    <form class="form" id="innerForm">${INNER_KEYS.map(([k, l]) => `<label>${l}<textarea data-k="${k}" rows="2" placeholder="${esc(hints[k])}">${esc(v[k] || "")}</textarea></label>`).join("")}
+      <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    root.onclick = (ev) => { if (ev.target.closest('[data-act="cancel"]')) openEntry(e.id); };
+    root.onsubmit = (ev) => {
+      ev.preventDefault();
+      const innerAll = {};
+      for (const t of $$("textarea[data-k]", root)) if (t.value.trim()) innerAll[t.dataset.k] = t.value.trim();
+      state.entryTab = "inner";
+      saveCharEdit(e, { innerAll }, "내면 편집");
+    };
+  });
+}
+function arcRow(x = {}) {
+  return `<div class="arc-row">
+    <div class="arc-row-top"><input class="a-label" placeholder="단계 이름 (예: 1부 시작)" value="${esc(x.label || "")}" aria-label="단계 이름"><input class="a-when" inputmode="decimal" placeholder="연도" value="${x.when != null ? esc(String(x.when)) : ""}" aria-label="연도">
+      <select class="a-level" aria-label="처지"><option value="">처지</option>${[5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5].map((n) => `<option value="${n}"${x.level === n ? " selected" : ""}>${n > 0 ? "+" : ""}${n}</option>`).join("")}</select>
+      <button type="button" class="icon-btn" data-arc-up aria-label="위로">↑</button><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button></div>
+    <textarea class="a-state" rows="2" placeholder="그때의 모습과 처지" aria-label="모습">${esc(x.state || "")}</textarea>
+    <input class="a-belief" placeholder="그때 믿는 것" value="${esc(x.belief || "")}" aria-label="믿음">
+    <input class="a-turn" placeholder="바뀐 계기 (사건 번호나 설명)" value="${esc(x.turn || "")}" aria-label="계기">
+  </div>`;
+}
+function openArcEditor(e) {
+  openSheet(`<h2 class="sheet-title">${esc(e.name)} · 성장 곡선</h2>
+    <form class="form" id="arcForm"><div id="arcRows">${(e.arc?.length ? e.arc : [{}, {}, {}]).map(arcRow).join("")}</div>
+      <button type="button" class="btn btn-ghost btn-small" data-act="arc-add">단계 추가</button>
+      <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    root.onclick = (ev) => {
+      if (ev.target.closest('[data-act="cancel"]')) openEntry(e.id);
+      else if (ev.target.closest('[data-act="arc-add"]')) $("#arcRows", root).insertAdjacentHTML("beforeend", arcRow());
+      else if (ev.target.closest("[data-del-row]")) ev.target.closest(".arc-row").remove();
+      else if (ev.target.closest("[data-arc-up]")) { const r = ev.target.closest(".arc-row"); if (r.previousElementSibling) r.parentNode.insertBefore(r, r.previousElementSibling); }
+    };
+    root.onsubmit = (ev) => {
+      ev.preventDefault();
+      const rows = $$(".arc-row", root).map((r) => ({ label: $(".a-label", r).value, when: $(".a-when", r).value.trim(), level: $(".a-level", r).value, state: $(".a-state", r).value, belief: $(".a-belief", r).value, turn: $(".a-turn", r).value }));
+      if (rows.some((x) => x.when && parseYear(x.when) === null)) { toast("연도는 숫자로 넣어 주세요"); return; }
+      state.entryTab = "arc";
+      saveCharEdit(e, { arc: rows }, "성장 곡선 편집");
+    };
+  });
+}
+function openVoiceEditor(e) {
+  const v = e.voice || {};
+  openSheet(`<h2 class="sheet-title">${esc(e.name)} · 말투 카드</h2>
+    <form class="form" id="voiceForm">
+      <label>어조·말씨<input id="v-tone" value="${esc(v.tone || "")}" placeholder="예: 짧게 끊어 말하는 반말, 바닷가 사투리"></label>
+      <label>말버릇<input id="v-habits" value="${esc(v.habits || "")}" placeholder="예: 대답하기 전에 '음…'을 붙인다"></label>
+      <label>자주 쓰는 표현 <small>한 줄에 하나</small><textarea id="v-phrases" rows="3">${esc((v.phrases || []).join("\n"))}</textarea></label>
+      <label>절대 쓰지 않는 말 <small>한 줄에 하나</small><textarea id="v-never" rows="2">${esc((v.never || []).join("\n"))}</textarea></label>
+      <label>예시 대사 <small>한 줄에 하나</small><textarea id="v-samples" rows="4">${esc((v.samples || []).join("\n"))}</textarea></label>
+      <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    root.onclick = (ev) => { if (ev.target.closest('[data-act="cancel"]')) openEntry(e.id); };
+    root.onsubmit = (ev) => {
+      ev.preventDefault();
+      const lines = (id) => $(id, root).value.split("\n").map((x) => x.trim()).filter(Boolean);
+      state.entryTab = "voice";
+      saveCharEdit(e, { voiceAll: { tone: $("#v-tone", root).value, habits: $("#v-habits", root).value, phrases: lines("#v-phrases"), never: lines("#v-never"), samples: lines("#v-samples") } }, "말투 편집");
+    };
+  });
+}
+function openLooksEditor(e) {
+  const v = e.looks || {};
+  const keys = [...LOOK_KEYS, ...Object.keys(v).filter((k) => !LOOK_KEYS.includes(k))];
+  openSheet(`<h2 class="sheet-title">${esc(e.name)} · 외모</h2>
+    <form class="form" id="looksForm">${keys.map((k) => `<label class="inline-label wide"><span>${esc(k)}</span><input data-k="${esc(k)}" value="${esc(v[k] || "")}"></label>`).join("")}
+      <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    root.onclick = (ev) => { if (ev.target.closest('[data-act="cancel"]')) openEntry(e.id); };
+    root.onsubmit = (ev) => {
+      ev.preventDefault();
+      const looksAll = {};
+      for (const i of $$("input[data-k]", root)) if (i.value.trim()) looksAll[i.dataset.k] = i.value.trim();
+      state.entryTab = "looks";
+      saveCharEdit(e, { looksAll }, "외모 편집");
+    };
+  });
+}
+function openAbilityEditor(e, idx) {
+  const a = idx >= 0 ? e.abilities[idx] : { name: "" };
+  openSheet(`<h2 class="sheet-title">${idx >= 0 ? "능력 편집" : "능력 추가"}</h2>
+    <form class="form" id="abForm">
+      <label>능력 이름<input id="ab-name" required value="${esc(a.name)}"></label>
+      <label>무엇을 할 수 있나<textarea id="ab-desc" rows="2">${esc(a.desc || "")}</textarea></label>
+      <label>한계 <small>범위, 횟수, 조건</small><input id="ab-limit" value="${esc(a.limit || "")}"></label>
+      <label>약점<input id="ab-weak" value="${esc(a.weakness || "")}"></label>
+      <label>대가 <small>쓸 때마다 치르는 것</small><input id="ab-cost" value="${esc(a.cost || "")}" placeholder="예: 쓸 때마다 기억 하나를 잃는다"></label>
+      <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button>${idx >= 0 ? `<button class="btn btn-danger" type="button" data-act="ab-del">삭제</button>` : ""}</div></form>`, (root) => {
+    root.onclick = async (ev) => {
+      if (ev.target.closest('[data-act="cancel"]')) openEntry(e.id);
+      if (ev.target.closest('[data-act="ab-del"]')) {
+        if (!(await confirmBox(`'${a.name}' 능력을 지울까요?`, "지우기", true))) return;
+        state.entryTab = "ability";
+        saveCharEdit(e, { abilities: e.abilities.filter((_, i) => i !== idx) }, "능력 삭제");
+      }
+    };
+    root.onsubmit = (ev) => {
+      ev.preventDefault();
+      const name = $("#ab-name", root).value.trim();
+      if (!name) return;
+      const list = (e.abilities || []).slice();
+      if (list.some((x, i) => x.name === name && i !== idx)) { toast("같은 이름의 능력이 있습니다"); return; }
+      const next = { name };
+      for (const [k, id] of [["desc", "#ab-desc"], ["limit", "#ab-limit"], ["weakness", "#ab-weak"], ["cost", "#ab-cost"]]) { const t = $(id, root).value.trim(); if (t) next[k] = t; }
+      if (idx >= 0) list[idx] = next; else list.push(next);
+      state.entryTab = "ability";
+      saveCharEdit(e, { abilities: list }, idx >= 0 ? "능력 편집" : "능력 추가");
+    };
+  });
+}
+async function addGalleryFiles(e, files) {
+  const list = (e.gallery || []).slice();
+  let added = 0;
+  for (const f of [...files]) {
+    if (list.length >= 12) { toast("무드보드에는 12장까지 붙일 수 있습니다"); break; }
+    try { const data = await entryPicture(f, 768); list.push({ img: await blobPut(data), at: Date.now() }); added++; } catch (err) { toast(err.message); }
+  }
+  if (!added) return;
+  state.entryTab = "looks";
+  await saveCharEdit(e, { gallery: list }, `무드보드 그림 ${added}장 추가`);
+}
+async function openGalleryImage(e, img) {
+  const data = await blobGet(img);
+  openSheet(`<img class="gal-full" src="${data}" alt="">
+    <div class="sheet-actions"><button class="btn" type="button" data-act="back">돌아가기</button><button class="btn" type="button" data-act="gal-main">대표 그림으로</button><button class="btn btn-danger" type="button" data-act="gal-del">빼기</button></div>`, (root) => {
+    root.onclick = async (ev) => {
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "back") openEntry(e.id);
+      else if (act === "gal-main") {
+        state.images[e.id] = { data: await blobToDataURL(await drawScaled((await loadImage(await (await fetch(data)).blob())).img, 512, "image/jpeg", 0.82)), at: Date.now() };
+        await persist.images();
+        renderCodex(); openEntry(e.id); toast("대표 그림으로 정했습니다");
+      } else if (act === "gal-del") {
+        state.entryTab = "looks";
+        await saveCharEdit(e, { gallery: (e.gallery || []).filter((g) => g.img !== img) }, "무드보드 그림 빼기");
+      }
+    };
+  });
+}
+async function makeLookPrompt(e, style, btn) {
+  if (!hasKeys(e.looks) && !e.summary) { toast("외모 카드를 먼저 채워 주세요"); return; }
+  btn.disabled = true;
+  btn.textContent = "만드는 중…";
+  try {
+    const w = currentWorld();
+    const looks = Object.entries(e.looks || {}).map(([k, v]) => `- ${k}: ${v}`).join("\n");
+    const text = await quickAsk(
+      "너는 그림 생성 도구(미드저니, DALL·E 등)에 넣을 인물 프롬프트를 쓴다. 외모 설정을 빠짐없이 시각적 묘사로 옮기고, 설정에 없는 것은 지어내지 않는다. 이름·고유명사는 그림에 의미가 없으므로 빼고 모습으로 풀어 쓴다. 정확히 두 줄로만 답한다: 'EN: '로 시작하는 영어 프롬프트 한 줄, 'KO: '로 시작하는 같은 내용의 한국어 프롬프트 한 줄.",
+      `세계관 분위기: ${w?.tone || "(없음)"}\n세계관 전제: ${w?.premise || "(없음)"}\n인물: ${e.name} — ${e.summary || ""}\n${e.when ? `나이 참고: ${worldCalendar().now != null ? `${Math.trunc(worldCalendar().now - e.when.start)}세 무렵` : "(모름)"}\n` : ""}외모:\n${looks || "(없음)"}\n그림 스타일: ${style}\n\n인물 한 명의 상반신 초상 프롬프트를 써 줘.`,
+    );
+    if (text === null) return;
+    const en = (text.match(/EN:\s*(.+)/) || [])[1]?.trim();
+    const ko = (text.match(/KO:\s*(.+)/) || [])[1]?.trim();
+    if (!en || !ko) { toast("프롬프트를 받지 못했습니다. 다시 시도해 주세요"); return; }
+    state.entryTab = "looks";
+    await saveCharEdit(e, { lookPrompt: { en, ko, style, at: Date.now() } }, "그림 프롬프트");
+  } catch (err) { toast(describeError(err)); }
+  finally { btn.disabled = false; }
+}
+
+function entryBaseHTML(e) {
+  const fields = Object.entries(e.fields || {});
+  const senses = Object.entries(e.senses || {}).filter(([, v]) => v);
+  return `
+    ${templateStatusHTML(e)}
+    ${fields.length ? `<dl class="fields">${fields.map(([k, v]) => `<div><dt>${esc(k)}</dt>${isBlankValue(v) ? `<dd class="blank">미정</dd>` : `<dd>${esc(v)}</dd>`}</div>`).join("")}</dl>` : ""}
+    ${e.body ? `<p class="section-label">본문</p><div class="md">${md(e.body)}</div>` : ""}
+    ${senses.length ? `<p class="section-label">감각</p><dl class="fields sense-fields">${senses.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : ""}
+    ${e.perspectives?.length ? `<p class="section-label">관점별 서술</p><div class="persp-list">${e.perspectives.map((x) => { const by = findEntry(x.by); return `<blockquote class="persp"><span class="persp-by">${by ? `<button type="button" class="ref" data-ref="${by.id}">${by.id}</button> ${esc(by.name)}` : esc(x.by)}의 관점</span><p>${esc(x.text)}</p></blockquote>`; }).join("")}</div>` : ""}
+    ${relationsHTML(e)}
+    ${!e.deleted && state.maps.some((m) => m.pins.some((p) => p.ref === e.id)) ? `<p class="when-line"><span class="lbl">지도</span><span>${esc(state.maps.filter((m) => m.pins.some((p) => p.ref === e.id)).map((m) => `${m.name} ${pinDir(m.pins.find((p) => p.ref === e.id).x, m.pins.find((p) => p.ref === e.id).y)}`).join(", "))}</span><button class="btn btn-ghost btn-small" type="button" data-act="map">지도에서 보기</button></p>` : ""}
+    ${e.tags?.length ? `<p class="section-label">태그</p><div>${e.tags.map((t) => `<span class="tag">#${esc(t)}</span>`).join("")}</div>` : ""}
+    ${!isCharacterType(e.type) && e.abilities?.length ? abilitiesHTML(e) : ""}`;
+}
 function openEntry(ref) {
   const e = findEntry(ref);
   if (!e) { toast(`${ref} 항목을 찾을 수 없습니다`); return; }
-  const fields = Object.entries(e.fields || {});
   const img = entryImage(e.id);
-  const senses = Object.entries(e.senses || {}).filter(([, v]) => v);
+  if (!isCharacterType(e.type) || !CHAR_TABS.some(([k]) => k === state.entryTab)) state.entryTab = "base";
+  if (openEntry.last !== e.id) { state.entryTab = "base"; openEntry.last = e.id; }
   const canInterview = !e.deleted && isCharacterType(e.type) && statusOf(e) !== "discarded";
   openSheet(`
     ${img ? `<button type="button" class="entry-img-btn" data-act="img-zoom" aria-label="그림 크게 보기"><img class="entry-img" src="${img}" alt="${esc(e.name)} 그림"></button>` : ""}
@@ -3882,26 +4583,26 @@ function openEntry(ref) {
     ${e.when ? `<p class="when-line"><span class="lbl">시점</span><span>${esc(rangeText(e.when))}${spanText(e.when) ? ` (${esc(spanText(e.when))})` : ""}${e.when.label ? ` · ${esc(e.when.label)}` : ""}</span>${e.deleted ? "" : `<button class="btn btn-ghost btn-small" type="button" data-act="timeline">연표에서 보기</button>`}</p>`
       : !e.deleted && isEventType(e.type) ? `<p class="when-line"><span class="lbl">시점</span><span class="meta" style="margin:0">아직 연표에 없습니다</span><button class="btn btn-ghost btn-small" type="button" data-act="set-time">시점 넣기</button></p>` : ""}
     ${!e.deleted && statusOf(e) !== "canon" ? `<div class="st-actions">${statusOf(e) === "draft" ? `<span>아직 정하지 않은 초안입니다.</span><button class="btn btn-small btn-primary" type="button" data-act="st-canon">확정으로</button><button class="btn btn-small" type="button" data-act="st-discarded">폐기</button>` : `<span>버린 안입니다. 연표와 관계도에서 빠집니다.</span><button class="btn btn-small" type="button" data-act="st-draft">초안으로 되살리기</button>`}</div>` : ""}
-    ${templateStatusHTML(e)}
-    ${fields.length ? `<dl class="fields">${fields.map(([k, v]) => `<div><dt>${esc(k)}</dt>${isBlankValue(v) ? `<dd class="blank">미정</dd>` : `<dd>${esc(v)}</dd>`}</div>`).join("")}</dl>` : ""}
-    ${e.body ? `<p class="section-label">본문</p><div class="md">${md(e.body)}</div>` : ""}
-    ${senses.length ? `<p class="section-label">감각</p><dl class="fields sense-fields">${senses.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : ""}
-    ${e.perspectives?.length ? `<p class="section-label">관점별 서술</p><div class="persp-list">${e.perspectives.map((x) => { const by = findEntry(x.by); return `<blockquote class="persp"><span class="persp-by">${by ? `<button type="button" class="ref" data-ref="${by.id}">${by.id}</button> ${esc(by.name)}` : esc(x.by)}의 관점</span><p>${esc(x.text)}</p></blockquote>`; }).join("")}</div>` : ""}
-    ${relationsHTML(e)}
-    ${!e.deleted && state.maps.some((m) => m.pins.some((p) => p.ref === e.id)) ? `<p class="when-line"><span class="lbl">지도</span><span>${esc(state.maps.filter((m) => m.pins.some((p) => p.ref === e.id)).map((m) => `${m.name} ${pinDir(m.pins.find((p) => p.ref === e.id).x, m.pins.find((p) => p.ref === e.id).y)}`).join(", "))}</span><button class="btn btn-ghost btn-small" type="button" data-act="map">지도에서 보기</button></p>` : ""}
-    ${e.tags?.length ? `<p class="section-label">태그</p><div>${e.tags.map((t) => `<span class="tag">#${esc(t)}</span>`).join("")}</div>` : ""}
+    ${charTabsHTML(e)}
+    ${isCharacterType(e.type) && !e.deleted && state.entryTab !== "base" ? charSectionHTML(e, state.entryTab) : entryBaseHTML(e)}
     <p class="meta">${fmtDate(e.updatedAt)} 수정 · ${e.updatedBy === "user" ? "직접 수정" : "Claude"} · 이력 ${e.history?.length || 0}개</p>
     <div class="sheet-actions">
       ${e.deleted
         ? `<button class="btn btn-primary" type="button" data-act="restore">되살리기</button><button class="btn" type="button" data-act="history">이력</button><button class="btn btn-danger" type="button" data-act="purge">완전히 지우기</button>`
-        : `<button class="btn btn-primary" type="button" data-act="develop">대화로 발전시키기</button>${canInterview ? `<button class="btn" type="button" data-act="interview">인터뷰</button>` : ""}<button class="btn" type="button" data-act="edit">편집</button><button class="btn" type="button" data-act="persp">관점 더하기</button>${img ? `<button class="btn" type="button" data-act="img-ask">그림으로 묘사 받기</button>` : ""}<button class="btn" type="button" data-act="graph">관계도</button><button class="btn" type="button" data-act="history">이력</button><button class="btn btn-danger" type="button" data-act="trash-entry">삭제</button>`}
+        : `<button class="btn btn-primary" type="button" data-act="develop">대화로 발전시키기</button>${canInterview ? `<button class="btn" type="button" data-act="interview">인터뷰</button><button class="btn" type="button" data-act="consistency">일관성 검사</button><button class="btn" type="button" data-act="compare-one">비교</button>` : ""}<button class="btn" type="button" data-act="edit">편집</button><button class="btn" type="button" data-act="persp">관점 더하기</button>${img ? `<button class="btn" type="button" data-act="img-ask">그림으로 묘사 받기</button>` : ""}<button class="btn" type="button" data-act="graph">관계도</button><button class="btn" type="button" data-act="history">이력</button><button class="btn btn-danger" type="button" data-act="trash-entry">삭제</button>`}
     </div>`, (root) => {
+    hydrateBlobs(root);
+    const gf = $("#galFile", root);
+    if (gf) gf.onchange = (ev) => { const files = [...(ev.target.files || [])]; ev.target.value = ""; if (files.length) addGalleryFiles(e, files); };
     root.onclick = async (ev) => {
       const refBtn = ev.target.closest("[data-ref]");
       if (refBtn) { openEntry(refBtn.dataset.ref); return; }
+      const etab = ev.target.closest("[data-etab]");
+      if (etab) { state.entryTab = etab.dataset.etab; openEntry(e.id); return; }
       const act = ev.target.closest("[data-act]")?.dataset.act;
       if (!act) return;
-      if (!["develop", "history", "graph", "tpl-ask", "timeline", "img-zoom", "map"].includes(act) && state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 고쳐 주세요"); return; }
+      if (!["develop", "history", "graph", "tpl-ask", "timeline", "img-zoom", "map", "gal-view", "copy-prompt", "inner-ask", "arc-ask", "voice-ask", "looks-ask", "ab-ask", "ab-rule", "addr-table", "compare-one", "consistency"].includes(act) && state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 고쳐 주세요"); return; }
+      if (await handleCharAct(act, e, ev, root)) return;
       if (act === "timeline") { closeSheet(); showInTimeline(e.id); return; }
       if (act === "map") { closeSheet(); showOnMap(e.id); return; }
       if (act === "img-zoom") { ev.target.closest(".entry-img-btn").classList.toggle("full"); return; }
@@ -4010,10 +4711,10 @@ function perspRow(by = "", text = "") {
   return `<div class="persp-row"><div class="kv-row"><input class="pb" list="perspNames" placeholder="누구의 관점 (항목 이름이나 번호)" value="${esc(who ? `${who.id} ${who.name}` : by)}" aria-label="관점 주체"><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button></div><textarea class="pt" rows="2" placeholder="그들은 이렇게 알고 있다" aria-label="관점 내용">${esc(text)}</textarea></div>`;
 }
 // 항목 그림: 긴 변 512px JPEG data URL
-async function entryPicture(file) {
+async function entryPicture(file, edge = 512) {
   if (!/^image\//.test(file.type || "") && !/\.(png|jpe?g|gif|webp|heic|avif)$/i.test(file.name)) throw new Error("그림 파일만 넣을 수 있습니다");
   const { img, url } = await loadImage(file);
-  try { return await blobToDataURL(await drawScaled(img, 512, "image/jpeg", 0.82)); }
+  try { return await blobToDataURL(await drawScaled(img, edge, "image/jpeg", edge > 512 ? 0.8 : 0.82)); }
   finally { URL.revokeObjectURL(url); }
 }
 function openEditor(e, presetType, opts = {}) {
@@ -4229,7 +4930,7 @@ async function openWorld(id) {
   state.manuscripts = (await idb.get("ms:" + id)) || [];
   state.images = (await idb.get("imgs:" + id)) || {};
   state.maps = (await idb.get("maps:" + id)) || [];
-  state.mapId = null; state.mapSel = null; state.mapMode = null; state.treeRoot = null; state.lifeYear = null;
+  state.mapId = null; state.mapSel = null; state.mapMode = null; state.treeRoot = null; state.lifeYear = null; state.addrIds = null;
   state.codexType = "all";
   state.codexQuery = "";
   state.tlHidden.clear();
@@ -4283,7 +4984,8 @@ function openWorldForm(existing) {
         await addTombstone("worlds", id);
         const threads = (await idb.get("threads:" + id)) || [];
         const maps = (await idb.get("maps:" + id)) || [];
-        await Promise.all([idb.del("entries:" + id), idb.del("log:" + id), idb.del("threads:" + id), idb.del("graph:" + id), idb.del("ms:" + id), idb.del("imgs:" + id), idb.del("maps:" + id), ...maps.map((m) => idb.del("mapimg:" + m.img)), ...threads.map((t) => idb.del("conv:" + t.id))]);
+        const blobs = blobRefs({ maps, entries: (await idb.get("entries:" + id)) || [] });
+        await Promise.all([idb.del("entries:" + id), idb.del("log:" + id), idb.del("threads:" + id), idb.del("graph:" + id), idb.del("ms:" + id), idb.del("imgs:" + id), idb.del("maps:" + id), ...blobs.map((img) => idb.del("mapimg:" + img)), ...threads.map((t) => idb.del("conv:" + t.id))]);
         state.worlds = state.worlds.filter((x) => x.id !== id);
         await persist.worlds();
         closeSheet();
@@ -4788,7 +5490,7 @@ function openLinkForm(fromId, toId) {
 /* ============================================================
    12-6. 보기 모드: 관계도 · 계보 · 세력표 · 지도
    ============================================================ */
-const GMODES = ["graph", "tree", "matrix", "map"];
+const GMODES = ["graph", "tree", "matrix", "addr", "map"];
 function setGraphMode(m) {
   state.gmode = GMODES.includes(m) ? m : "graph";
   LS.set("lk.gmode", state.gmode);
@@ -4801,12 +5503,14 @@ function renderGraphModeChrome() {
   $$("#view-graph .gm-graph").forEach((el) => (el.hidden = state.gmode !== "graph"));
   $("#treePane").hidden = state.gmode !== "tree";
   $("#matrixPane").hidden = state.gmode !== "matrix";
+  $("#addrPane").hidden = state.gmode !== "addr";
   $("#mapPane").hidden = state.gmode !== "map";
 }
 function renderCurrentGraphMode() {
   if (state.view !== "graph") return;
   if (state.gmode === "tree") renderTree();
   else if (state.gmode === "matrix") renderMatrix();
+  else if (state.gmode === "addr") renderAddress();
   else if (state.gmode === "map") renderMap();
   else renderGraph();
 }
@@ -5226,6 +5930,279 @@ function openMatrixCell(aId, bId) {
     };
   });
 }
+/* ---- 호칭표: 누가 누구를 뭐라고 부르는지(반말·존댓말) ---- */
+const SPEECH_KINDS = ["반말", "존댓말", "해요체", "하오체", "하게체", "합쇼체"];
+const speechBadge = (sp) => (!sp ? "" : sp === "반말" ? "반" : sp === "존댓말" ? "존" : sp.replace(/체$/, ""));
+function addrCandidates() {
+  return liveEntries().filter((e) => isCharacterType(e.type));
+}
+function addrSelected() {
+  const all = addrCandidates();
+  const ids = new Set(all.map((e) => e.id));
+  if (state.addrIds) return state.addrIds.filter((id) => ids.has(id)).map(findEntry);
+  const score = (e) => Object.keys(e.address || {}).length * 2 + (e.relations || []).length + incoming(e.id).length + all.filter((x) => x.address?.[e.id]).length * 2;
+  return all.slice().sort((a, b) => score(b) - score(a) || a.id.localeCompare(b.id)).slice(0, 8).sort((a, b) => a.id.localeCompare(b.id));
+}
+function renderAddress() {
+  const root = $("#addr");
+  const w = currentWorld();
+  if (!w) { root.innerHTML = `<div class="empty-state"><h3>세계관이 없습니다</h3></div>`; return; }
+  const list = addrSelected();
+  const all = addrCandidates();
+  const head = `<div class="row" style="align-items:center"><span class="meta" style="flex:1;margin:0">인물 ${list.length} / ${all.length}명</span><button class="btn btn-small" type="button" data-addr="pick">인물 고르기</button></div>`;
+  if (list.length < 2) {
+    root.innerHTML = `${head}<div class="empty-state"><h3>인물이 둘 이상 있어야 합니다</h3><p>인물 분류의 항목이 둘 이상이면, 서로를 뭐라고 부르는지(호칭과 반말·존댓말)를 표로 정리합니다.</p></div>`;
+    return;
+  }
+  const related = (a, b) => (a.relations || []).some((r) => r.to === b.id) || (b.relations || []).some((r) => r.to === a.id);
+  const undecided = [];
+  const oneWay = [];
+  for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) {
+    const a = list[i];
+    const b = list[j];
+    const ab = a.address?.[b.id];
+    const ba = b.address?.[a.id];
+    if (!ab && !ba && related(a, b)) undecided.push([a, b]);
+    else if (!!ab !== !!ba) oneWay.push(ab ? [b, a] : [a, b]);
+  }
+  root.innerHTML = `${head}
+    <p class="meta" style="margin:8px 0">가로줄의 인물이 세로줄의 인물을 부르는 말입니다. 칸을 누르면 양쪽을 함께 고칠 수 있습니다.</p>
+    <div class="mx-wrap"><table class="mx addr-mx"><thead><tr><th class="mx-corner" scope="col"><span>부르는 쪽 → 듣는 쪽</span></th>${list.map((b) => `<th class="mx-col" scope="col" style="--tc:${typeColor(b.type)}"><button type="button" data-ref="${b.id}" title="${esc(b.name)}">${esc(b.name.replace(/\s+/g, "").length > 7 ? b.name.replace(/\s+/g, "").slice(0, 6) + "…" : b.name.replace(/\s+/g, ""))}</button></th>`).join("")}</tr></thead>
+    <tbody>${list.map((a) => `<tr><th class="mx-row" scope="row" style="--tc:${typeColor(a.type)}"><button type="button" data-ref="${a.id}">${esc(a.name)}</button></th>${list.map((b) => {
+      if (a === b) return `<td class="mx-self" aria-hidden="true"></td>`;
+      const v = a.address?.[b.id];
+      const rel = related(a, b);
+      return `<td class="mx-cell addr-cell${v ? "" : " weak"}${!v && rel ? " want" : ""}"><button type="button" data-addr-cell="${a.id}|${b.id}" aria-label="${esc(a.name)}이(가) ${esc(b.name)}을(를) 부르는 말: ${esc(v?.call || "미정")}">${v ? `<span class="call">${esc(cut(v.call || "?", 10))}</span>${v.speech ? `<span class="sp sp-${esc(speechBadge(v.speech))}">${esc(speechBadge(v.speech))}</span>` : ""}` : rel ? "?" : "·"}</button></td>`;
+    }).join("")}</tr>`).join("")}</tbody></table></div>
+    <div class="mx-legend"><span class="lg"><span class="sp sp-반">반</span> 반말</span><span class="lg"><span class="sp sp-존">존</span> 존댓말</span><span class="lg">? 관계는 있는데 호칭 미정</span><span class="lg">· 관계 없음</span></div>
+    ${undecided.length || oneWay.length ? `<div class="tl-missing">
+      ${undecided.length ? `<strong>관계는 있는데 호칭이 없는 쌍 ${undecided.length}</strong><p class="meta" style="margin:4px 0 8px">${esc(undecided.slice(0, 8).map(([a, b]) => `${a.name}–${b.name}`).join(", "))}${undecided.length > 8 ? " …" : ""}</p>` : ""}
+      ${oneWay.length ? `<strong>한쪽만 정한 쌍 ${oneWay.length}</strong><p class="meta" style="margin:4px 0 8px">${esc(oneWay.slice(0, 8).map(([a, b]) => `${a.name}→${b.name}`).join(", "))}</p>` : ""}
+      <button class="btn btn-small" type="button" data-addr="ask">Claude와 호칭 정하기</button></div>` : ""}`;
+  renderAddress.todo = [...undecided, ...oneWay];
+}
+function openAddressCell(aId, bId) {
+  const a = findEntry(aId);
+  const b = findEntry(bId);
+  if (!a || !b) return;
+  const side = (x, y, pre) => {
+    const v = x.address?.[y.id] || {};
+    const known = SPEECH_KINDS.includes(v.speech || "");
+    return `<fieldset><legend>${esc(x.name)} → ${esc(y.name)}</legend>
+      <label>부르는 말<input id="${pre}-call" value="${esc(v.call || "")}" placeholder="예: 언니, 선생님, 이름만"></label>
+      <label>말씨<select id="${pre}-speech"><option value="">정하지 않음</option>${SPEECH_KINDS.map((k) => `<option${v.speech === k ? " selected" : ""}>${k}</option>`).join("")}<option value="__etc"${v.speech && !known ? " selected" : ""}>기타</option></select></label>
+      <label id="${pre}-etc-wrap"${v.speech && !known ? "" : " hidden"}>기타 말씨<input id="${pre}-etc" value="${esc(v.speech && !known ? v.speech : "")}" placeholder="예: 사투리 반말"></label>
+      <label>덧붙임<input id="${pre}-note" value="${esc(v.note || "")}" placeholder="예: 둘만 있을 때는 반말"></label>
+    </fieldset>`;
+  };
+  openSheet(`<h2 class="sheet-title">${esc(a.name)} ↔ ${esc(b.name)} · 호칭</h2>
+    <form class="form" id="addrForm">${side(a, b, "ab")}${side(b, a, "ba")}
+      <div class="sheet-actions"><button class="btn btn-primary" type="submit">저장</button><button class="btn" type="button" data-act="addr-chat">대화로 정하기</button></div></form>`, (root) => {
+    for (const pre of ["ab", "ba"]) $(`#${pre}-speech`, root).onchange = (ev) => { $(`#${pre}-etc-wrap`, root).hidden = ev.target.value !== "__etc"; };
+    root.onclick = (ev) => {
+      if (!ev.target.closest('[data-act="addr-chat"]')) return;
+      closeSheet();
+      startInNewThread(`${a.name}(${a.id})와 ${b.name}(${b.id})는 서로를 뭐라고 부를까? 나이, 신분, 관계, 성격을 따져 호칭과 말씨(반말·존댓말 등)를 양쪽 다 제안해 줘. 상황에 따라 바뀌면 그것도. 내가 고르면 set_address로 저장해 줘. `);
+    };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      if (state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 고쳐 주세요"); return; }
+      const apply = (x, y, pre) => {
+        const sp = $(`#${pre}-speech`, root).value === "__etc" ? $(`#${pre}-etc`, root).value.trim() : $(`#${pre}-speech`, root).value;
+        const next = { ...(x.address || {}) };
+        const v = {};
+        if ($(`#${pre}-call`, root).value.trim()) v.call = $(`#${pre}-call`, root).value.trim();
+        if (sp) v.speech = sp;
+        if ($(`#${pre}-note`, root).value.trim()) v.note = $(`#${pre}-note`, root).value.trim();
+        if (JSON.stringify(v) === JSON.stringify(x.address?.[y.id] || {})) return;
+        if (Object.keys(v).length) next[y.id] = v; else delete next[y.id];
+        updateEntry(x, { address: next }, "user", `호칭: ${y.name}`);
+      };
+      apply(a, b, "ab");
+      apply(b, a, "ba");
+      await persist.world();
+      closeSheet();
+      renderCodex();
+      toast("저장했습니다");
+    };
+  });
+}
+function openAddressPicker() {
+  const all = addrCandidates().sort((a, b) => a.id.localeCompare(b.id));
+  const cur = new Set(addrSelected().map((e) => e.id));
+  openSheet(`<h2 class="sheet-title">호칭표에 보일 인물</h2>
+    <p class="meta" style="margin:0 0 8px">많으면 표가 커지니 12명까지 고르세요.</p>
+    <div class="pick-list">${all.map((e) => `<label class="pick"><input type="checkbox" value="${e.id}"${cur.has(e.id) ? " checked" : ""}><span>${esc(e.name)} <small class="meta">${e.id}</small></span></label>`).join("")}</div>
+    <div class="sheet-actions"><button class="btn btn-primary" type="button" data-act="ok">보기</button><button class="btn" type="button" data-act="auto">자동으로</button></div>`, (root) => {
+    root.onclick = (ev) => {
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "ok") {
+        const ids = $$("input:checked", root).map((i) => i.value);
+        if (ids.length > 12) { toast("12명까지 고를 수 있습니다"); return; }
+        state.addrIds = ids;
+      } else if (act === "auto") state.addrIds = null;
+      else return;
+      closeSheet();
+      renderAddress();
+    };
+  });
+}
+function showAddressTable(id) {
+  const sel = addrSelected().map((e) => e.id);
+  if (id && !sel.includes(id)) state.addrIds = [...sel.slice(0, 11), id];
+  state.gmode = "addr";
+  LS.set("lk.gmode", "addr");
+  switchView("graph");
+}
+function bindAddress() {
+  $("#addrPane").addEventListener("click", (e) => {
+    const cell = e.target.closest("[data-addr-cell]");
+    if (cell) { const [a, b] = cell.dataset.addrCell.split("|"); openAddressCell(a, b); return; }
+    const ref = e.target.closest("[data-ref]");
+    if (ref) { openEntry(ref.dataset.ref); return; }
+    const act = e.target.closest("[data-addr]")?.dataset.addr;
+    if (act === "pick") openAddressPicker();
+    else if (act === "ask") {
+      const pairs = (renderAddress.todo || []).slice(0, 12).map(([a, b]) => `${a.name}(${a.id})–${b.name}(${b.id})`);
+      startInNewThread(`호칭표에서 아직 정하지 않은 쌍이 있어: ${pairs.join(", ")}. 각 쌍이 서로를 뭐라고 부르고 어떤 말씨(반말·존댓말 등)를 쓰는지 나이, 신분, 관계, 성격에 맞게 제안해 줘. 내가 고르면 set_address로 양쪽 다 저장해 줘. `);
+    }
+  });
+}
+
+/* ---- 인물 비교표 ---- */
+function openCompare(preIds = []) {
+  const all = liveEntries().filter((e) => isCharacterType(e.type)).sort((a, b) => a.id.localeCompare(b.id));
+  if (all.length < 2) { toast("비교할 인물이 둘 이상 있어야 합니다"); return; }
+  const pre = new Set(preIds);
+  openSheet(`<h2 class="sheet-title">인물 비교</h2>
+    <p class="meta" style="margin:0 0 8px">2~4명을 고르세요.</p>
+    <div class="pick-list">${all.map((e) => `<label class="pick"><input type="checkbox" value="${e.id}"${pre.has(e.id) ? " checked" : ""}><span>${esc(e.name)} <small class="meta">${e.id} · ${esc(cut(e.summary, 24))}</small></span></label>`).join("")}</div>
+    <div class="sheet-actions"><button class="btn btn-primary" type="button" data-act="cmp">비교하기</button></div>`, (root) => {
+    root.onclick = (ev) => {
+      if (!ev.target.closest('[data-act="cmp"]')) return;
+      const ids = $$("input:checked", root).map((i) => i.value);
+      if (ids.length < 2 || ids.length > 4) { toast("2~4명을 골라 주세요"); return; }
+      openCompareTable(ids);
+    };
+  });
+}
+function compareRows(list) {
+  const cal = worldCalendar();
+  const rows = [];
+  const add = (group, label, get) => { const vals = list.map((e) => String(get(e) ?? "").trim()); if (vals.some(Boolean)) rows.push({ group, label, vals }); };
+  add("기본", "요약", (e) => e.summary);
+  add("기본", "상태", (e) => STATUS[statusOf(e)]);
+  add("기본", "생몰", (e) => (e.when ? rangeText(e.when, cal) : ""));
+  if (cal.now != null) add("기본", "지금 나이", (e) => (e.when && e.when.start <= cal.now && (e.when.end == null || cal.now <= e.when.end) ? `${Math.trunc(cal.now - e.when.start)}세` : e.when?.end != null && cal.now > e.when.end ? "사망" : ""));
+  const fieldKeys = [...new Set(list.flatMap((e) => Object.keys(e.fields || {})))];
+  for (const k of fieldKeys) add("속성", k, (e) => (isBlankValue(e.fields?.[k] || "") ? "" : e.fields?.[k]));
+  for (const [k, l] of INNER_KEYS) add("내면", l, (e) => e.inner?.[k]);
+  add("말투", "어조·말씨", (e) => e.voice?.tone);
+  add("말투", "말버릇", (e) => e.voice?.habits);
+  const lookKeys = [...new Set([...LOOK_KEYS, ...list.flatMap((e) => Object.keys(e.looks || {}))])];
+  for (const k of lookKeys) add("외모", k, (e) => e.looks?.[k]);
+  add("능력", "능력", (e) => (e.abilities || []).map((a) => a.name).join(", "));
+  add("이야기", "성장 곡선", (e) => (e.arc?.length ? `${e.arc.length}단계 · ${e.arc.map((x) => x.label || "단계").join(" → ")}` : ""));
+  add("이야기", "관계", (e) => `${(e.relations || []).length + incoming(e.id).length}개`);
+  const others = list.map((e) => list.filter((x) => x !== e && e.address?.[x.id]).map((x) => `${x.name}: “${e.address[x.id].call || "?"}”${e.address[x.id].speech ? ` ${e.address[x.id].speech}` : ""}`).join(", "));
+  if (others.some(Boolean)) rows.push({ group: "말투", label: "서로 부르는 말", vals: others });
+  return rows;
+}
+function openCompareTable(ids) {
+  const list = ids.map(findEntry).filter(Boolean);
+  const rows = compareRows(list);
+  let lastGroup = "";
+  const norm = (v) => v.replace(/\s+/g, " ").trim();
+  openSheet(`<h2 class="sheet-title">인물 비교 · ${list.length}명</h2>
+    <p class="meta" style="margin:0 0 8px">같은 값은 <span class="same-mark">겹침</span>으로 표시합니다. 인물끼리 너무 닮았는지 확인해 보세요.</p>
+    <div class="mx-wrap cmp-wrap"><table class="mx cmp"><thead><tr><th class="mx-corner" scope="col"></th>${list.map((e) => `<th scope="col" class="cmp-head" style="--tc:${typeColor(e.type)}"><button type="button" data-ref="${e.id}">${esc(e.name)}</button></th>`).join("")}</tr></thead>
+    <tbody>${rows.map((r) => {
+      const counts = {};
+      for (const v of r.vals) if (v && r.label !== "상태" && r.label !== "관계") counts[norm(v)] = (counts[norm(v)] || 0) + 1;
+      const groupRow = r.group !== lastGroup ? `<tr class="cmp-group"><th colspan="${list.length + 1}">${esc(r.group)}</th></tr>` : "";
+      lastGroup = r.group;
+      return `${groupRow}<tr><th class="mx-row" scope="row">${esc(r.label)}</th>${r.vals.map((v) => `<td class="cmp-cell${v ? "" : " blank"}${v && counts[norm(v)] > 1 ? " same" : ""}">${v ? esc(v) : "—"}</td>`).join("")}</tr>`;
+    }).join("")}</tbody></table></div>
+    <div class="sheet-actions"><button class="btn" type="button" data-act="again">다시 고르기</button><button class="btn btn-primary" type="button" data-act="cmp-chat">대화로 차별점 만들기</button></div>`, (root) => {
+    root.onclick = (ev) => {
+      const ref = ev.target.closest("[data-ref]");
+      if (ref) { openEntry(ref.dataset.ref); return; }
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "again") openCompare(ids);
+      else if (act === "cmp-chat") { closeSheet(); startInNewThread(`${list.map((e) => `${e.name}(${e.id})`).join(", ")}를 비교해 줘. 성격, 내면, 말투, 외모, 역할이 겹치는 부분을 짚고, 각자가 이야기에서 대체할 수 없는 인물이 되도록 차별점을 제안해 줘. `); }
+    };
+  });
+}
+
+/* ---- 등장 비중 · 잊힌 인물 ---- */
+async function presenceStats() {
+  const chars = liveEntries().filter((e) => isCharacterType(e.type));
+  const keysOf = (e) => [e.id, e.name, ...(e.aliases || [])].filter((k) => k && k.length >= 2);
+  const count = (text, keys) => keys.reduce((n, k) => n + (text.split(k).length - 1), 0);
+  const stat = new Map(chars.map((e) => [e.id, { e, ms: 0, chat: 0, last: 0 }]));
+  for (const m of state.manuscripts) {
+    const text = `${m.title}\n${m.body}`;
+    for (const st of stat.values()) {
+      const n = count(text, keysOf(st.e)) + ((m.refs || []).includes(st.e.id) ? 1 : 0);
+      if (n) { st.ms += n; st.last = Math.max(st.last, m.updatedAt || 0); }
+    }
+  }
+  for (const t of state.threads) {
+    const conv = t.id === state.threadId ? state.conv : await idb.get("conv:" + t.id);
+    for (const item of conv?.display || []) {
+      const text = item.role === "user" ? item.text || "" : (item.parts || []).filter((p) => p.kind === "text").map((p) => p.text).join("\n");
+      if (!text) continue;
+      for (const st of stat.values()) {
+        const n = count(text, keysOf(st.e));
+        if (n) { st.chat += n; st.last = Math.max(st.last, item.at || t.updatedAt || 0); }
+      }
+    }
+  }
+  for (const st of stat.values()) {
+    const e = st.e;
+    st.depth = INNER_KEYS.filter(([k]) => e.inner?.[k]).length + (hasKeys(e.voice) ? 1 : 0) + (hasKeys(e.looks) ? 1 : 0) + Math.min(2, e.arc?.length || 0) + Math.min(2, e.abilities?.length || 0)
+      + Math.min(3, Object.values(e.fields || {}).filter((v) => !isBlankValue(v)).length) + (String(e.body || "").length > 200 ? 2 : String(e.body || "").length > 0 ? 1 : 0);
+    st.total = st.ms + st.chat;
+  }
+  return [...stat.values()].sort((a, b) => b.total - a.total || a.e.id.localeCompare(b.e.id));
+}
+async function openPresenceSheet() {
+  if (!currentWorld()) return;
+  openSheet(`<h2 class="sheet-title">등장 비중</h2><p class="status-line">세는 중…</p>`);
+  const rows = await presenceStats();
+  if (!rows.length) { openSheet(`<h2 class="sheet-title">등장 비중</h2><p class="meta">인물 분류의 항목이 없습니다.</p>`); return; }
+  const max = Math.max(1, ...rows.map((r) => r.total));
+  const now = Date.now();
+  const DAY = 24 * 3600 * 1000;
+  const recent = Math.max(0, ...rows.map((r) => r.last));
+  const totals = rows.map((r) => r.total).sort((a, b) => a - b);
+  const median = totals[Math.floor(totals.length / 2)];
+  const forgotten = rows.filter((r) => r.total > 0 && recent - r.last > 14 * DAY);
+  const never = rows.filter((r) => r.total === 0);
+  const shallow = rows.filter((r) => r.total > 0 && r.total >= median && r.depth < 4);
+  const ago = (t) => (!t ? "없음" : now - t < DAY ? "오늘" : `${Math.floor((now - t) / DAY)}일 전`);
+  const chip = (r) => `<button type="button" class="life-chip" data-ref="${r.e.id}" style="--tc:${typeColor(r.e.type)}"><b>${esc(r.e.name)}</b></button>`;
+  openSheet(`<h2 class="sheet-title">등장 비중</h2>
+    <p class="meta" style="margin:0 0 10px">원고함과 대화에서 이름·별칭·번호가 나온 횟수입니다. 깊이는 내면·말투·외모·성장 곡선·능력·속성·본문을 얼마나 채웠는지입니다(최대 16).</p>
+    <div class="presence">${rows.map((r) => `<button type="button" class="pres-row" data-ref="${r.e.id}">
+      <span class="pres-name">${esc(r.e.name)}</span>
+      <span class="pres-bar"><span style="width:${(r.total / max) * 100}%;--tc:${typeColor(r.e.type)}"></span></span>
+      <span class="pres-n">${r.total}</span>
+      <span class="pres-sub">원고 ${r.ms} · 대화 ${r.chat} · 마지막 ${ago(r.last)} · 깊이 ${r.depth}</span></button>`).join("")}</div>
+    ${forgotten.length ? `<div class="tl-missing"><strong>오래 안 나온 인물 ${forgotten.length}</strong><p class="meta" style="margin:4px 0 8px">가장 최근 언급보다 2주 넘게 뒤처졌습니다.</p><div class="life-chips">${forgotten.map(chip).join("")}</div><div class="row" style="margin-top:8px"><button class="btn btn-small" type="button" data-pres="revive">다시 등장시킬 방법 묻기</button></div></div>` : ""}
+    ${never.length ? `<div class="tl-missing"><strong>한 번도 나오지 않은 인물 ${never.length}</strong><div class="life-chips" style="margin-top:8px">${never.map(chip).join("")}</div></div>` : ""}
+    ${shallow.length ? `<div class="tl-missing"><strong>자주 나오는데 설정이 얇은 인물 ${shallow.length}</strong><p class="meta" style="margin:4px 0 8px">비중에 비해 내면·말투·성장 곡선이 비어 있습니다.</p><div class="life-chips">${shallow.map(chip).join("")}</div></div>` : ""}`, (root) => {
+    root.onclick = (ev) => {
+      const ref = ev.target.closest("[data-ref]");
+      if (ref) { openEntry(ref.dataset.ref); return; }
+      if (ev.target.closest('[data-pres="revive"]')) {
+        closeSheet();
+        startInNewThread(`요즘 이야기에서 오래 안 나온 인물이 있어: ${forgotten.map((r) => `${r.e.name}(${r.e.id})`).join(", ")}. 지금까지의 설정과 원고를 바탕으로 각 인물을 자연스럽게 다시 등장시킬 방법을 2가지씩 제안해 줘. `);
+      }
+    };
+  });
+}
+
 function bindMatrix() {
   $("#matrixPane").addEventListener("click", async (e) => {
     const chip = e.target.closest("[data-mtype]");
@@ -6592,7 +7569,8 @@ async function loadLocalSnapshot() {
   for (const w of worlds) {
     const threads = (await idb.get("threads:" + w.id)) || [];
     const maps = (await idb.get("maps:" + w.id)) || [];
-    for (const m of maps) { const d = await idb.get("mapimg:" + m.img); if (d) mapImgs[m.img] = d; }
+    const entries = (await idb.get("entries:" + w.id)) || [];
+    for (const img of blobRefs({ maps, entries })) { const d = await idb.get("mapimg:" + img); if (d) mapImgs[img] = d; }
     data[w.id] = {
       entries: (await idb.get("entries:" + w.id)) || [],
       log: (await idb.get("log:" + w.id)) || [],
@@ -6610,6 +7588,8 @@ const worldPath = (id) => `${SYNC_DIR}/w/${id}.json`;
 const convPath = (id) => `${SYNC_DIR}/c/${id}.json`;
 const imgPath = (id) => `${SYNC_DIR}/i/${id}.json`;
 const mapImgPath = (img) => `${SYNC_DIR}/m/${img}.json`;
+// 따로 저장하는 그림 덩어리: 지도 그림 + 인물 무드보드
+const blobRefs = (d) => [...(d?.maps || []).map((m) => m.img), ...(d?.entries || []).flatMap((e) => (e.gallery || []).map((g) => g.img))];
 const emptyWorldData = () => ({ entries: [], log: [], threads: [], graph: null, ms: [], images: {}, maps: [] });
 const INDEX_PATH = `${SYNC_DIR}/index.json`;
 function serializeSnapshot(snap) {
@@ -6620,7 +7600,7 @@ function serializeSnapshot(snap) {
     // 원고가 없으면 예전 형식 그대로 둔다(바뀐 것 없이 다시 올리지 않게)
     files[worldPath(w.id)] = JSON.stringify({ entries: d.entries, log: d.log, threads: d.threads, graph: d.graph, ...(d.ms?.length ? { ms: d.ms } : {}), ...(d.maps?.length ? { maps: d.maps } : {}) });
     if (d.images && Object.keys(d.images).length) files[imgPath(w.id)] = JSON.stringify(d.images);
-    for (const m of d.maps || []) if (snap.mapImgs?.[m.img]) files[mapImgPath(m.img)] = JSON.stringify({ data: snap.mapImgs[m.img] });
+    for (const img of blobRefs(d)) if (snap.mapImgs?.[img]) files[mapImgPath(img)] = JSON.stringify({ data: snap.mapImgs[img] });
     for (const t of d.threads) if (snap.convs[t.id]) files[convPath(t.id)] = JSON.stringify(snap.convs[t.id]);
   }
   return files;
@@ -6819,11 +7799,11 @@ async function syncOnce() {
   }
   applyTombstones(merged);
   // 지도 그림: 이 기기에 없는 그림은 받아 온다(그림 파일은 한 번 올리면 바뀌지 않는다)
-  for (const w of merged.worlds) for (const m of merged.data[w.id]?.maps || []) {
-    if (merged.mapImgs[m.img]) continue;
-    const p = mapImgPath(m.img);
-    if (got[p]) merged.mapImgs[m.img] = got[p].data;
-    else if (remote.files[p]) merged.mapImgs[m.img] = JSON.parse(b64ToText((await gh("GET", `/git/blobs/${remote.files[p]}`)).content)).data;
+  for (const w of merged.worlds) for (const img of blobRefs(merged.data[w.id])) {
+    if (merged.mapImgs[img]) continue;
+    const p = mapImgPath(img);
+    if (got[p]) merged.mapImgs[img] = got[p].data;
+    else if (remote.files[p]) merged.mapImgs[img] = JSON.parse(b64ToText((await gh("GET", `/git/blobs/${remote.files[p]}`)).content)).data;
   }
 
   // 합친 결과를 이 기기에 저장
@@ -6841,7 +7821,7 @@ async function syncOnce() {
       }
       if (after[imgPath(w.id)] !== before[imgPath(w.id)]) { await idb.set("imgs:" + w.id, merged.data[w.id].images || {}); localChanged = true; }
     }
-    const usedImgs = new Set(merged.worlds.flatMap((w) => (merged.data[w.id]?.maps || []).map((m) => m.img)));
+    const usedImgs = new Set(merged.worlds.flatMap((w) => blobRefs(merged.data[w.id])));
     for (const [img, d] of Object.entries(merged.mapImgs)) if (usedImgs.has(img) && !local.mapImgs[img] && d) { await idb.set("mapimg:" + img, d); localChanged = true; }
     for (const img of Object.keys(local.mapImgs)) if (!usedImgs.has(img)) { await idb.del("mapimg:" + img); delete state.mapImgs[img]; }
     for (const w of local.worlds) if (!liveWorlds.has(w.id)) { await Promise.all(["entries:", "log:", "threads:", "graph:", "ms:", "imgs:", "maps:"].map((k) => idb.del(k + w.id))); localChanged = true; }
@@ -6858,7 +7838,7 @@ async function syncOnce() {
   const finalShas = {};
   for (const [p, text] of Object.entries(after)) finalShas[p] = await gitBlobSha(text);
   const uploads = Object.keys(after).filter((p) => remote.files[p] !== finalShas[p]);
-  const keepMapImgs = new Set(merged.worlds.flatMap((w) => (merged.data[w.id]?.maps || []).map((m) => mapImgPath(m.img))));
+  const keepMapImgs = new Set(merged.worlds.flatMap((w) => blobRefs(merged.data[w.id]).map(mapImgPath)));
   const deletions = Object.keys(remote.files).filter((p) => !(p in after) && !keepMapImgs.has(p));
   let head = remote.head;
   if (uploads.length || deletions.length) {
@@ -7217,7 +8197,7 @@ async function exportAll() {
       manuscripts: (await idb.get("ms:" + w.id)) || [],
       images: (await idb.get("imgs:" + w.id)) || {},
       maps: (await idb.get("maps:" + w.id)) || [],
-      mapImages: Object.fromEntries(await Promise.all(((await idb.get("maps:" + w.id)) || []).map(async (m) => [m.img, (await idb.get("mapimg:" + m.img)) || ""]))),
+      mapImages: Object.fromEntries(await Promise.all(blobRefs({ maps: (await idb.get("maps:" + w.id)) || [], entries: (await idb.get("entries:" + w.id)) || [] }).map(async (img) => [img, (await idb.get("mapimg:" + img)) || ""]))),
       threads,
       convs,
     });
@@ -7416,6 +8396,8 @@ function bindGlobal() {
     else if (act === "trash") openTrash();
     else if (act === "types") openTypesSheet();
     else if (act === "checks") openChecksSheet();
+    else if (act === "compare") openCompare();
+    else if (act === "presence") openPresenceSheet();
     else if (act === "retry") { if (!state.busy) runAgent(); }
   });
   document.addEventListener("keydown", (e) => {
@@ -7432,6 +8414,7 @@ async function init() {
   bindGraph();
   bindTree();
   bindMatrix();
+  bindAddress();
   bindMap();
   $("#graphModes").addEventListener("click", (e) => { const b = e.target.closest("[data-gmode]"); if (b) setGraphMode(b.dataset.gmode); });
   bindTimeline();
