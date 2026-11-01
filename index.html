@@ -701,6 +701,89 @@ main { min-height: 0; min-width: 0; position: relative; }
 .ct .meta { margin: 6px 0 8px; }
 .mode-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 8px var(--gutter-r) 0 var(--gutter-l); padding: 6px 6px 6px 12px; border-radius: 12px; background: var(--accent-soft); font-size: 13px; }
 .mode-bar > span { flex: 1 1 180px; min-width: 0; }
+
+/* 관계·지도 탭의 보기 모드 */
+.view-modes { margin: 10px var(--gutter-r) 0 var(--gutter-l); flex: none; }
+.gm-pane { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.gm-pane .scroll { flex: 1; }
+.graph-tools select { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 7px 10px; font-size: 15px; color: var(--ink); }
+.map-name { flex: 1; min-width: 0; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.graph-empty.interactive { pointer-events: auto; background: var(--bg); }
+.graph-empty .row { display: flex; gap: 8px; }
+/* 계보 */
+.t-node { cursor: pointer; }
+.t-node:focus { outline: none; }
+.t-node:focus-visible .t-box { stroke: var(--accent); stroke-width: 2.5; }
+.t-box { fill: var(--surface); stroke: var(--line); stroke-width: 1.2; }
+.t-node.draft .t-box { stroke-dasharray: 4 3; }
+.t-bar { fill: var(--tc); }
+.t-name { font: 700 14px var(--font-body); fill: var(--ink); }
+.t-sub { font: 500 11.5px var(--font-body); fill: var(--muted); }
+.t-edge { fill: none; stroke: var(--muted); stroke-width: 1.6; opacity: .75; }
+.t-peer { fill: none; stroke: var(--accent); stroke-width: 2; stroke-dasharray: 5 4; }
+.t-elabel { font: 600 10.5px var(--font-body); fill: var(--accent); text-anchor: middle; stroke: var(--bg); stroke-width: 4px; paint-order: stroke; }
+.role-row { display: grid !important; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); align-items: center; gap: 8px; }
+.role-row small { color: var(--muted); font-family: var(--font-mono); }
+/* 세력표 */
+.mx-wrap { overflow: auto; max-height: 64vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overscroll-behavior: contain; }
+.mx { border-collapse: separate; border-spacing: 0; font-size: 12.5px; }
+.mx th, .mx td { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 0; }
+.mx thead th { position: sticky; top: 0; z-index: 2; background: var(--surface-2); }
+.mx th.mx-row { position: sticky; left: 0; z-index: 1; background: var(--surface-2); text-align: left; }
+.mx th.mx-corner { position: sticky; left: 0; top: 0; z-index: 3; background: var(--surface-2); font: 500 10.5px var(--font-body); color: var(--muted); padding: 6px; min-width: 84px; }
+.mx th button { display: block; width: 100%; border: 0; background: none; color: var(--ink); font: 700 12.5px var(--font-body); padding: 8px 6px; border-left: 3px solid var(--tc); text-align: left; }
+.mx th.mx-col button { writing-mode: vertical-rl; text-orientation: upright; min-height: 64px; padding: 8px 4px; border-left: 0; border-top: 3px solid var(--tc); margin: 0 auto; width: auto; white-space: nowrap; line-height: 1.15; }
+.mx th.mx-row button { max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mx td.mx-self { background: repeating-linear-gradient(135deg, var(--surface-2) 0 4px, transparent 4px 8px); min-width: 70px; }
+.mx td.mx-cell button { display: block; width: 100%; min-width: 70px; min-height: 46px; border: 0; padding: 4px 6px; font: 600 12px/1.3 var(--font-body); color: var(--ink); background: transparent; }
+.mx td.weak button { font-weight: 400; color: var(--muted); }
+.tone-good { background: color-mix(in srgb, var(--t-species) 20%, var(--surface)); }
+.tone-bad { background: color-mix(in srgb, var(--danger) 18%, var(--surface)); }
+.tone-mid { background: var(--surface-2); }
+.tone-none button { color: var(--muted) !important; }
+.mx td.weak.tone-good { background: color-mix(in srgb, var(--t-species) 9%, var(--surface)); }
+.mx td.weak.tone-bad { background: color-mix(in srgb, var(--danger) 8%, var(--surface)); }
+.mx-legend { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin-top: 10px; font-size: 12.5px; color: var(--muted); }
+.mx-legend .lg { padding: 2px 8px; border-radius: 6px; color: var(--ink); border: 1px solid var(--line); }
+/* 지도 */
+.map-tools { flex-wrap: wrap; }
+.map-stage { background-image: none; }
+.map-vp { position: absolute; left: 0; top: 0; transform-origin: 0 0; --ik: 1; }
+.map-vp img { display: block; width: 100%; height: 100%; user-select: none; -webkit-user-select: none; pointer-events: none; border-radius: 2px; box-shadow: var(--shadow); }
+#mapPins { position: absolute; inset: 0; }
+.map-pin { position: absolute; display: flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; cursor: pointer; transform: translate(-9px, -50%) scale(var(--ik)); transform-origin: 9px 50%; }
+.pin-dot { flex: none; width: 18px; height: 18px; border-radius: 50%; background: var(--tc); border: 3px solid var(--surface); box-shadow: 0 1px 4px rgba(0, 0, 0, .35); }
+.pin-label { white-space: nowrap; font: 700 12.5px var(--font-body); color: var(--ink); background: var(--surface); padding: 2px 7px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0, 0, 0, .25); }
+.map-pin.sel .pin-dot { box-shadow: 0 0 0 3px var(--accent), 0 1px 4px rgba(0, 0, 0, .35); }
+.map-pin.sel .pin-label { background: var(--accent); color: var(--accent-ink); }
+.map-pin.discarded { opacity: .45; }
+.sheet-search { width: 100%; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); padding: 8px 12px; font-size: 16px; color: var(--ink); }
+/* 생애 겹쳐 보기 */
+.life-tools { display: flex; align-items: center; gap: 6px; margin: 4px 0 10px; }
+.life-tools .sp, .life-year .sp { flex: 1; }
+.life-tools .icon-btn { width: 38px; min-height: 36px; font-size: 18px; }
+.life-scroll { overflow-x: auto; overflow-y: hidden; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); -webkit-overflow-scrolling: touch; }
+.life-svg { display: block; cursor: crosshair; }
+.life-era { fill: var(--surface-2); opacity: .55; }
+.life-era.alt { opacity: .25; }
+.life-era-t { font: 600 10.5px var(--font-body); fill: var(--muted); }
+.life-tick { stroke: var(--line); stroke-width: 1; }
+.life-tick-t { font: 500 10.5px var(--font-mono); fill: var(--muted); text-anchor: middle; }
+.life-now { stroke: var(--danger); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.life-ev { fill: var(--t-event); cursor: pointer; }
+.life-ev.span { opacity: .7; }
+.life-bar { fill: var(--tc); opacity: .85; }
+.life-name { font: 700 12px var(--font-body); fill: var(--ink); pointer-events: none; }
+.life-name.in { fill: #fff; }
+.life-row.dim { opacity: .22; }
+.life-cursor { stroke: var(--accent); stroke-width: 2; }
+.life-panel { margin-top: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.life-year { display: flex; align-items: center; gap: 8px; }
+.life-year strong { font: 700 18px var(--font-display); }
+.life-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.life-chip { border: 1px solid var(--line); border-left: 4px solid var(--tc, var(--t-event)); border-radius: 10px; background: var(--bg); padding: 5px 10px; font-size: 13px; color: var(--ink); }
+.life-chip b { font-weight: 700; }
+.life-hint { margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -752,14 +835,17 @@ main { min-height: 0; min-width: 0; position: relative; }
       <div class="scroll"><div class="pad" id="codex"></div></div>
     </section>
 
-    <section id="view-graph" class="view" aria-label="관계도" hidden>
-      <div class="graph-tools">
+    <section id="view-graph" class="view" aria-label="관계도와 지도" hidden>
+      <div class="seg-tabs view-modes" id="graphModes" role="tablist">
+        <button type="button" role="tab" data-gmode="graph">관계도</button><button type="button" role="tab" data-gmode="tree">계보</button><button type="button" role="tab" data-gmode="matrix">세력표</button><button type="button" role="tab" data-gmode="map">지도</button>
+      </div>
+      <div class="graph-tools gm-graph">
         <input id="graphSearch" type="search" placeholder="항목 찾기" aria-label="관계도에서 항목 찾기">
         <button class="btn btn-small" type="button" data-g="fit">화면 맞춤</button>
         <button class="btn btn-small" type="button" data-g="relayout">다시 배치</button>
       </div>
-      <div class="type-chips graph-types" id="graphTypes" role="toolbar" aria-label="보일 종류"></div>
-      <div class="graph-stage" id="graphStage">
+      <div class="type-chips graph-types gm-graph" id="graphTypes" role="toolbar" aria-label="보일 종류"></div>
+      <div class="graph-stage gm-graph" id="graphStage">
         <svg id="graphSvg" aria-label="항목 관계도">
           <defs>
             <marker id="gArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="g-arrow" d="M0,1 L9,5 L0,9 z"/></marker>
@@ -774,6 +860,36 @@ main { min-height: 0; min-width: 0; position: relative; }
         <div class="graph-hint" id="graphHint" hidden></div>
         <div class="graph-empty" id="graphEmpty" hidden></div>
         <div class="graph-card" id="graphCard" hidden></div>
+      </div>
+      <div class="gm-pane" id="treePane" hidden>
+        <div class="graph-tools" id="treeTools"></div>
+        <div class="graph-stage" id="treeStage">
+          <svg id="treeSvg" aria-label="가계도·조직도"><g id="treeVp"></g></svg>
+          <div class="zoom-ctrl">
+            <button class="icon-btn" type="button" data-pz="in" aria-label="확대">+</button>
+            <button class="icon-btn" type="button" data-pz="out" aria-label="축소">−</button>
+            <button class="icon-btn" type="button" data-pz="fit" aria-label="화면 맞춤">⤢</button>
+          </div>
+          <div class="graph-empty interactive" id="treeEmpty" hidden></div>
+        </div>
+      </div>
+      <div class="gm-pane" id="matrixPane" hidden>
+        <div class="scroll"><div class="pad" id="matrix"></div></div>
+      </div>
+      <div class="gm-pane" id="mapPane" hidden>
+        <div class="graph-tools map-tools" id="mapTools"></div>
+        <div class="graph-stage map-stage" id="mapStage">
+          <div class="map-vp" id="mapVp" hidden><img id="mapImg" alt="지도" draggable="false"><div id="mapPins"></div></div>
+          <div class="zoom-ctrl">
+            <button class="icon-btn" type="button" data-pz="in" aria-label="확대">+</button>
+            <button class="icon-btn" type="button" data-pz="out" aria-label="축소">−</button>
+            <button class="icon-btn" type="button" data-pz="fit" aria-label="화면 맞춤">⤢</button>
+          </div>
+          <div class="graph-hint" id="mapHint" hidden></div>
+          <div class="graph-empty interactive" id="mapEmpty" hidden></div>
+          <div class="graph-card" id="mapCard" hidden></div>
+        </div>
+        <input id="mapFile" type="file" accept="image/*" hidden>
       </div>
     </section>
 
@@ -794,7 +910,7 @@ main { min-height: 0; min-width: 0; position: relative; }
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/><path d="M9 8h6"/></svg>설정집
     </button>
     <button type="button" data-view="graph">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="7" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8.4 6.6l7.1-.4M7.3 9.3l3.5 6.4M16.8 8.3l-3.6 7.4"/></svg>관계도
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="7" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8.4 6.6l7.1-.4M7.3 9.3l3.5 6.4M16.8 8.3l-3.6 7.4"/></svg>관계·지도
     </button>
     <button type="button" data-view="timeline">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v18"/><circle cx="7" cy="7" r="2"/><circle cx="7" cy="16" r="2"/><path d="M11 7h9M11 16h6"/></svg>연표
@@ -1517,7 +1633,18 @@ const state = {
   codexTab: "entries",
   msKind: "all",
   msQuery: "",
-  pendingMode: null,    // 다음에 만들 대화의 모드(인물 인터뷰 등)
+  pendingMode: null,
+  gmode: LS.get("lk.gmode", "graph"), // 관계도 탭의 보기: graph | tree | matrix | map
+  treeRoot: null,
+  maps: [],             // 현재 세계관의 지도 [{ id, name, img, w, h, pins: [{ ref, x, y }], at }]
+  mapImgs: {},          // 지도 그림 캐시 { img id: data URL }
+  mapId: null,
+  mapSel: null,
+  mapMode: null,        // { type: "add" } | { type: "move", ref }
+  tlMode: LS.get("lk.tlmode", "list"), // 연표 탭의 보기: list | life
+  lifeYear: null,
+  lifeZoom: 1,
+  lifeAll: false,    // 다음에 만들 대화의 모드(인물 인터뷰 등)
 };
 let live = null;
 const qrSelected = new Set(); // 여러 개 고르기에서 체크한 추천 대답 번호
@@ -1545,6 +1672,7 @@ const persist = {
   world: () => Promise.all([persist.entries(), persist.log(), persist.ms()]),
   ms: () => (state.worldId ? idb.set("ms:" + state.worldId, state.manuscripts) : Promise.resolve()),
   images: () => (state.worldId ? idb.set("imgs:" + state.worldId, state.images) : Promise.resolve()),
+  maps: () => (state.worldId ? idb.set("maps:" + state.worldId, state.maps) : Promise.resolve()),
 };
 
 /* ============================================================
@@ -2299,6 +2427,8 @@ function contextNoteFor(thread) {
     if (v >= 7) {
       const rules = worldNaming();
       lines.push(rules.length ? `이름 규칙:\n${rules.map((r) => `- ${r.name}${r.applies?.length ? ` (적용: ${r.applies.join(", ")})` : ""}: ${cut(r.rules, 160)}${r.examples?.length ? ` · 예: ${r.examples.slice(0, 6).join(", ")}` : ""}`).join("\n")}` : "이름 규칙: 없음", `원고함: ${state.manuscripts.length}편${state.manuscripts.length ? " (get_manuscripts로 읽는다)" : ""}`, "");
+      const pinned = state.maps.filter((m) => m.pins.length);
+      if (pinned.length) lines.push(`지도(핀의 대략적인 위치):\n${pinned.map((m) => `- ${m.name}: ${mapPinsText(m)}`).join("\n")}`, "");
       if (thread.mode?.type === "interview") {
         const who = findEntry(thread.mode.ref);
         if (who) lines.push(`[인물 인터뷰] 대상: ${who.id} ${who.name}. 이 대화에서 너는 ${who.name}이(가) 되어 1인칭으로 답한다. (( )) 안의 말은 작가로서 받는다. "인터뷰 정리"를 부탁받으면 새로 드러난 사실을 정리해 제안하고 요약을 원고함에 저장한다.`, "");
@@ -2839,7 +2969,7 @@ function switchView(view) {
   $$(".tabbar button").forEach((b) => (b.dataset.view === view ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
   LS.set("lk.view", view);
   if (view === "codex") renderCodex();
-  if (view === "graph") renderGraph();
+  if (view === "graph") { renderGraphModeChrome(); renderCurrentGraphMode(); }
   if (view === "timeline") renderTimeline();
   if (view === "settings") renderSettings();
   if (view === "chat") scrollChatToBottom(true);
@@ -3713,6 +3843,7 @@ function openEntry(ref) {
     ${senses.length ? `<p class="section-label">감각</p><dl class="fields sense-fields">${senses.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : ""}
     ${e.perspectives?.length ? `<p class="section-label">관점별 서술</p><div class="persp-list">${e.perspectives.map((x) => { const by = findEntry(x.by); return `<blockquote class="persp"><span class="persp-by">${by ? `<button type="button" class="ref" data-ref="${by.id}">${by.id}</button> ${esc(by.name)}` : esc(x.by)}의 관점</span><p>${esc(x.text)}</p></blockquote>`; }).join("")}</div>` : ""}
     ${relationsHTML(e)}
+    ${!e.deleted && state.maps.some((m) => m.pins.some((p) => p.ref === e.id)) ? `<p class="when-line"><span class="lbl">지도</span><span>${esc(state.maps.filter((m) => m.pins.some((p) => p.ref === e.id)).map((m) => `${m.name} ${pinDir(m.pins.find((p) => p.ref === e.id).x, m.pins.find((p) => p.ref === e.id).y)}`).join(", "))}</span><button class="btn btn-ghost btn-small" type="button" data-act="map">지도에서 보기</button></p>` : ""}
     ${e.tags?.length ? `<p class="section-label">태그</p><div>${e.tags.map((t) => `<span class="tag">#${esc(t)}</span>`).join("")}</div>` : ""}
     <p class="meta">${fmtDate(e.updatedAt)} 수정 · ${e.updatedBy === "user" ? "직접 수정" : "Claude"} · 이력 ${e.history?.length || 0}개</p>
     <div class="sheet-actions">
@@ -3725,8 +3856,9 @@ function openEntry(ref) {
       if (refBtn) { openEntry(refBtn.dataset.ref); return; }
       const act = ev.target.closest("[data-act]")?.dataset.act;
       if (!act) return;
-      if (!["develop", "history", "graph", "tpl-ask", "timeline", "img-zoom"].includes(act) && state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 고쳐 주세요"); return; }
+      if (!["develop", "history", "graph", "tpl-ask", "timeline", "img-zoom", "map"].includes(act) && state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 고쳐 주세요"); return; }
       if (act === "timeline") { closeSheet(); showInTimeline(e.id); return; }
+      if (act === "map") { closeSheet(); showOnMap(e.id); return; }
       if (act === "img-zoom") { ev.target.closest(".entry-img-btn").classList.toggle("full"); return; }
       if (act === "interview") { closeSheet(); startInterview(e.id); return; }
       if (act === "persp") { closeSheet(); startInNewThread(`${e.name}(${e.id})을(를) 이 세계의 서로 다른 세력이나 인물은 어떻게 알고 믿고 있는지 정해 줘. 누가 무엇을 숨기거나 왜곡하는지도. 정해지면 set_perspective로 기록해 줘. `); return; }
@@ -4051,6 +4183,8 @@ async function openWorld(id) {
   state.threads = (await idb.get("threads:" + id)) || [];
   state.manuscripts = (await idb.get("ms:" + id)) || [];
   state.images = (await idb.get("imgs:" + id)) || {};
+  state.maps = (await idb.get("maps:" + id)) || [];
+  state.mapId = null; state.mapSel = null; state.mapMode = null; state.treeRoot = null; state.lifeYear = null;
   state.codexType = "all";
   state.codexQuery = "";
   state.tlHidden.clear();
@@ -4103,12 +4237,13 @@ function openWorldForm(existing) {
         const id = w.id;
         await addTombstone("worlds", id);
         const threads = (await idb.get("threads:" + id)) || [];
-        await Promise.all([idb.del("entries:" + id), idb.del("log:" + id), idb.del("threads:" + id), idb.del("graph:" + id), idb.del("ms:" + id), idb.del("imgs:" + id), ...threads.map((t) => idb.del("conv:" + t.id))]);
+        const maps = (await idb.get("maps:" + id)) || [];
+        await Promise.all([idb.del("entries:" + id), idb.del("log:" + id), idb.del("threads:" + id), idb.del("graph:" + id), idb.del("ms:" + id), idb.del("imgs:" + id), idb.del("maps:" + id), ...maps.map((m) => idb.del("mapimg:" + m.img)), ...threads.map((t) => idb.del("conv:" + t.id))]);
         state.worlds = state.worlds.filter((x) => x.id !== id);
         await persist.worlds();
         closeSheet();
         if (state.worlds[0]) await openWorld(state.worlds[0].id);
-        else { state.worldId = null; state.entries = []; state.log = []; state.threads = []; state.manuscripts = []; state.images = {}; state.threadId = null; state.conv = { api: [], display: [] }; renderWorldName(); renderChat(); renderCodex(); }
+        else { state.worldId = null; state.entries = []; state.log = []; state.threads = []; state.manuscripts = []; state.images = {}; state.maps = []; state.threadId = null; state.conv = { api: [], display: [] }; renderWorldName(); renderChat(); renderCodex(); }
         toast("세계관을 지웠습니다");
       }
     };
@@ -4520,10 +4655,10 @@ let graphQueued = false;
 function queueGraphRender() {
   if (graphQueued) return;
   graphQueued = true;
-  requestAnimationFrame(() => { graphQueued = false; renderGraph(); });
+  requestAnimationFrame(() => { graphQueued = false; renderCurrentGraphMode(); });
 }
 async function renderGraph() {
-  if (state.view !== "graph") return;
+  if (state.view !== "graph" || state.gmode !== "graph") return;
   await loadGraphPositions();
   const hadLayout = graph.nodes.size > 0 || Object.keys(graph.pos).length > 0;
   buildGraphModel();
@@ -4543,6 +4678,8 @@ async function renderGraph() {
   saveGraphPositions();
 }
 function showInGraph(id) {
+  state.gmode = "graph";
+  LS.set("lk.gmode", "graph");
   graph.pendingSelect = id;
   graph.focusHops = 0;
   graph.linkFrom = null;
@@ -4601,6 +4738,727 @@ function openLinkForm(fromId, toId) {
       toast(added || rev ? "관계를 이었습니다" : "이미 있는 관계입니다");
     };
   });
+}
+
+/* ============================================================
+   12-6. 보기 모드: 관계도 · 계보 · 세력표 · 지도
+   ============================================================ */
+const GMODES = ["graph", "tree", "matrix", "map"];
+function setGraphMode(m) {
+  state.gmode = GMODES.includes(m) ? m : "graph";
+  LS.set("lk.gmode", state.gmode);
+  renderGraphModeChrome();
+  renderCurrentGraphMode();
+}
+function renderGraphModeChrome() {
+  if (!GMODES.includes(state.gmode)) state.gmode = "graph";
+  $$("#graphModes [data-gmode]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.gmode === state.gmode)));
+  $$("#view-graph .gm-graph").forEach((el) => (el.hidden = state.gmode !== "graph"));
+  $("#treePane").hidden = state.gmode !== "tree";
+  $("#matrixPane").hidden = state.gmode !== "matrix";
+  $("#mapPane").hidden = state.gmode !== "map";
+}
+function renderCurrentGraphMode() {
+  if (state.view !== "graph") return;
+  if (state.gmode === "tree") renderTree();
+  else if (state.gmode === "matrix") renderMatrix();
+  else if (state.gmode === "map") renderMap();
+  else renderGraph();
+}
+
+// 끌어서 이동, 두 손가락·휠로 확대. 누르기(움직이지 않고 뗀 것)는 onTap으로 넘긴다.
+function makePanZoom(stage, apply, { min = 0.2, max = 4, onTap } = {}) {
+  const v = { k: 1, x: 0, y: 0 };
+  const ptrs = new Map();
+  let start = null;
+  let pinch = null;
+  let moved = false;
+  let downTarget = null;
+  const set = (nv) => { Object.assign(v, nv); v.k = clamp(v.k, min, max); apply(v); };
+  const zoomAt = (cx, cy, f) => {
+    const r = stage.getBoundingClientRect();
+    const k = clamp(v.k * f, min, max);
+    const wx = (cx - r.left - v.x) / v.k;
+    const wy = (cy - r.top - v.y) / v.k;
+    set({ k, x: cx - r.left - wx * k, y: cy - r.top - wy * k });
+  };
+  stage.addEventListener("pointerdown", (e) => {
+    if (e.target.closest(".zoom-ctrl, .graph-card, .graph-hint, .graph-empty.interactive > *")) return;
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    stage.setPointerCapture(e.pointerId);
+    ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (ptrs.size === 2) {
+      const [a, b] = [...ptrs.values()];
+      pinch = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, mid: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }, v: { ...v } };
+      moved = true;
+      return;
+    }
+    moved = false;
+    downTarget = e.target;
+    start = { x: e.clientX, y: e.clientY, v: { ...v } };
+  });
+  stage.addEventListener("pointermove", (e) => {
+    if (!ptrs.has(e.pointerId)) return;
+    ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pinch && ptrs.size >= 2) {
+      const r = stage.getBoundingClientRect();
+      const [a, b] = [...ptrs.values()];
+      const d = Math.hypot(a.x - b.x, a.y - b.y) || 1;
+      const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+      const k = clamp(pinch.v.k * (d / pinch.d), min, max);
+      const wx = (pinch.mid.x - r.left - pinch.v.x) / pinch.v.k;
+      const wy = (pinch.mid.y - r.top - pinch.v.y) / pinch.v.k;
+      set({ k, x: mid.x - r.left - wx * k, y: mid.y - r.top - wy * k });
+      return;
+    }
+    if (!start) return;
+    const dx = e.clientX - start.x;
+    const dy = e.clientY - start.y;
+    if (!moved && Math.hypot(dx, dy) < 6) return;
+    moved = true;
+    set({ ...start.v, x: start.v.x + dx, y: start.v.y + dy });
+  });
+  const end = (e) => {
+    if (!ptrs.has(e.pointerId)) return;
+    ptrs.delete(e.pointerId);
+    if (pinch) {
+      if (ptrs.size === 1) { const p = [...ptrs.values()][0]; pinch = null; start = { x: p.x, y: p.y, v: { ...v } }; }
+      else if (!ptrs.size) { pinch = null; start = null; }
+      return;
+    }
+    if (ptrs.size) return;
+    if (e.type !== "pointercancel" && !moved && start && onTap) {
+      const r = stage.getBoundingClientRect();
+      onTap({ target: downTarget, wx: (e.clientX - r.left - v.x) / v.k, wy: (e.clientY - r.top - v.y) / v.k });
+    }
+    start = null;
+  };
+  stage.addEventListener("pointerup", end);
+  stage.addEventListener("pointercancel", end);
+  stage.addEventListener("wheel", (e) => { e.preventDefault(); zoomAt(e.clientX, e.clientY, Math.exp(-e.deltaY * 0.0015)); }, { passive: false });
+  // 키보드로 누른 단추(포인터 없이 생긴 click)도 누르기로 처리한다
+  stage.addEventListener("click", (e) => { if (e.detail === 0 && onTap && !e.target.closest(".zoom-ctrl, .graph-card, .graph-hint, .graph-empty")) onTap({ target: e.target, wx: NaN, wy: NaN }); });
+  stage.querySelector(".zoom-ctrl")?.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-pz]");
+    if (!b) return;
+    if (b.dataset.pz === "fit") api.onFit?.();
+    else api.zoomBy(b.dataset.pz === "in" ? 1.3 : 1 / 1.3);
+  });
+  const api = {
+    v,
+    set,
+    zoomBy(f) { const r = stage.getBoundingClientRect(); zoomAt(r.left + r.width / 2, r.top + r.height / 2, f); },
+    fit(b, pad = 24, maxK = 1.5) {
+      const r = stage.getBoundingClientRect();
+      if (!r.width || !r.height || !b.w || !b.h) return false;
+      const k = clamp(Math.min((r.width - pad * 2) / b.w, (r.height - pad * 2) / b.h, maxK), min, max);
+      set({ k, x: (r.width - b.w * k) / 2 - b.x * k, y: (r.height - b.h * k) / 2 - b.y * k });
+      return true;
+    },
+    center(wx, wy, k = v.k) { const r = stage.getBoundingClientRect(); set({ k, x: r.width / 2 - wx * k, y: r.height / 2 - wy * k }); },
+    onFit: null,
+  };
+  return api;
+}
+
+/* ---- 계보: 가계도·조직도 ----
+   관계 "A —이름→ B"는 'A의 ○○ = B'로 읽는다. 이름마다 위(부모·상위), 아래(자식·하위), 같은 줄(배우자·형제)을 정한다. */
+const TREE_ROLES = { up: "위 (부모·상위)", down: "아래 (자식·하위)", peer: "같은 줄 (배우자·형제)", none: "쓰지 않음" };
+function guessTreeRole(label) {
+  const l = String(label || "").replace(/\s/g, "");
+  if (/^(배우자|남편|아내|부인|부군|약혼자|정혼자|반려자?|형|오빠|누나|언니|동생|남동생|여동생|형제|자매|남매|쌍둥이|의형제|의자매)$/.test(l)) return "peer";
+  if (/(아버지|어머니|부모|부친|모친|양부|양모|계부|계모|할아버지|할머니|조부|조모|조상|선조|시조|소속|상관|상사|주군|군주|주인|스승|사부|상위|모체|본부|수장|두목|지도자|맹주|종주)/.test(l)) return "up";
+  if (/(아들|딸|자녀|자식|손자|손녀|후손|양자|양녀|제자|부하|휘하|구성원|단원|회원|하위|산하|지부|분파|신하|가신|종자|하인|소속원)/.test(l)) return "down";
+  return "none";
+}
+const treeRoleOf = (label) => currentWorld()?.treeRoles?.[label] || guessTreeRole(label);
+function treeEdges() {
+  const live = liveEntries();
+  const ids = new Set(live.map((e) => e.id));
+  const parentEdges = [];
+  const peerEdges = [];
+  const seen = new Set();
+  for (const a of live) for (const r of a.relations || []) {
+    if (!ids.has(r.to) || r.to === a.id) continue;
+    const role = treeRoleOf(r.label);
+    if (role === "up" || role === "down") {
+      const pe = role === "up" ? { p: r.to, c: a.id, label: r.label } : { p: a.id, c: r.to, label: r.label };
+      const k = `${pe.p}>${pe.c}`;
+      if (!seen.has(k) && !seen.has(`${pe.c}>${pe.p}`)) { seen.add(k); parentEdges.push(pe); }
+    } else if (role === "peer") {
+      const k = [a.id, r.to].sort().join("~");
+      if (!seen.has(k)) { seen.add(k); peerEdges.push({ a: a.id, b: r.to, label: r.label }); }
+    }
+  }
+  return { parentEdges, peerEdges };
+}
+function treeComponents({ parentEdges, peerEdges }) {
+  const adj = new Map();
+  const link = (a, b) => { if (!adj.has(a)) adj.set(a, new Set()); if (!adj.has(b)) adj.set(b, new Set()); adj.get(a).add(b); adj.get(b).add(a); };
+  for (const e of parentEdges) link(e.p, e.c);
+  for (const e of peerEdges) link(e.a, e.b);
+  const seen = new Set();
+  const comps = [];
+  for (const id of [...adj.keys()].sort()) {
+    if (seen.has(id)) continue;
+    const comp = [];
+    const q = [id];
+    seen.add(id);
+    while (q.length) { const x = q.shift(); comp.push(x); for (const y of adj.get(x)) if (!seen.has(y)) { seen.add(y); q.push(y); } }
+    comps.push(comp);
+  }
+  return comps.sort((a, b) => b.length - a.length);
+}
+const TREE_W = 132;
+const TREE_H = 54;
+const TREE_GAP = 26;
+const TREE_ROW = 112;
+function layoutTree(ids, edges, rootId) {
+  const set = new Set(ids);
+  const pe = edges.parentEdges.filter((e) => set.has(e.p) && set.has(e.c));
+  const pr = edges.peerEdges.filter((e) => set.has(e.a) && set.has(e.b));
+  const parents = new Map(ids.map((id) => [id, []]));
+  const children = new Map(ids.map((id) => [id, []]));
+  const peers = new Map(ids.map((id) => [id, []]));
+  for (const e of pe) { parents.get(e.c).push(e.p); children.get(e.p).push(e.c); }
+  for (const e of pr) { peers.get(e.a).push(e.b); peers.get(e.b).push(e.a); }
+  // 세대(층): 자식은 부모보다 아래, 같은 줄은 같은 층, 부모 없는 이는 자식 바로 위로 내린다. 값은 늘기만 해서 끝난다.
+  const N = ids.length + 1;
+  const level = new Map(ids.map((id) => [id, 0]));
+  for (let it = 0; it < N * 3; it++) {
+    let changed = false;
+    for (const e of pe) if (level.get(e.c) < level.get(e.p) + 1 && level.get(e.p) + 1 <= N) { level.set(e.c, level.get(e.p) + 1); changed = true; }
+    for (const e of pr) { const m = Math.max(level.get(e.a), level.get(e.b)); if (level.get(e.a) !== m || level.get(e.b) !== m) { level.set(e.a, m); level.set(e.b, m); changed = true; } }
+    for (const id of ids) {
+      if (parents.get(id).length || !children.get(id).length) continue;
+      const want = Math.min(...children.get(id).map((c) => level.get(c))) - 1;
+      if (want > level.get(id)) { level.set(id, want); changed = true; }
+    }
+    if (!changed) break;
+  }
+  const minL = Math.min(...level.values());
+  for (const id of ids) level.set(id, level.get(id) - minL);
+  const maxL = Math.max(...level.values());
+  // 처음 순서: 기준 항목에서 너비 우선
+  const order = new Map();
+  const q = [rootId && set.has(rootId) ? rootId : ids[0]];
+  const seen = new Set(q);
+  while (q.length) {
+    const x = q.shift();
+    order.set(x, order.size);
+    const next = [...peers.get(x), ...children.get(x), ...parents.get(x)].sort((a, b) => nameOf(a).localeCompare(nameOf(b), "ko"));
+    for (const y of next) if (!seen.has(y)) { seen.add(y); q.push(y); }
+  }
+  const rows = Array.from({ length: maxL + 1 }, (_, L) => ids.filter((id) => level.get(id) === L).sort((a, b) => order.get(a) - order.get(b)));
+  const pos = new Map();
+  const index = () => rows.forEach((r) => r.forEach((id, i) => pos.set(id, i)));
+  const keepPeersTogether = (row) => {
+    const out = [];
+    const placed = new Set();
+    for (const id of row) {
+      if (placed.has(id)) continue;
+      out.push(id); placed.add(id);
+      for (const p of peers.get(id)) if (!placed.has(p) && row.includes(p)) { out.push(p); placed.add(p); }
+    }
+    return out;
+  };
+  index();
+  const bary = (id, nbr) => { const xs = nbr.get(id).filter((n) => pos.has(n)).map((n) => pos.get(n)); return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : pos.get(id); };
+  for (let sweep = 0; sweep < 4; sweep++) {
+    for (let L = 1; L <= maxL; L++) { rows[L] = keepPeersTogether(rows[L].slice().sort((a, b) => bary(a, parents) - bary(b, parents))); index(); }
+    for (let L = maxL - 1; L >= 0; L--) { rows[L] = keepPeersTogether(rows[L].slice().sort((a, b) => bary(a, children) - bary(b, children))); index(); }
+  }
+  // 가로 위치: 이웃(부모·자식) 가운데로 끌어당기고, 겹치지 않게 밀어낸다
+  const X = new Map();
+  rows.forEach((r) => r.forEach((id, i) => X.set(id, i * (TREE_W + TREE_GAP))));
+  const step = TREE_W + TREE_GAP;
+  for (let it = 0; it < 24; it++) {
+    const Ls = it % 2 ? [...rows.keys()].reverse() : [...rows.keys()];
+    for (const L of Ls) {
+      const row = rows[L];
+      if (!row.length) continue;
+      const desired = row.map((id) => {
+        const nb = [...parents.get(id), ...children.get(id)];
+        return nb.length ? nb.reduce((a, n) => a + X.get(n), 0) / nb.length : X.get(id);
+      });
+      const xs = row.map((_, i) => desired[i]);
+      for (let i = 1; i < xs.length; i++) xs[i] = Math.max(xs[i], xs[i - 1] + step);
+      const shift = desired.reduce((a, d, i) => a + (d - xs[i]), 0) / xs.length;
+      row.forEach((id, i) => X.set(id, xs[i] + shift));
+    }
+  }
+  const minX = Math.min(...X.values());
+  const nodes = ids.map((id) => ({ id, x: X.get(id) - minX, y: level.get(id) * TREE_ROW, level: level.get(id) }));
+  return { nodes, pe, pr, parents, width: Math.max(...nodes.map((n) => n.x)) + TREE_W, height: maxL * TREE_ROW + TREE_H };
+}
+const treeView = { pz: null, fitKey: "" };
+function lifeYears(e) {
+  if (!e?.when) return "";
+  const cal = worldCalendar();
+  return e.when.end != null ? `${fmtYearNum(e.when.start)}~${fmtYearNum(e.when.end)}` : `${fmtYear(e.when.start, cal)}~`;
+}
+function renderTree() {
+  const tools = $("#treeTools");
+  const empty = $("#treeEmpty");
+  const vp = $("#treeVp");
+  const w = currentWorld();
+  if (!w) { tools.innerHTML = ""; vp.innerHTML = ""; empty.hidden = false; empty.innerHTML = "<div><strong>세계관이 없습니다</strong></div>"; return; }
+  const edges = treeEdges();
+  const comps = treeComponents(edges);
+  if (!comps.length) {
+    tools.innerHTML = `<span class="map-name">가계도·조직도</span><button class="btn btn-small" type="button" data-tree="roles">관계 해석</button>`;
+    vp.innerHTML = "";
+    empty.hidden = false;
+    empty.innerHTML = `<div><strong>계보로 볼 관계가 없습니다</strong>어머니, 아들, 배우자, 소속, 부하처럼 위아래가 있는 관계로 항목을 이으면 가계도·조직도가 그려집니다.<div class="row" style="justify-content:center;margin-top:12px"><button class="btn" type="button" data-tree="roles">관계 해석 정하기</button></div></div>`;
+    return;
+  }
+  empty.hidden = true;
+  let comp = comps.find((c) => c.includes(state.treeRoot));
+  if (!comp) { comp = comps[0]; state.treeRoot = null; }
+  const compLabel = (c) => {
+    const tops = c.filter((id) => !edges.parentEdges.some((e) => e.c === id && c.includes(e.p)));
+    const lead = (tops.length ? tops : c).map(nameOf).sort((a, b) => a.localeCompare(b, "ko"))[0];
+    return `${lead} 계보 · ${c.length}`;
+  };
+  tools.innerHTML = `${comps.length > 1 ? `<select id="treeRoot" aria-label="볼 계보">${comps.map((c) => `<option value="${c[0]}"${c === comp ? " selected" : ""}>${esc(compLabel(c))}</option>`).join("")}</select>` : `<span class="map-name">${esc(compLabel(comp))}</span>`}
+    <button class="btn btn-small" type="button" data-tree="roles">관계 해석</button>`;
+  const L = layoutTree(comp, edges, state.treeRoot || comp[0]);
+  const byId = new Map(L.nodes.map((n) => [n.id, n]));
+  const isPeer = (a, b) => L.pr.some((e) => (e.a === a && e.b === b) || (e.a === b && e.b === a));
+  let lines = "";
+  let labels = "";
+  // 같은 줄(배우자·형제) 선
+  for (const e of L.pr) {
+    const a = byId.get(e.a);
+    const b = byId.get(e.b);
+    if (a.level !== b.level) continue;
+    const [l, r] = a.x < b.x ? [a, b] : [b, a];
+    const y = l.y + TREE_H / 2;
+    lines += `<path class="t-peer" d="M${l.x + TREE_W},${y} H${r.x}"/>`;
+    if (r.x - l.x - TREE_W > 30) labels += `<text class="t-elabel" x="${(l.x + TREE_W + r.x) / 2}" y="${y - 6}">${esc(cut(e.label, 6))}</text>`;
+  }
+  // 부모→자식: 두 부모가 같은 줄이면 둘 사이에서 내려온다
+  const groups = new Map();
+  for (const n of L.nodes) {
+    const ps = L.parents.get(n.id).filter((p) => byId.has(p)).sort();
+    if (!ps.length) continue;
+    const couple = ps.length === 2 && isPeer(ps[0], ps[1]) && byId.get(ps[0]).level === byId.get(ps[1]).level;
+    const keys = couple ? [ps.join("+")] : ps;
+    for (const k of keys) { if (!groups.has(k)) groups.set(k, []); groups.get(k).push(n); }
+  }
+  for (const [k, kids] of groups) {
+    const ps = k.split("+").map((id) => byId.get(id));
+    const ox = ps.reduce((a, p) => a + p.x + TREE_W / 2, 0) / ps.length;
+    const oy = ps.length === 2 ? ps[0].y + TREE_H / 2 : ps[0].y + TREE_H;
+    for (const c of kids) {
+      const midY = c.y - 22;
+      lines += `<path class="t-edge" d="M${ox},${oy} V${midY} H${c.x + TREE_W / 2} V${c.y}"/>`;
+    }
+  }
+  const nodes = L.nodes.map((n) => {
+    const e = findEntry(n.id);
+    const sub = lifeYears(e) || typeInfo(e.type).label;
+    return `<g class="t-node${statusOf(e) === "draft" ? " draft" : ""}" data-id="${n.id}" transform="translate(${n.x},${n.y})" style="--tc:${typeColor(e.type)}" role="button" tabindex="0" aria-label="${esc(e.name)}">
+      <rect class="t-box" width="${TREE_W}" height="${TREE_H}" rx="10"/><rect class="t-bar" width="5" height="${TREE_H - 16}" x="0" y="8" rx="2"/>
+      <text class="t-name" x="14" y="23">${esc(cut(e.name, 9))}</text><text class="t-sub" x="14" y="41">${esc(cut(sub, 14))}</text></g>`;
+  }).join("");
+  vp.innerHTML = `<g class="t-lines">${lines}</g><g>${labels}</g><g>${nodes}</g>`;
+  const bounds = { x: 0, y: 0, w: L.width, h: L.height };
+  treeView.pz.onFit = () => treeView.pz.fit(bounds, 20, 1.2);
+  const key = `${comp.join(",")}|${L.width}x${L.height}`;
+  if (treeView.fitKey !== key) { treeView.fitKey = key; requestAnimationFrame(() => treeView.pz.fit(bounds, 20, 1.2)); }
+}
+function openTreeRolesSheet() {
+  const w = currentWorld();
+  if (!w) return;
+  const counts = new Map();
+  for (const e of liveEntries()) for (const r of e.relations || []) counts.set(r.label, (counts.get(r.label) || 0) + 1);
+  const labels = [...counts.keys()].sort((a, b) => counts.get(b) - counts.get(a) || a.localeCompare(b, "ko"));
+  openSheet(`<h2 class="sheet-title">관계 해석</h2>
+    <p class="meta" style="margin:0 0 10px">관계는 'A의 ○○ = B'로 읽습니다. 예: 서리 —어머니→ 하람이면 하람은 서리의 어머니이므로 <b>위</b>입니다. 서리 —제자→ 나래이면 나래는 <b>아래</b>입니다.</p>
+    ${labels.length ? `<form class="form" id="rolesForm">${labels.map((l) => `<label class="role-row"><span>${esc(l)} <small>${counts.get(l)}</small></span><select data-label="${esc(l)}">${Object.entries(TREE_ROLES).map(([k, t]) => `<option value="${k}"${treeRoleOf(l) === k ? " selected" : ""}>${t}${guessTreeRole(l) === k ? " · 자동" : ""}</option>`).join("")}</select></label>`).join("")}
+      <div class="sheet-actions"><button class="btn btn-primary" type="submit">저장</button><button class="btn" type="button" data-act="roles-reset">모두 자동으로</button></div></form>`
+      : `<p class="meta">아직 관계가 없습니다.</p>`}`, (root) => {
+    const save = async (roles) => {
+      w.treeRoles = roles;
+      w.updatedAt = Date.now();
+      await persist.worlds();
+      closeSheet();
+      treeView.fitKey = "";
+      renderTree();
+      toast("저장했습니다");
+    };
+    root.onsubmit = (ev) => {
+      ev.preventDefault();
+      const roles = {};
+      for (const sel of $$("select[data-label]", root)) if (sel.value !== guessTreeRole(sel.dataset.label)) roles[sel.dataset.label] = sel.value;
+      save(roles);
+    };
+    root.onclick = (ev) => { if (ev.target.closest('[data-act="roles-reset"]')) save({}); };
+  });
+}
+/* ---- 세력표: 세력끼리 서로를 어떻게 보는지 ---- */
+const MATRIX_GUESS = /세력|국가|나라|조직|단체|가문|왕국|제국|공화국|교단|길드|종족|부족|연합/;
+const REL_BAD = /적대|적국|전쟁|원수|숙적|경쟁|대립|반목|침략|증오|불신|긴장|분쟁|라이벌|견제|억압|박해|배신|표적|복수/;
+const REL_GOOD = /동맹|우호|협력|연합|후원|보호|교역|무역|조약|친선|지지|원조|혼인|우방|공존|화친|형제/;
+function relTone(labels) {
+  if (!labels.length) return "none";
+  const t = labels.join(" ");
+  return REL_BAD.test(t) ? "bad" : REL_GOOD.test(t) ? "good" : "mid";
+}
+function matrixTypes() {
+  const w = currentWorld();
+  const keys = typeKeys();
+  if (Array.isArray(w?.matrixTypes)) return keys.filter((k) => w.matrixTypes.includes(k));
+  return keys.filter((k) => k === "faction" || MATRIX_GUESS.test(typeInfo(k).label));
+}
+const relLabels = (a, b) => (a.relations || []).filter((r) => r.to === b.id).map((r) => r.label);
+function renderMatrix() {
+  const root = $("#matrix");
+  const w = currentWorld();
+  if (!w) { root.innerHTML = `<div class="empty-state"><h3>세계관이 없습니다</h3></div>`; return; }
+  const types = matrixTypes();
+  const counts = {};
+  for (const e of liveEntries()) counts[e.type] = (counts[e.type] || 0) + 1;
+  const list = liveEntries().filter((e) => types.includes(e.type)).sort((a, b) => a.id.localeCompare(b.id));
+  const chips = `<div class="type-chips" role="toolbar" aria-label="표에 넣을 분류">${typeKeys().filter((k) => counts[k]).map((k) => `<button class="type-chip" type="button" data-mtype="${k}" aria-pressed="${types.includes(k)}"><span class="tdot" style="background:${typeColor(k)}"></span>${esc(typeInfo(k).label)}<span class="n">${counts[k]}</span></button>`).join("")}</div>`;
+  if (list.length < 2) {
+    root.innerHTML = `${chips}<div class="empty-state"><h3>세력이 둘 이상 있어야 합니다</h3><p>위에서 표에 넣을 분류(세력, 국가, 가문 등)를 고르세요. 항목이 둘 이상이면 서로를 어떻게 보는지 표로 보여 줍니다.</p></div>`;
+    return;
+  }
+  const undecided = [];
+  const head = `<tr><th class="mx-corner" scope="col"><span>행에게 열은</span></th>${list.map((b) => `<th class="mx-col" scope="col" style="--tc:${typeColor(b.type)}"><button type="button" data-ref="${b.id}" title="${esc(b.name)}">${esc(b.name.replace(/\s+/g, "").length > 7 ? b.name.replace(/\s+/g, "").slice(0, 6) + "…" : b.name.replace(/\s+/g, ""))}</button></th>`).join("")}</tr>`;
+  const body = list.map((a) => `<tr><th class="mx-row" scope="row" style="--tc:${typeColor(a.type)}"><button type="button" data-ref="${a.id}">${esc(a.name)}</button></th>${list.map((b) => {
+    if (a === b) return `<td class="mx-self" aria-hidden="true"></td>`;
+    const ab = relLabels(a, b);
+    const ba = relLabels(b, a);
+    if (!ab.length && !ba.length && a.id < b.id) undecided.push([a, b]);
+    const tone = relTone(ab.length ? ab : ba);
+    const text = ab.length ? ab.join(", ") : ba.length ? `↩ ${ba.join(", ")}` : "?";
+    return `<td class="mx-cell tone-${tone}${ab.length ? "" : " weak"}"><button type="button" data-mx="${a.id}|${b.id}" aria-label="${esc(a.name)}에게 ${esc(b.name)}은(는) ${esc(ab.join(", ") || "미정")}">${esc(cut(text, 18))}</button></td>`;
+  }).join("")}</tr>`).join("");
+  const pairs = list.length * (list.length - 1) / 2;
+  root.innerHTML = `${chips}
+    <p class="meta" style="margin:10px 0 8px">가로줄의 세력이 세로줄의 세력을 어떻게 보는지입니다. 칸을 누르면 양쪽 관계를 고칠 수 있습니다.</p>
+    <div class="mx-wrap"><table class="mx"><thead>${head}</thead><tbody>${body}</tbody></table></div>
+    <div class="mx-legend"><span class="lg tone-good">우호</span><span class="lg tone-bad">적대·경쟁</span><span class="lg tone-mid">기타</span><span class="lg tone-none">?</span><span>↩ 상대 쪽에서만 정함</span></div>
+    ${undecided.length ? `<div class="tl-missing"><strong>관계가 정해지지 않은 쌍 ${undecided.length} / ${pairs}</strong><p class="meta" style="margin:4px 0 8px">${esc(undecided.slice(0, 8).map(([a, b]) => `${a.name}–${b.name}`).join(", "))}${undecided.length > 8 ? " …" : ""}</p><button class="btn btn-small" type="button" data-mx-ask>Claude와 빈 칸 정하기</button></div>` : `<p class="meta" style="margin-top:14px">모든 쌍의 관계가 정해져 있습니다.</p>`}`;
+  renderMatrix.undecided = undecided;
+}
+function openMatrixCell(aId, bId) {
+  const a = findEntry(aId);
+  const b = findEntry(bId);
+  if (!a || !b) return;
+  const ab = relLabels(a, b).join(", ");
+  const ba = relLabels(b, a).join(", ");
+  openSheet(`<h2 class="sheet-title">${esc(a.name)} ↔ ${esc(b.name)}</h2>
+    <form class="form" id="mxForm">
+      <label>${esc(a.name)}에게 ${esc(b.name)}은(는) <small>쉼표로 여러 개</small><input id="mx-ab" value="${esc(ab)}" placeholder="예: 숙적, 교역 상대"></label>
+      <label>${esc(b.name)}에게 ${esc(a.name)}은(는)<input id="mx-ba" value="${esc(ba)}" placeholder="예: 다음 표적"></label>
+      <div class="sheet-actions"><button class="btn btn-primary" type="submit">저장</button><button class="btn" type="button" data-act="mx-chat">대화로 정하기</button></div>
+    </form>`, (root) => {
+    root.onclick = (ev) => {
+      if (!ev.target.closest('[data-act="mx-chat"]')) return;
+      closeSheet();
+      switchView("chat");
+      fillInput(`${a.name}(${a.id})와 ${b.name}(${b.id})는 서로를 어떻게 볼까? 두 세력의 이해관계, 지난 역사, 지금의 긴장을 따져 같이 정해 보자. 정해지면 set_relation으로 양쪽 관계를 저장해 줘. `);
+    };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      if (state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 고쳐 주세요"); return; }
+      const apply = (x, y, text, old) => {
+        const labels = splitList(text);
+        if (labels.join(", ") === old) return;
+        const rest = (x.relations || []).filter((r) => r.to !== y.id);
+        updateEntry(x, { relations: [...rest, ...labels.map((label) => ({ to: y.id, label }))] }, "user", `관계 편집(세력표): ${y.name}`);
+      };
+      apply(a, b, $("#mx-ab", root).value, ab);
+      apply(b, a, $("#mx-ba", root).value, ba);
+      await persist.world();
+      closeSheet();
+      renderCodex();
+      toast("저장했습니다");
+    };
+  });
+}
+function bindMatrix() {
+  $("#matrixPane").addEventListener("click", async (e) => {
+    const chip = e.target.closest("[data-mtype]");
+    if (chip) {
+      const w = currentWorld();
+      const cur = new Set(matrixTypes());
+      if (cur.has(chip.dataset.mtype)) cur.delete(chip.dataset.mtype); else cur.add(chip.dataset.mtype);
+      w.matrixTypes = [...cur];
+      w.updatedAt = Date.now();
+      await persist.worlds();
+      renderMatrix();
+      return;
+    }
+    const cell = e.target.closest("[data-mx]");
+    if (cell) { const [a, b] = cell.dataset.mx.split("|"); openMatrixCell(a, b); return; }
+    const ref = e.target.closest("[data-ref]");
+    if (ref) { openEntry(ref.dataset.ref); return; }
+    if (e.target.closest("[data-mx-ask]")) {
+      const pairs = (renderMatrix.undecided || []).slice(0, 12).map(([a, b]) => `${a.name}(${a.id})–${b.name}(${b.id})`);
+      switchView("chat");
+      fillInput(`세력표에서 아직 관계가 정해지지 않은 쌍이 있어: ${pairs.join(", ")}. 각 쌍이 서로를 어떻게 보는지(동맹, 경쟁, 무관심, 숨은 거래 등) 이유와 함께 제안해 줘. 내가 고르면 set_relation으로 양쪽 관계를 저장해 줘. `);
+    }
+  });
+}
+/* ---- 지도: 그림을 올리고 항목을 핀으로 꽂는다 ----
+   지도 정보(이름, 크기, 핀)는 maps:<세계관>에, 그림은 mapimg:<그림 id>에 따로 둔다(핀만 바뀌면 그림을 다시 올리지 않게). */
+const mapView = { pz: null, fitKey: "", pendingCenter: null };
+const MAP_EDGE = 2048;
+const currentMap = () => state.maps.find((m) => m.id === state.mapId) || state.maps[0] || null;
+async function mapImage(m) {
+  if (!m) return "";
+  if (state.mapImgs[m.img] === undefined) state.mapImgs[m.img] = (await idb.get("mapimg:" + m.img)) || "";
+  return state.mapImgs[m.img];
+}
+const pinDir = (x, y) => { const v = y < 0.34 ? "북" : y > 0.66 ? "남" : ""; const h = x < 0.34 ? "서" : x > 0.66 ? "동" : ""; return v || h ? `${v}${h}쪽` : "가운데"; };
+function mapPinsText(m, limit = 40) {
+  return m.pins.map((p) => { const e = findEntry(p.ref); return e && !e.deleted ? `${e.name}(${e.id}) ${pinDir(p.x, p.y)}` : null; }).filter(Boolean).slice(0, limit).join(", ");
+}
+async function saveMaps(m) { if (m) m.at = Date.now(); await persist.maps(); }
+async function renderMap() {
+  const w = currentWorld();
+  const m = currentMap();
+  state.mapId = m?.id || null;
+  const tools = $("#mapTools");
+  const empty = $("#mapEmpty");
+  const vp = $("#mapVp");
+  if (!w || !m) {
+    tools.innerHTML = w ? `<span class="map-name">지도</span>` : "";
+    vp.hidden = true;
+    $("#mapHint").hidden = true;
+    $("#mapCard").hidden = true;
+    empty.hidden = false;
+    empty.innerHTML = w ? `<div><strong>지도가 없습니다</strong>그려 둔 지도나 참고 그림을 올리면, 장소와 세력을 핀으로 꽂아 둘 수 있습니다.<div class="row" style="justify-content:center;margin-top:12px"><button class="btn btn-primary" type="button" data-map="upload">지도 올리기</button></div></div>` : "<div><strong>세계관이 없습니다</strong></div>";
+    return;
+  }
+  tools.innerHTML = `${state.maps.length > 1 ? `<select id="mapSelect" aria-label="지도 고르기">${state.maps.map((x) => `<option value="${x.id}"${x.id === m.id ? " selected" : ""}>${esc(x.name)}</option>`).join("")}</select>` : `<span class="map-name">${esc(m.name)}</span>`}
+    <button class="btn btn-small${state.mapMode?.type === "add" ? " btn-primary" : ""}" type="button" data-map="add">핀 추가</button>
+    <button class="btn btn-small" type="button" data-map="chat">대화로</button>
+    <button class="btn btn-small btn-ghost" type="button" data-map="manage">관리</button>`;
+  empty.hidden = true;
+  vp.hidden = false;
+  const src = await mapImage(m);
+  const img = $("#mapImg");
+  if (img.dataset.img !== m.img) { img.src = src; img.dataset.img = m.img; }
+  vp.style.width = `${m.w}px`;
+  vp.style.height = `${m.h}px`;
+  renderPins(m);
+  renderMapChrome(m);
+  const bounds = { x: 0, y: 0, w: m.w, h: m.h };
+  mapView.pz.onFit = () => mapView.pz.fit(bounds, 8, 4);
+  const key = `${m.id}|${m.img}`;
+  if (mapView.pendingCenter) {
+    const c = mapView.pendingCenter;
+    mapView.pendingCenter = null;
+    mapView.fitKey = key;
+    requestAnimationFrame(() => { mapView.pz.fit(bounds, 8, 4); mapView.pz.center(c.x * m.w, c.y * m.h, Math.max(mapView.pz.v.k * 2.5, 0.5)); });
+  } else if (mapView.fitKey !== key) { mapView.fitKey = key; requestAnimationFrame(() => mapView.pz.fit(bounds, 8, 4)); }
+}
+function renderPins(m) {
+  $("#mapPins").innerHTML = m.pins.map((p) => {
+    const e = findEntry(p.ref);
+    if (!e || e.deleted) return "";
+    return `<button type="button" class="map-pin${state.mapSel === e.id ? " sel" : ""}${statusOf(e) === "discarded" ? " discarded" : ""}" data-pin="${e.id}" style="left:${(p.x * m.w).toFixed(1)}px;top:${(p.y * m.h).toFixed(1)}px;--tc:${typeColor(e.type)}" aria-label="${esc(e.name)}"><span class="pin-dot"></span><span class="pin-label">${esc(e.name)}</span></button>`;
+  }).join("");
+}
+function renderMapChrome(m) {
+  const hint = $("#mapHint");
+  const card = $("#mapCard");
+  if (state.mapMode?.type === "add") { hint.hidden = false; hint.innerHTML = `<span>핀을 꽂을 자리를 누르세요</span><button class="btn btn-small" type="button" data-map="cancel">취소</button>`; }
+  else if (state.mapMode?.type === "move") { hint.hidden = false; hint.innerHTML = `<span><b>${esc(nameOf(state.mapMode.ref))}</b>의 새 자리를 누르세요</span><button class="btn btn-small" type="button" data-map="cancel">취소</button>`; }
+  else if (!m.pins.length) { hint.hidden = false; hint.innerHTML = `<span>'핀 추가'를 누르고 지도에서 자리를 골라 장소를 꽂아 보세요.</span>`; }
+  else hint.hidden = true;
+  const e = !state.mapMode && state.mapSel && m.pins.some((p) => p.ref === state.mapSel) ? findEntry(state.mapSel) : null;
+  if (e) {
+    card.hidden = false;
+    card.innerHTML = `<div class="entry-head" style="--tc:${typeColor(e.type)}"><span class="catno">${e.id}</span><span>${esc(typeInfo(e.type).label)}</span>${statusBadge(e)}</div>
+      <strong class="gc-name">${esc(e.name)}</strong>
+      <p class="gc-sum">${esc(e.summary || "요약 없음")}</p>
+      <div class="row"><button class="btn btn-small btn-primary" type="button" data-map="open">자세히</button><button class="btn btn-small" type="button" data-map="move">옮기기</button><button class="btn btn-small" type="button" data-map="unpin">핀 빼기</button></div>`;
+  } else card.hidden = true;
+}
+async function onMapTap({ target, wx, wy }) {
+  const m = currentMap();
+  if (!m) return;
+  const pin = target?.closest?.(".map-pin");
+  const inside = wx >= 0 && wy >= 0 && wx <= m.w && wy <= m.h;
+  if (state.mapMode?.type === "move" || state.mapMode?.type === "add") {
+    if (!inside) return;
+    const x = clamp(wx / m.w, 0, 1);
+    const y = clamp(wy / m.h, 0, 1);
+    const mode = state.mapMode;
+    state.mapMode = null;
+    if (mode.type === "move") {
+      const p = m.pins.find((q) => q.ref === mode.ref);
+      if (p) { p.x = x; p.y = y; }
+      await saveMaps(m);
+      state.mapSel = mode.ref;
+      renderMap();
+      toast("옮겼습니다");
+    } else { renderMap(); openPinPicker(m, x, y); }
+    return;
+  }
+  if (pin) { state.mapSel = pin.dataset.pin; renderPins(m); renderMapChrome(m); return; }
+  if (state.mapSel) { state.mapSel = null; renderPins(m); renderMapChrome(m); }
+}
+function openPinPicker(m, x, y) {
+  const pinned = new Set(m.pins.map((p) => p.ref));
+  const placeLike = (e) => e.type === "place" || /장소|지역|국가|도시|지형/.test(typeInfo(e.type).label);
+  const list = liveEntries().filter((e) => !pinned.has(e.id)).sort((a, b) => (placeLike(b) - placeLike(a)) || a.id.localeCompare(b.id));
+  openSheet(`<h2 class="sheet-title">무엇을 꽂을까요?</h2>
+    <p class="meta" style="margin:0 0 8px">지도의 ${pinDir(x, y)}에 꽂습니다. 목록에 없으면 설정집에서 먼저 항목을 만드세요.</p>
+    <input id="pinSearch" type="search" placeholder="항목 찾기" aria-label="항목 찾기" class="sheet-search">
+    <div class="entry-list" id="pinList" style="margin-top:10px"></div>`, (root) => {
+    const draw = () => {
+      const q = $("#pinSearch", root).value.trim().toLowerCase();
+      const shown = list.filter((e) => !q || `${e.id} ${e.name} ${(e.aliases || []).join(" ")}`.toLowerCase().includes(q));
+      $("#pinList", root).innerHTML = shown.length ? shown.slice(0, 80).map(entryCard).join("") : `<p class="meta">꽂을 항목이 없습니다.</p>`;
+    };
+    $("#pinSearch", root).oninput = draw;
+    draw();
+    root.onclick = async (ev) => {
+      const r = ev.target.closest("[data-ref]");
+      if (!r) return;
+      m.pins.push({ ref: r.dataset.ref, x, y });
+      state.mapSel = r.dataset.ref;
+      await saveMaps(m);
+      closeSheet();
+      renderMap();
+      toast(`${nameOf(r.dataset.ref)}을(를) 꽂았습니다`);
+    };
+  });
+}
+async function onMapFile(file) {
+  if (!/^image\//.test(file.type || "") && !/\.(png|jpe?g|gif|webp|heic|avif)$/i.test(file.name)) { toast("그림 파일만 올릴 수 있습니다"); return; }
+  toast("지도를 올리는 중…");
+  let loaded;
+  try { loaded = await loadImage(file); } catch (err) { toast(err.message); return; }
+  const { img, url } = loaded;
+  try {
+    const data = await blobToDataURL(await drawScaled(img, MAP_EDGE, "image/jpeg", 0.85));
+    const scale = Math.min(1, MAP_EDGE / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.max(1, Math.round(img.naturalWidth * scale));
+    const h = Math.max(1, Math.round(img.naturalHeight * scale));
+    const imgId = uid();
+    await idb.set("mapimg:" + imgId, data);
+    state.mapImgs[imgId] = data;
+    const target = state.maps.find((x) => x.id === mapView.replaceId);
+    mapView.replaceId = null;
+    if (target) {
+      const old = target.img;
+      Object.assign(target, { img: imgId, w, h });
+      await idb.del("mapimg:" + old);
+      delete state.mapImgs[old];
+      state.mapId = target.id;
+    } else {
+      const m = { id: uid(), name: state.maps.length ? `지도 ${state.maps.length + 1}` : "세계 지도", img: imgId, w, h, pins: [] };
+      state.maps.push(m);
+      state.mapId = m.id;
+    }
+    await saveMaps(currentMap());
+    mapView.fitKey = "";
+    renderMap();
+    toast(target ? "지도 그림을 바꿨습니다(핀은 그대로)" : "지도를 올렸습니다");
+  } catch (err) {
+    toast(err.message || "지도를 올리지 못했습니다");
+  } finally { URL.revokeObjectURL(url); }
+}
+function openMapManage(m) {
+  openSheet(`<h2 class="sheet-title">지도 관리</h2>
+    <form class="form" id="mapForm"><label>이름<input id="map-name" value="${esc(m.name)}" required></label>
+      <p class="meta" style="margin:0">핀 ${m.pins.length}개 · 그림 ${m.w}×${m.h}</p>
+      <div class="sheet-actions"><button class="btn btn-primary" type="submit">이름 저장</button></div></form>
+    <div class="sheet-actions">
+      <button class="btn" type="button" data-mm="replace">그림 바꾸기</button>
+      <button class="btn" type="button" data-mm="new">새 지도 올리기</button>
+      <button class="btn btn-danger" type="button" data-mm="delete">이 지도 지우기</button>
+    </div>`, (root) => {
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      const name = $("#map-name", root).value.trim();
+      if (!name) return;
+      m.name = name;
+      await saveMaps(m);
+      closeSheet(); renderMap(); toast("저장했습니다");
+    };
+    root.onclick = async (ev) => {
+      const a = ev.target.closest("[data-mm]")?.dataset.mm;
+      if (a === "replace" || a === "new") { mapView.replaceId = a === "replace" ? m.id : null; closeSheet(); $("#mapFile").click(); }
+      else if (a === "delete") {
+        if (!(await confirmBox(`'${m.name}' 지도와 핀 ${m.pins.length}개를 지울까요? 설정집 항목은 그대로입니다.`, "지우기", true))) return;
+        state.maps = state.maps.filter((x) => x !== m);
+        state.mapId = null; state.mapSel = null;
+        await idb.del("mapimg:" + m.img);
+        delete state.mapImgs[m.img];
+        await addTombstone("maps", `${state.worldId}:${m.id}`);
+        await persist.maps();
+        closeSheet(); renderMap(); toast("지웠습니다");
+      }
+    };
+  });
+}
+async function mapChat(m) {
+  const data = await mapImage(m);
+  const pins = mapPinsText(m);
+  switchView("chat");
+  fillInput(`첨부한 그림은 이 세계의 지도 '${m.name}'이야.${pins ? ` 핀: ${pins}.` : ""} 지도를 보고 지형·기후·교통로·국경이 지금 설정과 맞는지 살펴보고, 설정에 넣을 만한 지리 정보를 제안해 줘. `);
+  try {
+    const blob = await (await fetch(data)).blob();
+    await addFiles([new File([blob], `${m.name}.jpg`, { type: "image/jpeg" })]);
+  } catch { toast("지도를 첨부하지 못했습니다"); }
+}
+function showOnMap(id) {
+  const m = state.maps.find((x) => x.pins.some((p) => p.ref === id));
+  if (!m) return;
+  const p = m.pins.find((q) => q.ref === id);
+  state.mapId = m.id;
+  state.mapSel = id;
+  state.mapMode = null;
+  mapView.pendingCenter = { x: p.x, y: p.y };
+  state.gmode = "map";
+  LS.set("lk.gmode", "map");
+  switchView("graph");
+}
+function bindMap() {
+  const vp = $("#mapVp");
+  mapView.pz = makePanZoom($("#mapStage"), (v) => { vp.style.transform = `translate(${v.x}px,${v.y}px) scale(${v.k})`; vp.style.setProperty("--ik", String(1 / v.k)); }, { min: 0.03, max: 8, onTap: onMapTap });
+  $("#mapFile").onchange = (e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) onMapFile(f); };
+  $("#mapPane").addEventListener("change", (e) => { if (e.target.id === "mapSelect") { state.mapId = e.target.value; state.mapSel = null; state.mapMode = null; renderMap(); } });
+  $("#mapPane").addEventListener("click", async (e) => {
+    const a = e.target.closest("[data-map]")?.dataset.map;
+    if (!a) return;
+    const m = currentMap();
+    if (a === "upload") { mapView.replaceId = null; $("#mapFile").click(); return; }
+    if (!m) return;
+    if (a === "add") { state.mapMode = state.mapMode?.type === "add" ? null : { type: "add" }; state.mapSel = null; renderMap(); }
+    else if (a === "cancel") { state.mapMode = null; renderMap(); }
+    else if (a === "manage") openMapManage(m);
+    else if (a === "chat") mapChat(m);
+    else if (a === "open" && state.mapSel) openEntry(state.mapSel);
+    else if (a === "move" && state.mapSel) { state.mapMode = { type: "move", ref: state.mapSel }; renderMap(); }
+    else if (a === "unpin" && state.mapSel) {
+      m.pins = m.pins.filter((p) => p.ref !== state.mapSel);
+      state.mapSel = null;
+      await saveMaps(m);
+      renderMap();
+      toast("핀을 뺐습니다");
+    }
+  });
+}
+function bindTree() {
+  const vp = $("#treeVp");
+  treeView.pz = makePanZoom($("#treeStage"), (v) => vp.setAttribute("transform", `translate(${v.x},${v.y}) scale(${v.k})`), {
+    min: 0.15, max: 3,
+    onTap: ({ target }) => { const n = target?.closest?.(".t-node"); if (n) openEntry(n.dataset.id); },
+  });
+  $("#treeStage").addEventListener("keydown", (e) => { const n = e.target.closest?.(".t-node"); if (n && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openEntry(n.dataset.id); } });
+  $("#treePane").addEventListener("change", (e) => { if (e.target.id === "treeRoot") { state.treeRoot = e.target.value; renderTree(); } });
+  $("#treePane").addEventListener("click", (e) => { if (e.target.closest('[data-tree="roles"]')) openTreeRolesSheet(); });
 }
 
 function bindGraph() {
@@ -5195,8 +6053,10 @@ function renderTimeline() {
     return;
   }
   if (document.activeElement?.id === "tlSearch" && $("#tlResults")) { renderTimelineResults(); return; }
+  const modeTabs = `<div class="seg-tabs" id="tlModes" role="tablist"><button type="button" role="tab" data-tlmode="list" aria-selected="${state.tlMode !== "life"}">연표</button><button type="button" role="tab" data-tlmode="life" aria-selected="${state.tlMode === "life"}">생애 겹쳐 보기</button></div>`;
+  if (state.tlMode === "life") { renderLifespans(root, modeTabs); return; }
   const cal = worldCalendar();
-  root.innerHTML = `
+  root.innerHTML = `${modeTabs}
     <div class="tl-head">
       <div><span class="eyebrow">달력</span>
         <p class="tl-cal">${esc(fmtYear(cal.now ?? 1, cal))} 형식${cal.now !== null ? ` · 지금 ${esc(fmtYear(cal.now, cal))}` : ""}${cal.eras.length ? ` · 시대 ${cal.eras.length}개` : ""}</p></div>
@@ -5288,6 +6148,8 @@ function showInTimeline(id) {
   state.tlHidden.delete(e.type);
   state.tlQuery = "";
   state.tlHighlight = id;
+  state.tlMode = "list";
+  LS.set("lk.tlmode", "list");
   switchView("timeline");
 }
 function eraRow(name = "", start = "", end = "") {
@@ -5361,8 +6223,133 @@ function openCalendarSheet() {
     };
   });
 }
+/* ---- 생애 겹쳐 보기: 인물의 생몰년을 가로 막대로 겹쳐 그해 누가 살아 있었는지 본다 ---- */
+function niceStep(raw) {
+  const p = 10 ** Math.floor(Math.log10(Math.max(raw, 1e-9)));
+  for (const m of [1, 2, 5, 10]) if (m * p >= raw) return Math.max(1, m * p);
+  return Math.max(1, 10 * p);
+}
+function lifeData() {
+  const all = timelineEntries();
+  const rows = all.filter((e) => isCharacterType(e.type) || (state.lifeAll && e.when.end != null && !isEventType(e.type)));
+  const rowSet = new Set(rows);
+  const events = all.filter((e) => !rowSet.has(e) && isEventType(e.type));
+  return { rows, events };
+}
+function lifeAgeText(e, year) {
+  const n = Math.trunc(year - e.when.start);
+  if (!isCharacterType(e.type)) return `${n}년째`;
+  if (n === 0) return "태어난 해";
+  return `${n}세${e.when.end != null && Math.trunc(e.when.end) === Math.trunc(year) ? " · 죽은 해" : ""}`;
+}
+function renderLifespans(root, tabs) {
+  const cal = worldCalendar();
+  const { rows, events } = lifeData();
+  const noYears = liveEntries().filter((e) => isCharacterType(e.type) && !e.when);
+  const controls = `<div class="life-tools"><button class="type-chip" type="button" data-life="all" aria-pressed="${state.lifeAll}">세력·기간 항목도</button><span class="sp"></span><button class="icon-btn" type="button" data-life="out" aria-label="축소">−</button><button class="icon-btn" type="button" data-life="in" aria-label="확대">+</button></div>`;
+  const missing = noYears.length ? `<details class="tl-missing"><summary>생몰년이 없는 인물 ${noYears.length}명</summary><div class="entry-list">${noYears.map((e) => `<button class="entry-card" type="button" data-tl-set="${e.id}" style="--tc:${typeColor(e.type)}"><span class="catno">${e.id}</span><span class="ename">${esc(e.name)}</span><span class="esum">눌러서 태어난 해 넣기</span></button>`).join("")}</div></details>` : "";
+  if (!rows.length) {
+    root.innerHTML = `${tabs}${controls}<div class="empty-state"><h3>생몰년이 있는 인물이 없습니다</h3><p>인물 편집의 '연표' 칸에 태어난 해(시작)와 죽은 해(끝)를 넣으면, 여기서 생애를 겹쳐 보고 그해 누가 몇 살이었는지 볼 수 있습니다.</p></div>${missing}`;
+    return;
+  }
+  const prevScroll = $(".life-scroll", root)?.scrollLeft;
+  const known = [...rows, ...events].flatMap((e) => [e.when.start, e.when.end ?? e.when.start]);
+  if (cal.now != null) known.push(cal.now);
+  const lo = Math.min(...known);
+  const hi = Math.max(...known);
+  const pad = Math.max(1, Math.round((hi - lo) * 0.03));
+  const y0 = lo - pad;
+  const y1 = hi + pad;
+  const openEnd = (e) => e.when.end ?? Math.max(e.when.start, cal.now ?? hi);
+  const avail = Math.max(280, (root.clientWidth || 360) - 34);
+  const ppy = (avail / (y1 - y0)) * state.lifeZoom;
+  const W = Math.round((y1 - y0) * ppy);
+  const X = (yr) => (yr - y0) * ppy;
+  const AXIS = 28;
+  const EVL = events.length ? 24 : 0;
+  const ROW = 30;
+  const TOP = AXIS + EVL + 4;
+  const H = TOP + rows.length * ROW + 8;
+  const year = state.lifeYear ?? cal.now;
+  const alive = (e) => year != null && e.when.start <= year && year <= openEnd(e);
+  let svg = "";
+  // 시대 띠
+  cal.eras.slice().sort((a, b) => a.start - b.start).forEach((era, i) => {
+    const a = Math.max(era.start, y0);
+    const b = Math.min(Number.isFinite(era.end) ? era.end : y1, y1);
+    if (b <= a) return;
+    svg += `<rect class="life-era${i % 2 ? " alt" : ""}" x="${X(a)}" y="0" width="${X(b) - X(a)}" height="${H}"/><text class="life-era-t" x="${X(a) + 4}" y="${H - 6}">${esc(cut(era.name, 12))}</text>`;
+  });
+  // 눈금
+  const step = niceStep(64 / ppy);
+  for (let t = Math.ceil(y0 / step) * step; t <= y1; t += step) svg += `<line class="life-tick" x1="${X(t)}" x2="${X(t)}" y1="${AXIS - 6}" y2="${H}"/><text class="life-tick-t" x="${X(t)}" y="${AXIS - 10}">${fmtYearNum(t)}</text>`;
+  if (cal.now != null) svg += `<line class="life-now" x1="${X(cal.now)}" x2="${X(cal.now)}" y1="${AXIS - 6}" y2="${H}"/>`;
+  // 사건
+  for (const e of events) {
+    const x = X(e.when.start);
+    const cy = AXIS + 11;
+    svg += e.when.end != null
+      ? `<rect class="life-ev span" data-ref="${e.id}" x="${x}" y="${cy - 4}" width="${Math.max(4, X(e.when.end) - x)}" height="8" rx="4"><title>${esc(e.name)} · ${esc(rangeText(e.when, cal))}</title></rect>`
+      : `<path class="life-ev" data-ref="${e.id}" d="M${x},${cy - 6} L${x + 6},${cy} L${x},${cy + 6} L${x - 6},${cy} Z"><title>${esc(e.name)} · ${esc(rangeText(e.when, cal))}</title></path>`;
+  }
+  // 생애 막대
+  rows.forEach((e, i) => {
+    const y = TOP + i * ROW;
+    const x1 = X(e.when.start);
+    const w = Math.max(4, X(openEnd(e)) - x1);
+    const tw = e.name.length * 12.5 + 14;
+    const inside = w > tw;
+    const dim = year != null && !alive(e);
+    svg += `<g class="life-row${dim ? " dim" : ""}${e.when.end == null ? " open" : ""}" style="--tc:${typeColor(e.type)}">
+      <rect class="life-bar" x="${x1}" y="${y + 5}" width="${w}" height="20" rx="10"${e.when.end == null ? ' mask="url(#lifeFade)"' : ""}/>
+      <text class="life-name${inside ? " in" : ""}" x="${inside ? x1 + 9 : x1 + w + 5}" y="${y + 19.5}">${esc(e.name)}</text></g>`;
+  });
+  if (year != null) svg += `<line class="life-cursor" x1="${X(year)}" x2="${X(year)}" y1="${AXIS - 6}" y2="${H}"/>`;
+  const era = year != null && cal.eras.length ? eraOf(year, cal) : null;
+  const aliveRows = year != null ? rows.filter(alive) : [];
+  const yearEvents = year != null ? events.filter((e) => e.when.start <= year && year <= (e.when.end ?? e.when.start)) : [];
+  const panel = year == null
+    ? `<p class="meta life-hint">막대 위를 누르면 그해에 살아 있던 인물과 나이를 보여 줍니다.</p>`
+    : `<div class="life-panel">
+        <div class="life-year"><strong>${esc(fmtYear(year, cal))}</strong>${era ? `<span class="meta">${esc(era.name)}</span>` : ""}${year === cal.now ? `<span class="pill">지금</span>` : ""}<span class="sp"></span><button class="btn btn-ghost btn-small" type="button" data-life="prev" aria-label="한 해 앞">◀</button><button class="btn btn-ghost btn-small" type="button" data-life="next" aria-label="한 해 뒤">▶</button></div>
+        <p class="meta" style="margin:6px 0">살아 있는 ${state.lifeAll ? "인물·세력" : "인물"} ${aliveRows.length}</p>
+        <div class="life-chips">${aliveRows.map((e) => `<button class="life-chip" type="button" data-ref="${e.id}" style="--tc:${typeColor(e.type)}"><b>${esc(e.name)}</b> ${esc(lifeAgeText(e, year))}</button>`).join("") || `<span class="meta">없음</span>`}</div>
+        ${yearEvents.length ? `<p class="meta" style="margin:8px 0 6px">이 해의 사건</p><div class="life-chips">${yearEvents.map((e) => `<button class="life-chip ev" type="button" data-ref="${e.id}"><b>${esc(e.name)}</b></button>`).join("")}</div>` : ""}
+      </div>`;
+  root.innerHTML = `${tabs}${controls}
+    <div class="life-scroll"><svg class="life-svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" data-y0="${y0}" data-ppy="${ppy}" role="img" aria-label="인물 생애 막대">
+      <defs><linearGradient id="lifeFadeG" x1="0" x2="1" y1="0" y2="0"><stop offset="0.75" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0.15"/></linearGradient><mask id="lifeFade" maskContentUnits="objectBoundingBox"><rect width="1" height="1" fill="url(#lifeFadeG)"/></mask></defs>
+      ${svg}</svg></div>
+    ${panel}${missing}`;
+  const sc = $(".life-scroll", root);
+  if (state.lifeRecenter && year != null) { sc.scrollLeft = X(year) - sc.clientWidth / 2; state.lifeRecenter = false; }
+  else if (prevScroll != null) sc.scrollLeft = prevScroll;
+}
+
 function bindTimeline() {
   $("#view-timeline").addEventListener("click", (e) => {
+    const mode = e.target.closest("[data-tlmode]");
+    if (mode) { state.tlMode = mode.dataset.tlmode; LS.set("lk.tlmode", state.tlMode); state.lifeRecenter = true; renderTimeline(); return; }
+    const lifeAct = e.target.closest("[data-life]")?.dataset.life;
+    if (lifeAct) {
+      const cal = worldCalendar();
+      const cur = state.lifeYear ?? cal.now;
+      if (lifeAct === "all") state.lifeAll = !state.lifeAll;
+      else if (lifeAct === "in") { state.lifeZoom = Math.min(40, state.lifeZoom * 1.6); state.lifeRecenter = true; }
+      else if (lifeAct === "out") { state.lifeZoom = Math.max(1, state.lifeZoom / 1.6); state.lifeRecenter = true; }
+      else if ((lifeAct === "prev" || lifeAct === "next") && cur != null) state.lifeYear = cur + (lifeAct === "next" ? 1 : -1);
+      renderTimeline();
+      return;
+    }
+    const lifeRef = e.target.closest(".life-panel [data-ref], .life-svg [data-ref]");
+    if (lifeRef) { openEntry(lifeRef.dataset.ref); return; }
+    const lifeSvg = e.target.closest(".life-svg");
+    if (lifeSvg) {
+      const r = lifeSvg.getBoundingClientRect();
+      state.lifeYear = Math.round(Number(lifeSvg.dataset.y0) + (e.clientX - r.left) / Number(lifeSvg.dataset.ppy));
+      renderTimeline();
+      return;
+    }
     const chip = e.target.closest("[data-tlt]");
     if (chip) {
       const k = chip.dataset.tlt;
@@ -5430,11 +6417,12 @@ function bindTheme() {
    - lorekeeper/w/<세계관>.json : 항목, 변경 기록, 대화 목록, 관계도 위치
    - lorekeeper/c/<대화>.json  : 대화 기록
    - lorekeeper/i/<세계관>.json : 항목 그림(있을 때만)
+   - lorekeeper/m/<그림>.json  : 지도 그림(지도 정보와 핀은 세계관 파일에)
    한 번 동기화할 때 바뀐 파일만 모아 커밋 하나로 올리고, 그 사이 다른 기기가
    먼저 올렸으면(fast-forward 실패) 다시 받아 합친 뒤 올린다.
    ============================================================ */
 const SYNC_DIR = "lorekeeper";
-const SYNC_KEY_RE = /^(worlds$|entries:|log:|threads:|graph:|conv:|ms:|imgs:|sync:tombstones$)/;
+const SYNC_KEY_RE = /^(worlds$|entries:|log:|threads:|graph:|conv:|ms:|imgs:|maps:|mapimg:|sync:tombstones$)/;
 const syncCfg = Object.assign(
   { enabled: false, repo: "", token: "", device: "", auto: true, lastSyncAt: 0, lastCommit: "", shas: {}, lastError: "" },
   LS.get("lk.sync", {}),
@@ -5547,7 +6535,7 @@ async function remoteHead() {
 async function flushLocal() {
   if (!state.worldId) return;
   syncState.applying = true;
-  try { await Promise.all([persist.world(), persist.threads(), persist.worlds(), persist.conv(), persist.images()]); }
+  try { await Promise.all([persist.world(), persist.threads(), persist.worlds(), persist.conv(), persist.images(), persist.maps()]); }
   finally { syncState.applying = false; }
 }
 async function loadLocalSnapshot() {
@@ -5555,8 +6543,11 @@ async function loadLocalSnapshot() {
   const tomb = (await idb.get("sync:tombstones")) || { worlds: {}, threads: {}, entries: {} };
   const data = {};
   const convs = {};
+  const mapImgs = {};
   for (const w of worlds) {
     const threads = (await idb.get("threads:" + w.id)) || [];
+    const maps = (await idb.get("maps:" + w.id)) || [];
+    for (const m of maps) { const d = await idb.get("mapimg:" + m.img); if (d) mapImgs[m.img] = d; }
     data[w.id] = {
       entries: (await idb.get("entries:" + w.id)) || [],
       log: (await idb.get("log:" + w.id)) || [],
@@ -5564,15 +6555,17 @@ async function loadLocalSnapshot() {
       graph: (await idb.get("graph:" + w.id)) || null,
       ms: (await idb.get("ms:" + w.id)) || [],
       images: (await idb.get("imgs:" + w.id)) || {},
+      maps,
     };
     for (const t of threads) convs[t.id] = (await idb.get("conv:" + t.id)) || null;
   }
-  return { worlds, tomb: { worlds: {}, threads: {}, entries: {}, ...tomb }, data, convs };
+  return { worlds, tomb: { worlds: {}, threads: {}, entries: {}, ...tomb }, data, convs, mapImgs };
 }
 const worldPath = (id) => `${SYNC_DIR}/w/${id}.json`;
 const convPath = (id) => `${SYNC_DIR}/c/${id}.json`;
 const imgPath = (id) => `${SYNC_DIR}/i/${id}.json`;
-const emptyWorldData = () => ({ entries: [], log: [], threads: [], graph: null, ms: [], images: {} });
+const mapImgPath = (img) => `${SYNC_DIR}/m/${img}.json`;
+const emptyWorldData = () => ({ entries: [], log: [], threads: [], graph: null, ms: [], images: {}, maps: [] });
 const INDEX_PATH = `${SYNC_DIR}/index.json`;
 function serializeSnapshot(snap) {
   const files = {};
@@ -5580,8 +6573,9 @@ function serializeSnapshot(snap) {
   for (const w of snap.worlds) {
     const d = snap.data[w.id] || emptyWorldData();
     // 원고가 없으면 예전 형식 그대로 둔다(바뀐 것 없이 다시 올리지 않게)
-    files[worldPath(w.id)] = JSON.stringify({ entries: d.entries, log: d.log, threads: d.threads, graph: d.graph, ...(d.ms?.length ? { ms: d.ms } : {}) });
+    files[worldPath(w.id)] = JSON.stringify({ entries: d.entries, log: d.log, threads: d.threads, graph: d.graph, ...(d.ms?.length ? { ms: d.ms } : {}), ...(d.maps?.length ? { maps: d.maps } : {}) });
     if (d.images && Object.keys(d.images).length) files[imgPath(w.id)] = JSON.stringify(d.images);
+    for (const m of d.maps || []) if (snap.mapImgs?.[m.img]) files[mapImgPath(m.img)] = JSON.stringify({ data: snap.mapImgs[m.img] });
     for (const t of d.threads) if (snap.convs[t.id]) files[convPath(t.id)] = JSON.stringify(snap.convs[t.id]);
   }
   return files;
@@ -5590,7 +6584,7 @@ function serializeSnapshot(snap) {
 // ---- 합치기 ----
 function mergeTombstones(a, b) {
   const out = { worlds: {}, threads: {}, entries: {} };
-  for (const src of [a, b]) for (const k of ["worlds", "threads", "entries", "manuscripts"]) for (const [id, at] of Object.entries(src?.[k] || {})) { out[k] = out[k] || {}; out[k][id] = Math.max(out[k][id] || 0, at); }
+  for (const src of [a, b]) for (const k of ["worlds", "threads", "entries", "manuscripts", "maps"]) for (const [id, at] of Object.entries(src?.[k] || {})) { out[k] = out[k] || {}; out[k][id] = Math.max(out[k][id] || 0, at); }
   const cutoff = Date.now() - 90 * 24 * 3600 * 1000; // 90일 지난 삭제 기록은 정리
   for (const k of Object.keys(out)) for (const [id, at] of Object.entries(out[k])) if (at < cutoff) delete out[k][id];
   return out;
@@ -5669,7 +6663,13 @@ function mergeWorldData(local, remote) {
     if (!l || (r.updatedAt || 0) > (l.updatedAt || 0)) ms.set(r.id, r);
   }
   const images = moveImages(local.images || {}, renames);
-  return { entries: [...out.values()], log, threads: [...threads.values()], graph: graphData, ms: [...ms.values()], images, renames };
+  // 지도: 같은 id면 나중에 고친 쪽. 번호가 옮겨진 항목의 핀도 따라간다
+  const maps = new Map((local.maps || []).map((m) => [m.id, renames && Object.keys(renames).length ? { ...m, pins: m.pins.map((p) => (renames[p.ref] ? { ...p, ref: renames[p.ref] } : p)) } : m]));
+  for (const r of remote.maps || []) {
+    const l = maps.get(r.id);
+    if (!l || (r.at || 0) > (l.at || 0)) maps.set(r.id, r);
+  }
+  return { entries: [...out.values()], log, threads: [...threads.values()], graph: graphData, ms: [...ms.values()], images, maps: [...maps.values()], renames };
 }
 function renameRefs(m, renames) {
   return renames && m.refs?.some((r) => renames[r]) ? { ...m, refs: m.refs.map((r) => renames[r] || r) } : m;
@@ -5709,6 +6709,7 @@ function applyTombstones(snap) {
     const ids = new Set(d.entries.map((e) => e.id));
     for (const e of d.entries) if (e.relations?.some((r) => !ids.has(r.to))) e.relations = e.relations.filter((r) => ids.has(r.to));
     d.ms = (d.ms || []).filter((m) => { const at = t.manuscripts?.[`${w.id}:${m.id}`]; return !(at && at >= (m.updatedAt || 0)); });
+    d.maps = (d.maps || []).filter((m) => { const at = t.maps?.[`${w.id}:${m.id}`]; return !(at && at >= (m.at || 0)); });
     // 완전히 지운 항목의 그림, 빼기만 표시된 오래된 그림 기록은 정리한다
     const imgs = {};
     for (const [id, v] of Object.entries(d.images || {})) if (ids.has(id) && (v?.data || (v?.at || 0) > Date.now() - 90 * 24 * 3600 * 1000)) imgs[id] = v;
@@ -5738,7 +6739,7 @@ async function syncOnce() {
   const got = {};
   for (const p of toFetch) got[p] = JSON.parse(b64ToText((await gh("GET", `/git/blobs/${remote.files[p]}`)).content));
 
-  const merged = { worlds: local.worlds, tomb: local.tomb, data: local.data, convs: local.convs };
+  const merged = { worlds: local.worlds, tomb: local.tomb, data: local.data, convs: local.convs, mapImgs: { ...local.mapImgs } };
   const changedConvs = new Set();
   if (got[INDEX_PATH]) {
     merged.worlds = mergeWorldList(local.worlds, got[INDEX_PATH].worlds || []);
@@ -5747,7 +6748,7 @@ async function syncOnce() {
   for (const w of merged.worlds) {
     const r = got[worldPath(w.id)];
     const ri = got[imgPath(w.id)];
-    if (!merged.data[w.id]) merged.data[w.id] = r ? { entries: r.entries || [], log: r.log || [], threads: r.threads || [], graph: r.graph || null, ms: r.ms || [], images: ri || {} } : { ...emptyWorldData(), images: ri || {} };
+    if (!merged.data[w.id]) merged.data[w.id] = r ? { entries: r.entries || [], log: r.log || [], threads: r.threads || [], graph: r.graph || null, ms: r.ms || [], images: ri || {}, maps: r.maps || [] } : { ...emptyWorldData(), images: ri || {} };
     else {
       if (r) merged.data[w.id] = mergeWorldData(merged.data[w.id], r);
       if (ri) merged.data[w.id].images = mergeImages(merged.data[w.id].images, ri);
@@ -5772,6 +6773,13 @@ async function syncOnce() {
     }
   }
   applyTombstones(merged);
+  // 지도 그림: 이 기기에 없는 그림은 받아 온다(그림 파일은 한 번 올리면 바뀌지 않는다)
+  for (const w of merged.worlds) for (const m of merged.data[w.id]?.maps || []) {
+    if (merged.mapImgs[m.img]) continue;
+    const p = mapImgPath(m.img);
+    if (got[p]) merged.mapImgs[m.img] = got[p].data;
+    else if (remote.files[p]) merged.mapImgs[m.img] = JSON.parse(b64ToText((await gh("GET", `/git/blobs/${remote.files[p]}`)).content)).data;
+  }
 
   // 합친 결과를 이 기기에 저장
   const after = serializeSnapshot(merged);
@@ -5783,12 +6791,15 @@ async function syncOnce() {
     for (const w of merged.worlds) {
       if (after[worldPath(w.id)] !== before[worldPath(w.id)]) {
         const d = merged.data[w.id];
-        await Promise.all([idb.set("entries:" + w.id, d.entries), idb.set("log:" + w.id, d.log), idb.set("threads:" + w.id, d.threads), d.graph ? idb.set("graph:" + w.id, d.graph) : idb.del("graph:" + w.id), idb.set("ms:" + w.id, d.ms || [])]);
+        await Promise.all([idb.set("entries:" + w.id, d.entries), idb.set("log:" + w.id, d.log), idb.set("threads:" + w.id, d.threads), d.graph ? idb.set("graph:" + w.id, d.graph) : idb.del("graph:" + w.id), idb.set("ms:" + w.id, d.ms || []), idb.set("maps:" + w.id, d.maps || [])]);
         localChanged = true;
       }
       if (after[imgPath(w.id)] !== before[imgPath(w.id)]) { await idb.set("imgs:" + w.id, merged.data[w.id].images || {}); localChanged = true; }
     }
-    for (const w of local.worlds) if (!liveWorlds.has(w.id)) { await Promise.all(["entries:", "log:", "threads:", "graph:", "ms:", "imgs:"].map((k) => idb.del(k + w.id))); localChanged = true; }
+    const usedImgs = new Set(merged.worlds.flatMap((w) => (merged.data[w.id]?.maps || []).map((m) => m.img)));
+    for (const [img, d] of Object.entries(merged.mapImgs)) if (usedImgs.has(img) && !local.mapImgs[img] && d) { await idb.set("mapimg:" + img, d); localChanged = true; }
+    for (const img of Object.keys(local.mapImgs)) if (!usedImgs.has(img)) { await idb.del("mapimg:" + img); delete state.mapImgs[img]; }
+    for (const w of local.worlds) if (!liveWorlds.has(w.id)) { await Promise.all(["entries:", "log:", "threads:", "graph:", "ms:", "imgs:", "maps:"].map((k) => idb.del(k + w.id))); localChanged = true; }
     const liveThreads = new Set(merged.worlds.flatMap((w) => merged.data[w.id].threads.map((t) => t.id)));
     for (const id of Object.keys(merged.convs)) {
       if (!liveThreads.has(id)) { if (local.convs[id] !== undefined) { await idb.del("conv:" + id); localChanged = true; } continue; }
@@ -5802,7 +6813,8 @@ async function syncOnce() {
   const finalShas = {};
   for (const [p, text] of Object.entries(after)) finalShas[p] = await gitBlobSha(text);
   const uploads = Object.keys(after).filter((p) => remote.files[p] !== finalShas[p]);
-  const deletions = Object.keys(remote.files).filter((p) => !(p in after));
+  const keepMapImgs = new Set(merged.worlds.flatMap((w) => (merged.data[w.id]?.maps || []).map((m) => mapImgPath(m.img))));
+  const deletions = Object.keys(remote.files).filter((p) => !(p in after) && !keepMapImgs.has(p));
   let head = remote.head;
   if (uploads.length || deletions.length) {
     const items = [];
@@ -5830,7 +6842,7 @@ async function reloadAfterSync(changedConvs) {
   state.worlds = (await idb.get("worlds")) || [];
   resetGraphCache();
   if (!state.worlds.length) {
-    state.worldId = null; state.entries = []; state.log = []; state.threads = []; state.manuscripts = []; state.images = {}; state.threadId = null; state.conv = { api: [], display: [] };
+    state.worldId = null; state.entries = []; state.log = []; state.threads = []; state.manuscripts = []; state.images = {}; state.maps = []; state.threadId = null; state.conv = { api: [], display: [] };
     renderWorldName(); renderChat(); renderCodex();
     return;
   }
@@ -5840,6 +6852,7 @@ async function reloadAfterSync(changedConvs) {
   state.threads = (await idb.get("threads:" + state.worldId)) || [];
   state.manuscripts = (await idb.get("ms:" + state.worldId)) || [];
   state.images = (await idb.get("imgs:" + state.worldId)) || {};
+  state.maps = (await idb.get("maps:" + state.worldId)) || [];
   if (state.threadId && !state.threads.some((t) => t.id === state.threadId)) { state.threadId = null; state.conv = { api: [], display: [] }; }
   else if (state.threadId && changedConvs.has(state.threadId)) state.conv = (await idb.get("conv:" + state.threadId)) || { api: [], display: [] };
   renderWorldName();
@@ -6145,7 +7158,7 @@ function download(filename, text, type) {
   setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
 async function exportAll() {
-  if (state.worldId) await Promise.all([persist.world(), persist.threads(), persist.conv(), persist.worlds(), persist.images()]);
+  if (state.worldId) await Promise.all([persist.world(), persist.threads(), persist.conv(), persist.worlds(), persist.images(), persist.maps()]);
   const data = { app: "lorekeeper", version: 1, exportedAt: new Date().toISOString(), worlds: [] };
   for (const w of state.worlds) {
     const threads = (await idb.get("threads:" + w.id)) || [];
@@ -6158,6 +7171,8 @@ async function exportAll() {
       graph: (await idb.get("graph:" + w.id)) || null,
       manuscripts: (await idb.get("ms:" + w.id)) || [],
       images: (await idb.get("imgs:" + w.id)) || {},
+      maps: (await idb.get("maps:" + w.id)) || [],
+      mapImages: Object.fromEntries(await Promise.all(((await idb.get("maps:" + w.id)) || []).map(async (m) => [m.img, (await idb.get("mapimg:" + m.img)) || ""]))),
       threads,
       convs,
     });
@@ -6183,6 +7198,8 @@ async function importBackup(file) {
       x.graph ? idb.set("graph:" + id, x.graph) : idb.del("graph:" + id),
       idb.set("ms:" + id, x.manuscripts || []),
       idb.set("imgs:" + id, x.images || {}),
+      idb.set("maps:" + id, x.maps || []),
+      ...Object.entries(x.mapImages || {}).filter(([, v]) => v).map(([k, v]) => idb.set("mapimg:" + k, v)),
       idb.set("threads:" + id, x.threads || []),
       ...Object.entries(x.convs || {}).filter(([, v]) => v).map(([tid, v]) => idb.set("conv:" + tid, v)),
     ]);
@@ -6368,6 +7385,10 @@ async function init() {
   bindGlobal();
   bindCodexTabs();
   bindGraph();
+  bindTree();
+  bindMatrix();
+  bindMap();
+  $("#graphModes").addEventListener("click", (e) => { const b = e.target.closest("[data-gmode]"); if (b) setGraphMode(b.dataset.gmode); });
   bindTimeline();
   bindTheme();
   bindSync();
