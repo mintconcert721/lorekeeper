@@ -939,6 +939,21 @@ main { min-height: 0; min-width: 0; position: relative; }
 .seal-깨어남 { background: color-mix(in srgb, var(--danger) 22%, var(--surface)); }
 .seal-파괴됨, .seal-잃어버림 { text-decoration: line-through; }
 .owner-top { grid-template-columns: minmax(0, 1fr) 58px 58px auto; }
+
+/* 데이터 지키기 */
+.data-banner { position: absolute; z-index: 30; top: 8px; left: 0; right: 0; margin: 0 var(--gutter-r) 0 var(--gutter-l); background: var(--danger-soft); flex-wrap: wrap; box-shadow: var(--shadow); }
+.data-banner > span { flex: 1 1 200px; }
+.hist-list li { border-bottom: 1px solid var(--line); }
+.hist-item { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 10px; width: 100%; text-align: left; border: 0; background: none; padding: 8px 4px; color: var(--ink); }
+.hist-item.sel { background: var(--accent-soft); border-radius: 10px; }
+.hist-date { font: 600 13px var(--font-mono); }
+.hist-msg { font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hist-meta { grid-column: 1 / -1; font-size: 12px; color: var(--muted); }
+.hist-meta.empty { color: var(--danger); font-weight: 700; }
+.hist-detail { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--accent); border-radius: 12px; background: var(--surface); }
+.hist-detail p { margin: 0 0 6px; }
+.orphan { border: 1px solid var(--accent); border-radius: 12px; padding: 8px 12px; margin-bottom: 8px; background: var(--surface); }
+.orphan p { margin: 2px 0; }
 </style>
 </head>
 <body>
@@ -954,6 +969,7 @@ main { min-height: 0; min-width: 0; position: relative; }
   </header>
 
   <main>
+    <div id="dataBanner" class="banner data-banner" role="alert" hidden></div>
     <section id="view-chat" class="view" aria-label="대화">
       <div class="thread-bar">
         <button id="threadsBtn" class="btn btn-ghost btn-small" type="button">대화 목록</button>
@@ -1982,6 +1998,7 @@ const idb = (() => {
     get: (k) => run("readonly", (s) => s.get(k), () => mem.get(k)),
     set: (k, v) => run("readwrite", (s) => s.put(v, k), () => { mem.set(k, v); }).then((r) => { noteLocalChange(k); return r; }),
     del: (k) => run("readwrite", (s) => s.delete(k), () => { mem.delete(k); }).then((r) => { noteLocalChange(k); return r; }),
+    keys: () => run("readonly", (s) => s.getAllKeys(), () => [...mem.keys()]),
     get broken() { return broken; },
   };
 })();
@@ -8714,6 +8731,7 @@ async function gh(method, path, body) {
 }
 function describeSyncError(err) {
   if (err?.status === 0) return "네트워크에 연결할 수 없습니다.";
+  if (err?.status === "shrink") return `안전을 위해 동기화를 멈췄습니다(${err.message}). 데이터는 바꾸지 않았습니다. 설정의 '기록에서 되살리기'로 확인해 주세요.`;
   if (err?.status === 401) return "토큰이 올바르지 않거나 만료되었습니다. 새 토큰을 넣어 주세요.";
   if (err?.status === 403) return /rate limit/i.test(err.message) ? "GitHub 요청 한도에 걸렸습니다. 잠시 후 다시 시도합니다." : "토큰에 이 저장소의 Contents 읽기·쓰기 권한이 없습니다.";
   if (err?.status === 404) return "저장소를 찾을 수 없습니다. 저장소 이름과, 토큰이 그 저장소에 접근할 수 있는지 확인하세요.";
@@ -8918,6 +8936,27 @@ function mergeImages(local = {}, remote = {}) {
   for (const [id, v] of Object.entries(remote)) if (!out[id] || (v?.at || 0) > (out[id].at || 0)) out[id] = v;
   return out;
 }
+// 안전장치: 삭제 기록(tombstone) 없이 세계관이나 항목이 사라지는 합치기는 하지 않는다
+function syncShrinkProblems(local, before, got, merged, after) {
+  const out = [];
+  const tomb = merged.tomb || {};
+  const ids = (list) => new Set((list || []).map((x) => x.id));
+  const hadWorlds = new Set([...ids(local.worlds), ...ids(got[INDEX_PATH]?.worlds)]);
+  const nowWorlds = ids(merged.worlds);
+  const lostWorlds = [...hadWorlds].filter((id) => !nowWorlds.has(id) && !tomb.worlds?.[id]);
+  if (lostWorlds.length) out.push(`세계관 ${lostWorlds.length}개가 사라지려 했습니다`);
+  const parse = (t) => { try { return JSON.parse(t); } catch { return null; } };
+  const paths = new Set([...Object.keys(before), ...Object.keys(got)].filter((p) => p.startsWith(`${SYNC_DIR}/w/`)));
+  for (const p of paths) {
+    const wid = p.slice(`${SYNC_DIR}/w/`.length, -".json".length);
+    if (tomb.worlds?.[wid] || !nowWorlds.has(wid)) continue;
+    const had = new Set([...((parse(before[p] || "null")?.entries) || []).map((e) => e.id), ...((got[p]?.entries) || []).map((e) => e.id)]);
+    const now = new Set(((parse(after[p] || "null")?.entries) || []).map((e) => e.id));
+    const lost = [...had].filter((id) => !now.has(id) && !tomb.entries?.[`${wid}:${id}`]);
+    if (lost.length >= 3 && lost.length > had.size * 0.2) out.push(`항목 ${lost.length}개가 사라지려 했습니다`);
+  }
+  return out;
+}
 const isPrefix = (a, b) => a.length <= b.length && JSON.stringify(a) === JSON.stringify(b.slice(0, a.length));
 function mergeConv(local, remote) {
   if (!local) return { conv: remote };
@@ -8964,11 +9003,11 @@ async function syncOnce() {
   const local = await loadLocalSnapshot();
   const before = serializeSnapshot(local);
 
-  // 지난 동기화 뒤 원격에서 바뀐 파일만 받는다
-  const changed = Object.keys(remote.files).filter((p) => remote.files[p] !== syncCfg.shas[p]);
+  // 원격 파일 중 이 기기에 똑같은 내용이 없는 것은 모두 받는다.
+  // (지난 동기화 기록만 믿으면, 브라우저가 이 기기의 저장소를 비웠을 때 빈 상태를 '최신'으로 여겨 원격까지 지운다)
   const localShas = {};
-  for (const p of changed) if (before[p] !== undefined) localShas[p] = await gitBlobSha(before[p]);
-  const toFetch = changed.filter((p) => remote.files[p] !== localShas[p]);
+  for (const [p, text] of Object.entries(before)) localShas[p] = await gitBlobSha(text);
+  const toFetch = Object.keys(remote.files).filter((p) => remote.files[p] !== localShas[p]);
   const got = {};
   for (const p of toFetch) got[p] = JSON.parse(b64ToText((await gh("GET", `/git/blobs/${remote.files[p]}`)).content));
 
@@ -9016,6 +9055,12 @@ async function syncOnce() {
 
   // 합친 결과를 이 기기에 저장
   const after = serializeSnapshot(merged);
+  const shrink = syncShrinkProblems(local, before, got, merged, after);
+  if (shrink.length) {
+    const err = new Error(shrink.join(" / "));
+    err.status = "shrink";
+    throw err;
+  }
   syncState.applying = true;
   let localChanged = false;
   try {
@@ -9203,6 +9248,7 @@ function syncCardHTML() {
       <p>켜 두면 앱을 열 때, 고친 뒤 잠시 후, 화면으로 돌아올 때 자동으로 맞춥니다.</p>
       <div class="row">
         <button class="btn btn-primary" type="button" data-act="sync-now">지금 동기화</button>
+        <button class="btn" type="button" data-act="sync-history">기록에서 되살리기</button>
         <button class="btn btn-danger" type="button" data-act="sync-off">연결 끊기</button>
       </div>
       <p>토큰은 이 기기의 브라우저에만 저장됩니다. API 키와 모델·테마 설정은 기기마다 따로입니다.</p>
@@ -9306,6 +9352,11 @@ async function renderSettings() {
       <div class="row">
         <button class="btn" type="button" data-act="export-md"${currentWorld() ? "" : " disabled"}>현재 세계관을 문서(.md)로</button>
       </div>
+      <p>마지막 백업 파일: ${LS.get("lk.lastBackup", 0) ? esc(fmtDate(LS.get("lk.lastBackup", 0))) : "없음"}</p>
+      <div class="row">
+        <button class="btn" type="button" data-act="storage-check">저장소 점검·되살리기</button>
+        ${syncCfg.enabled ? `<button class="btn" type="button" data-act="sync-history">기록에서 되살리기</button>` : ""}
+      </div>
     </section>
 
     <section class="card">
@@ -9346,6 +9397,10 @@ async function renderSettings() {
     else if (act === "sync-now") {
       const ok = await runSync("manual");
       toast(ok ? "동기화했습니다" : syncCfg.lastError || "잠시 후 다시 시도합니다");
+    } else if (act === "sync-history") {
+      openSyncHistory();
+    } else if (act === "storage-check") {
+      openStorageCheck();
     } else if (act === "sync-off") {
       if (!(await confirmBox("동기화 연결을 끊을까요? 이 기기와 저장소의 데이터는 그대로 남고, 이 기기에 저장된 토큰만 지웁니다.", "연결 끊기", true))) return;
       Object.assign(syncCfg, { enabled: false, token: "", lastError: "" });
@@ -9411,6 +9466,7 @@ async function exportAll() {
     });
   }
   download(`lorekeeper-backup-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(data), "application/json");
+  LS.set("lk.lastBackup", Date.now());
   toast("백업 파일을 만들었습니다");
 }
 async function importBackup(file) {
@@ -9420,6 +9476,10 @@ async function importBackup(file) {
   const clash = data.worlds.filter((x) => state.worlds.some((w) => w.id === x.world?.id));
   const msg = `세계관 ${data.worlds.length}개를 불러옵니다.${clash.length ? `\n이미 있는 ${clash.length}개는 백업 내용으로 덮어씁니다.` : ""}`;
   if (!(await confirmBox(msg, "불러오기"))) return;
+  await applyBackupData(data);
+  toast("백업을 불러왔습니다");
+}
+async function applyBackupData(data) {
   for (const x of data.worlds) {
     if (!x.world?.id) continue;
     const id = x.world.id;
@@ -9439,9 +9499,158 @@ async function importBackup(file) {
   }
   await persist.worlds();
   resetGraphCache(); // 불러온 관계도 위치를 다시 읽게 한다
-  await openWorld(state.worldId && state.worlds.some((w) => w.id === state.worldId) ? state.worldId : state.worlds[0].id);
+  if (state.worlds.length) await openWorld(state.worldId && state.worlds.some((w) => w.id === state.worldId) ? state.worldId : state.worlds[0].id);
   renderSettings();
-  toast("백업을 불러왔습니다");
+}
+/* ============================================================
+   14-1. 데이터 지키기: 동기화 기록에서 되살리기 · 저장소 점검
+   ============================================================ */
+async function syncHistory(limit = 30) {
+  const head = await remoteHead();
+  const out = [];
+  let sha = head.head;
+  while (sha && out.length < limit) {
+    const c = await gh("GET", `/git/commits/${sha}`);
+    const tree = await gh("GET", `/git/trees/${c.tree.sha}?recursive=1`);
+    const items = (tree.tree || []).filter((t) => t.type === "blob" && t.path.startsWith(SYNC_DIR + "/"));
+    out.push({
+      sha, tree: c.tree.sha, date: c.committer?.date || c.author?.date || null, message: String(c.message || ""),
+      worlds: items.filter((t) => t.path.startsWith(`${SYNC_DIR}/w/`)).length,
+      convs: items.filter((t) => t.path.startsWith(`${SYNC_DIR}/c/`)).length,
+      size: items.filter((t) => t.path.startsWith(`${SYNC_DIR}/w/`)).reduce((a, t) => a + (t.size || 0), 0),
+    });
+    sha = c.parents?.[0]?.sha;
+  }
+  return out;
+}
+async function snapshotFromTree(treeSha, full) {
+  const tree = await gh("GET", `/git/trees/${treeSha}?recursive=1`);
+  const files = {};
+  for (const t of tree.tree || []) if (t.type === "blob") files[t.path] = t.sha;
+  const read = async (p) => (files[p] ? JSON.parse(b64ToText((await gh("GET", `/git/blobs/${files[p]}`)).content)) : null);
+  const index = (await read(INDEX_PATH)) || { worlds: [] };
+  const worlds = [];
+  for (const w of index.worlds || []) {
+    const wf = (await read(worldPath(w.id))) || {};
+    const x = { world: w, entries: wf.entries || [], log: wf.log || [], graph: wf.graph || null, manuscripts: wf.ms || [], maps: wf.maps || [], threads: wf.threads || [] };
+    if (full) {
+      x.images = (await read(imgPath(w.id))) || {};
+      x.mapImages = {};
+      for (const img of blobRefs({ maps: x.maps, entries: x.entries })) { const d = await read(mapImgPath(img)); if (d?.data) x.mapImages[img] = d.data; }
+      x.convs = {};
+      for (const t of x.threads) x.convs[t.id] = await read(convPath(t.id));
+    }
+    worlds.push(x);
+  }
+  return { app: "lorekeeper", version: 1, exportedAt: new Date().toISOString(), worlds };
+}
+async function openSyncHistory() {
+  if (!syncCfg.enabled) { toast("GitHub 동기화를 먼저 연결하세요"); return; }
+  openSheet(`<h2 class="sheet-title">기록에서 되살리기</h2><p class="status-line">동기화 기록을 읽는 중…</p>`);
+  let list;
+  try { list = await syncHistory(30); } catch (err) { openSheet(`<h2 class="sheet-title">기록에서 되살리기</h2><p class="note note-error">${esc(describeSyncError(err))}</p>`); return; }
+  const kb = (n) => (n >= 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(1)}MB` : `${Math.max(1, Math.round(n / 1024))}KB`);
+  openSheet(`<h2 class="sheet-title">기록에서 되살리기</h2>
+    <p class="meta" style="margin:0 0 10px">GitHub 저장소에 남은 동기화 기록입니다(최근 ${list.length}개). 데이터가 사라지기 직전 시각을 골라 살펴본 뒤, 백업 파일로 받거나 이 기기에 되살리세요. 세계관 파일이 갑자기 0개나 아주 작아진 기록이 있다면 그 바로 아래(이전) 기록을 고르면 됩니다.</p>
+    <ul class="list-plain hist-list">${list.map((c, i) => `<li><button type="button" class="hist-item" data-hist="${i}"><span class="hist-date">${c.date ? esc(new Date(c.date).toLocaleString("ko-KR", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })) : "시각 모름"}</span><span class="hist-msg">${esc(c.message.replace(/^로어키퍼 동기화 · /, ""))}</span><span class="hist-meta${c.worlds === 0 ? " empty" : ""}">세계관 ${c.worlds} · 대화 ${c.convs} · ${kb(c.size)}</span></button></li>`).join("")}</ul>
+    <div id="histOut"></div>`, (root) => {
+    let picked = null;
+    root.onclick = async (ev) => {
+      const item = ev.target.closest("[data-hist]");
+      const act = ev.target.closest("[data-hact]")?.dataset.hact;
+      const out = $("#histOut", root);
+      if (item) {
+        picked = list[Number(item.dataset.hist)];
+        $$(".hist-item", root).forEach((b) => b.classList.toggle("sel", b === item));
+        out.innerHTML = `<p class="status-line">살펴보는 중…</p>`;
+        try {
+          const snap = await snapshotFromTree(picked.tree, false);
+          out.innerHTML = `<section class="hist-detail"><p><b>${picked.date ? esc(new Date(picked.date).toLocaleString("ko-KR")) : "이"}</b> 기록</p>
+            ${snap.worlds.length ? `<ul class="list-plain">${snap.worlds.map((x) => `<li>${esc(x.world.name)} · 항목 ${x.entries.filter((e) => !e.deleted).length} · 대화 ${x.threads.length} · 원고 ${x.manuscripts.length}</li>`).join("")}</ul>` : `<p class="meta">이 기록에는 세계관이 없습니다.</p>`}
+            ${snap.worlds.length ? `<div class="row"><button class="btn btn-small" type="button" data-hact="download">백업 파일로 받기</button><button class="btn btn-small btn-primary" type="button" data-hact="restore">이 기기에 되살리기</button></div>` : ""}</section>`;
+          out.scrollIntoView({ block: "nearest" });
+        } catch (err) { out.innerHTML = `<p class="note note-error">${esc(describeSyncError(err))}</p>`; }
+      } else if ((act === "download" || act === "restore") && picked) {
+        out.insertAdjacentHTML("beforeend", `<p class="status-line" id="histBusy">대화와 그림까지 모두 받는 중…</p>`);
+        try {
+          const snap = await snapshotFromTree(picked.tree, true);
+          $("#histBusy", root)?.remove();
+          if (act === "download") {
+            download(`lorekeeper-restore-${(picked.date ? new Date(picked.date) : new Date()).toISOString().slice(0, 16).replace(/[:T]/g, "-")}.json`, JSON.stringify(snap), "application/json");
+            toast("백업 파일을 만들었습니다. 설정 › 백업 불러오기로 언제든 되살릴 수 있습니다");
+          } else {
+            const clash = snap.worlds.filter((x) => state.worlds.some((w) => w.id === x.world.id));
+            if (!(await confirmBox(`이 기록의 세계관 ${snap.worlds.length}개를 이 기기에 되살립니다.${clash.length ? `\n이미 있는 ${clash.length}개는 이 기록의 내용으로 바뀝니다(지금 내용은 먼저 백업 파일로 받아 두기를 권합니다).` : ""}\n되살린 내용은 다음 동기화 때 GitHub에도 올라갑니다.`, "되살리기"))) return;
+            await applyBackupData(snap);
+            closeSheet();
+            switchView("codex");
+            toast("되살렸습니다");
+            runSync("restore");
+          }
+        } catch (err) { $("#histBusy", root)?.remove(); toast(describeSyncError(err)); }
+      }
+    };
+  });
+}
+const WORLD_KEY_RE = /^(entries|log|threads|graph|ms|imgs|maps):(.+)$/;
+async function scanStorage() {
+  const keys = (await idb.keys()) || [];
+  const worlds = (await idb.get("worlds")) || [];
+  const listed = new Set(worlds.map((w) => w.id));
+  const found = new Map();
+  for (const k of keys) { const m = String(k).match(WORLD_KEY_RE); if (m) { if (!found.has(m[2])) found.set(m[2], new Set()); found.get(m[2]).add(m[1]); } }
+  const info = async (wid) => {
+    const entries = (await idb.get("entries:" + wid)) || [];
+    const threads = (await idb.get("threads:" + wid)) || [];
+    const ms = (await idb.get("ms:" + wid)) || [];
+    return { wid, entries: entries.filter((e) => !e.deleted).length, threads: threads.length, ms: ms.length, sample: entries.filter((e) => !e.deleted).slice(0, 4).map((e) => e.name), threadTitles: threads.slice(0, 3).map((t) => t.title), last: Math.max(0, ...entries.map((e) => e.updatedAt || 0), ...threads.map((t) => t.updatedAt || 0)) };
+  };
+  const listedInfo = [];
+  for (const w of worlds) listedInfo.push({ w, ...(await info(w.id)) });
+  const orphans = [];
+  for (const wid of found.keys()) if (!listed.has(wid)) orphans.push(await info(wid));
+  let est = null;
+  try { est = await navigator.storage?.estimate?.(); } catch { est = null; }
+  let persisted = null;
+  try { persisted = await navigator.storage?.persisted?.(); } catch { persisted = null; }
+  return { keys: keys.length, listedInfo, orphans: orphans.filter((o) => o.entries || o.threads || o.ms), est, persisted, broken: idb.broken };
+}
+async function openStorageCheck() {
+  openSheet(`<h2 class="sheet-title">저장소 점검</h2><p class="status-line">이 기기의 저장소를 살피는 중…</p>`);
+  const r = await scanStorage();
+  const mb = (n) => `${(n / 1024 / 1024).toFixed(1)}MB`;
+  openSheet(`<h2 class="sheet-title">저장소 점검</h2>
+    ${r.broken ? `<p class="note note-error">이 브라우저에서는 저장소(IndexedDB)를 열 수 없어 지금은 임시로만 저장됩니다. 개인정보 보호 모드라면 일반 창에서 여세요. 원래 데이터는 지워지지 않았을 수 있습니다.</p>` : ""}
+    <p class="meta" style="margin:0 0 8px">저장된 값 ${r.keys}개${r.est ? ` · 사용 ${mb(r.est.usage || 0)} / 가능 ${mb(r.est.quota || 0)}` : ""} · 저장소 보호: ${r.persisted === true ? "켜짐(브라우저가 공간이 부족해도 지우지 않음)" : r.persisted === false ? "꺼짐" : "알 수 없음"}</p>
+    ${r.persisted === false ? `<div class="row"><button class="btn btn-small" type="button" data-sc="persist">저장소 보호 요청</button></div>` : ""}
+    <p class="section-label">목록에 있는 세계관 ${r.listedInfo.length}</p>
+    ${r.listedInfo.length ? `<ul class="list-plain addr-list">${r.listedInfo.map((x) => `<li><b>${esc(x.w.name)}</b> · 항목 ${x.entries} · 대화 ${x.threads} · 원고 ${x.ms}</li>`).join("")}</ul>` : `<p class="meta">없음</p>`}
+    <p class="section-label">목록에서 빠진 세계관 데이터 ${r.orphans.length}</p>
+    ${r.orphans.length ? r.orphans.map((o, i) => `<section class="orphan"><p><b>항목 ${o.entries} · 대화 ${o.threads} · 원고 ${o.ms}</b>${o.last ? ` <span class="meta">마지막 수정 ${esc(fmtDate(o.last))}</span>` : ""}</p>${o.sample.length ? `<p class="meta">항목 예: ${esc(o.sample.join(", "))}</p>` : ""}${o.threadTitles.length ? `<p class="meta">대화 예: ${esc(o.threadTitles.join(", "))}</p>` : ""}<div class="row"><button class="btn btn-small btn-primary" type="button" data-sc="adopt" data-i="${i}">이 데이터 되살리기</button></div></section>`).join("")
+      : `<p class="meta">없습니다. 이 기기 저장소에는 목록 밖에 남은 세계관 데이터가 없습니다.</p>`}
+    <p class="meta" style="margin-top:12px">여기에도 없으면 이 브라우저(또는 홈 화면 앱)의 저장소 자체가 비워진 것입니다. 다른 브라우저·홈 화면 앱·다른 기기에서 열어 보거나, GitHub 동기화를 썼다면 '기록에서 되살리기', 백업 파일이 있다면 '백업 불러오기'로 되살릴 수 있습니다.</p>`, (root) => {
+    root.onclick = async (ev) => {
+      const sc = ev.target.closest("[data-sc]")?.dataset.sc;
+      if (sc === "persist") {
+        let ok = false;
+        try { ok = await navigator.storage.persist(); } catch { ok = false; }
+        toast(ok ? "저장소 보호를 켰습니다" : "브라우저가 아직 허락하지 않았습니다. 홈 화면에 추가하면 허락받기 쉽습니다");
+        openStorageCheck();
+      } else if (sc === "adopt") {
+        const o = r.orphans[Number(ev.target.closest("[data-i]").dataset.i)];
+        const entries = (await idb.get("entries:" + o.wid)) || [];
+        const counters = {};
+        for (const e of entries) { const m = e.id.match(/^([A-Z][A-Z0-9]{0,2})-(\d+)$/); if (m) counters[m[1]] = Math.max(counters[m[1]] || 0, Number(m[2])); }
+        const now = Date.now();
+        state.worlds.push({ id: o.wid, name: `되살린 세계관 (${new Date(o.last || now).toLocaleDateString("ko-KR")})`, premise: "", tone: "", rules: "", counters, createdAt: Math.min(now, ...entries.map((e) => e.createdAt || now)), updatedAt: now, entryCount: o.entries });
+        await persist.worlds();
+        await openWorld(o.wid);
+        closeSheet();
+        switchView("codex");
+        toast("되살렸습니다. 세계관 이름은 개요 편집에서 바꾸세요");
+      }
+    };
+  });
 }
 function exportMarkdown() {
   const w = currentWorld();
@@ -9519,6 +9728,11 @@ function bindGlobal() {
   // 첨부: 버튼, 붙여넣기, 끌어다 놓기
   $("#attachBtn").onclick = () => $("#fileInput").click();
   $("#toolsBtn").onclick = () => openCreativeTools();
+  $("#dataBanner").onclick = (e) => {
+    const a = e.target.closest("[data-banner]")?.dataset.banner;
+    if (a === "check") openStorageCheck();
+    if (a === "close") $("#dataBanner").hidden = true;
+  };
   $("#modeBar").onclick = (e) => {
     const m = e.target.closest("[data-mode]")?.dataset.mode;
     if (m === "wrap") fillInput("인터뷰 정리: 이번 인터뷰에서 새로 드러난 사실을 모아서, 설정에 넣을 것과 고칠 것을 제안해 줘. 인터뷰 요약은 원고함에 저장해 줘. ((작가로서 답해 줘)) ");
@@ -9634,11 +9848,40 @@ async function init() {
   state.worlds = (await idb.get("worlds")) || [];
   const want = LS.get("lk.world", null);
   const w = state.worlds.find((x) => x.id === want) || state.worlds[0];
-  if (w) await openWorld(w.id);
-  else { renderWorldName(); renderChat(); renderCodex(); }
-  switchView(LS.get("lk.view", "chat"));
-  if (idb.broken) toast("이 브라우저에서는 데이터가 저장되지 않습니다. 개인정보 보호 모드를 끄세요");
+  // 화면을 그리다 오류가 나도 데이터는 그대로 두고, 무엇이 문제인지 보여 준다
+  try {
+    if (w) await openWorld(w.id);
+    else { renderWorldName(); renderChat(); renderCodex(); }
+  } catch (err) {
+    console.error(err);
+    renderWorldName();
+    try { renderCodex(); } catch (e2) { console.error(e2); }
+    showDataBanner(`화면을 여는 중 오류가 났습니다(${esc(err?.message || err)}). 저장된 데이터는 지우지 않았습니다.`);
+  }
+  try { switchView(LS.get("lk.view", "chat")); } catch (err) { console.error(err); }
+  if (idb.broken) showDataBanner("이 브라우저에서는 저장소를 열 수 없어 지금은 임시로만 저장됩니다. 개인정보 보호 모드라면 일반 창에서 여세요.");
+  else checkOrphans();
+  if (state.worlds.length && !LS.get("lk.persistAsked", false)) {
+    LS.set("lk.persistAsked", true);
+    navigator.storage?.persisted?.().then((p) => (p ? null : navigator.storage.persist?.())).catch(() => {});
+  }
   if (syncCfg.enabled) runSync("startup");
+}
+function showDataBanner(html) {
+  const b = $("#dataBanner");
+  b.hidden = false;
+  b.innerHTML = `<span>${html}</span><button class="btn btn-small btn-primary" type="button" data-banner="check">저장소 점검</button><button class="btn btn-small btn-ghost" type="button" data-banner="close" aria-label="닫기">×</button>`;
+}
+// 세계관 목록에서 빠졌지만 이 기기에 남아 있는 데이터가 있으면 알려 준다
+async function checkOrphans() {
+  try {
+    const keys = (await idb.keys()) || [];
+    const listed = new Set(state.worlds.map((w) => w.id));
+    const wids = new Set(keys.map((k) => String(k).match(/^entries:(.+)$/)?.[1]).filter((x) => x && !listed.has(x)));
+    let n = 0;
+    for (const wid of wids) n += ((await idb.get("entries:" + wid)) || []).filter((e) => !e.deleted).length;
+    if (n) showDataBanner(`세계관 목록에서 빠진 데이터(항목 ${n}개)가 이 기기에 남아 있습니다.`);
+  } catch (err) { console.warn(err); }
 }
 init();
 </script>
