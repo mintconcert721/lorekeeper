@@ -1,0 +1,2165 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#EEF0EC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111719" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="로어키퍼">
+<title>로어키퍼</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232F7468'/%3E%3Cpath d='M20 14h24v36l-12-8-12 8z' fill='%23F3F7F5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<style>
+/* 레이아웃: 상단 세계관 바 · 가운데 작업 영역 · 하단 탭. 설정집은 기록 보관소의 색인 카드처럼 분류번호(C-001)로 정리한다. */
+:root {
+  --bg: #EEF0EC;
+  --surface: #F8F9F6;
+  --surface-2: #E2E7E1;
+  --ink: #1D2A2E;
+  --muted: #5B6A6A;
+  --line: #CAD2CB;
+  --accent: #2F7468;
+  --accent-ink: #F3F7F5;
+  --accent-soft: #D5E7E1;
+  --danger: #A33A2F;
+  --danger-soft: #F3DEDA;
+  --user-bubble: #DCE5EC;
+  --backdrop: rgba(12, 20, 22, .45);
+  --t-character: #8B4A7E;
+  --t-place: #33689A;
+  --t-faction: #A24E2A;
+  --t-species: #557A2E;
+  --t-event: #8E6D12;
+  --t-item: #5B57A8;
+  --t-concept: #2F7468;
+  --t-other: #66706F;
+  --font-display: "Hahmlet", "Noto Serif KR", "AppleMyungjo", "Batang", serif;
+  --font-body: "IBM Plex Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --gutter-l: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111719;
+    --surface: #182023;
+    --surface-2: #222C2F;
+    --ink: #E2E8E4;
+    --muted: #93A19F;
+    --line: #2F3B3D;
+    --accent: #6DBCAD;
+    --accent-ink: #0D1917;
+    --accent-soft: #1D3833;
+    --danger: #E58374;
+    --danger-soft: #3A2220;
+    --user-bubble: #22313B;
+    --backdrop: rgba(0, 0, 0, .6);
+    --t-character: #D493C6;
+    --t-place: #86B6E3;
+    --t-faction: #E79A72;
+    --t-species: #A6CB7A;
+    --t-event: #D9B85A;
+    --t-item: #A9A5EE;
+    --t-concept: #6DBCAD;
+    --t-other: #A5AFAE;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.6 var(--font-body);
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+#app {
+  position: fixed;
+  left: 0; right: 0;
+  top: var(--app-top, 0px);
+  height: var(--app-h, 100dvh);
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
+  background: var(--bg);
+}
+
+/* 상단 바 */
+.topbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: calc(env(safe-area-inset-top, 0px) + 8px) var(--gutter-r) 8px var(--gutter-l);
+  border-bottom: 1px solid var(--line);
+}
+.world-switch {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column; align-items: flex-start;
+  background: none; border: 0; padding: 2px 0; text-align: left;
+}
+.eyebrow { font-size: 11px; letter-spacing: .08em; color: var(--muted); }
+.world-switch .name {
+  font-family: var(--font-display); font-size: 19px; font-weight: 700; line-height: 1.3;
+  max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.world-switch .name::after { content: " ▾"; font-size: 12px; color: var(--muted); }
+.cost-badge {
+  border: 0; border-radius: 999px; padding: 4px 10px;
+  background: var(--surface-2); color: var(--muted);
+  font: 500 12px var(--font-mono); font-variant-numeric: tabular-nums;
+}
+
+/* 본문 / 뷰 */
+main { min-height: 0; min-width: 0; position: relative; }
+.view { height: 100%; min-height: 0; min-width: 0; display: flex; flex-direction: column; }
+.scroll { flex: 1; min-height: 0; min-width: 0; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.pad { padding: 16px var(--gutter-r) 32px var(--gutter-l); }
+
+/* 하단 탭 */
+.tabbar {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--line); background: var(--surface);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.tabbar button {
+  background: none; border: 0; padding: 8px 0 10px;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  font-size: 12px; color: var(--muted);
+}
+.tabbar svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.tabbar button[aria-current="page"] { color: var(--accent); font-weight: 600; }
+@media (pointer: coarse) { body.kb-open .tabbar { display: none; } }
+
+/* 공통 버튼 */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 40px; padding: 8px 14px;
+  border: 1px solid var(--line); border-radius: 10px;
+  background: var(--surface); font-size: 14px; font-weight: 500;
+}
+.btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn-danger { color: var(--danger); }
+.btn-danger-solid { background: var(--danger); border-color: var(--danger); color: var(--surface); }
+.btn-ghost { background: none; border-color: transparent; color: var(--accent); padding-inline: 8px; }
+.btn-small { min-height: 32px; padding: 4px 10px; font-size: 13px; }
+.btn:disabled { opacity: .5; cursor: default; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.row.end { justify-content: flex-end; }
+
+/* 대화 */
+.thread-bar {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px var(--gutter-r) 6px var(--gutter-l);
+  border-bottom: 1px solid var(--line);
+  font-size: 13px; color: var(--muted);
+}
+.thread-title { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ctx-meter { font: 12px var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ctx-meter.warn { color: var(--danger); }
+.chat-log {
+  display: flex; flex-direction: column; gap: 18px;
+  padding: 16px var(--gutter-r) 24px var(--gutter-l);
+}
+.msg-user {
+  align-self: flex-end; max-width: 86%;
+  background: var(--user-bubble);
+  padding: 10px 14px; border-radius: 16px 16px 4px 16px;
+  white-space: pre-wrap;
+}
+.msg-assistant { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.msg-meta { font: 11px var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.status-line { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; }
+.status-line::before {
+  content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .status-line::before { animation: none; } }
+.thinking { border-left: 2px solid var(--line); padding-left: 10px; color: var(--muted); font-size: 13px; }
+.thinking summary { cursor: pointer; list-style: none; font-size: 12px; letter-spacing: .04em; }
+.thinking summary::-webkit-details-marker { display: none; }
+.thinking summary::before { content: "▸ "; }
+.thinking[open] summary::before { content: "▾ "; }
+.thinking-body { margin-top: 4px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.action-chip {
+  display: inline-flex; align-items: center; gap: 6px; max-width: 100%;
+  border: 1px solid var(--line); border-radius: 999px;
+  background: var(--surface); padding: 3px 10px 3px 8px;
+  font-size: 12.5px; text-align: left;
+}
+.action-chip .glyph { font: 600 12px var(--font-mono); color: var(--accent); }
+.action-chip.read { background: none; color: var(--muted); }
+.action-chip.read .glyph { color: var(--muted); }
+.action-chip span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.note { margin: 0; font-size: 13px; padding: 8px 12px; border-radius: 10px; background: var(--surface-2); }
+.note-error { background: var(--danger-soft); color: var(--danger); }
+.retry-row { display: flex; justify-content: center; }
+.composer-wrap { border-top: 1px solid var(--line); background: var(--surface); }
+.banner {
+  margin: 8px var(--gutter-r) 0 var(--gutter-l);
+  padding: 8px 12px; border-radius: 10px;
+  background: var(--accent-soft); font-size: 13px;
+  display: flex; align-items: center; gap: 8px; justify-content: space-between;
+}
+.composer {
+  display: flex; gap: 8px; align-items: flex-end;
+  padding: 8px var(--gutter-r) 8px var(--gutter-l);
+}
+.composer textarea {
+  flex: 1; min-width: 0; resize: none; max-height: 200px;
+  border: 1px solid var(--line); border-radius: 14px;
+  padding: 9px 12px; background: var(--bg);
+  font-size: 16px; line-height: 1.45;
+}
+.composer .btn { min-height: 42px; border-radius: 14px; }
+.empty-chat { display: flex; flex-direction: column; gap: 14px; padding-top: 8px; }
+.empty-chat h2 { margin: 0; font: 700 22px/1.35 var(--font-display); text-wrap: balance; }
+.empty-chat p { margin: 0; color: var(--muted); }
+.suggestions { display: flex; flex-direction: column; gap: 8px; }
+.suggestion {
+  text-align: left; border: 1px solid var(--line); background: var(--surface);
+  border-radius: 12px; padding: 10px 14px; font-size: 14px;
+}
+
+/* 마크다운 */
+.md { overflow-wrap: anywhere; }
+.md > :first-child { margin-top: 0; }
+.md > :last-child { margin-bottom: 0; }
+.md p { margin: 0 0 .7em; }
+.md h3, .md h4, .md h5, .md h6 { font-family: var(--font-display); margin: 1em 0 .4em; line-height: 1.35; text-wrap: balance; }
+.md h3 { font-size: 18px; } .md h4 { font-size: 16px; } .md h5, .md h6 { font-size: 15px; }
+.md ul, .md ol { margin: 0 0 .7em; padding-left: 1.3em; }
+.md li { margin: .15em 0; }
+.md blockquote { margin: 0 0 .7em; padding: 4px 12px; border-left: 3px solid var(--accent); color: var(--muted); }
+.md code { font: 13px var(--font-mono); background: var(--surface-2); padding: 1px 5px; border-radius: 5px; }
+.md pre { overflow-x: auto; background: var(--surface-2); padding: 10px 12px; border-radius: 10px; }
+.md pre code { background: none; padding: 0; }
+.md hr { border: 0; border-top: 1px solid var(--line); margin: 1em 0; }
+.ref {
+  border: 0; background: var(--accent-soft); color: var(--accent);
+  font: 600 12px var(--font-mono); padding: 1px 6px; border-radius: 6px; vertical-align: 1px;
+}
+
+/* 설정집 */
+.world-card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  padding: 14px 16px; display: flex; flex-direction: column; gap: 6px;
+}
+.world-card h2 { margin: 0; font: 700 20px/1.35 var(--font-display); text-wrap: balance; }
+.world-card .label { font-size: 11px; letter-spacing: .08em; color: var(--muted); margin-top: 4px; }
+.world-card p { margin: 0; }
+.codex-tools { display: flex; gap: 8px; margin: 16px 0 10px; }
+.codex-tools input {
+  flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--surface); padding: 8px 12px; font-size: 16px;
+}
+.type-chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+.type-chips::-webkit-scrollbar { display: none; }
+.type-chip {
+  flex: none; border: 1px solid var(--line); background: var(--surface);
+  border-radius: 999px; padding: 4px 12px; font-size: 13px;
+}
+.type-chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.type-chip .n { font: 11px var(--font-mono); opacity: .7; margin-left: 4px; }
+.group-title {
+  margin: 20px 0 8px; font-size: 12px; letter-spacing: .08em; color: var(--muted);
+  display: flex; align-items: center; gap: 8px;
+}
+.group-title::after { content: ""; flex: 1; border-top: 1px solid var(--line); }
+.entry-list { display: flex; flex-direction: column; gap: 8px; }
+.entry-card {
+  width: 100%; text-align: left;
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 12px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  padding: 10px 14px;
+}
+.catno { font: 600 12px var(--font-mono); color: var(--tc, var(--muted)); font-variant-numeric: tabular-nums; padding-top: 3px; }
+.entry-card .ename { font-weight: 600; font-size: 15px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.entry-card .esum { grid-column: 2; color: var(--muted); font-size: 13.5px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.entry-card .etags { grid-column: 2; font-size: 12px; color: var(--muted); }
+.empty-state { text-align: center; color: var(--muted); padding: 32px 8px; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.empty-state h3 { margin: 0; font: 700 18px var(--font-display); color: var(--ink); }
+
+/* 시트 */
+.sheet { position: fixed; inset: 0; z-index: 40; display: flex; flex-direction: column; justify-content: flex-end; }
+.sheet-backdrop { position: absolute; inset: 0; background: var(--backdrop); }
+.sheet-panel {
+  position: relative; width: 100%; max-width: 760px; margin: 0 auto;
+  max-height: 92%; overflow-y: auto; overscroll-behavior: contain;
+  background: var(--surface); border-radius: 18px 18px 0 0;
+  padding: 6px var(--gutter-r) calc(20px + env(safe-area-inset-bottom, 0px)) var(--gutter-l);
+}
+.sheet-grip { width: 40px; height: 4px; border-radius: 2px; background: var(--line); margin: 6px auto 14px; }
+.sheet-title { margin: 0 0 12px; font: 700 20px/1.35 var(--font-display); }
+.sheet-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.entry-head { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.entry-head .catno { padding: 0; }
+.entry-name { margin: 4px 0 2px; font: 700 24px/1.3 var(--font-display); text-wrap: balance; }
+.aliases { margin: 0; color: var(--muted); font-size: 13px; }
+.summary { margin: 10px 0; font-size: 15px; }
+.fields { margin: 12px 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+.fields > div { display: grid; grid-template-columns: minmax(70px, 30%) minmax(0, 1fr); gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.fields dt { color: var(--muted); font-size: 13px; }
+.fields dd { margin: 0; }
+.section-label { margin: 18px 0 6px; font-size: 11px; letter-spacing: .08em; color: var(--muted); }
+.rel-list { display: flex; flex-direction: column; gap: 6px; }
+.rel { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 14px; }
+.rel .lbl { color: var(--muted); font-size: 13px; }
+.tag { font-size: 13px; color: var(--accent); margin-right: 8px; }
+.meta { margin: 14px 0 0; font-size: 12px; color: var(--muted); }
+.pill { font-size: 11px; padding: 1px 8px; border-radius: 999px; background: var(--surface-2); }
+.pill-danger { background: var(--danger-soft); color: var(--danger); }
+.list-plain { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.list-item {
+  width: 100%; text-align: left; display: flex; flex-direction: column; gap: 2px;
+  border: 1px solid var(--line); background: var(--bg); border-radius: 12px; padding: 10px 14px;
+}
+.list-item.current { border-color: var(--accent); }
+.list-item .t { font-weight: 600; }
+.list-item .s { font-size: 13px; color: var(--muted); }
+.list-row { display: flex; gap: 8px; align-items: stretch; }
+.list-row .list-item { flex: 1; min-width: 0; }
+
+/* 폼 */
+.form { display: flex; flex-direction: column; gap: 12px; }
+.form label, .form fieldset { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+.form fieldset { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin: 0; }
+.form legend { padding: 0 4px; }
+.form small { font-size: 12px; }
+.form input, .form textarea, .form select {
+  border: 1px solid var(--line); border-radius: 10px; background: var(--bg);
+  padding: 8px 10px; font-size: 16px; color: var(--ink); width: 100%; min-width: 0;
+}
+.form textarea { resize: vertical; line-height: 1.5; }
+.kv-row { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) auto; gap: 6px; margin-bottom: 6px; }
+.icon-btn { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; width: 40px; min-height: 40px; color: var(--muted); }
+
+/* 설정 화면 */
+.settings { display: flex; flex-direction: column; gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.card h2 { margin: 0; font: 700 17px var(--font-display); }
+.card p { margin: 0; font-size: 13.5px; color: var(--muted); }
+.card .form input, .card .form select { background: var(--bg); }
+.radio-list { display: flex; flex-direction: column; gap: 6px; }
+.radio {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 10px; align-items: center;
+  border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; background: var(--bg);
+}
+.radio input { margin: 0; accent-color: var(--accent); grid-row: span 2; }
+.radio .t { font-weight: 600; font-size: 14px; }
+.radio .s { font-size: 12px; color: var(--muted); grid-column: 2; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.stat { background: var(--bg); border-radius: 10px; padding: 8px 10px; }
+.stat .v { font: 600 16px var(--font-mono); font-variant-numeric: tabular-nums; }
+.stat .k { font-size: 11px; color: var(--muted); }
+.switch { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 14px; }
+.switch input { width: 20px; height: 20px; accent-color: var(--accent); }
+
+/* 대화 상자 · 알림 */
+.dialog { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 16px; }
+.dialog-backdrop { position: absolute; inset: 0; background: var(--backdrop); }
+.dialog-panel {
+  position: relative; width: 100%; max-width: 360px;
+  background: var(--surface); border-radius: 16px; padding: 18px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.dialog-panel p { margin: 0; white-space: pre-wrap; }
+.toast {
+  position: fixed; z-index: 70; left: 50%; transform: translateX(-50%);
+  bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  width: max-content; max-width: calc(100% - 32px);
+  background: var(--ink); color: var(--bg);
+  padding: 8px 14px; border-radius: 10px; font-size: 13.5px;
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <button id="worldBtn" class="world-switch" type="button" aria-label="세계관 바꾸기">
+      <span class="eyebrow">세계관</span>
+      <span class="name" id="worldName">로어키퍼</span>
+    </button>
+    <button id="costBadge" class="cost-badge" type="button" aria-label="이번 달 사용 비용">$0.000</button>
+  </header>
+
+  <main>
+    <section id="view-chat" class="view" aria-label="대화">
+      <div class="thread-bar">
+        <button id="threadsBtn" class="btn btn-ghost btn-small" type="button">대화 목록</button>
+        <span id="threadTitle" class="thread-title"></span>
+        <span id="ctxMeter" class="ctx-meter"></span>
+        <button id="newThreadBtn" class="btn btn-ghost btn-small" type="button">새 대화</button>
+      </div>
+      <div id="chatScroll" class="scroll">
+        <div id="chatLog" class="chat-log"></div>
+      </div>
+      <div class="composer-wrap">
+        <div id="keyBanner" class="banner" hidden>
+          <span>Claude API 키를 넣어야 대화할 수 있습니다.</span>
+          <button class="btn btn-small btn-primary" type="button" data-goto="settings">키 입력</button>
+        </div>
+        <form id="composer" class="composer">
+          <textarea id="input" rows="1" placeholder="세계관에 대해 이야기해 보세요" aria-label="메시지"></textarea>
+          <button id="sendBtn" class="btn btn-primary" type="submit">보내기</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="view-codex" class="view" aria-label="설정집" hidden>
+      <div class="scroll"><div class="pad" id="codex"></div></div>
+    </section>
+
+    <section id="view-settings" class="view" aria-label="설정" hidden>
+      <div class="scroll"><div class="pad settings" id="settings"></div></div>
+    </section>
+  </main>
+
+  <nav class="tabbar" aria-label="화면 전환">
+    <button type="button" data-view="chat" aria-current="page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>대화
+    </button>
+    <button type="button" data-view="codex">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/><path d="M9 8h6"/></svg>설정집
+    </button>
+    <button type="button" data-view="settings">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/></svg>설정
+    </button>
+  </nav>
+</div>
+
+<div id="sheet" class="sheet" hidden>
+  <div class="sheet-backdrop" data-close-sheet></div>
+  <div class="sheet-panel" role="dialog" aria-modal="true" id="sheetBody"></div>
+</div>
+<div id="dialog" class="dialog" hidden></div>
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script type="module">
+import Anthropic from "https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk@0.135.0/+esm";
+
+/* ============================================================
+   1. 상수
+   ============================================================ */
+const PRICES = {
+  // 100만 토큰당 달러. cacheRead는 캐시에서 읽은 입력 토큰 단가.
+  "claude-opus-5-5":   { label: "Opus 5.5",   in: 4,   out: 20,  cacheRead: 0.2,  fallback: true },
+  "claude-sonnet-5-5": { label: "Sonnet 5.5", in: 2,   out: 10,  cacheRead: 0.2,  fallback: true },
+  "claude-haiku-5-5":  { label: "Haiku 5.5",  in: 0.1, out: 0.5, cacheRead: 0.01, fallback: false },
+  // 안전 정책 폴백으로 대신 답할 수 있는 모델(비용 계산용)
+  "claude-opus-5":     { label: "Opus 5",     in: 5,   out: 25,  cacheRead: 0.5 },
+  "claude-opus-4-8":   { label: "Opus 4.8",   in: 5,   out: 25,  cacheRead: 0.5 },
+};
+const MODEL_CHOICES = [
+  { id: "claude-opus-5-5",   note: "창작 품질과 설정 일관성이 가장 좋습니다" },
+  { id: "claude-sonnet-5-5", note: "품질과 비용의 균형" },
+  { id: "claude-haiku-5-5",  note: "가장 저렴합니다. 복잡한 설정 정리는 약할 수 있습니다" },
+];
+const EFFORTS = [
+  { id: "low",    label: "가볍게", note: "빠르고 저렴. 짧은 질문과 단순 저장에 적합" },
+  { id: "medium", label: "보통",   note: "기본값" },
+  { id: "high",   label: "깊게",   note: "복잡한 설정 설계, 모순 검토" },
+  { id: "xhigh",  label: "아주 깊게", note: "대규모 정리. 비용이 크게 늘어납니다" },
+];
+const TYPES = {
+  character: { label: "인물", code: "C" },
+  place:     { label: "장소", code: "P" },
+  faction:   { label: "세력", code: "F" },
+  species:   { label: "종족", code: "S" },
+  event:     { label: "사건", code: "E" },
+  item:      { label: "사물", code: "I" },
+  concept:   { label: "개념", code: "K" },
+  other:     { label: "기타", code: "X" },
+};
+const TYPE_KEYS = Object.keys(TYPES);
+const MAX_ROUNDS = 16;
+const CTX_WARN = 150000;
+
+const SYSTEM_PROMPT = `너는 '로어키퍼'라는 모바일 앱 안에서 일하는 세계관 공동 작가이자 설정 편집자다. 사용자와 대화하며 창작 세계관(세계 개요, 인물, 장소, 세력, 종족, 사건, 사물, 개념)을 함께 만들고, 앱의 설정집에 정리해 저장한다.
+
+## 설정집 다루는 법
+- 설정집은 도구로만 읽고 쓴다. 대화의 첫 메시지에는 앱이 자동으로 붙인 [설정집 현황]이 있다. 항목은 분류번호 id(예: C-001)로 가리킨다.
+- 기존 항목을 고치기 전에는 get_entries로 최신 내용을 읽는다. 새 항목을 만들기 전에는 같은 대상이 이미 있는지 확인한다.
+- 사용자가 직접 말한 설정, 또는 네 제안 중 사용자가 고른 것은 바로 저장한다. 네가 새로 떠올린 아이디어는 먼저 제안하고, 사용자가 받아들이면 저장한다. 사용자가 "알아서 채워줘"처럼 맡기면 바로 저장해도 된다.
+- 한 정보는 가장 알맞은 항목 한 곳에 저장하고, 항목 사이의 연결은 set_relation으로 표현한다.
+- summary는 목록만 봐도 무엇인지 알 수 있는 한 줄로 쓴다. fields에는 짧은 사실(나이, 소속, 위치, 외모, 말투 등)을, body에는 서술과 배경 이야기를 담는다.
+- 삭제는 사용자가 분명히 요청했을 때만 한다.
+- [앱 알림]으로 사용자가 직접 수정한 내용이 전달되면 그것을 최신 설정으로 받아들인다.
+
+## 일관성
+- 새 설정이 기존 설정이나 세계 규칙과 충돌하면, 저장하기 전에 어느 항목의 어떤 내용과 부딪히는지 짚고 해결 방법을 2~3가지 제안한다.
+- 연표, 나이, 거리, 인물 관계처럼 숫자와 사실이 얽힌 부분은 특히 꼼꼼히 맞춘다.
+
+## 창작 태도
+- 뻔한 클리셰보다 이 세계에만 있을 법한 구체적인 디테일(관습, 은어, 물건, 모순, 비밀)을 제안한다.
+- 적절할 때 답의 끝에 이야기를 넓힐 거리(갈등의 씨앗, 아직 정해지지 않은 질문)를 1~3개 짧게 덧붙인다. 매번 붙일 필요는 없다.
+- 이 세계관의 주인은 사용자다. 사용자의 결정을 존중하고, 네 취향으로 방향을 바꾸지 않는다.
+
+## 답변 형식
+- 한국어로 답한다. 휴대폰 화면에서 읽으므로 짧은 문단과 목록을 쓰고, 표는 쓰지 않는다.
+- 항목을 언급할 때 이름 옆에 id를 붙이면(예: 서리(C-001)) 사용자가 눌러서 바로 볼 수 있다.
+- 설정집을 바꿨다면 답의 마지막에 무엇을 바꿨는지 한두 줄로 알린다. 앱이 변경 내역을 따로 표시하므로 길게 반복하지 않는다.`;
+
+/* ============================================================
+   2. 도구 정의
+   ============================================================ */
+const STR = { type: "string" };
+const STR_ARR = { type: "array", items: { type: "string" } };
+const STR_MAP = { type: "object", additionalProperties: { type: "string" } };
+const TOOLS = [
+  {
+    name: "search_entries",
+    description: "설정집에서 항목을 찾는다. query는 이름, 별칭, 요약, 태그, 속성, 본문에서 부분 일치로 찾는다. query 없이 부르면 전체 목록을 준다. 결과에는 id, 종류, 이름, 요약만 있다. 자세한 내용은 get_entries로 읽는다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "찾을 말. 여러 단어면 모두 포함한 항목을 찾는다." },
+        type: { type: "string", enum: TYPE_KEYS, description: "종류로 좁힌다." },
+      },
+    },
+  },
+  {
+    name: "get_entries",
+    description: "id 목록으로 항목의 전체 내용(별칭, 요약, 속성, 본문, 관계, 태그)을 읽는다. 한 번에 최대 20개. 기존 항목을 고치거나 일관성을 확인하기 전에 쓴다.",
+    input_schema: {
+      type: "object",
+      properties: { ids: { ...STR_ARR, description: '예: ["C-001", "P-002"]' } },
+      required: ["ids"],
+    },
+  },
+  {
+    name: "create_entry",
+    description: "새 설정 항목을 만든다. 같은 종류에 같은 이름이 있으면 실패하므로 먼저 search_entries로 확인한다. 성공하면 새 id를 돌려준다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        type: { type: "string", enum: TYPE_KEYS, description: "character 인물, place 장소, faction 세력, species 종족, event 사건, item 사물, concept 개념(마법 체계, 기술, 종교, 관습), other 기타" },
+        name: { type: "string" },
+        summary: { type: "string", description: "목록에서 보일 한 줄 요약. 80자 이내." },
+        aliases: { ...STR_ARR, description: "별칭, 다른 표기" },
+        fields: { ...STR_MAP, description: '짧은 사실들. 예: {"나이": "17", "소속": "P-001 잿빛 첨탑 등대"}' },
+        body: { type: "string", description: "마크다운 상세 서술" },
+        tags: STR_ARR,
+      },
+      required: ["type", "name", "summary"],
+    },
+  },
+  {
+    name: "update_entry",
+    description: "기존 항목을 고친다. 바꿀 값만 넣는다. set_fields는 속성을 추가하거나 덮어쓰고, remove_fields는 속성을 지운다. body는 본문 전체를 바꾸고 append_body는 본문 끝에 덧붙인다(둘 중 하나만). aliases와 tags는 넣으면 목록 전체를 바꾼다. 고치기 전 내용은 자동으로 이력에 남는다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        id: STR,
+        name: STR,
+        type: { type: "string", enum: TYPE_KEYS },
+        summary: STR,
+        aliases: STR_ARR,
+        tags: STR_ARR,
+        set_fields: STR_MAP,
+        remove_fields: STR_ARR,
+        body: STR,
+        append_body: STR,
+        reason: { type: "string", description: "무엇을 왜 고쳤는지 짧게. 이력에 남는다." },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "set_relation",
+    description: "두 항목 사이의 관계를 만들거나 지운다. label은 from 쪽에서 본 관계다(예: 스승, 소속, 거주지, 적대, 원인). reverse_label을 주면 반대 방향 관계도 함께 만든다. remove가 true면 from에서 to로 가는 관계를 지운다(label을 주면 그 관계만).",
+    input_schema: {
+      type: "object",
+      properties: {
+        from_id: STR,
+        to_id: STR,
+        label: STR,
+        reverse_label: STR,
+        remove: { type: "boolean" },
+      },
+      required: ["from_id", "to_id"],
+    },
+  },
+  {
+    name: "delete_entry",
+    description: "항목을 휴지통으로 옮긴다. 사용자는 앱에서 되살릴 수 있다. 사용자가 삭제를 분명히 요청했을 때만 쓴다.",
+    input_schema: {
+      type: "object",
+      properties: { id: STR, reason: STR },
+      required: ["id"],
+    },
+  },
+  {
+    name: "update_world",
+    description: "세계관 전체 개요를 고친다. premise는 핵심 전제, tone은 장르와 분위기와 문체, rules는 이 세계에서 깨지면 안 되는 규칙(마크다운 목록)이다. 바꿀 값만 넣는다.",
+    input_schema: {
+      type: "object",
+      properties: { name: STR, premise: STR, tone: STR, rules: STR },
+    },
+  },
+].map((t) => ({ ...t, eager_input_streaming: true }));
+
+const TOOL_STATUS = {
+  search_entries: "설정집을 찾아보는 중…",
+  get_entries: "설정을 읽는 중…",
+  create_entry: "새 항목을 기록하는 중…",
+  update_entry: "항목을 고치는 중…",
+  set_relation: "관계를 잇는 중…",
+  delete_entry: "항목을 정리하는 중…",
+  update_world: "세계관 개요를 고치는 중…",
+};
+
+/* ============================================================
+   3. 유틸
+   ============================================================ */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const clone = (o) => JSON.parse(JSON.stringify(o));
+const fmtDate = (t) => new Date(t).toLocaleString("ko-KR", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+const fmtUSD = (v) => "$" + (v < 10 ? v.toFixed(3) : v.toFixed(2));
+const fmtTok = (n) => (n >= 1000 ? (n / 1000).toFixed(1) + "K" : String(n));
+const cut = (s, n) => { s = String(s || "").replace(/\s+/g, " ").trim(); return s.length > n ? s.slice(0, n - 1) + "…" : s; };
+const splitList = (s) => String(s || "").split(/[,，]/).map((x) => x.trim()).filter(Boolean);
+const monthKey = () => new Date().toISOString().slice(0, 7);
+
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* 저장 불가 환경 */ } },
+};
+
+const idb = (() => {
+  const mem = new Map();
+  let dbp = null;
+  let broken = false;
+  const open = () => {
+    if (!dbp) {
+      dbp = new Promise((res, rej) => {
+        try {
+          const r = indexedDB.open("lorekeeper", 1);
+          r.onupgradeneeded = () => r.result.createObjectStore("kv");
+          r.onsuccess = () => res(r.result);
+          r.onerror = () => rej(r.error);
+        } catch (e) { rej(e); }
+      }).catch((e) => { broken = true; console.warn("IndexedDB 사용 불가", e); return null; });
+    }
+    return dbp;
+  };
+  const run = async (mode, fn, fallback) => {
+    const db = await open();
+    if (!db) return fallback();
+    return new Promise((res, rej) => {
+      const t = db.transaction("kv", mode);
+      const req = fn(t.objectStore("kv"));
+      t.oncomplete = () => res(req?.result);
+      t.onerror = () => rej(t.error);
+      t.onabort = () => rej(t.error);
+    });
+  };
+  return {
+    get: (k) => run("readonly", (s) => s.get(k), () => mem.get(k)),
+    set: (k, v) => run("readwrite", (s) => s.put(v, k), () => { mem.set(k, v); }),
+    del: (k) => run("readwrite", (s) => s.delete(k), () => { mem.delete(k); }),
+    get broken() { return broken; },
+  };
+})();
+
+/* ============================================================
+   4. 상태
+   ============================================================ */
+const settings = Object.assign(
+  { apiKey: "", model: "claude-opus-5-5", effort: "medium", showThinking: true },
+  LS.get("lk.settings", {}),
+);
+const saveSettings = () => LS.set("lk.settings", settings);
+const cost = Object.assign({ total: 0, months: {}, requests: 0 }, LS.get("lk.cost", {}));
+const saveCost = () => LS.set("lk.cost", cost);
+
+const state = {
+  worlds: [],
+  worldId: null,
+  entries: [],
+  log: [],
+  threads: [],
+  threadId: null,
+  conv: { api: [], display: [] },
+  view: "chat",
+  busy: false,
+  codexType: "all",
+  codexQuery: "",
+};
+let live = null;
+
+const currentWorld = () => state.worlds.find((w) => w.id === state.worldId) || null;
+const currentThread = () => state.threads.find((t) => t.id === state.threadId) || null;
+const activeEntries = () => state.entries.filter((e) => !e.deleted);
+
+const persist = {
+  worlds: () => idb.set("worlds", state.worlds),
+  entries: () => {
+    const w = currentWorld();
+    if (w) w.entryCount = activeEntries().length;
+    return Promise.all([idb.set("entries:" + state.worldId, state.entries), idb.set("worlds", state.worlds)]);
+  },
+  log: () => idb.set("log:" + state.worldId, state.log.slice(-500)),
+  threads: () => idb.set("threads:" + state.worldId, state.threads),
+  conv: () => (state.threadId ? idb.set("conv:" + state.threadId, clone(state.conv)) : Promise.resolve()),
+  world: () => Promise.all([persist.entries(), persist.log()]),
+};
+
+/* ============================================================
+   5. 설정집 데이터 조작
+   ============================================================ */
+function findEntry(ref) {
+  if (!ref) return null;
+  const raw = String(ref).trim();
+  const up = raw.toUpperCase();
+  return (
+    state.entries.find((e) => e.id.toUpperCase() === up) ||
+    state.entries.find((e) => !e.deleted && e.name === raw) ||
+    state.entries.find((e) => !e.deleted && (e.aliases || []).includes(raw)) ||
+    null
+  );
+}
+function nextId(type) {
+  const w = currentWorld();
+  const code = TYPES[type].code;
+  w.counters = w.counters || {};
+  let n = w.counters[code] || 0;
+  let id;
+  do { n += 1; id = `${code}-${String(n).padStart(3, "0")}`; } while (state.entries.some((e) => e.id === id));
+  w.counters[code] = n;
+  return id;
+}
+function snapshot(e) { const { history, ...rest } = e; return clone(rest); }
+function pushHistory(e, by, reason) {
+  e.history = e.history || [];
+  e.history.push({ at: Date.now(), by, reason: reason || "", data: snapshot(e) });
+  if (e.history.length > 30) e.history.shift();
+}
+function logChange(by, action, e, note) {
+  state.log.push({ at: Date.now(), by, action, id: e?.id || null, name: e?.name || "", type: e?.type || "", note: note || "" });
+}
+function nameOf(id) { const e = findEntry(id); return e ? e.name : "(없는 항목)"; }
+function incoming(id) {
+  const out = [];
+  for (const e of state.entries) {
+    if (e.deleted) continue;
+    for (const r of e.relations || []) if (r.to === id) out.push({ from: e, label: r.label });
+  }
+  return out;
+}
+function assertUniqueName(type, name, exceptId) {
+  const dup = activeEntries().find((e) => e.type === type && e.name === name && e.id !== exceptId);
+  if (dup) throw new Error(`같은 이름의 ${TYPES[type].label} 항목이 이미 있습니다: ${dup.id}`);
+}
+function createEntry(d, by) {
+  const name = String(d.name || "").trim();
+  if (!name) throw new Error("이름이 비어 있습니다.");
+  if (!TYPES[d.type]) throw new Error("알 수 없는 종류입니다.");
+  assertUniqueName(d.type, name);
+  const now = Date.now();
+  const e = {
+    id: nextId(d.type), type: d.type, name,
+    aliases: d.aliases || [], summary: String(d.summary || "").trim(),
+    fields: d.fields || {}, body: d.body || "", tags: d.tags || [],
+    relations: d.relations || [],
+    createdAt: now, updatedAt: now, updatedBy: by, history: [],
+  };
+  state.entries.push(e);
+  logChange(by, "create", e);
+  return e;
+}
+function updateEntry(e, p, by, reason) {
+  const nextName = p.name !== undefined ? String(p.name).trim() || e.name : e.name;
+  const nextType = p.type !== undefined && TYPES[p.type] ? p.type : e.type;
+  assertUniqueName(nextType, nextName, e.id);
+  pushHistory(e, by, reason);
+  e.name = nextName;
+  e.type = nextType;
+  if (p.summary !== undefined) e.summary = String(p.summary).trim();
+  if (p.aliases !== undefined) e.aliases = p.aliases;
+  if (p.tags !== undefined) e.tags = p.tags;
+  if (p.fields !== undefined) e.fields = p.fields;
+  if (p.set_fields) Object.assign(e.fields, p.set_fields);
+  if (p.remove_fields) for (const k of p.remove_fields) delete e.fields[k];
+  if (p.body !== undefined) e.body = p.body;
+  if (p.append_body) e.body = (e.body ? e.body.trimEnd() + "\n\n" : "") + p.append_body;
+  if (p.relations !== undefined) e.relations = p.relations;
+  e.updatedAt = Date.now();
+  e.updatedBy = by;
+  logChange(by, "update", e, reason);
+}
+function addRelation(a, toId, label, by) {
+  a.relations = a.relations || [];
+  if (a.relations.some((r) => r.to === toId && r.label === label)) return false;
+  pushHistory(a, by, "관계 추가");
+  a.relations.push({ to: toId, label });
+  a.updatedAt = Date.now(); a.updatedBy = by;
+  logChange(by, "relation", a, `${label} → ${toId}`);
+  return true;
+}
+function removeRelation(a, toId, label, by) {
+  const before = (a.relations || []).length;
+  const keep = (a.relations || []).filter((r) => !(r.to === toId && (!label || r.label === label)));
+  if (keep.length === before) return 0;
+  pushHistory(a, by, "관계 삭제");
+  a.relations = keep;
+  a.updatedAt = Date.now(); a.updatedBy = by;
+  logChange(by, "relation", a, `삭제 → ${toId}`);
+  return before - keep.length;
+}
+function trashEntry(e, by, reason) {
+  pushHistory(e, by, reason || "삭제");
+  e.deleted = true; e.deletedAt = Date.now(); e.updatedAt = Date.now(); e.updatedBy = by;
+  logChange(by, "delete", e, reason);
+}
+function restoreEntry(e) {
+  assertUniqueName(e.type, e.name, e.id);
+  e.deleted = false; delete e.deletedAt; e.updatedAt = Date.now(); e.updatedBy = "user";
+  logChange("user", "restore", e);
+}
+function purgeEntry(e) {
+  state.entries = state.entries.filter((x) => x !== e);
+  for (const o of state.entries) o.relations = (o.relations || []).filter((r) => r.to !== e.id);
+  logChange("user", "purge", e);
+}
+function restoreVersion(e, h) {
+  const data = clone(h.data);
+  pushHistory(e, "user", "되돌리기 전 상태");
+  for (const k of ["type", "name", "aliases", "summary", "fields", "body", "tags", "relations"]) e[k] = data[k];
+  e.updatedAt = Date.now(); e.updatedBy = "user";
+  logChange("user", "update", e, "이전 버전으로 되돌림");
+}
+function scoreEntry(e, terms) {
+  const hay = {
+    name: e.name.toLowerCase(),
+    alias: (e.aliases || []).join(" ").toLowerCase(),
+    tags: (e.tags || []).join(" ").toLowerCase(),
+    sum: (e.summary || "").toLowerCase(),
+    fields: Object.entries(e.fields || {}).flat().join(" ").toLowerCase(),
+    body: (e.body || "").toLowerCase(),
+    id: e.id.toLowerCase(),
+  };
+  let total = 0;
+  for (const t of terms) {
+    let s = 0;
+    if (hay.id === t) s += 20;
+    if (hay.name.includes(t)) s += 10;
+    if (hay.alias.includes(t)) s += 8;
+    if (hay.tags.includes(t)) s += 5;
+    if (hay.sum.includes(t)) s += 3;
+    if (hay.fields.includes(t)) s += 2;
+    if (hay.body.includes(t)) s += 1;
+    if (!s) return 0;
+    total += s;
+  }
+  return total;
+}
+function indexLine(e) {
+  return `${e.id} ${TYPES[e.type]?.label || e.type} ${e.name}${e.aliases?.length ? ` (${e.aliases.join(", ")})` : ""} — ${cut(e.summary, 70)}`;
+}
+function entryToText(e) {
+  const lines = [`## ${e.id} · ${TYPES[e.type]?.label || e.type} · ${e.name}${e.deleted ? " (휴지통)" : ""}`];
+  if (e.aliases?.length) lines.push(`별칭: ${e.aliases.join(", ")}`);
+  lines.push(`요약: ${e.summary || "(없음)"}`);
+  const f = Object.entries(e.fields || {});
+  if (f.length) { lines.push("속성:"); for (const [k, v] of f) lines.push(`- ${k}: ${v}`); }
+  if (e.body) lines.push("본문:", e.body);
+  const out = (e.relations || []).map((r) => `- ${r.label} → ${r.to} ${nameOf(r.to)}`);
+  const inc = incoming(e.id).map(({ from, label }) => `- ${from.id} ${from.name}의 ${label} (상대 쪽에서 맺은 관계)`);
+  if (out.length || inc.length) lines.push("관계:", ...out, ...inc);
+  if (e.tags?.length) lines.push(`태그: ${e.tags.map((t) => "#" + t).join(" ")}`);
+  lines.push(`최종 수정: ${fmtDate(e.updatedAt)} (${e.updatedBy === "user" ? "사용자 직접" : "Claude"})`);
+  return lines.join("\n");
+}
+function worldOverviewText(w) {
+  return [
+    `세계관: ${w.name}`,
+    `핵심 전제: ${w.premise || "(아직 없음)"}`,
+    `분위기·문체: ${w.tone || "(아직 없음)"}`,
+    `세계 규칙:\n${w.rules || "(아직 없음)"}`,
+  ].join("\n");
+}
+
+/* ============================================================
+   6. 도구 실행
+   ============================================================ */
+function validateInput(schema, input) {
+  if (typeof input !== "object" || input === null || Array.isArray(input)) return "입력이 객체가 아닙니다.";
+  for (const k of schema.required || []) if (input[k] === undefined) return `필수 값 '${k}'가 없습니다.`;
+  for (const [k, v] of Object.entries(input)) {
+    const p = schema.properties[k];
+    if (!p) continue;
+    if (p.type === "string" && typeof v !== "string") return `'${k}'는 문자열이어야 합니다.`;
+    if (p.enum && !p.enum.includes(v)) return `'${k}' 값이 올바르지 않습니다: ${v}`;
+    if (p.type === "boolean" && typeof v !== "boolean") return `'${k}'는 true/false여야 합니다.`;
+    if (p.type === "array" && (!Array.isArray(v) || v.some((x) => typeof x !== "string"))) return `'${k}'는 문자열 배열이어야 합니다.`;
+    if (p.type === "object" && (typeof v !== "object" || v === null || Array.isArray(v) || Object.values(v).some((x) => typeof x !== "string"))) return `'${k}'는 문자열 값을 가진 객체여야 합니다.`;
+  }
+  return null;
+}
+
+const TOOL_IMPL = {
+  search_entries({ query, type }) {
+    let list = activeEntries();
+    if (type) list = list.filter((e) => e.type === type);
+    const q = (query || "").trim().toLowerCase();
+    if (q) {
+      const terms = q.split(/\s+/);
+      list = list.map((e) => ({ e, s: scoreEntry(e, terms) })).filter((x) => x.s > 0).sort((a, b) => b.s - a.s).map((x) => x.e);
+    }
+    const shown = list.slice(0, q ? 40 : 300);
+    const head = list.length ? `${list.length}개 항목${list.length > shown.length ? `, 앞의 ${shown.length}개만 표시` : ""}:` : "일치하는 항목이 없습니다.";
+    return {
+      content: [head, ...shown.map(indexLine)].join("\n"),
+      action: { kind: "read", text: q ? `검색 · ${query}` : "목록 확인" },
+    };
+  },
+  get_entries({ ids }) {
+    const found = [];
+    const missing = [];
+    for (const id of ids.slice(0, 20)) { const e = findEntry(id); if (e) found.push(e); else missing.push(id); }
+    let content = found.map(entryToText).join("\n\n");
+    if (missing.length) content += `\n\n찾을 수 없는 id: ${missing.join(", ")}`;
+    return {
+      content: content.trim(),
+      is_error: !found.length,
+      action: found.length ? { kind: "read", text: `읽음 · ${found.map((e) => e.name).join(", ")}` } : null,
+    };
+  },
+  create_entry(input) {
+    const e = createEntry(input, "claude");
+    return { content: `생성됨: ${e.id} (${TYPES[e.type].label} · ${e.name})`, action: { kind: "create", text: `${TYPES[e.type].label} ${e.name}`, ref: e.id }, changed: true };
+  },
+  update_entry(input) {
+    const e = findEntry(input.id);
+    if (!e || e.deleted) throw new Error(`${input.id} 항목이 없습니다. search_entries로 id를 확인하세요.`);
+    if (input.body !== undefined && input.append_body !== undefined) throw new Error("body와 append_body는 함께 쓸 수 없습니다.");
+    updateEntry(e, input, "claude", input.reason);
+    return { content: `수정됨: ${e.id} (${e.name})`, action: { kind: "update", text: `${TYPES[e.type].label} ${e.name}`, ref: e.id }, changed: true };
+  },
+  set_relation({ from_id, to_id, label, reverse_label, remove }) {
+    const a = findEntry(from_id);
+    const b = findEntry(to_id);
+    if (!a || a.deleted) throw new Error(`${from_id} 항목이 없습니다.`);
+    if (!b || b.deleted) throw new Error(`${to_id} 항목이 없습니다.`);
+    if (a === b) throw new Error("자기 자신과는 관계를 맺을 수 없습니다.");
+    if (remove) {
+      const n = removeRelation(a, b.id, label?.trim(), "claude");
+      return {
+        content: n ? `관계 삭제: ${a.id} → ${b.id}` : "지울 관계가 없습니다.",
+        action: n ? { kind: "relation", text: `${a.name} ⇢ ${b.name} 관계 삭제`, ref: a.id } : null,
+        changed: !!n,
+      };
+    }
+    if (!label || !label.trim()) throw new Error("label이 필요합니다.");
+    addRelation(a, b.id, label.trim(), "claude");
+    if (reverse_label && reverse_label.trim()) addRelation(b, a.id, reverse_label.trim(), "claude");
+    return {
+      content: `관계 저장: ${a.id} -[${label.trim()}]-> ${b.id}${reverse_label ? `, ${b.id} -[${reverse_label.trim()}]-> ${a.id}` : ""}`,
+      action: { kind: "relation", text: `${a.name} → ${label.trim()} → ${b.name}`, ref: a.id },
+      changed: true,
+    };
+  },
+  delete_entry({ id, reason }) {
+    const e = findEntry(id);
+    if (!e || e.deleted) throw new Error(`${id} 항목이 없습니다.`);
+    trashEntry(e, "claude", reason);
+    return { content: `휴지통으로 옮김: ${e.id} (${e.name})`, action: { kind: "delete", text: `${TYPES[e.type].label} ${e.name}`, ref: e.id }, changed: true };
+  },
+  update_world(input) {
+    const w = currentWorld();
+    for (const k of ["name", "premise", "tone", "rules"]) if (input[k] !== undefined) w[k] = input[k];
+    w.updatedAt = Date.now();
+    logChange("claude", "world", null, "세계관 개요 수정");
+    return { content: "세계관 개요를 고쳤습니다.\n" + worldOverviewText(w), action: { kind: "world", text: "세계관 개요" }, changed: true };
+  },
+};
+
+function runTool(name, input) {
+  const tool = TOOLS.find((t) => t.name === name);
+  if (!tool) return { content: `알 수 없는 도구: ${name}`, is_error: true };
+  const problem = validateInput(tool.input_schema, input);
+  if (problem) return { content: JSON.stringify({ error: problem, INVALID_JSON: JSON.stringify(input) }), is_error: true };
+  try {
+    return TOOL_IMPL[name](input);
+  } catch (err) {
+    return { content: String(err?.message || err), is_error: true };
+  }
+}
+
+/* ============================================================
+   7. Claude 호출
+   ============================================================ */
+function calcCost(u, modelId) {
+  const p = PRICES[modelId] || PRICES[settings.model];
+  const inTok = u?.input_tokens || 0;
+  const cw = u?.cache_creation_input_tokens || 0;
+  const cr = u?.cache_read_input_tokens || 0;
+  const out = u?.output_tokens || 0;
+  let pin = p.in, pout = p.out, pcr = p.cacheRead;
+  if (modelId === "claude-haiku-5-5" && inTok + cw + cr > 100000) { pin = 0.5; pout = 2.5; pcr = 0.05; }
+  return (inTok * pin + cw * pin * 1.25 + cr * pcr + out * pout) / 1e6;
+}
+function addCost(v) {
+  cost.total += v;
+  cost.months[monthKey()] = (cost.months[monthKey()] || 0) + v;
+  cost.requests += 1;
+  saveCost();
+  updateCostBadge();
+}
+
+function buildParams() {
+  const m = PRICES[settings.model];
+  const params = {
+    model: settings.model,
+    max_tokens: 64000,
+    system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
+    tools: TOOLS,
+    messages: state.conv.api.slice(),
+    thinking: { type: "adaptive", display: settings.showThinking ? "summarized" : "omitted" },
+    output_config: { effort: settings.effort },
+    cache_control: { type: "ephemeral" },
+  };
+  if (m?.fallback) {
+    // 안전 정책 오판으로 거절되면 서버가 권장 모델로 자동 재시도한다.
+    params.betas = ["server-side-fallback-2026-07-01"];
+    params.fallbacks = "default";
+  }
+  return params;
+}
+
+function contextNoteFor(thread) {
+  const w = currentWorld();
+  if (!thread.contextSent) {
+    const list = activeEntries();
+    const shown = list.slice(0, 400);
+    return [
+      "[설정집 현황 · 앱이 자동으로 첨부함]",
+      worldOverviewText(w),
+      "",
+      `항목 ${list.length}개${list.length > shown.length ? ` (앞의 ${shown.length}개만 표시, 나머지는 search_entries로 찾을 것)` : ""}:`,
+      ...(shown.length ? shown.map(indexLine) : ["(아직 없음)"]),
+    ].join("\n");
+  }
+  const changes = state.log.filter((c) => c.by === "user" && c.at > (thread.syncedAt || 0));
+  if (!changes.length) return null;
+  const label = { create: "추가", update: "수정", delete: "삭제", restore: "복구", purge: "완전 삭제", relation: "관계 변경", world: "세계관 개요 수정" };
+  const seen = new Set();
+  const lines = [];
+  for (const c of changes.slice().reverse()) {
+    const key = (c.id || "world") + c.action;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    lines.push(c.id ? `- ${c.id} ${c.name}: ${label[c.action] || c.action}` : `- ${label[c.action] || c.action}`);
+  }
+  return ["[앱 알림: 사용자가 대화 밖에서 직접 바꾼 내용. 필요하면 get_entries로 최신 내용을 읽을 것]", ...lines.reverse()].join("\n");
+}
+
+function apiMessage(err) {
+  return err?.error?.error?.message || err?.message || String(err);
+}
+function describeError(err) {
+  if (err instanceof Anthropic.AuthenticationError) return "API 키가 올바르지 않습니다. 설정에서 키를 확인하세요.";
+  if (err instanceof Anthropic.PermissionDeniedError) return "이 API 키로는 이 모델을 쓸 권한이 없습니다. 설정에서 다른 모델을 고르거나 Console 권한을 확인하세요.";
+  if (err instanceof Anthropic.NotFoundError) return "모델을 찾을 수 없습니다. 설정에서 모델을 확인하세요.";
+  if (err instanceof Anthropic.RateLimitError) return "요청 한도에 걸렸습니다. 잠시 후 다시 시도하세요.";
+  if (err instanceof Anthropic.BadRequestError) {
+    const m = apiMessage(err);
+    return /credit/i.test(m) ? `크레딧이 부족합니다. Console의 Billing에서 잔액을 확인하세요. (${m})` : `요청이 거부되었습니다: ${m}`;
+  }
+  if (err instanceof Anthropic.InternalServerError) return `Anthropic 서버가 일시적으로 응답하지 않습니다(${err.status}). 잠시 후 다시 시도하세요.`;
+  if (err instanceof Anthropic.APIConnectionError) return "네트워크에 연결할 수 없습니다. 인터넷 연결을 확인하세요.";
+  if (err instanceof Anthropic.APIError) return `API 오류 ${err.status ?? ""}: ${apiMessage(err)}`;
+  return `오류: ${err?.message || err}`;
+}
+
+async function sendMessage(text) {
+  if (state.busy) return;
+  if (!settings.apiKey) { toast("설정에서 API 키를 먼저 넣으세요"); switchView("settings"); return; }
+  if (!currentWorld()) { toast("먼저 세계관을 만드세요"); openWorldSheet(); return; }
+  let thread = currentThread();
+  if (!thread) thread = await createThread(text);
+  const blocks = [];
+  const note = contextNoteFor(thread);
+  if (note) blocks.push({ type: "text", text: note });
+  blocks.push({ type: "text", text });
+  state.conv.api.push({ role: "user", content: blocks });
+  state.conv.display.push({ role: "user", text, at: Date.now() });
+  thread.contextSent = true;
+  thread.syncedAt = Date.now();
+  thread.updatedAt = Date.now();
+  await Promise.all([persist.conv(), persist.threads()]);
+  renderChat();
+  await runAgent();
+}
+
+function handleEvent(ev, item, blockParts) {
+  if (ev.type === "content_block_start") {
+    const b = ev.content_block;
+    if (b.type === "thinking" || b.type === "redacted_thinking") {
+      const p = { kind: "thinking", text: "", streaming: true };
+      item.parts.push(p);
+      blockParts.set(ev.index, p);
+      live.status = "생각하는 중…";
+    } else if (b.type === "text") {
+      const p = { kind: "text", text: "" };
+      item.parts.push(p);
+      blockParts.set(ev.index, p);
+      live.status = "";
+    } else if (b.type === "tool_use") {
+      live.status = TOOL_STATUS[b.name] || "설정집 작업 중…";
+    } else if (b.type === "fallback") {
+      item.parts.push({ kind: "note", tone: "info", text: `안전 정책 판단으로 ${b.to?.model || "다른 모델"}이 이어서 답합니다.` });
+    }
+  } else if (ev.type === "content_block_delta") {
+    const p = blockParts.get(ev.index);
+    if (!p) return;
+    if (ev.delta.type === "thinking_delta") p.text += ev.delta.thinking;
+    else if (ev.delta.type === "text_delta") p.text += ev.delta.text;
+  } else if (ev.type === "content_block_stop") {
+    const p = blockParts.get(ev.index);
+    if (p && p.kind === "thinking") { p.streaming = false; live.status = "정리하는 중…"; }
+  }
+  scheduleLive();
+}
+
+async function runAgent() {
+  const thread = currentThread();
+  state.busy = true;
+  const item = { role: "assistant", parts: [], at: Date.now(), cost: 0, model: settings.model };
+  state.conv.display.push(item);
+  live = { item, el: null, status: "생각하는 중…", stream: null, stopped: false };
+  renderChat();
+  updateComposer();
+  const client = new Anthropic({ apiKey: settings.apiKey, dangerouslyAllowBrowser: true });
+  let jsonRetries = 0;
+  let dataChanged = false;
+  try {
+    let finished = false;
+    for (let round = 0; round < MAX_ROUNDS && !finished; round++) {
+      const before = item.parts.length;
+      const blockParts = new Map();
+      let message;
+      try {
+        const stream = client.beta.messages.stream(buildParams());
+        live.stream = stream;
+        for await (const ev of stream) handleEvent(ev, item, blockParts);
+        message = await stream.finalMessage();
+        jsonRetries = 0;
+      } catch (err) {
+        if (err instanceof Anthropic.APIUserAbortError || live.stopped) {
+          item.parts.push({ kind: "note", tone: "info", text: "응답을 멈췄습니다. 멈춘 부분은 대화 기록에 남지 않습니다." });
+          return;
+        }
+        if (err instanceof Anthropic.APIError) throw err;
+        if (jsonRetries++ >= 2) throw err;
+        item.parts.length = before;
+        continue;
+      }
+
+      const turnCost = calcCost(message.usage, message.model);
+      item.cost += turnCost;
+      item.model = message.model;
+      addCost(turnCost);
+      if (thread) {
+        const u = message.usage || {};
+        thread.lastCtx = (u.input_tokens || 0) + (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0);
+      }
+
+      if (message.stop_reason === "refusal") {
+        const cat = message.stop_details?.category;
+        item.parts.push({ kind: "note", tone: "error", text: `안전 정책에 따라 이 요청에는 답할 수 없습니다${cat ? ` (분류: ${cat})` : ""}. 표현을 바꿔 다시 요청해 보세요.` });
+        return;
+      }
+      const toolUses = message.content.filter((b) => b.type === "tool_use");
+      if (message.stop_reason === "max_tokens" && toolUses.length) {
+        item.parts.push({ kind: "note", tone: "error", text: "응답이 너무 길어 중간에 끊겼습니다. 요청을 나눠서 다시 보내 주세요." });
+        return;
+      }
+      state.conv.api.push({ role: "assistant", content: clone(message.content) });
+      if (message.stop_reason === "pause_turn") { await persist.conv(); continue; }
+      if (!toolUses.length) {
+        if (message.stop_reason === "max_tokens") item.parts.push({ kind: "note", tone: "info", text: "답변이 길이 제한에 걸려 끝까지 나오지 않았습니다. '계속'이라고 보내면 이어서 씁니다." });
+        finished = true;
+        break;
+      }
+      const results = [];
+      for (const tu of toolUses) {
+        const r = runTool(tu.name, tu.input);
+        results.push({ type: "tool_result", tool_use_id: tu.id, content: r.content, ...(r.is_error ? { is_error: true } : {}) });
+        if (r.action) item.parts.push({ kind: "action", action: r.action });
+        if (r.changed) dataChanged = true;
+      }
+      state.conv.api.push({ role: "user", content: results });
+      live.status = "이어서 생각하는 중…";
+      if (dataChanged) { await persist.world(); renderCodex(); renderWorldName(); }
+      await persist.conv();
+      scheduleLive();
+      if (round === MAX_ROUNDS - 1) {
+        item.parts.push({ kind: "note", tone: "info", text: "작업 단계가 많아 여기서 멈췄습니다. '계속'이라고 보내면 이어서 진행합니다." });
+      }
+    }
+  } catch (err) {
+    console.error(err);
+    item.parts.push({ kind: "note", tone: "error", text: describeError(err) });
+  } finally {
+    item.parts = item.parts.filter((p) => !(p.kind === "thinking" && !p.text.trim()));
+    for (const p of item.parts) delete p.streaming;
+    live = null;
+    state.busy = false;
+    if (thread) thread.updatedAt = Date.now();
+    await Promise.all([persist.conv(), persist.threads(), persist.world(), persist.worlds()]);
+    renderChat();
+    renderCodex();
+    renderWorldName();
+    updateComposer();
+  }
+}
+
+function stopAgent() {
+  if (!live) return;
+  live.stopped = true;
+  try { live.stream?.abort(); } catch { /* 이미 끝남 */ }
+}
+
+/* ============================================================
+   8. 마크다운
+   ============================================================ */
+function inline(s) {
+  return esc(s)
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/(^|[^*\w])\*(?!\s)([^*\n]+?)\*(?!\w)/g, "$1<em>$2</em>")
+    .replace(/\b([CPFSEIKX]-\d{3,})\b/g, '<button type="button" class="ref" data-ref="$1">$1</button>');
+}
+function md(src) {
+  const lines = String(src || "").replace(/\r/g, "").split("\n");
+  let html = "";
+  let para = [];
+  let list = null;
+  let quote = [];
+  let code = null;
+  const flushPara = () => { if (para.length) { html += `<p>${para.map(inline).join("<br>")}</p>`; para = []; } };
+  const flushList = () => { if (list) { html += `<${list.tag}>${list.items.map((i) => `<li>${inline(i)}</li>`).join("")}</${list.tag}>`; list = null; } };
+  const flushQuote = () => { if (quote.length) { html += `<blockquote>${quote.map(inline).join("<br>")}</blockquote>`; quote = []; } };
+  const flushAll = () => { flushPara(); flushList(); flushQuote(); };
+  for (const line of lines) {
+    if (code) {
+      if (/^\s*```/.test(line)) { html += `<pre><code>${esc(code.join("\n"))}</code></pre>`; code = null; } else code.push(line);
+      continue;
+    }
+    if (/^\s*```/.test(line)) { flushAll(); code = []; continue; }
+    if (!line.trim()) { flushAll(); continue; }
+    let m;
+    if ((m = line.match(/^(#{1,4})\s+(.*)$/))) { flushAll(); const lv = Math.min(m[1].length + 2, 6); html += `<h${lv}>${inline(m[2])}</h${lv}>`; continue; }
+    if (/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(line)) { flushAll(); html += "<hr>"; continue; }
+    if ((m = line.match(/^\s*[-*•]\s+(.*)$/))) {
+      flushPara(); flushQuote();
+      if (!list || list.tag !== "ul") { flushList(); list = { tag: "ul", items: [] }; }
+      list.items.push(m[1]);
+      continue;
+    }
+    if ((m = line.match(/^\s*\d+[.)]\s+(.*)$/))) {
+      flushPara(); flushQuote();
+      if (!list || list.tag !== "ol") { flushList(); list = { tag: "ol", items: [] }; }
+      list.items.push(m[1]);
+      continue;
+    }
+    if ((m = line.match(/^>\s?(.*)$/))) { flushPara(); flushList(); quote.push(m[1]); continue; }
+    if (list && /^\s{2,}\S/.test(line)) { list.items[list.items.length - 1] += " " + line.trim(); continue; }
+    flushList(); flushQuote();
+    para.push(line);
+  }
+  if (code) html += `<pre><code>${esc(code.join("\n"))}</code></pre>`;
+  flushAll();
+  return html;
+}
+
+/* ============================================================
+   9. 화면: 공통
+   ============================================================ */
+function toast(msg) {
+  const t = $("#toast");
+  t.textContent = msg;
+  t.hidden = false;
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => { t.hidden = true; }, 2600);
+}
+function confirmBox(message, okLabel = "확인", danger = false) {
+  return new Promise((resolve) => {
+    const d = $("#dialog");
+    d.innerHTML = `<div class="dialog-backdrop" data-r="0"></div>
+      <div class="dialog-panel" role="alertdialog" aria-modal="true">
+        <p>${esc(message)}</p>
+        <div class="row end">
+          <button class="btn" type="button" data-r="0">취소</button>
+          <button class="btn ${danger ? "btn-danger-solid" : "btn-primary"}" type="button" data-r="1">${esc(okLabel)}</button>
+        </div>
+      </div>`;
+    d.hidden = false;
+    $('[data-r="1"]', d).focus();
+    d.onclick = (e) => {
+      const b = e.target.closest("[data-r]");
+      if (!b) return;
+      d.hidden = true;
+      d.onclick = null;
+      resolve(b.dataset.r === "1");
+    };
+  });
+}
+function openSheet(html, mount) {
+  const body = $("#sheetBody");
+  body.innerHTML = `<div class="sheet-grip"></div>${html}`;
+  $("#sheet").hidden = false;
+  body.scrollTop = 0;
+  body.onclick = null;
+  body.onsubmit = null;
+  mount?.(body);
+}
+function closeSheet() {
+  $("#sheet").hidden = true;
+  $("#sheetBody").innerHTML = "";
+}
+function switchView(view) {
+  state.view = view;
+  for (const v of ["chat", "codex", "settings"]) $(`#view-${v}`).hidden = v !== view;
+  $$(".tabbar button").forEach((b) => (b.dataset.view === view ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
+  LS.set("lk.view", view);
+  if (view === "codex") renderCodex();
+  if (view === "settings") renderSettings();
+  if (view === "chat") scrollChatToBottom(true);
+}
+function renderWorldName() {
+  const w = currentWorld();
+  $("#worldName").textContent = w ? w.name : "세계관 없음";
+}
+function updateCostBadge() {
+  $("#costBadge").textContent = fmtUSD(cost.months[monthKey()] || 0);
+}
+
+/* ============================================================
+   10. 화면: 대화
+   ============================================================ */
+function actionChip(a) {
+  const glyph = { create: "+", update: "✎", relation: "↔", delete: "×", world: "◎", read: "·" }[a.kind] || "·";
+  const verb = { create: "추가", update: "수정", relation: "", delete: "휴지통", world: "수정", read: "" }[a.kind] || "";
+  const label = `${a.text}${verb ? " " + verb : ""}`;
+  const attr = a.ref ? ` data-ref="${esc(a.ref)}"` : "";
+  return `<button type="button" class="action-chip ${a.kind === "read" ? "read" : ""}"${attr}><span class="glyph">${glyph}</span><span>${esc(label)}</span></button>`;
+}
+function assistantInner(item, isLive) {
+  let html = "";
+  let chips = [];
+  const flushChips = () => { if (chips.length) { html += `<div class="chips">${chips.join("")}</div>`; chips = []; } };
+  for (const p of item.parts) {
+    if (p.kind === "action") { chips.push(actionChip(p.action)); continue; }
+    flushChips();
+    if (p.kind === "thinking") {
+      if (!p.text.trim()) continue;
+      html += `<details class="thinking"${isLive && p.streaming ? " open" : ""}><summary>생각 요약</summary><div class="thinking-body md">${md(p.text)}</div></details>`;
+    } else if (p.kind === "text") {
+      if (p.text) html += `<div class="md">${md(p.text)}</div>`;
+    } else if (p.kind === "note") {
+      html += `<p class="note ${p.tone === "error" ? "note-error" : ""}">${esc(p.text)}</p>`;
+    }
+  }
+  flushChips();
+  if (isLive && live?.status) html += `<div class="status-line">${esc(live.status)}</div>`;
+  if (!isLive && item.cost) html += `<div class="msg-meta">${esc(PRICES[item.model]?.label || item.model)} · ${fmtUSD(item.cost)}</div>`;
+  return html;
+}
+function emptyChatHTML() {
+  const w = currentWorld();
+  if (!w) {
+    return `<div class="empty-chat">
+      <h2>세계관을 하나 열어 보세요</h2>
+      <p>대화하면서 인물, 장소, 세력, 역사를 만들면 Claude가 설정집에 정리해 둡니다.</p>
+      <div class="row">
+        <button class="btn btn-primary" type="button" data-act="new-world">새 세계관 만들기</button>
+        <button class="btn" type="button" data-act="load-sample">예시 세계관 둘러보기</button>
+      </div>
+    </div>`;
+  }
+  const ideas = [
+    "주인공이 될 인물을 같이 만들어 보자",
+    "이 세계의 마법이나 기술 체계를 정해 줘",
+    "지금 설정에서 서로 어긋나는 부분을 찾아 줘",
+    "설정집을 바탕으로 이야기 갈등 3가지를 제안해 줘",
+  ];
+  return `<div class="empty-chat">
+    <span class="eyebrow">새 대화 · ${esc(w.name)}</span>
+    <h2>무엇부터 만들어 볼까요?</h2>
+    <p>대화 중에 정해진 설정은 설정집에 바로 기록됩니다. 설정집 탭에서 직접 고칠 수도 있습니다.</p>
+    <div class="suggestions">${ideas.map((t) => `<button class="suggestion" type="button" data-suggest="${esc(t)}">${esc(t)}</button>`).join("")}</div>
+  </div>`;
+}
+function renderChat() {
+  const log = $("#chatLog");
+  const d = state.conv.display;
+  if (!d.length) {
+    log.innerHTML = emptyChatHTML();
+  } else {
+    log.innerHTML = d.map((m, i) => {
+      if (m.role === "user") return `<div class="msg-user">${esc(m.text)}</div>`;
+      const isLive = live && live.item === m;
+      return `<div class="msg-assistant" data-i="${i}">${assistantInner(m, isLive)}</div>`;
+    }).join("");
+    const last = state.conv.api[state.conv.api.length - 1];
+    if (!state.busy && last && last.role === "user") {
+      log.insertAdjacentHTML("beforeend", `<div class="retry-row"><button class="btn btn-small" type="button" data-act="retry">다시 시도</button></div>`);
+    }
+  }
+  if (live) live.el = log.querySelector(`.msg-assistant[data-i="${state.conv.display.indexOf(live.item)}"]`);
+  const t = currentThread();
+  $("#threadTitle").textContent = t ? t.title : "";
+  const ctx = t?.lastCtx || 0;
+  const meter = $("#ctxMeter");
+  meter.textContent = ctx ? `맥락 ${fmtTok(ctx)}` : "";
+  meter.classList.toggle("warn", ctx > CTX_WARN);
+  meter.title = ctx > CTX_WARN ? "대화가 길어 요청마다 비용이 큽니다. 새 대화를 시작해 보세요." : "";
+  updateComposer();
+  scrollChatToBottom(true);
+}
+let liveFrame = 0;
+function scheduleLive() {
+  if (liveFrame) return;
+  liveFrame = requestAnimationFrame(() => {
+    liveFrame = 0;
+    if (!live) return;
+    if (!live.el || !live.el.isConnected) {
+      live.el = $(`#chatLog .msg-assistant[data-i="${state.conv.display.indexOf(live.item)}"]`);
+    }
+    if (live.el) {
+      const sc = $("#chatScroll");
+      const nearBottom = sc.scrollHeight - sc.scrollTop - sc.clientHeight < 120;
+      live.el.innerHTML = assistantInner(live.item, true);
+      if (nearBottom) sc.scrollTop = sc.scrollHeight;
+    }
+  });
+}
+function scrollChatToBottom(force) {
+  const sc = $("#chatScroll");
+  if (force) requestAnimationFrame(() => { sc.scrollTop = sc.scrollHeight; });
+}
+function updateComposer() {
+  const btn = $("#sendBtn");
+  btn.textContent = state.busy ? "멈추기" : "보내기";
+  btn.classList.toggle("btn-primary", !state.busy);
+  btn.classList.toggle("btn-danger", state.busy);
+  $("#keyBanner").hidden = !!settings.apiKey;
+}
+async function createThread(firstText) {
+  const t = { id: uid(), title: cut(firstText, 30) || "새 대화", createdAt: Date.now(), updatedAt: Date.now(), contextSent: false, syncedAt: 0, lastCtx: 0 };
+  state.threads.push(t);
+  state.threadId = t.id;
+  state.conv = { api: [], display: [] };
+  LS.set("lk.thread", t.id);
+  await persist.threads();
+  return t;
+}
+async function openThread(id) {
+  state.threadId = id;
+  state.conv = (await idb.get("conv:" + id)) || { api: [], display: [] };
+  LS.set("lk.thread", id);
+  renderChat();
+}
+function newThread() {
+  if (state.busy) { toast("응답이 끝난 뒤에 바꿀 수 있습니다"); return; }
+  state.threadId = null;
+  state.conv = { api: [], display: [] };
+  LS.set("lk.thread", null);
+  renderChat();
+  switchView("chat");
+}
+function openThreadsSheet() {
+  if (state.busy) { toast("응답이 끝난 뒤에 바꿀 수 있습니다"); return; }
+  const list = state.threads.slice().sort((a, b) => b.updatedAt - a.updatedAt);
+  openSheet(`<h2 class="sheet-title">대화 목록</h2>
+    ${list.length ? `<ul class="list-plain">${list.map((t) => `<li class="list-row">
+      <button class="list-item ${t.id === state.threadId ? "current" : ""}" type="button" data-thread="${t.id}">
+        <span class="t">${esc(t.title)}</span>
+        <span class="s">${fmtDate(t.updatedAt)}${t.lastCtx ? ` · 맥락 ${fmtTok(t.lastCtx)}` : ""}</span>
+      </button>
+      <button class="icon-btn" type="button" data-del-thread="${t.id}" aria-label="대화 삭제">×</button>
+    </li>`).join("")}</ul>` : `<p class="meta">아직 대화가 없습니다.</p>`}
+    <div class="sheet-actions"><button class="btn btn-primary" type="button" data-act="new-thread">새 대화</button></div>
+    <p class="meta">대화를 지워도 설정집은 그대로 남습니다. 대화가 길어지면 새 대화를 시작하는 편이 저렴합니다.</p>`, (root) => {
+    root.onclick = async (e) => {
+      const open = e.target.closest("[data-thread]");
+      const del = e.target.closest("[data-del-thread]");
+      if (open) { closeSheet(); await openThread(open.dataset.thread); switchView("chat"); }
+      else if (del) {
+        const t = state.threads.find((x) => x.id === del.dataset.delThread);
+        if (!t || !(await confirmBox(`'${t.title}' 대화를 지울까요? 설정집은 지워지지 않습니다.`, "지우기", true))) return;
+        state.threads = state.threads.filter((x) => x !== t);
+        await Promise.all([idb.del("conv:" + t.id), persist.threads()]);
+        if (state.threadId === t.id) newThread();
+        openThreadsSheet();
+      } else if (e.target.closest('[data-act="new-thread"]')) { closeSheet(); newThread(); }
+    };
+  });
+}
+
+/* ============================================================
+   11. 화면: 설정집
+   ============================================================ */
+function typeColor(type) { return `var(--t-${TYPES[type] ? type : "other"})`; }
+function entryCard(e) {
+  return `<button class="entry-card" type="button" data-ref="${e.id}" style="--tc:${typeColor(e.type)}">
+    <span class="catno">${e.id}</span>
+    <span class="ename">${esc(e.name)}</span>
+    <span class="esum">${esc(e.summary || "요약 없음")}</span>
+    ${e.tags?.length ? `<span class="etags">${e.tags.map((t) => "#" + esc(t)).join(" ")}</span>` : ""}
+  </button>`;
+}
+function renderCodex() {
+  const root = $("#codex");
+  const w = currentWorld();
+  if (!w) {
+    root.innerHTML = `<div class="empty-state"><h3>아직 세계관이 없습니다</h3><p>새로 만들거나 예시 세계관을 불러와 보세요.</p>
+      <div class="row"><button class="btn btn-primary" type="button" data-act="new-world">새 세계관 만들기</button><button class="btn" type="button" data-act="load-sample">예시 세계관</button></div></div>`;
+    return;
+  }
+  // 검색창에 입력 중이면 입력란은 그대로 두고 결과만 다시 그린다(휴대폰 키보드가 닫히지 않게).
+  if (document.activeElement?.id === "codexSearch" && $("#codexResults")) { renderCodexResults(); return; }
+  root.innerHTML = `
+    <section class="world-card">
+      <span class="eyebrow">세계관 개요</span>
+      <h2>${esc(w.name)}</h2>
+      ${w.premise ? `<p>${esc(w.premise)}</p>` : `<p class="meta">핵심 전제를 아직 정하지 않았습니다.</p>`}
+      ${w.tone ? `<span class="label">분위기 · 문체</span><p>${esc(w.tone)}</p>` : ""}
+      ${w.rules ? `<span class="label">세계 규칙</span><div class="md">${md(w.rules)}</div>` : ""}
+      <div class="row"><button class="btn btn-small" type="button" data-act="edit-world">개요 편집</button></div>
+    </section>
+    <div class="codex-tools">
+      <input id="codexSearch" type="search" placeholder="이름, 태그, 내용 검색" value="${esc(state.codexQuery)}" aria-label="설정집 검색">
+      <button class="btn btn-primary" type="button" data-act="new-entry">새 항목</button>
+    </div>
+    <div id="codexResults"></div>`;
+  const input = $("#codexSearch", root);
+  input.oninput = () => { state.codexQuery = input.value; renderCodexResults(); };
+  renderCodexResults();
+}
+function renderCodexResults() {
+  const box = $("#codexResults");
+  if (!box) return;
+  const all = activeEntries();
+  const counts = {};
+  for (const e of all) counts[e.type] = (counts[e.type] || 0) + 1;
+  let list = state.codexType === "all" ? all : all.filter((e) => e.type === state.codexType);
+  const q = state.codexQuery.trim().toLowerCase();
+  if (q) {
+    const terms = q.split(/\s+/);
+    list = list.filter((e) => scoreEntry(e, terms) > 0);
+  }
+  const groups = TYPE_KEYS.map((k) => ({ k, items: list.filter((e) => e.type === k).sort((a, b) => a.id.localeCompare(b.id)) })).filter((g) => g.items.length);
+  const trashCount = state.entries.length - all.length;
+  box.innerHTML = `
+    <div class="type-chips" role="toolbar" aria-label="종류">
+      <button class="type-chip" type="button" data-type="all" aria-pressed="${state.codexType === "all"}">전체<span class="n">${all.length}</span></button>
+      ${TYPE_KEYS.map((k) => `<button class="type-chip" type="button" data-type="${k}" aria-pressed="${state.codexType === k}">${TYPES[k].label}<span class="n">${counts[k] || 0}</span></button>`).join("")}
+    </div>
+    ${groups.length ? groups.map((g) => `<h3 class="group-title">${TYPES[g.k].label} · ${g.items.length}</h3><div class="entry-list">${g.items.map(entryCard).join("")}</div>`).join("")
+      : `<div class="empty-state"><h3>${q || state.codexType !== "all" ? "조건에 맞는 항목이 없습니다" : "설정집이 비어 있습니다"}</h3><p>대화 탭에서 Claude와 이야기하면 항목이 여기에 쌓입니다.</p></div>`}
+    ${trashCount ? `<div class="row" style="margin-top:20px"><button class="btn btn-small" type="button" data-act="trash">휴지통 ${trashCount}</button></div>` : ""}`;
+}
+
+function relationsHTML(e) {
+  const out = (e.relations || []).map((r) => {
+    const t = findEntry(r.to);
+    return `<div class="rel"><span class="lbl">${esc(r.label)}</span> → ${t ? `<button type="button" class="ref" data-ref="${t.id}">${t.id}</button> ${esc(t.name)}${t.deleted ? ' <span class="pill pill-danger">휴지통</span>' : ""}` : esc(r.to)}</div>`;
+  });
+  const inc = incoming(e.id).map(({ from, label }) => `<div class="rel"><button type="button" class="ref" data-ref="${from.id}">${from.id}</button><span>${esc(from.name)}의 <span class="lbl">${esc(label)}</span></span></div>`);
+  if (!out.length && !inc.length) return "";
+  return `<p class="section-label">관계</p><div class="rel-list">${out.join("")}${inc.join("")}</div>`;
+}
+function openEntry(ref) {
+  const e = findEntry(ref);
+  if (!e) { toast(`${ref} 항목을 찾을 수 없습니다`); return; }
+  const fields = Object.entries(e.fields || {});
+  openSheet(`
+    <div class="entry-head" style="--tc:${typeColor(e.type)}">
+      <span class="catno">${e.id}</span><span>${TYPES[e.type]?.label || e.type}</span>${e.deleted ? '<span class="pill pill-danger">휴지통</span>' : ""}
+    </div>
+    <h2 class="entry-name">${esc(e.name)}</h2>
+    ${e.aliases?.length ? `<p class="aliases">${esc(e.aliases.join(" · "))}</p>` : ""}
+    <p class="summary">${esc(e.summary)}</p>
+    ${fields.length ? `<dl class="fields">${fields.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : ""}
+    ${e.body ? `<p class="section-label">본문</p><div class="md">${md(e.body)}</div>` : ""}
+    ${relationsHTML(e)}
+    ${e.tags?.length ? `<p class="section-label">태그</p><div>${e.tags.map((t) => `<span class="tag">#${esc(t)}</span>`).join("")}</div>` : ""}
+    <p class="meta">${fmtDate(e.updatedAt)} 수정 · ${e.updatedBy === "user" ? "직접 수정" : "Claude"} · 이력 ${e.history?.length || 0}개</p>
+    <div class="sheet-actions">
+      ${e.deleted
+        ? `<button class="btn btn-primary" type="button" data-act="restore">되살리기</button><button class="btn" type="button" data-act="history">이력</button><button class="btn btn-danger" type="button" data-act="purge">완전히 지우기</button>`
+        : `<button class="btn btn-primary" type="button" data-act="develop">대화로 발전시키기</button><button class="btn" type="button" data-act="edit">편집</button><button class="btn" type="button" data-act="history">이력</button><button class="btn btn-danger" type="button" data-act="trash-entry">삭제</button>`}
+    </div>`, (root) => {
+    root.onclick = async (ev) => {
+      const refBtn = ev.target.closest("[data-ref]");
+      if (refBtn) { openEntry(refBtn.dataset.ref); return; }
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (!act) return;
+      if (act !== "develop" && act !== "history" && state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 고쳐 주세요"); return; }
+      if (act === "develop") {
+        closeSheet();
+        switchView("chat");
+        const input = $("#input");
+        input.value = `${e.name}(${e.id})를 더 발전시키고 싶어. `;
+        autosize(input);
+        input.focus();
+      } else if (act === "edit") openEditor(e);
+      else if (act === "history") openHistory(e);
+      else if (act === "trash-entry") {
+        if (!(await confirmBox(`'${e.name}'을(를) 휴지통으로 옮길까요?`, "삭제", true))) return;
+        trashEntry(e, "user");
+        await persist.world();
+        closeSheet(); renderCodex(); toast("휴지통으로 옮겼습니다");
+      } else if (act === "restore") {
+        try { restoreEntry(e); } catch (err) { toast(err.message); return; }
+        await persist.world();
+        renderCodex(); openEntry(e.id); toast("되살렸습니다");
+      } else if (act === "purge") {
+        if (!(await confirmBox(`'${e.name}'을(를) 완전히 지웁니다. 되돌릴 수 없습니다.`, "완전히 지우기", true))) return;
+        purgeEntry(e);
+        await persist.world();
+        closeSheet(); renderCodex(); toast("완전히 지웠습니다");
+      }
+    };
+  });
+}
+function openHistory(e) {
+  const hs = (e.history || []).map((h, i) => ({ h, i })).reverse();
+  openSheet(`<h2 class="sheet-title">${esc(e.name)} · 이력</h2>
+    ${hs.length ? `<ul class="list-plain">${hs.map(({ h, i }) => `<li class="list-item">
+      <span class="t">${fmtDate(h.at)} · ${h.by === "user" ? "직접 수정" : "Claude"}</span>
+      <span class="s">${esc(h.reason || "수정")} — 당시 요약: ${esc(cut(h.data.summary, 60))}</span>
+      <div class="row" style="margin-top:6px"><button class="btn btn-small" type="button" data-restore="${i}">이 버전으로 되돌리기</button></div>
+    </li>`).join("")}</ul>` : `<p class="meta">아직 이력이 없습니다.</p>`}
+    <div class="sheet-actions"><button class="btn" type="button" data-act="back">돌아가기</button></div>`, (root) => {
+    root.onclick = async (ev) => {
+      const r = ev.target.closest("[data-restore]");
+      if (r) {
+        if (state.busy) { toast("Claude가 작업 중입니다"); return; }
+        const h = e.history[Number(r.dataset.restore)];
+        if (!h || !(await confirmBox(`${fmtDate(h.at)} 버전으로 되돌릴까요? 지금 상태도 이력에 남습니다.`, "되돌리기"))) return;
+        try { restoreVersion(e, h); } catch (err) { toast(err.message); return; }
+        await persist.world();
+        renderCodex(); openEntry(e.id); toast("되돌렸습니다");
+      } else if (ev.target.closest('[data-act="back"]')) openEntry(e.id);
+    };
+  });
+}
+function kvRow(k = "", v = "") {
+  return `<div class="kv-row"><input class="fk" placeholder="이름 (예: 나이)" value="${esc(k)}" aria-label="속성 이름"><input class="fv" placeholder="내용" value="${esc(v)}" aria-label="속성 내용"><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button></div>`;
+}
+function relRow(selfId, to = "", label = "") {
+  const opts = activeEntries().filter((x) => x.id !== selfId).sort((a, b) => a.id.localeCompare(b.id))
+    .map((x) => `<option value="${x.id}"${x.id === to ? " selected" : ""}>${x.id} ${esc(x.name)}</option>`).join("");
+  return `<div class="kv-row"><input class="rl" placeholder="관계 (예: 스승)" value="${esc(label)}" aria-label="관계 이름"><select class="rt" aria-label="대상 항목"><option value="">대상 선택</option>${opts}</select><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button></div>`;
+}
+function openEditor(e, presetType) {
+  const isNew = !e;
+  const d = e ? e : { type: presetType || (state.codexType !== "all" ? state.codexType : "character"), name: "", aliases: [], summary: "", fields: {}, body: "", tags: [], relations: [] };
+  const selfId = e?.id || "";
+  openSheet(`<h2 class="sheet-title">${isNew ? "새 항목" : `${esc(e.id)} 편집`}</h2>
+    <form class="form" id="entryForm">
+      <label>종류<select id="f-type">${TYPE_KEYS.map((k) => `<option value="${k}"${k === d.type ? " selected" : ""}>${TYPES[k].label}</option>`).join("")}</select></label>
+      <label>이름<input id="f-name" required value="${esc(d.name)}"></label>
+      <label>별칭 <small>쉼표로 구분</small><input id="f-aliases" value="${esc((d.aliases || []).join(", "))}"></label>
+      <label>한 줄 요약<input id="f-summary" value="${esc(d.summary)}"></label>
+      <fieldset><legend>속성</legend><div id="f-fields">${Object.entries(d.fields || {}).map(([k, v]) => kvRow(k, v)).join("")}</div>
+        <button type="button" class="btn btn-ghost btn-small" data-add="field">속성 추가</button></fieldset>
+      <label>본문 <small>마크다운</small><textarea id="f-body" rows="8">${esc(d.body)}</textarea></label>
+      <fieldset><legend>관계</legend><div id="f-rels">${(d.relations || []).map((r) => relRow(selfId, r.to, r.label)).join("")}</div>
+        <button type="button" class="btn btn-ghost btn-small" data-add="rel">관계 추가</button></fieldset>
+      <label>태그 <small>쉼표로 구분</small><input id="f-tags" value="${esc((d.tags || []).join(", "))}"></label>
+      <div class="sheet-actions">
+        <button class="btn" type="button" data-act="cancel">취소</button>
+        <button class="btn btn-primary" type="submit">저장</button>
+      </div>
+    </form>`, (root) => {
+    root.onclick = (ev) => {
+      const add = ev.target.closest("[data-add]");
+      if (add?.dataset.add === "field") $("#f-fields", root).insertAdjacentHTML("beforeend", kvRow());
+      else if (add?.dataset.add === "rel") $("#f-rels", root).insertAdjacentHTML("beforeend", relRow(selfId));
+      else if (ev.target.closest("[data-del-row]")) ev.target.closest(".kv-row").remove();
+      else if (ev.target.closest('[data-act="cancel"]')) { if (e) openEntry(e.id); else closeSheet(); }
+    };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      if (state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 저장해 주세요"); return; }
+      const fields = {};
+      for (const row of $$("#f-fields .kv-row", root)) {
+        const k = $(".fk", row).value.trim();
+        if (k) fields[k] = $(".fv", row).value.trim();
+      }
+      const relations = [];
+      for (const row of $$("#f-rels .kv-row", root)) {
+        const to = $(".rt", row).value;
+        const label = $(".rl", row).value.trim();
+        if (to && label && !relations.some((r) => r.to === to && r.label === label)) relations.push({ to, label });
+      }
+      const data = {
+        type: $("#f-type", root).value,
+        name: $("#f-name", root).value,
+        aliases: splitList($("#f-aliases", root).value),
+        summary: $("#f-summary", root).value,
+        fields,
+        body: $("#f-body", root).value,
+        tags: splitList($("#f-tags", root).value).map((t) => t.replace(/^#/, "")),
+        relations,
+      };
+      try {
+        let saved;
+        if (isNew) saved = createEntry(data, "user");
+        else { updateEntry(e, data, "user", "직접 편집"); saved = e; }
+        await persist.world();
+        renderCodex();
+        openEntry(saved.id);
+        toast("저장했습니다");
+      } catch (err) { toast(err.message); }
+    };
+  });
+}
+function openTrash() {
+  const list = state.entries.filter((e) => e.deleted).sort((a, b) => (b.deletedAt || 0) - (a.deletedAt || 0));
+  openSheet(`<h2 class="sheet-title">휴지통</h2>
+    ${list.length ? `<div class="entry-list">${list.map(entryCard).join("")}</div>` : `<p class="meta">비어 있습니다.</p>`}`, (root) => {
+    root.onclick = (ev) => { const r = ev.target.closest("[data-ref]"); if (r) openEntry(r.dataset.ref); };
+  });
+}
+
+/* ============================================================
+   12. 세계관 관리
+   ============================================================ */
+function sampleWorld() {
+  const now = Date.now();
+  const w = {
+    id: uid(), name: "안개바다 등대력 (예시)", createdAt: now, updatedAt: now,
+    premise: "땅이 가라앉은 뒤 세상은 끝없는 안개바다가 되었다. 사람들은 떠 있는 섬에 살고, 섬과 섬 사이를 오가는 길은 등대 불빛이 닿는 곳뿐이다.",
+    tone: "쓸쓸하지만 따뜻한 해양 판타지. 잔잔한 문체로, 큰 전쟁보다 한 사람의 선택에 초점을 둔다.",
+    rules: "- 등대 불은 등대지기의 기억을 태워야만 켜진다.\n- 불빛 없이 안개 속에서 사흘을 넘기면 자기 이름을 잊는다.\n- 섬은 스스로 움직이지 않는다. 움직이는 섬이 있다면 무언가 잘못된 것이다.",
+    counters: { C: 1, P: 1, F: 1, K: 1 },
+  };
+  const base = { createdAt: now, updatedAt: now, updatedBy: "user", history: [], aliases: [] };
+  const entries = [
+    { ...base, id: "K-001", type: "concept", name: "등명 계약", summary: "등대지기가 자기 기억 하나를 연료로 바쳐 등대 불을 켜는 계약.",
+      fields: { "대가": "바친 기억은 되찾을 수 없다", "지속": "기억 하나당 약 한 계절", "기록": "바친 기억의 제목만 등명부에 적는다" },
+      body: "계약은 등대 꼭대기의 화로 앞에서 맺는다. 등대지기가 기억을 소리 내어 이야기하고, 이야기가 끝나면 불이 붙는다. 기쁜 기억일수록 불빛이 멀리 간다고 알려져 있지만 확인된 적은 없다.\n\n등명부는 등대마다 한 권씩 있으며, 지금까지 바쳐진 기억의 제목이 날짜와 함께 적혀 있다.",
+      tags: ["마법체계", "등대"], relations: [] },
+    { ...base, id: "P-001", type: "place", name: "잿빛 첨탑 등대", summary: "서쪽 끝 항로의 마지막 등대. 이 불이 꺼지면 서쪽 섬 세 곳이 고립된다.",
+      fields: { "위치": "서쪽 변경, 바람꼬리 섬", "높이": "약 40미터", "상태": "불빛이 해마다 약해지는 중" },
+      body: "", tags: ["등대", "서쪽변경"], relations: [] },
+    { ...base, id: "C-001", type: "character", name: "서리", summary: "열일곱 살 견습 등대지기. 아직 바칠 기억을 고르지 못했다.",
+      fields: { "나이": "17", "소속": "잿빛 첨탑 등대", "성격": "꼼꼼하고 겁이 많지만 고집이 세다", "비밀": "어머니에 대한 기억을 바치지 않으려고 등명부를 몰래 고쳐 왔다" },
+      body: "늙은 등대지기 밑에서 3년째 일을 배우고 있다. 불이 약해지는 이유가 자신이 고친 등명부 때문이 아닐까 의심하기 시작했다.",
+      tags: ["주인공후보"], relations: [{ to: "P-001", label: "근무지" }, { to: "K-001", label: "아직 맺지 않은 계약" }] },
+    { ...base, id: "F-001", type: "faction", name: "무등회", summary: "등대를 끄고 안개를 숭배하는 비밀 결사. 잃어버린 기억이 안개 속에 고여 있다고 믿는다.",
+      fields: { "규모": "확인된 회원 약 200명", "상징": "꺼진 초를 거꾸로 든 손" },
+      body: "", tags: ["비밀결사"], relations: [{ to: "P-001", label: "다음 표적" }] },
+  ];
+  return { w, entries };
+}
+async function addWorld(w, entries = []) {
+  state.worlds.push(w);
+  await Promise.all([idb.set("worlds", state.worlds), idb.set("entries:" + w.id, entries), idb.set("log:" + w.id, []), idb.set("threads:" + w.id, [])]);
+  try { await navigator.storage?.persist?.(); } catch { /* 지원 안 함 */ }
+  await openWorld(w.id);
+}
+async function openWorld(id) {
+  state.worldId = id;
+  state.entries = (await idb.get("entries:" + id)) || [];
+  state.log = (await idb.get("log:" + id)) || [];
+  state.threads = (await idb.get("threads:" + id)) || [];
+  state.codexType = "all";
+  state.codexQuery = "";
+  LS.set("lk.world", id);
+  const want = LS.get("lk.thread", null);
+  const t = state.threads.find((x) => x.id === want) || state.threads.slice().sort((a, b) => b.updatedAt - a.updatedAt)[0];
+  if (t) await openThread(t.id);
+  else { state.threadId = null; state.conv = { api: [], display: [] }; renderChat(); }
+  renderWorldName();
+  renderCodex();
+}
+function openWorldSheet() {
+  if (state.busy) { toast("응답이 끝난 뒤에 바꿀 수 있습니다"); return; }
+  openSheet(`<h2 class="sheet-title">세계관</h2>
+    ${state.worlds.length ? `<ul class="list-plain">${state.worlds.map((w) => `<li><button class="list-item ${w.id === state.worldId ? "current" : ""}" type="button" data-world="${w.id}">
+      <span class="t">${esc(w.name)}</span><span class="s">${esc(cut(w.premise, 60) || "전제 미정")} · 항목 ${w.entryCount ?? 0}개</span></button></li>`).join("")}</ul>` : `<p class="meta">아직 세계관이 없습니다.</p>`}
+    <div class="sheet-actions">
+      <button class="btn btn-primary" type="button" data-act="new-world">새 세계관</button>
+      <button class="btn" type="button" data-act="load-sample">예시 세계관 추가</button>
+      ${currentWorld() ? `<button class="btn" type="button" data-act="edit-world">현재 세계관 개요 편집</button>` : ""}
+    </div>`, (root) => {
+    root.onclick = async (ev) => {
+      const w = ev.target.closest("[data-world]");
+      if (w) { closeSheet(); await openWorld(w.dataset.world); }
+    };
+  });
+}
+function openWorldForm(existing) {
+  const w = existing || { name: "", premise: "", tone: "", rules: "" };
+  openSheet(`<h2 class="sheet-title">${existing ? "세계관 개요 편집" : "새 세계관"}</h2>
+    <form class="form" id="worldForm">
+      <label>이름<input id="w-name" required value="${esc(w.name)}" placeholder="예: 안개바다 등대력"></label>
+      <label>핵심 전제 <small>한두 문장</small><textarea id="w-premise" rows="3">${esc(w.premise)}</textarea></label>
+      <label>분위기 · 문체<input id="w-tone" value="${esc(w.tone)}" placeholder="예: 쓸쓸하지만 따뜻한 해양 판타지"></label>
+      <label>세계 규칙 <small>깨지면 안 되는 규칙, 한 줄에 하나</small><textarea id="w-rules" rows="4">${esc(w.rules)}</textarea></label>
+      <div class="sheet-actions">
+        <button class="btn" type="button" data-act="cancel">취소</button>
+        <button class="btn btn-primary" type="submit">${existing ? "저장" : "만들기"}</button>
+        ${existing ? `<button class="btn btn-danger" type="button" data-act="delete-world">세계관 삭제</button>` : ""}
+      </div>
+    </form>
+    ${existing ? "" : `<p class="meta">이름만 정해도 됩니다. 나머지는 Claude와 대화하며 채울 수 있습니다.</p>`}`, (root) => {
+    root.onclick = async (ev) => {
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "cancel") closeSheet();
+      if (act === "delete-world") {
+        if (!(await confirmBox(`'${w.name}' 세계관과 모든 항목, 대화를 지웁니다. 되돌릴 수 없습니다. 먼저 백업을 받아 두세요.`, "모두 지우기", true))) return;
+        const id = w.id;
+        const threads = (await idb.get("threads:" + id)) || [];
+        await Promise.all([idb.del("entries:" + id), idb.del("log:" + id), idb.del("threads:" + id), ...threads.map((t) => idb.del("conv:" + t.id))]);
+        state.worlds = state.worlds.filter((x) => x.id !== id);
+        await persist.worlds();
+        closeSheet();
+        if (state.worlds[0]) await openWorld(state.worlds[0].id);
+        else { state.worldId = null; state.entries = []; state.log = []; state.threads = []; state.threadId = null; state.conv = { api: [], display: [] }; renderWorldName(); renderChat(); renderCodex(); }
+        toast("세계관을 지웠습니다");
+      }
+    };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      if (state.busy) { toast("Claude가 작업 중입니다"); return; }
+      const data = {
+        name: $("#w-name", root).value.trim(),
+        premise: $("#w-premise", root).value.trim(),
+        tone: $("#w-tone", root).value.trim(),
+        rules: $("#w-rules", root).value.trim(),
+      };
+      if (!data.name) { toast("이름을 넣어 주세요"); return; }
+      if (existing) {
+        Object.assign(existing, data, { updatedAt: Date.now() });
+        logChange("user", "world", null, "세계관 개요 수정");
+        await Promise.all([persist.worlds(), persist.log()]);
+        closeSheet(); renderWorldName(); renderCodex(); toast("저장했습니다");
+      } else {
+        const now = Date.now();
+        closeSheet();
+        await addWorld({ id: uid(), ...data, counters: {}, createdAt: now, updatedAt: now, entryCount: 0 });
+        switchView("chat");
+        toast("새 세계관을 만들었습니다");
+      }
+    };
+  });
+}
+async function loadSample() {
+  const { w, entries } = sampleWorld();
+  w.entryCount = entries.length;
+  closeSheet();
+  await addWorld(w, entries);
+  switchView("codex");
+  toast("예시 세계관을 불러왔습니다");
+}
+
+/* ============================================================
+   13. 화면: 설정
+   ============================================================ */
+async function renderSettings() {
+  const root = $("#settings");
+  const month = cost.months[monthKey()] || 0;
+  let persisted = null;
+  try { persisted = await navigator.storage?.persisted?.(); } catch { persisted = null; }
+  const masked = settings.apiKey ? settings.apiKey.slice(0, 10) + "…" + settings.apiKey.slice(-4) : "";
+  root.innerHTML = `
+    <section class="card">
+      <h2>Claude API 키</h2>
+      <p>${settings.apiKey ? `저장된 키: <code>${esc(masked)}</code>` : "Console(platform.claude.com)의 API Keys에서 키를 만들어 붙여 넣으세요."} 키는 이 기기의 브라우저에만 저장되고 Anthropic API로만 전송됩니다.</p>
+      <form class="form" id="keyForm">
+        <input id="apiKey" type="password" autocomplete="off" placeholder="sk-ant-…" aria-label="API 키">
+        <div class="row">
+          <button class="btn btn-primary" type="submit">저장</button>
+          <button class="btn" type="button" data-act="test-key"${settings.apiKey ? "" : " disabled"}>연결 확인</button>
+          ${settings.apiKey ? `<button class="btn btn-danger" type="button" data-act="clear-key">키 지우기</button>` : ""}
+        </div>
+      </form>
+      <p>이 앱 전용 키를 만들고, Console에서 월 사용 한도를 걸어 두는 것을 권합니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>모델</h2>
+      <div class="radio-list">${MODEL_CHOICES.map((m) => { const p = PRICES[m.id]; return `<label class="radio"><input type="radio" name="model" value="${m.id}"${settings.model === m.id ? " checked" : ""}><span class="t">${p.label}</span><span class="s">입력 $${p.in} · 출력 $${p.out} / 100만 토큰 — ${m.note}</span></label>`; }).join("")}</div>
+      <p>Opus와 Sonnet은 안전 정책 오판으로 거절되면 서버가 권장 모델로 자동 재시도합니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>생각 깊이</h2>
+      <div class="radio-list">${EFFORTS.map((x) => `<label class="radio"><input type="radio" name="effort" value="${x.id}"${settings.effort === x.id ? " checked" : ""}><span class="t">${x.label}</span><span class="s">${x.note}</span></label>`).join("")}</div>
+      <label class="switch">생각 요약 보기 <input type="checkbox" id="showThinking"${settings.showThinking ? " checked" : ""}></label>
+      <p>생각한 분량도 출력 토큰으로 과금됩니다. 요약을 보든 안 보든 비용은 같습니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>사용 비용 <span class="meta">(추정)</span></h2>
+      <div class="stats">
+        <div class="stat"><div class="v">${fmtUSD(month)}</div><div class="k">이번 달</div></div>
+        <div class="stat"><div class="v">${fmtUSD(cost.total)}</div><div class="k">누적</div></div>
+        <div class="stat"><div class="v">${cost.requests}</div><div class="k">요청 수</div></div>
+      </div>
+      <p>응답의 토큰 사용량과 공개 단가로 계산한 값입니다. 정확한 청구액은 Console의 Usage에서 확인하세요.</p>
+      <div class="row"><button class="btn btn-small" type="button" data-act="reset-cost">비용 기록 초기화</button></div>
+    </section>
+
+    <section class="card">
+      <h2>백업</h2>
+      <p>데이터는 이 기기 브라우저에만 있습니다. 브라우저 데이터를 지우거나 기기를 바꾸면 사라지므로 자주 내보내 두세요.${persisted === true ? " 이 브라우저는 저장 공간을 보존하도록 설정되어 있습니다." : persisted === false ? " 아이폰은 홈 화면에 추가해서 쓰면 데이터가 더 오래 보존됩니다." : ""}</p>
+      <div class="row">
+        <button class="btn" type="button" data-act="export-all">전체 백업 내보내기</button>
+        <button class="btn" type="button" data-act="import">백업 불러오기</button>
+        <input type="file" id="importFile" accept="application/json,.json" hidden>
+      </div>
+      <div class="row">
+        <button class="btn" type="button" data-act="export-md"${currentWorld() ? "" : " disabled"}>현재 세계관을 문서(.md)로</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>홈 화면에 추가</h2>
+      <p>아이폰 Safari: 공유 버튼 → 홈 화면에 추가. 안드로이드 Chrome: 메뉴 → 홈 화면에 추가. 앱처럼 전체 화면으로 열립니다.</p>
+    </section>`;
+
+  root.onsubmit = (ev) => {
+    if (ev.target.id !== "keyForm") return;
+    ev.preventDefault();
+    const v = $("#apiKey", root).value.trim();
+    if (!v) { toast("키를 붙여 넣어 주세요"); return; }
+    settings.apiKey = v;
+    saveSettings();
+    updateComposer();
+    renderSettings();
+    toast("키를 저장했습니다");
+  };
+  root.onchange = (ev) => {
+    const t = ev.target;
+    if (t.name === "model") { settings.model = t.value; saveSettings(); toast(`${PRICES[t.value].label}로 바꿨습니다`); }
+    else if (t.name === "effort") { settings.effort = t.value; saveSettings(); }
+    else if (t.id === "showThinking") { settings.showThinking = t.checked; saveSettings(); }
+    else if (t.id === "importFile" && t.files?.[0]) importBackup(t.files[0]);
+  };
+  root.onclick = async (ev) => {
+    const act = ev.target.closest("[data-act]")?.dataset.act;
+    if (!act) return;
+    if (act === "test-key") testKey();
+    else if (act === "clear-key") {
+      if (!(await confirmBox("저장된 API 키를 지울까요?", "지우기", true))) return;
+      settings.apiKey = ""; saveSettings(); updateComposer(); renderSettings();
+    } else if (act === "reset-cost") {
+      if (!(await confirmBox("비용 기록을 0으로 초기화할까요? 실제 청구에는 영향이 없습니다.", "초기화"))) return;
+      cost.total = 0; cost.months = {}; cost.requests = 0; saveCost(); updateCostBadge(); renderSettings();
+    } else if (act === "export-all") exportAll();
+    else if (act === "import") $("#importFile", root).click();
+    else if (act === "export-md") exportMarkdown();
+  };
+}
+async function testKey() {
+  try {
+    const client = new Anthropic({ apiKey: settings.apiKey, dangerouslyAllowBrowser: true });
+    const m = await client.models.retrieve(settings.model);
+    toast(`연결됨: ${m.display_name || m.id}`);
+  } catch (err) {
+    toast(describeError(err));
+  }
+}
+
+/* ============================================================
+   14. 백업
+   ============================================================ */
+function download(filename, text, type) {
+  const blob = new Blob([text], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+async function exportAll() {
+  if (state.worldId) await Promise.all([persist.world(), persist.threads(), persist.conv(), persist.worlds()]);
+  const data = { app: "lorekeeper", version: 1, exportedAt: new Date().toISOString(), worlds: [] };
+  for (const w of state.worlds) {
+    const threads = (await idb.get("threads:" + w.id)) || [];
+    const convs = {};
+    for (const t of threads) convs[t.id] = (await idb.get("conv:" + t.id)) || null;
+    data.worlds.push({
+      world: w,
+      entries: (await idb.get("entries:" + w.id)) || [],
+      log: (await idb.get("log:" + w.id)) || [],
+      threads,
+      convs,
+    });
+  }
+  download(`lorekeeper-backup-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(data), "application/json");
+  toast("백업 파일을 만들었습니다");
+}
+async function importBackup(file) {
+  let data;
+  try { data = JSON.parse(await file.text()); } catch { toast("백업 파일을 읽을 수 없습니다"); return; }
+  if (data?.app !== "lorekeeper" || !Array.isArray(data.worlds)) { toast("로어키퍼 백업 파일이 아닙니다"); return; }
+  const clash = data.worlds.filter((x) => state.worlds.some((w) => w.id === x.world?.id));
+  const msg = `세계관 ${data.worlds.length}개를 불러옵니다.${clash.length ? `\n이미 있는 ${clash.length}개는 백업 내용으로 덮어씁니다.` : ""}`;
+  if (!(await confirmBox(msg, "불러오기"))) return;
+  for (const x of data.worlds) {
+    if (!x.world?.id) continue;
+    const id = x.world.id;
+    const i = state.worlds.findIndex((w) => w.id === id);
+    if (i >= 0) state.worlds[i] = x.world; else state.worlds.push(x.world);
+    await Promise.all([
+      idb.set("entries:" + id, x.entries || []),
+      idb.set("log:" + id, x.log || []),
+      idb.set("threads:" + id, x.threads || []),
+      ...Object.entries(x.convs || {}).filter(([, v]) => v).map(([tid, v]) => idb.set("conv:" + tid, v)),
+    ]);
+  }
+  await persist.worlds();
+  await openWorld(state.worldId && state.worlds.some((w) => w.id === state.worldId) ? state.worldId : state.worlds[0].id);
+  renderSettings();
+  toast("백업을 불러왔습니다");
+}
+function exportMarkdown() {
+  const w = currentWorld();
+  if (!w) return;
+  const parts = [`# ${w.name}`, "", w.premise ? `> ${w.premise}` : "", "", w.tone ? `**분위기 · 문체**: ${w.tone}` : "", "", w.rules ? `## 세계 규칙\n\n${w.rules}` : ""];
+  for (const k of TYPE_KEYS) {
+    const list = activeEntries().filter((e) => e.type === k).sort((a, b) => a.id.localeCompare(b.id));
+    if (!list.length) continue;
+    parts.push("", `## ${TYPES[k].label}`);
+    for (const e of list) {
+      parts.push("", `### ${e.name} \`${e.id}\``);
+      if (e.aliases?.length) parts.push(`*별칭: ${e.aliases.join(", ")}*`);
+      parts.push("", e.summary || "");
+      const f = Object.entries(e.fields || {});
+      if (f.length) parts.push("", ...f.map(([kk, v]) => `- **${kk}**: ${v}`));
+      if (e.body) parts.push("", e.body);
+      const rel = (e.relations || []).map((r) => `- ${r.label} → ${nameOf(r.to)} (\`${r.to}\`)`);
+      if (rel.length) parts.push("", "**관계**", ...rel);
+      if (e.tags?.length) parts.push("", e.tags.map((t) => "#" + t).join(" "));
+    }
+  }
+  const safe = w.name.replace(/[\\/:*?"<>|]/g, "_");
+  download(`${safe}.md`, parts.join("\n").replace(/\n{3,}/g, "\n\n"), "text/markdown");
+  toast("문서 파일을 만들었습니다");
+}
+
+/* ============================================================
+   15. 입력 · 시작
+   ============================================================ */
+function autosize(t) {
+  t.style.height = "auto";
+  t.style.height = Math.min(t.scrollHeight, 200) + "px";
+}
+function fitViewport() {
+  const vv = window.visualViewport;
+  const h = vv ? vv.height : window.innerHeight;
+  document.documentElement.style.setProperty("--app-h", `${h}px`);
+  document.documentElement.style.setProperty("--app-top", `${vv ? vv.offsetTop : 0}px`);
+}
+
+function bindGlobal() {
+  window.visualViewport?.addEventListener("resize", fitViewport);
+  window.visualViewport?.addEventListener("scroll", fitViewport);
+  window.addEventListener("resize", fitViewport);
+  fitViewport();
+
+  $(".tabbar").onclick = (e) => { const b = e.target.closest("[data-view]"); if (b) switchView(b.dataset.view); };
+  $("#worldBtn").onclick = openWorldSheet;
+  $("#costBadge").onclick = () => switchView("settings");
+  $("#threadsBtn").onclick = openThreadsSheet;
+  $("#newThreadBtn").onclick = newThread;
+
+  const input = $("#input");
+  input.addEventListener("input", () => autosize(input));
+  input.addEventListener("focus", () => document.body.classList.add("kb-open"));
+  // 탭이 끝난 뒤에 하단 탭을 되돌린다. 바로 되돌리면 레이아웃이 밀려 누른 버튼을 놓친다.
+  input.addEventListener("blur", () => setTimeout(() => {
+    if (document.activeElement !== input) document.body.classList.remove("kb-open");
+  }, 250));
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); $("#composer").requestSubmit(); }
+  });
+  // 보내기 버튼을 눌러도 입력란 포커스가 유지되게 한다. 포커스가 빠지면 키보드가 닫히며 레이아웃이 밀려 버튼을 놓친다.
+  $("#sendBtn").addEventListener("pointerdown", (e) => e.preventDefault());
+  $("#sendBtn").addEventListener("mousedown", (e) => e.preventDefault());
+  $("#composer").onsubmit = (e) => {
+    e.preventDefault();
+    if (state.busy) { stopAgent(); return; }
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = "";
+    autosize(input);
+    sendMessage(text);
+  };
+
+  document.addEventListener("click", async (e) => {
+    if (e.target.closest("[data-close-sheet]")) { closeSheet(); return; }
+    const inSheet = e.target.closest("#sheetBody");
+    const ref = e.target.closest("[data-ref]");
+    if (ref && !inSheet) { openEntry(ref.dataset.ref); return; }
+    const go = e.target.closest("[data-goto]");
+    if (go) { switchView(go.dataset.goto); return; }
+    const sug = e.target.closest("[data-suggest]");
+    if (sug) { input.value = sug.dataset.suggest; autosize(input); input.focus(); return; }
+    const chip = e.target.closest("[data-type]");
+    if (chip && e.target.closest("#codex")) { state.codexType = chip.dataset.type; renderCodexResults(); return; }
+    const act = e.target.closest("[data-act]")?.dataset.act;
+    if (!act) return;
+    if (inSheet && !["new-world", "load-sample", "edit-world"].includes(act)) return;
+    if (act === "new-world") openWorldForm(null);
+    else if (act === "load-sample") loadSample();
+    else if (act === "edit-world") { const w = currentWorld(); if (w) openWorldForm(w); }
+    else if (act === "new-entry") { if (state.busy) toast("Claude가 작업 중입니다"); else openEditor(null); }
+    else if (act === "trash") openTrash();
+    else if (act === "retry") { if (!state.busy) runAgent(); }
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (!$("#dialog").hidden) return;
+    if (!$("#sheet").hidden) closeSheet();
+  });
+  window.addEventListener("beforeunload", (e) => { if (state.busy) { e.preventDefault(); e.returnValue = ""; } });
+}
+
+async function init() {
+  bindGlobal();
+  updateCostBadge();
+  state.worlds = (await idb.get("worlds")) || [];
+  const want = LS.get("lk.world", null);
+  const w = state.worlds.find((x) => x.id === want) || state.worlds[0];
+  if (w) await openWorld(w.id);
+  else { renderWorldName(); renderChat(); renderCodex(); }
+  switchView(LS.get("lk.view", "chat"));
+  if (idb.broken) toast("이 브라우저에서는 데이터가 저장되지 않습니다. 개인정보 보호 모드를 끄세요");
+}
+init();
+</script>
+</body>
+</html>
