@@ -9,6 +9,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="로어키퍼">
+<script>try{var t=JSON.parse(localStorage.getItem("lk.settings")||"{}").theme;if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
 <title>로어키퍼</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232F7468'/%3E%3Cpath d='M20 14h24v36l-12-8-12 8z' fill='%23F3F7F5'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -52,9 +53,11 @@
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --gutter-l: max(16px, env(safe-area-inset-left, 0px));
   --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+  color-scheme: light;
 }
+/* 테마: 기본은 기기 설정을 따르고, 설정에서 라이트/다크를 고르면 html[data-theme]로 고정한다. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #111719;
     --surface: #182023;
     --surface-2: #222C2F;
@@ -87,6 +90,39 @@
     --t-c8: #9DB3C8;
     color-scheme: dark;
   }
+}
+:root[data-theme="dark"] {
+  --bg: #111719;
+  --surface: #182023;
+  --surface-2: #222C2F;
+  --ink: #E2E8E4;
+  --muted: #93A19F;
+  --line: #2F3B3D;
+  --accent: #6DBCAD;
+  --accent-ink: #0D1917;
+  --accent-soft: #1D3833;
+  --danger: #E58374;
+  --danger-soft: #3A2220;
+  --user-bubble: #22313B;
+  --backdrop: rgba(0, 0, 0, .6);
+  --shadow: 0 6px 24px rgba(0, 0, 0, .5);
+  --t-character: #D493C6;
+  --t-place: #86B6E3;
+  --t-faction: #E79A72;
+  --t-species: #A6CB7A;
+  --t-event: #D9B85A;
+  --t-item: #A9A5EE;
+  --t-concept: #6DBCAD;
+  --t-other: #A5AFAE;
+  --t-c1: #E8919F;
+  --t-c2: #7CC4D2;
+  --t-c3: #D0C26A;
+  --t-c4: #B9A2EA;
+  --t-c5: #EBA470;
+  --t-c6: #8CCB9C;
+  --t-c7: #E39BC8;
+  --t-c8: #9DB3C8;
+  color-scheme: dark;
 }
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
@@ -135,6 +171,11 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
   max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .world-switch .name::after { content: " ▾"; font-size: 12px; color: var(--muted); }
+.theme-btn {
+  flex: none; display: grid; place-items: center; width: 36px; height: 36px;
+  border: 0; border-radius: 999px; background: var(--surface-2); color: var(--ink);
+}
+.theme-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .cost-badge {
   border: 0; border-radius: 999px; padding: 4px 10px;
   background: var(--surface-2); color: var(--muted);
@@ -149,7 +190,7 @@ main { min-height: 0; min-width: 0; position: relative; }
 
 /* 하단 탭 */
 .tabbar {
-  display: grid; grid-template-columns: repeat(4, 1fr);
+  display: grid; grid-template-columns: repeat(5, 1fr);
   border-top: 1px solid var(--line); background: var(--surface);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -477,6 +518,48 @@ main { min-height: 0; min-width: 0; position: relative; }
 .graph-card .gc-sum { margin: 0 0 6px; font-size: 13.5px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .label-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 
+/* 연표 */
+.tl-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.tl-cal { margin: 0; font-size: 14px; }
+.tl-head .btn { flex: none; white-space: nowrap; }
+.tl { position: relative; display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.tl-row { display: grid; grid-template-columns: 52px 18px minmax(0, 1fr); gap: 0 8px; align-items: start; }
+.tl-year { text-align: right; padding-top: 10px; font: 600 13px var(--font-mono); font-variant-numeric: tabular-nums; color: var(--tc, var(--muted)); overflow-wrap: normal; }
+.tl-axis { position: relative; align-self: stretch; display: flex; justify-content: center; }
+.tl-axis::before { content: ""; position: absolute; top: -10px; bottom: -10px; left: 50%; width: 2px; margin-left: -1px; background: var(--line); }
+.tl-dot { position: relative; margin-top: 14px; width: 12px; height: 12px; border-radius: 50%; background: var(--tc, var(--muted)); box-shadow: 0 0 0 3px var(--bg); }
+.tl-dot.span { height: 30px; border-radius: 6px; }
+.tl-card {
+  width: 100%; min-width: 0; text-align: left; display: flex; flex-direction: column; gap: 2px;
+  background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--tc, var(--line));
+  border-radius: 10px; padding: 8px 12px;
+}
+.tl-row.hl .tl-card { outline: 2px solid var(--accent); outline-offset: 1px; }
+.tl-meta { font-size: 12px; color: var(--muted); }
+.tl-meta .catno { padding: 0; font-size: 11.5px; }
+.tl-name { font-weight: 600; font-size: 15px; }
+.tl-when { font-size: 13px; color: var(--ink); }
+.tl-sum { font-size: 13px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.tl-era {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+  margin: 10px 0 2px; padding: 6px 12px; border-radius: 10px; background: var(--surface-2);
+}
+.tl-era strong { font: 700 15px var(--font-display); }
+.tl-era span { font: 12px var(--font-mono); color: var(--muted); }
+.tl-gap, .tl-now { display: grid; grid-template-columns: 52px 18px minmax(0, 1fr); gap: 0 8px; font-size: 12px; color: var(--muted); }
+.tl-gap span { grid-column: 3; font-style: italic; }
+.tl-gap::before, .tl-now::before { content: ""; grid-column: 2; justify-self: center; width: 2px; background: repeating-linear-gradient(var(--line) 0 3px, transparent 3px 6px); }
+.tl-now { color: var(--danger); font-weight: 600; }
+.tl-now::before { background: var(--danger); width: 2px; }
+.tl-now span { grid-column: 3; border-top: 2px solid var(--danger); padding-top: 2px; }
+.tl-missing { margin-top: 20px; border: 1px dashed var(--line); border-radius: 12px; padding: 10px 12px; }
+.tl-missing summary { cursor: pointer; font-weight: 600; }
+.tl-missing .entry-list { margin: 10px 0; }
+.time-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+.era-row { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) auto; gap: 6px; margin-bottom: 6px; }
+.when-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin: 6px 0; font-size: 14px; }
+.when-line .lbl { font-size: 11px; letter-spacing: .08em; color: var(--muted); }
+
 /* 분류와 템플릿 */
 .tpl-status { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; padding: 10px 12px; border-radius: 12px; background: var(--accent-soft); font-size: 13.5px; }
 .tpl-status.done { background: var(--surface-2); color: var(--muted); }
@@ -544,6 +627,7 @@ main { min-height: 0; min-width: 0; position: relative; }
       <span class="eyebrow">세계관</span>
       <span class="name" id="worldName">로어키퍼</span>
     </button>
+    <button id="themeBtn" class="theme-btn" type="button" aria-label="테마 바꾸기"></button>
     <button id="costBadge" class="cost-badge" type="button" aria-label="이번 달 사용 비용">$0.000</button>
   </header>
 
@@ -605,6 +689,10 @@ main { min-height: 0; min-width: 0; position: relative; }
       </div>
     </section>
 
+    <section id="view-timeline" class="view" aria-label="연표" hidden>
+      <div class="scroll" id="tlScroll"><div class="pad" id="timeline"></div></div>
+    </section>
+
     <section id="view-settings" class="view" aria-label="설정" hidden>
       <div class="scroll"><div class="pad settings" id="settings"></div></div>
     </section>
@@ -619,6 +707,9 @@ main { min-height: 0; min-width: 0; position: relative; }
     </button>
     <button type="button" data-view="graph">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="7" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8.4 6.6l7.1-.4M7.3 9.3l3.5 6.4M16.8 8.3l-3.6 7.4"/></svg>관계도
+    </button>
+    <button type="button" data-view="timeline">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v18"/><circle cx="7" cy="7" r="2"/><circle cx="7" cy="16" r="2"/><path d="M11 7h9M11 16h6"/></svg>연표
     </button>
     <button type="button" data-view="settings">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/></svg>설정
@@ -936,13 +1027,97 @@ const TOOLS_V4 = [
   },
   toolV3("suggest_replies"),
 ];
+// v5: 연표. v4 지침 끝에 연표 절을 덧붙이고, 시점 입력과 연표 도구를 더한다.
+const SYSTEM_V5 = SYSTEM_V4 + `
+
+## 연표
+- 사건, 인물의 출생과 죽음, 나라의 건국과 멸망처럼 시점이 있는 항목은 time_start(필수)와 time_end(기간일 때), time_label(보일 표기, 선택)을 넣어 연표에 올린다. 숫자는 이 세계 달력의 연도이고, 같은 해 안의 순서는 소수(예: 312.5)로 나타낸다.
+- 인물은 time_start에 태어난 해, time_end에 죽은 해를 넣는다. 살아 있으면 time_end를 넣지 않는다.
+- 달력 표기, 현재 연도, 시대 구분은 [설정집 현황]에 있다. 사용자가 바꾸면 [앱 알림]으로 알려 준다. 정하거나 바꿀 때는 set_calendar를 쓴다.
+- 시점을 새로 정하거나 바꾸기 전에는 get_timeline으로 앞뒤 사건, 인물의 나이, 같은 시대의 인물과 어긋나지 않는지 확인한다.`;
+const TIME_PROPS = {
+  time_start: { type: "number", description: "연표 시작 연도(이 세계 달력 기준 숫자). 사건이 일어난 해, 인물이 태어난 해, 나라가 세워진 해 등. 같은 해 안의 순서는 소수로(예: 312.5)." },
+  time_end: { type: "number", description: "기간이면 끝 연도(전쟁 종결, 사망, 멸망 등). 아직 끝나지 않았으면 넣지 않는다." },
+  time_label: { type: "string", description: "연표에 보일 표기(선택). 예: 312년 늦가을" },
+};
+const toolV4 = (name) => TOOLS_V4.find((t) => t.name === name);
+const TOOLS_V5 = [
+  toolV4("search_entries"),
+  toolV4("get_entries"),
+  {
+    name: "create_entry",
+    description: toolV4("create_entry").description + " 시점이 있는 항목이면 time_start 등을 함께 넣어 연표에 올린다.",
+    input_schema: {
+      type: "object",
+      properties: { ...toolV4("create_entry").input_schema.properties, ...TIME_PROPS },
+      required: ["type", "name", "summary"],
+    },
+    eager_input_streaming: true,
+  },
+  {
+    name: "update_entry",
+    description: toolV4("update_entry").description + " 시점은 time_start, time_end, time_label로 고치고, clear_time이 true면 연표에서 뺀다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        ...toolV4("update_entry").input_schema.properties,
+        ...TIME_PROPS,
+        clear_time: { type: "boolean", description: "true면 이 항목을 연표에서 뺀다." },
+      },
+      required: ["id"],
+    },
+    eager_input_streaming: true,
+  },
+  toolV4("set_relation"),
+  toolV4("delete_entry"),
+  toolV4("update_world"),
+  toolV4("list_types"),
+  toolV4("get_template"),
+  {
+    name: "get_timeline",
+    description: "연표(시점이 있는 항목)를 시간순으로 읽는다. 달력 표기, 현재 연도, 시대 구분도 함께 준다. 순서, 나이, 같은 시대 인물 같은 앞뒤 관계를 확인할 때 쓴다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        from: { type: "number", description: "이 연도부터(선택)" },
+        to: { type: "number", description: "이 연도까지(선택)" },
+        type: { type: "string", description: "분류 이름이나 키로 좁힌다(선택)." },
+      },
+    },
+    eager_input_streaming: true,
+  },
+  {
+    name: "set_calendar",
+    description: "이 세계의 달력 표기, 현재 연도, 시대 구분을 정한다. 바꿀 값만 넣는다. eras를 넣으면 시대 목록 전체를 바꾼다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        prefix: { type: "string", description: "연도 앞 표기. 예: '등대력 '(뒤에 띄어쓰기 포함 가능)" },
+        suffix: { type: "string", description: "연도 뒤 표기. 예: '년'" },
+        now: { type: "number", description: "이야기 속 '지금'의 연도" },
+        eras: {
+          type: "array",
+          description: "시대 구분 전체 목록",
+          items: {
+            type: "object",
+            properties: { name: { type: "string" }, start: { type: "number" }, end: { type: "number" } },
+            required: ["name", "start"],
+          },
+        },
+      },
+    },
+    eager_input_streaming: true,
+  },
+  toolV4("suggest_replies"),
+];
 const PROMPT_SETS = {
   1: { system: SYSTEM_V1, tools: TOOLS_V1 },
   2: { system: SYSTEM_V2, tools: TOOLS_V2 },
   3: { system: SYSTEM_V3, tools: TOOLS_V3 },
   4: { system: SYSTEM_V4, tools: TOOLS_V4 },
+  5: { system: SYSTEM_V5, tools: TOOLS_V5 },
 };
-const PROMPT_CURRENT = 4;
+const PROMPT_CURRENT = 5;
 // 버전 정보가 없는 예전 대화는 만든 시각으로 버전을 추정한다(각 버전의 배포 완료 시각, UTC).
 const PROMPT_RELEASES = [
   { v: 2, at: Date.parse("2026-11-01T15:35:14Z") },
@@ -962,6 +1137,8 @@ const TOOL_STATUS = {
   suggest_replies: "대답 후보를 고르는 중…",
   list_types: "분류 목록을 보는 중…",
   get_template: "템플릿을 읽는 중…",
+  get_timeline: "연표를 살피는 중…",
+  set_calendar: "달력을 정리하는 중…",
 };
 
 /* ============================================================
@@ -1024,7 +1201,7 @@ const idb = (() => {
    4. 상태
    ============================================================ */
 const settings = Object.assign(
-  { apiKey: "", model: "claude-opus-5-5", effort: "medium", showThinking: true },
+  { apiKey: "", model: "claude-opus-5-5", effort: "medium", showThinking: true, theme: "system" },
   LS.get("lk.settings", {}),
 );
 const saveSettings = () => LS.set("lk.settings", settings);
@@ -1043,6 +1220,9 @@ const state = {
   busy: false,
   codexType: "all",
   codexQuery: "",
+  tlQuery: "",
+  tlHidden: new Set(),
+  tlHighlight: null,
 };
 let live = null;
 const qrSelected = new Set(); // 여러 개 고르기에서 체크한 추천 대답 번호
@@ -1178,6 +1358,70 @@ function templateFileText(t) {
 }
 
 /* ============================================================
+   4-2. 달력과 연표
+   항목의 시점은 entry.when = { start, end, label } (숫자는 이 세계 달력의 연도).
+   세계관의 달력은 world.calendar = { prefix, suffix, now, eras:[{ name, start, end }] }.
+   ============================================================ */
+function worldCalendar(w = currentWorld()) {
+  const c = (w && w.calendar) || {};
+  return {
+    prefix: typeof c.prefix === "string" ? c.prefix : "",
+    suffix: typeof c.suffix === "string" ? c.suffix : "년",
+    now: Number.isFinite(c.now) ? c.now : null,
+    eras: Array.isArray(c.eras) ? c.eras.filter((x) => x && x.name && Number.isFinite(x.start)) : [],
+  };
+}
+function parseYear(v) {
+  if (v === null || v === undefined) return null;
+  if (typeof v === "number") return Number.isFinite(v) ? v : null;
+  const t = String(v).replace(/[,\s]/g, "").replace(/[^\d.+-]/g, "");
+  if (!t || t === "-" || t === "." || t === "+") return null;
+  const n = Number(t);
+  return Number.isFinite(n) ? n : null;
+}
+const fmtYearNum = (n) => String(Math.trunc(n));
+const fmtYear = (n, cal = worldCalendar()) => `${cal.prefix}${fmtYearNum(n)}${cal.suffix}`;
+function normalizeWhen(w) {
+  if (!w) return null;
+  const start = parseYear(w.start);
+  if (start === null) return null;
+  const end = parseYear(w.end);
+  return { start, end: end !== null && end > start ? end : null, label: String(w.label || "").trim() };
+}
+function rangeText(when, cal = worldCalendar()) {
+  if (!when) return "";
+  return when.end != null ? `${fmtYear(when.start, cal)} ~ ${fmtYear(when.end, cal)}` : fmtYear(when.start, cal);
+}
+function spanText(when, cal = worldCalendar()) {
+  if (!when || when.end == null) return "";
+  return `${fmtYearNum(when.end - when.start)}${cal.suffix}`;
+}
+function eraOf(n, cal = worldCalendar()) {
+  return cal.eras.slice().sort((a, b) => a.start - b.start).filter((x) => n >= x.start && (!Number.isFinite(x.end) || n < x.end)).pop() || null;
+}
+function eraRangeText(era, cal = worldCalendar()) {
+  return `${fmtYear(era.start, cal)}${Number.isFinite(era.end) ? ` ~ ${fmtYear(era.end, cal)}` : " ~"}`;
+}
+function timelineEntries() {
+  return activeEntries()
+    .filter((e) => e.when && Number.isFinite(e.when.start))
+    .sort((a, b) => a.when.start - b.when.start || (a.when.end ?? a.when.start) - (b.when.end ?? b.when.start) || a.id.localeCompare(b.id));
+}
+function calendarText() {
+  const cal = worldCalendar();
+  const eras = cal.eras.slice().sort((a, b) => a.start - b.start);
+  return [
+    `달력: 연도는 "${fmtYear(312, cal)}"처럼 표기 · 현재 연도: ${cal.now !== null ? fmtYear(cal.now, cal) : "정하지 않음"}`,
+    `시대 구분: ${eras.length ? eras.map((x) => `${x.name}(${eraRangeText(x, cal)})`).join(", ") : "없음"}`,
+  ].join("\n");
+}
+function timelineLine(e, cal = worldCalendar()) {
+  const era = eraOf(e.when.start, cal);
+  const span = spanText(e.when, cal);
+  return `- ${rangeText(e.when, cal)}${span ? `(${span})` : ""}${e.when.label ? ` "${e.when.label}"` : ""} · ${e.id} ${typeInfo(e.type).label} ${e.name} — ${cut(e.summary, 60)}${era ? ` [${era.name}]` : ""}`;
+}
+
+/* ============================================================
    5. 설정집 데이터 조작
    ============================================================ */
 function findEntry(ref) {
@@ -1234,6 +1478,7 @@ function createEntry(d, by) {
     aliases: d.aliases || [], summary: String(d.summary || "").trim(),
     fields: d.fields || {}, body: d.body || "", tags: d.tags || [],
     relations: d.relations || [],
+    ...(normalizeWhen(d.when) ? { when: normalizeWhen(d.when) } : {}),
     createdAt: now, updatedAt: now, updatedBy: by, history: [],
   };
   state.entries.push(e);
@@ -1256,6 +1501,7 @@ function updateEntry(e, p, by, reason) {
   if (p.body !== undefined) e.body = p.body;
   if (p.append_body) e.body = (e.body ? e.body.trimEnd() + "\n\n" : "") + p.append_body;
   if (p.relations !== undefined) e.relations = p.relations;
+  if (p.when !== undefined) { const w = normalizeWhen(p.when); if (w) e.when = w; else delete e.when; }
   e.updatedAt = Date.now();
   e.updatedBy = by;
   logChange(by, "update", e, reason);
@@ -1298,6 +1544,7 @@ function restoreVersion(e, h) {
   const data = clone(h.data);
   pushHistory(e, "user", "되돌리기 전 상태");
   for (const k of ["type", "name", "aliases", "summary", "fields", "body", "tags", "relations"]) e[k] = data[k];
+  if (data.when) e.when = data.when; else delete e.when;
   e.updatedAt = Date.now(); e.updatedBy = "user";
   logChange("user", "update", e, "이전 버전으로 되돌림");
 }
@@ -1327,7 +1574,7 @@ function scoreEntry(e, terms) {
   return total;
 }
 function indexLine(e) {
-  return `${e.id} ${typeInfo(e.type).label} ${e.name}${e.aliases?.length ? ` (${e.aliases.join(", ")})` : ""} — ${cut(e.summary, 70)}`;
+  return `${e.id} ${typeInfo(e.type).label} ${e.name}${e.aliases?.length ? ` (${e.aliases.join(", ")})` : ""} — ${cut(e.summary, 70)}${e.when ? ` · ${rangeText(e.when)}` : ""}`;
 }
 function entryToText(e) {
   const lines = [`## ${e.id} · ${typeInfo(e.type).label} · ${e.name}${e.deleted ? " (휴지통)" : ""}`];
@@ -1340,6 +1587,7 @@ function entryToText(e) {
   const inc = incoming(e.id).map(({ from, label }) => `- ${from.id} ${from.name}의 ${label} (상대 쪽에서 맺은 관계)`);
   if (out.length || inc.length) lines.push("관계:", ...out, ...inc);
   if (e.tags?.length) lines.push(`태그: ${e.tags.map((t) => "#" + t).join(" ")}`);
+  if (e.when) lines.push(`시점: ${rangeText(e.when)}${spanText(e.when) ? ` (${spanText(e.when)})` : ""}${e.when.label ? ` · 표기 "${e.when.label}"` : ""}`);
   lines.push(`최종 수정: ${fmtDate(e.updatedAt)} (${e.updatedBy === "user" ? "사용자 직접" : "Claude"})`);
   return lines.join("\n");
 }
@@ -1355,21 +1603,41 @@ function worldOverviewText(w) {
 /* ============================================================
    6. 도구 실행
    ============================================================ */
+const isNumberLike = (v) => (typeof v === "number" && Number.isFinite(v)) || (typeof v === "string" && v.trim() !== "" && Number.isFinite(Number(v)));
 function validateInput(schema, input) {
   if (typeof input !== "object" || input === null || Array.isArray(input)) return "입력이 객체가 아닙니다.";
   for (const k of schema.required || []) if (input[k] === undefined) return `필수 값 '${k}'가 없습니다.`;
   for (const [k, v] of Object.entries(input)) {
-    const p = schema.properties[k];
+    const p = (schema.properties || {})[k];
     if (!p) continue;
     if (p.type === "string" && typeof v !== "string") return `'${k}'는 문자열이어야 합니다.`;
     if (p.enum && !p.enum.includes(v)) return `'${k}' 값이 올바르지 않습니다: ${v}`;
     if (p.type === "boolean" && typeof v !== "boolean") return `'${k}'는 true/false여야 합니다.`;
-    if (p.type === "array" && (!Array.isArray(v) || v.some((x) => typeof x !== "string"))) return `'${k}'는 문자열 배열이어야 합니다.`;
+    if (p.type === "number" && !isNumberLike(v)) return `'${k}'는 숫자여야 합니다.`;
+    if (p.type === "array") {
+      if (!Array.isArray(v)) return `'${k}'는 배열이어야 합니다.`;
+      if (p.items?.type === "object") {
+        for (const item of v) {
+          const problem = validateInput(p.items, item);
+          if (problem) return `'${k}' 안의 항목: ${problem}`;
+        }
+      } else if (v.some((x) => typeof x !== "string")) return `'${k}'는 문자열 배열이어야 합니다.`;
+    }
     if (p.type === "object" && (typeof v !== "object" || v === null || Array.isArray(v) || Object.values(v).some((x) => typeof x !== "string"))) return `'${k}'는 문자열 값을 가진 객체여야 합니다.`;
   }
   return null;
 }
 
+function whenFromInput(input, base) {
+  const has = ["time_start", "time_end", "time_label"].some((k) => input[k] !== undefined);
+  if (!has) return undefined;
+  const start = input.time_start !== undefined ? parseYear(input.time_start) : base?.start ?? null;
+  if (start === null) throw new Error("time_start(시작 연도)가 필요합니다.");
+  const end = input.time_end !== undefined ? parseYear(input.time_end) : base?.end ?? null;
+  if (end !== null && end < start) throw new Error("time_end는 time_start보다 앞설 수 없습니다.");
+  const label = input.time_label !== undefined ? input.time_label : base?.label || "";
+  return { start, end, label };
+}
 const TOOL_IMPL = {
   search_entries({ query, type }) {
     let list = activeEntries();
@@ -1405,12 +1673,12 @@ const TOOL_IMPL = {
   create_entry(input) {
     const t = findType(input.type);
     if (!t) throw new Error(`분류 '${input.type}'가 없습니다. 쓸 수 있는 분류: ${worldTypes().map((x) => x.label).join(", ")}`);
-    const e = createEntry({ ...input, type: t.key }, "claude");
+    const e = createEntry({ ...input, type: t.key, when: whenFromInput(input) }, "claude");
     const gaps = templateGaps(e);
     const note = gaps && (gaps.fields.length || gaps.sections.length)
       ? `\n템플릿에서 아직 비어 있는 칸: ${[...gaps.fields, ...gaps.sections.map((s) => "## " + s)].join(", ")}`
       : "";
-    return { content: `생성됨: ${e.id} (${t.label} · ${e.name})${note}`, action: { kind: "create", text: `${t.label} ${e.name}`, ref: e.id }, changed: true };
+    return { content: `생성됨: ${e.id} (${t.label} · ${e.name})${e.when ? ` · 연표 ${rangeText(e.when)}` : ""}${note}`, action: { kind: "create", text: `${t.label} ${e.name}`, ref: e.id }, changed: true };
   },
   update_entry(input) {
     const e = findEntry(input.id);
@@ -1422,8 +1690,56 @@ const TOOL_IMPL = {
       if (!t) throw new Error(`분류 '${input.type}'가 없습니다. 쓸 수 있는 분류: ${worldTypes().map((x) => x.label).join(", ")}`);
       patch.type = t.key;
     }
+    if (input.clear_time) patch.when = null;
+    else {
+      const w = whenFromInput(input, e.when);
+      if (w !== undefined) patch.when = w;
+    }
     updateEntry(e, patch, "claude", input.reason);
     return { content: `수정됨: ${e.id} (${e.name})`, action: { kind: "update", text: `${typeInfo(e.type).label} ${e.name}`, ref: e.id }, changed: true };
+  },
+  get_timeline({ from, to, type }) {
+    const cal = worldCalendar();
+    let list = timelineEntries();
+    if (type) {
+      const t = findType(type);
+      if (!t) throw new Error(`분류 '${type}'가 없습니다. 쓸 수 있는 분류: ${worldTypes().map((x) => x.label).join(", ")}`);
+      list = list.filter((e) => e.type === t.key);
+    }
+    const f = parseYear(from);
+    const tt = parseYear(to);
+    if (f !== null) list = list.filter((e) => (e.when.end ?? e.when.start) >= f);
+    if (tt !== null) list = list.filter((e) => e.when.start <= tt);
+    const missing = activeEntries().filter((e) => !e.when && (e.type === "event" || /사건|역사|전쟁/.test(typeInfo(e.type).label)));
+    return {
+      content: [
+        calendarText(),
+        "",
+        list.length ? `연표 ${list.length}개(시간순):` : "조건에 맞는 연표 항목이 없다.",
+        ...list.slice(0, 300).map((e) => timelineLine(e, cal)),
+        ...(missing.length ? ["", `시점이 없는 사건 ${missing.length}개: ${missing.slice(0, 30).map((e) => `${e.id} ${e.name}`).join(", ")}`] : []),
+      ].join("\n"),
+      action: { kind: "read", text: "연표 확인" },
+    };
+  },
+  set_calendar(input) {
+    const w = currentWorld();
+    const cal = worldCalendar(w);
+    const next = { prefix: cal.prefix, suffix: cal.suffix, now: cal.now, eras: cal.eras };
+    if (input.prefix !== undefined) next.prefix = input.prefix;
+    if (input.suffix !== undefined) next.suffix = input.suffix;
+    if (input.now !== undefined) next.now = parseYear(input.now);
+    if (input.eras !== undefined) {
+      next.eras = input.eras
+        .map((x) => ({ name: String(x.name).trim(), start: parseYear(x.start), end: x.end !== undefined ? parseYear(x.end) : null }))
+        .filter((x) => x.name && x.start !== null)
+        .map((x) => ({ name: x.name, start: x.start, ...(x.end !== null && x.end > x.start ? { end: x.end } : {}) }))
+        .sort((a, b) => a.start - b.start);
+    }
+    w.calendar = next;
+    w.updatedAt = Date.now();
+    logChange("claude", "calendar", null, "달력·시대 수정");
+    return { content: "달력을 고쳤다.\n" + calendarText(), action: { kind: "world", text: "달력·시대" }, changed: true };
   },
   list_types() {
     return { content: `분류 ${worldTypes().length}개:\n${typeListText()}`, action: { kind: "read", text: "분류 목록 확인" } };
@@ -1572,6 +1888,7 @@ function contextNoteFor(thread) {
       worldOverviewText(w),
       "",
     ];
+    if (v >= 5) lines.push(calendarText(), "");
     if (v >= 4) lines.push("분류 목록 (항목을 만들 때 이 중 하나를 쓴다. 템플릿이 있는 분류는 get_template로 구조를 확인한다):", typeListText(), "");
     lines.push(
       `항목 ${list.length}개${list.length > shown.length ? ` (앞의 ${shown.length}개만 표시, 나머지는 search_entries로 찾을 것)` : ""}:`,
@@ -1580,9 +1897,9 @@ function contextNoteFor(thread) {
     return lines.join("\n");
   }
   // 분류·템플릿 변경 알림은 그 도구를 가진 대화(버전 4 이상)에만 보낸다.
-  const changes = state.log.filter((c) => c.by === "user" && c.at > (thread.syncedAt || 0) && (c.action !== "types" || v >= 4));
+  const changes = state.log.filter((c) => c.by === "user" && c.at > (thread.syncedAt || 0) && (c.action !== "types" || v >= 4) && (c.action !== "calendar" || v >= 5));
   if (!changes.length) return null;
-  const label = { create: "추가", update: "수정", delete: "삭제", restore: "복구", purge: "완전 삭제", relation: "관계 변경", world: "세계관 개요 수정", types: "분류·템플릿 변경" };
+  const label = { create: "추가", update: "수정", delete: "삭제", restore: "복구", purge: "완전 삭제", relation: "관계 변경", world: "세계관 개요 수정", types: "분류·템플릿 변경", calendar: "달력·시대 변경" };
   const seen = new Set();
   const lines = [];
   for (const c of changes.slice().reverse()) {
@@ -1591,6 +1908,7 @@ function contextNoteFor(thread) {
     seen.add(key);
     if (c.id) lines.push(`- ${c.id} ${c.name}: ${label[c.action] || c.action}`);
     else if (c.action === "types") lines.push(`- ${label.types}: ${c.note}`);
+    else if (c.action === "calendar") lines.push(`- ${label.calendar}:\n${calendarText()}`);
     else lines.push(`- ${label[c.action] || c.action}`);
   }
   const typesChanged = changes.some((c) => c.action === "types");
@@ -2077,11 +2395,12 @@ function closeSheet() {
 }
 function switchView(view) {
   state.view = view;
-  for (const v of ["chat", "codex", "graph", "settings"]) $(`#view-${v}`).hidden = v !== view;
+  for (const v of ["chat", "codex", "graph", "timeline", "settings"]) $(`#view-${v}`).hidden = v !== view;
   $$(".tabbar button").forEach((b) => (b.dataset.view === view ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
   LS.set("lk.view", view);
   if (view === "codex") renderCodex();
   if (view === "graph") renderGraph();
+  if (view === "timeline") renderTimeline();
   if (view === "settings") renderSettings();
   if (view === "chat") scrollChatToBottom(true);
 }
@@ -2338,6 +2657,7 @@ function entryCard(e) {
 function renderCodex() {
   // 설정집이 바뀔 때마다 불리므로, 관계도를 보고 있으면 함께 다시 그린다.
   if (state.view === "graph") queueGraphRender();
+  if (state.view === "timeline") renderTimeline();
   const root = $("#codex");
   const w = currentWorld();
   if (!w) {
@@ -2410,6 +2730,8 @@ function openEntry(ref) {
     <h2 class="entry-name">${esc(e.name)}</h2>
     ${e.aliases?.length ? `<p class="aliases">${esc(e.aliases.join(" · "))}</p>` : ""}
     <p class="summary">${esc(e.summary)}</p>
+    ${e.when ? `<p class="when-line"><span class="lbl">시점</span><span>${esc(rangeText(e.when))}${spanText(e.when) ? ` (${esc(spanText(e.when))})` : ""}${e.when.label ? ` · ${esc(e.when.label)}` : ""}</span>${e.deleted ? "" : `<button class="btn btn-ghost btn-small" type="button" data-act="timeline">연표에서 보기</button>`}</p>`
+      : !e.deleted && isEventType(e.type) ? `<p class="when-line"><span class="lbl">시점</span><span class="meta" style="margin:0">아직 연표에 없습니다</span><button class="btn btn-ghost btn-small" type="button" data-act="set-time">시점 넣기</button></p>` : ""}
     ${templateStatusHTML(e)}
     ${fields.length ? `<dl class="fields">${fields.map(([k, v]) => `<div><dt>${esc(k)}</dt>${isBlankValue(v) ? `<dd class="blank">미정</dd>` : `<dd>${esc(v)}</dd>`}</div>`).join("")}</dl>` : ""}
     ${e.body ? `<p class="section-label">본문</p><div class="md">${md(e.body)}</div>` : ""}
@@ -2426,7 +2748,9 @@ function openEntry(ref) {
       if (refBtn) { openEntry(refBtn.dataset.ref); return; }
       const act = ev.target.closest("[data-act]")?.dataset.act;
       if (!act) return;
-      if (!["develop", "history", "graph", "tpl-ask"].includes(act) && state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 고쳐 주세요"); return; }
+      if (!["develop", "history", "graph", "tpl-ask", "timeline"].includes(act) && state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 고쳐 주세요"); return; }
+      if (act === "timeline") { closeSheet(); showInTimeline(e.id); return; }
+      if (act === "set-time") { openEditor(e, null, { focusTime: true }); return; }
       if (act === "tpl-fill") {
         const merged = mergeTemplate(e.fields || {}, e.body || "", typeInfo(e.type).template);
         updateEntry(e, { fields: merged.fields, body: merged.body }, "user", "템플릿 칸 추가");
@@ -2506,7 +2830,7 @@ function relRow(selfId, to = "", label = "") {
     .map((x) => `<option value="${x.id}"${x.id === to ? " selected" : ""}>${x.id} ${esc(x.name)}</option>`).join("");
   return `<div class="kv-row"><input class="rl" placeholder="관계 (예: 스승)" value="${esc(label)}" aria-label="관계 이름"><select class="rt" aria-label="대상 항목"><option value="">대상 선택</option>${opts}</select><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button></div>`;
 }
-function openEditor(e, presetType) {
+function openEditor(e, presetType, opts = {}) {
   const isNew = !e;
   const d = e ? e : { type: presetType || (state.codexType !== "all" ? state.codexType : typeKeys()[0]), name: "", aliases: [], summary: "", fields: {}, body: "", tags: [], relations: [] };
   const selfId = e?.id || "";
@@ -2520,6 +2844,14 @@ function openEditor(e, presetType) {
       <fieldset><legend>속성</legend><div id="f-fields">${Object.entries(d.fields || {}).map(([k, v]) => kvRow(k, v)).join("")}</div>
         <button type="button" class="btn btn-ghost btn-small" data-add="field">속성 추가</button></fieldset>
       <label>본문 <small>마크다운</small><textarea id="f-body" rows="8">${esc(d.body)}</textarea></label>
+      <fieldset id="f-time"><legend>연표</legend>
+        <div class="time-row">
+          <label>시작 연도<input id="f-ts" inputmode="decimal" value="${d.when ? esc(String(d.when.start)) : ""}" placeholder="예: 312"></label>
+          <label>끝 연도 <small>기간일 때</small><input id="f-te" inputmode="decimal" value="${d.when?.end != null ? esc(String(d.when.end)) : ""}"></label>
+        </div>
+        <label>표기 <small>선택</small><input id="f-tl" value="${esc(d.when?.label || "")}" placeholder="예: 312년 늦가을"></label>
+        <p class="meta" style="margin:0">이 세계 달력의 연도 숫자입니다(${esc(fmtYear(312))} 형식). 인물은 태어난 해와 죽은 해를 넣습니다. 비워 두면 연표에 나오지 않습니다.</p>
+      </fieldset>
       <fieldset><legend>관계</legend><div id="f-rels">${(d.relations || []).map((r) => relRow(selfId, r.to, r.label)).join("")}</div>
         <button type="button" class="btn btn-ghost btn-small" data-add="rel">관계 추가</button></fieldset>
       <label>태그 <small>쉼표로 구분</small><input id="f-tags" value="${esc((d.tags || []).join(", "))}"></label>
@@ -2557,6 +2889,10 @@ function openEditor(e, presetType) {
     };
     $("#f-type", root).addEventListener("change", () => refreshTemplate(true));
     refreshTemplate(isNew);
+    if (opts.focusTime) {
+      const ts = $("#f-ts", root);
+      requestAnimationFrame(() => { $("#f-time", root).scrollIntoView({ block: "center" }); ts.focus(); });
+    }
     root.onsubmit = async (ev) => {
       ev.preventDefault();
       if (state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 저장해 주세요"); return; }
@@ -2578,9 +2914,20 @@ function openEditor(e, presetType) {
         summary: $("#f-summary", root).value,
         fields,
         body: $("#f-body", root).value,
+        when: null,
         tags: splitList($("#f-tags", root).value).map((t) => t.replace(/^#/, "")),
         relations,
       };
+      // 연표 시점: 비우면 연표에서 뺀다
+      const tsText = $("#f-ts", root).value.trim();
+      const teText = $("#f-te", root).value.trim();
+      const ts = tsText ? parseYear(tsText) : null;
+      const te = teText ? parseYear(teText) : null;
+      if (tsText && ts === null) { toast("시작 연도는 숫자로 넣어 주세요"); return; }
+      if (teText && te === null) { toast("끝 연도는 숫자로 넣어 주세요"); return; }
+      if (te !== null && ts === null) { toast("끝 연도를 쓰려면 시작 연도도 넣어 주세요"); return; }
+      if (te !== null && te < ts) { toast("끝 연도는 시작 연도보다 앞설 수 없습니다"); return; }
+      data.when = ts !== null ? { start: ts, end: te, label: $("#f-tl", root).value.trim() } : null;
       try {
         let saved;
         if (isNew) saved = createEntry(data, "user");
@@ -2645,6 +2992,8 @@ async function openWorld(id) {
   state.threads = (await idb.get("threads:" + id)) || [];
   state.codexType = "all";
   state.codexQuery = "";
+  state.tlHidden.clear();
+  state.tlQuery = "";
   LS.set("lk.world", id);
   const want = LS.get("lk.thread", null);
   const t = state.threads.find((x) => x.id === want) || state.threads.slice().sort((a, b) => b.updatedAt - a.updatedAt)[0];
@@ -3768,6 +4117,251 @@ function openTemplateImport(items) {
 }
 
 /* ============================================================
+   12-3. 연표
+   ============================================================ */
+const isCharacterType = (key) => key === "character" || /인물|캐릭터/.test(typeInfo(key).label);
+const isEventType = (key) => key === "event" || /사건|역사|전쟁/.test(typeInfo(key).label);
+function eventTypeKey() {
+  return typeKeys().find((k) => k === "event") || typeKeys().find((k) => isEventType(k)) || typeKeys()[0];
+}
+function renderTimeline() {
+  const root = $("#timeline");
+  const w = currentWorld();
+  if (!w) {
+    root.innerHTML = `<div class="empty-state"><h3>아직 세계관이 없습니다</h3><p>새로 만들거나 예시 세계관을 불러와 보세요.</p>
+      <div class="row"><button class="btn btn-primary" type="button" data-act="new-world">새 세계관 만들기</button><button class="btn" type="button" data-act="load-sample">예시 세계관</button></div></div>`;
+    return;
+  }
+  if (document.activeElement?.id === "tlSearch" && $("#tlResults")) { renderTimelineResults(); return; }
+  const cal = worldCalendar();
+  root.innerHTML = `
+    <div class="tl-head">
+      <div><span class="eyebrow">달력</span>
+        <p class="tl-cal">${esc(fmtYear(cal.now ?? 1, cal))} 형식${cal.now !== null ? ` · 지금 ${esc(fmtYear(cal.now, cal))}` : ""}${cal.eras.length ? ` · 시대 ${cal.eras.length}개` : ""}</p></div>
+      <button class="btn btn-small" type="button" data-tl="calendar">달력·시대</button>
+    </div>
+    <div class="codex-tools">
+      <input id="tlSearch" type="search" placeholder="연표에서 찾기" value="${esc(state.tlQuery)}" aria-label="연표에서 찾기">
+      <button class="btn btn-primary" type="button" data-tl="new">사건 추가</button>
+    </div>
+    <div id="tlResults"></div>`;
+  const input = $("#tlSearch", root);
+  input.oninput = () => { state.tlQuery = input.value; renderTimelineResults(); };
+  renderTimelineResults();
+}
+function renderTimelineResults() {
+  const box = $("#tlResults");
+  if (!box) return;
+  const cal = worldCalendar();
+  const all = timelineEntries();
+  const counts = {};
+  for (const e of all) counts[e.type] = (counts[e.type] || 0) + 1;
+  let list = all.filter((e) => !state.tlHidden.has(e.type));
+  const q = state.tlQuery.trim().toLowerCase();
+  if (q) { const terms = q.split(/\s+/); list = list.filter((e) => scoreEntry(e, terms) > 0); }
+
+  // 간격이 유난히 긴 곳에 "… N년 뒤" 표시(연속된 서로 다른 시작 연도 간격의 중앙값 3배 이상)
+  const starts = [...new Set(list.map((e) => e.when.start))];
+  const diffs = starts.slice(1).map((v, i) => v - starts[i]).sort((a, b) => a - b);
+  const gapLimit = diffs.length >= 3 ? Math.max(1, diffs[Math.floor(diffs.length / 2)] * 3) : Infinity;
+
+  let html = "";
+  let eraName;
+  let prev = null;
+  let nowShown = cal.now === null;
+  const nowHTML = () => `<div class="tl-now"><span>지금 · ${esc(fmtYear(cal.now, cal))}</span></div>`;
+  for (const e of list) {
+    const start = e.when.start;
+    if (!nowShown && start > cal.now) { html += nowHTML(); nowShown = true; }
+    const era = cal.eras.length ? eraOf(start, cal) : null;
+    const name = era ? era.name : null;
+    if (cal.eras.length && name !== eraName) {
+      html += era
+        ? `<div class="tl-era"><strong>${esc(era.name)}</strong><span>${esc(eraRangeText(era, cal))}</span></div>`
+        : `<div class="tl-era"><strong>시대 구분 밖</strong><span></span></div>`;
+      eraName = name;
+    } else if (prev !== null && start - prev >= gapLimit) {
+      html += `<div class="tl-gap"><span>… ${esc(fmtYearNum(start - prev))}${esc(cal.suffix)} 뒤</span></div>`;
+    }
+    prev = start;
+    const t = typeInfo(e.type);
+    let extra = "";
+    if (e.when.end != null) extra = isCharacterType(e.type) ? `향년 ${fmtYearNum(e.when.end - e.when.start)}` : spanText(e.when, cal);
+    else if (isCharacterType(e.type) && cal.now !== null && cal.now >= start) extra = `지금 ${fmtYearNum(cal.now - start)}살`;
+    html += `<div class="tl-row${state.tlHighlight === e.id ? " hl" : ""}" id="tl-${e.id}" style="--tc:${typeColor(e.type)}">
+      <div class="tl-year">${esc(fmtYearNum(start))}</div>
+      <div class="tl-axis"><span class="tl-dot${e.when.end != null ? " span" : ""}"></span></div>
+      <button class="tl-card" type="button" data-ref="${e.id}">
+        <span class="tl-meta"><span class="catno">${e.id}</span> ${esc(t.label)}</span>
+        <span class="tl-name">${esc(e.name)}</span>
+        <span class="tl-when">${esc(e.when.label || rangeText(e.when, cal))}${e.when.label ? ` · ${esc(rangeText(e.when, cal))}` : ""}${extra ? ` · ${esc(extra)}` : ""}</span>
+        ${e.summary ? `<span class="tl-sum">${esc(e.summary)}</span>` : ""}
+      </button>
+    </div>`;
+  }
+  if (!nowShown && list.length) html += nowHTML();
+
+  const missing = activeEntries().filter((e) => !e.when && isEventType(e.type));
+  const chips = Object.keys(counts).length
+    ? `<div class="type-chips graph-types" role="toolbar" aria-label="보일 분류" style="padding:0;margin-top:4px">${typeKeys().filter((k) => counts[k]).map((k) => `<button class="type-chip" type="button" data-tlt="${k}" aria-pressed="${!state.tlHidden.has(k)}"><span class="tdot" style="background:${typeColor(k)}"></span>${esc(typeInfo(k).label)}<span class="n">${counts[k]}</span></button>`).join("")}</div>`
+    : "";
+  box.innerHTML = `${chips}
+    ${all.length
+      ? (list.length ? `<div class="tl">${html}</div>` : `<div class="empty-state"><h3>조건에 맞는 항목이 없습니다</h3></div>`)
+      : `<div class="empty-state"><h3>아직 연표에 오른 항목이 없습니다</h3><p>항목 편집에서 시점(연도)을 넣거나, 대화에서 "연표를 정리해 줘"라고 해 보세요. 사건뿐 아니라 인물의 생몰, 나라의 존속 기간도 올릴 수 있습니다.</p></div>`}
+    ${missing.length ? `<details class="tl-missing"${all.length ? "" : " open"}><summary>시점이 없는 사건 ${missing.length}개</summary>
+      <div class="entry-list">${missing.map((e) => `<button class="entry-card" type="button" data-tl-set="${e.id}" style="--tc:${typeColor(e.type)}"><span class="catno">${e.id}</span><span class="ename">${esc(e.name)}</span><span class="esum">시점 넣기 · ${esc(e.summary || "")}</span></button>`).join("")}</div>
+      <button class="btn btn-small" type="button" data-tl="ask">Claude에게 시점 정리 부탁하기</button>
+    </details>` : ""}`;
+  if (state.tlHighlight) {
+    const row = document.getElementById(`tl-${state.tlHighlight}`);
+    if (row) requestAnimationFrame(() => row.scrollIntoView({ block: "center" }));
+    const id = state.tlHighlight;
+    setTimeout(() => { if (state.tlHighlight === id) { state.tlHighlight = null; document.getElementById(`tl-${id}`)?.classList.remove("hl"); } }, 2500);
+  }
+}
+function showInTimeline(id) {
+  const e = findEntry(id);
+  if (!e?.when) return;
+  state.tlHidden.delete(e.type);
+  state.tlQuery = "";
+  state.tlHighlight = id;
+  switchView("timeline");
+}
+function eraRow(name = "", start = "", end = "") {
+  return `<div class="era-row"><input class="en" placeholder="시대 이름" value="${esc(name)}" aria-label="시대 이름"><input class="es" inputmode="decimal" placeholder="시작" value="${esc(start)}" aria-label="시작 연도"><input class="ee" inputmode="decimal" placeholder="끝" value="${esc(end)}" aria-label="끝 연도"><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button></div>`;
+}
+function openCalendarSheet() {
+  const w = currentWorld();
+  if (!w) return;
+  const cal = worldCalendar(w);
+  openSheet(`<h2 class="sheet-title">달력과 시대</h2>
+    <form class="form" id="calForm">
+      <div class="time-row">
+        <label>연도 앞 표기<input id="c-prefix" value="${esc(cal.prefix)}" placeholder="예: 등대력" autocomplete="off"></label>
+        <label>연도 뒤 표기<input id="c-suffix" value="${esc(cal.suffix)}" placeholder="년" autocomplete="off"></label>
+      </div>
+      <p class="meta" id="c-preview" style="margin:0"></p>
+      <label>현재 연도 <small>이야기 속 '지금'. 비워 두면 표시하지 않습니다</small><input id="c-now" inputmode="decimal" value="${cal.now ?? ""}"></label>
+      <fieldset><legend>시대 구분</legend>
+        <div id="c-eras">${cal.eras.map((x) => eraRow(x.name, x.start, x.end ?? "")).join("")}</div>
+        <button type="button" class="btn btn-ghost btn-small" data-cal="add">시대 추가</button>
+        <p class="meta" style="margin:4px 0 0">끝 연도를 비우면 지금까지 이어지는 시대입니다.</p>
+      </fieldset>
+      <div class="sheet-actions">
+        <button class="btn" type="button" data-cal="cancel">취소</button>
+        <button class="btn btn-primary" type="submit">저장</button>
+      </div>
+    </form>`, (root) => {
+    const preview = () => {
+      const p = $("#c-prefix", root).value.replace(/^\s+/, "");
+      const sfx = $("#c-suffix", root).value;
+      $("#c-preview", root).textContent = `표기 예: ${p}${p && !/\s$/.test(p) ? " " : ""}312${sfx}`;
+    };
+    preview();
+    root.addEventListener("input", (ev) => { if (ev.target.matches("#c-prefix, #c-suffix")) preview(); });
+    root.onclick = (ev) => {
+      const act = ev.target.closest("[data-cal]")?.dataset.cal;
+      if (act === "add") $("#c-eras", root).insertAdjacentHTML("beforeend", eraRow());
+      else if (act === "cancel") closeSheet();
+      else if (ev.target.closest("[data-del-row]")) ev.target.closest(".era-row").remove();
+    };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      if (state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 바꿔 주세요"); return; }
+      let prefix = $("#c-prefix", root).value.replace(/^\s+/, "");
+      if (prefix && !/\s$/.test(prefix)) prefix += " ";
+      const suffix = $("#c-suffix", root).value.trim();
+      const nowText = $("#c-now", root).value.trim();
+      const now = nowText ? parseYear(nowText) : null;
+      if (nowText && now === null) { toast("현재 연도는 숫자로 넣어 주세요"); return; }
+      const eras = [];
+      for (const row of $$(".era-row", root)) {
+        const name = $(".en", row).value.trim();
+        const sText = $(".es", row).value.trim();
+        const eText = $(".ee", row).value.trim();
+        if (!name && !sText && !eText) continue;
+        const start = parseYear(sText);
+        const end = eText ? parseYear(eText) : null;
+        if (!name) { toast("시대 이름을 넣어 주세요"); return; }
+        if (start === null) { toast(`'${name}'의 시작 연도를 숫자로 넣어 주세요`); return; }
+        if (eText && (end === null || end <= start)) { toast(`'${name}'의 끝 연도는 시작보다 뒤여야 합니다`); return; }
+        eras.push({ name, start, ...(end !== null ? { end } : {}) });
+      }
+      eras.sort((a, b) => a.start - b.start);
+      w.calendar = { prefix, suffix, now, eras };
+      w.updatedAt = Date.now();
+      logChange("user", "calendar", null, "달력·시대 수정");
+      await Promise.all([persist.worlds(), persist.log()]);
+      closeSheet();
+      renderTimeline();
+      toast("달력을 저장했습니다");
+    };
+  });
+}
+function bindTimeline() {
+  $("#view-timeline").addEventListener("click", (e) => {
+    const chip = e.target.closest("[data-tlt]");
+    if (chip) {
+      const k = chip.dataset.tlt;
+      if (state.tlHidden.has(k)) state.tlHidden.delete(k); else state.tlHidden.add(k);
+      renderTimelineResults();
+      return;
+    }
+    const set = e.target.closest("[data-tl-set]");
+    if (set) {
+      if (state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 고쳐 주세요"); return; }
+      const ent = findEntry(set.dataset.tlSet);
+      if (ent) openEditor(ent, null, { focusTime: true });
+      return;
+    }
+    const act = e.target.closest("[data-tl]")?.dataset.tl;
+    if (act === "calendar") openCalendarSheet();
+    else if (act === "new") {
+      if (state.busy) { toast("Claude가 작업 중입니다"); return; }
+      openEditor(null, eventTypeKey(), { focusTime: true });
+    } else if (act === "ask") {
+      switchView("chat");
+      fillInput("시점이 없는 사건들의 시점을 정해서 연표에 올려 줘. 앞뒤 순서와 인물 나이가 맞는지도 확인해 줘. ");
+    }
+  });
+}
+
+/* ============================================================
+   12-4. 테마
+   ============================================================ */
+const THEME_MQ = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+const SUN_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg>';
+const MOON_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>';
+const effectiveTheme = () => (settings.theme === "light" || settings.theme === "dark" ? settings.theme : THEME_MQ?.matches ? "dark" : "light");
+function applyTheme() {
+  const root = document.documentElement;
+  if (settings.theme === "light" || settings.theme === "dark") root.setAttribute("data-theme", settings.theme);
+  else root.removeAttribute("data-theme");
+  const dark = effectiveTheme() === "dark";
+  const btn = $("#themeBtn");
+  btn.innerHTML = dark ? SUN_SVG : MOON_SVG;
+  btn.setAttribute("aria-label", dark ? "라이트 모드로 바꾸기" : "다크 모드로 바꾸기");
+  const bg = getComputedStyle(root).getPropertyValue("--bg").trim();
+  for (const m of $$('meta[name="theme-color"]')) {
+    if (m.dataset.origContent === undefined) { m.dataset.origContent = m.getAttribute("content") || ""; m.dataset.origMedia = m.getAttribute("media") || ""; }
+    if (settings.theme === "light" || settings.theme === "dark") { m.setAttribute("content", bg); m.removeAttribute("media"); }
+    else { m.setAttribute("content", m.dataset.origContent); if (m.dataset.origMedia) m.setAttribute("media", m.dataset.origMedia); }
+  }
+}
+function bindTheme() {
+  $("#themeBtn").onclick = () => {
+    settings.theme = effectiveTheme() === "dark" ? "light" : "dark";
+    saveSettings();
+    applyTheme();
+    if (state.view === "settings") renderSettings();
+    toast(settings.theme === "dark" ? "다크 모드" : "라이트 모드");
+  };
+  THEME_MQ?.addEventListener?.("change", () => { if (settings.theme !== "light" && settings.theme !== "dark") applyTheme(); });
+  applyTheme();
+}
+
+/* ============================================================
    13. 화면: 설정
    ============================================================ */
 async function renderSettings() {
@@ -3789,6 +4383,12 @@ async function renderSettings() {
         </div>
       </form>
       <p>이 앱 전용 키를 만들고, Console에서 월 사용 한도를 걸어 두는 것을 권합니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>화면 테마</h2>
+      <div class="radio-list">${[["system", "기기 설정 따르기", "휴대폰의 다크 모드 설정을 따릅니다"], ["light", "라이트", "밝은 화면"], ["dark", "다크", "어두운 화면"]].map(([v, t, n]) => `<label class="radio"><input type="radio" name="theme" value="${v}"${(settings.theme || "system") === v ? " checked" : ""}><span class="t">${t}</span><span class="s">${n}</span></label>`).join("")}</div>
+      <p>위쪽 막대의 해·달 버튼으로도 바로 바꿀 수 있습니다.</p>
     </section>
 
     <section class="card">
@@ -3853,6 +4453,7 @@ async function renderSettings() {
   root.onchange = (ev) => {
     const t = ev.target;
     if (t.name === "model") { settings.model = t.value; saveSettings(); toast(`${PRICES[t.value].label}로 바꿨습니다`); }
+    else if (t.name === "theme") { settings.theme = t.value; saveSettings(); applyTheme(); }
     else if (t.name === "effort") { settings.effort = t.value; saveSettings(); }
     else if (t.id === "showThinking") { settings.showThinking = t.checked; saveSettings(); }
     else if (t.id === "importFile" && t.files?.[0]) importBackup(t.files[0]);
@@ -3958,8 +4559,17 @@ function exportMarkdown() {
       if (e.body) parts.push("", e.body);
       const rel = (e.relations || []).map((r) => `- ${r.label} → ${nameOf(r.to)} (\`${r.to}\`)`);
       if (rel.length) parts.push("", "**관계**", ...rel);
+      if (e.when) parts.push("", `*시점: ${rangeText(e.when)}${e.when.label ? ` · ${e.when.label}` : ""}*`);
       if (e.tags?.length) parts.push("", e.tags.map((t) => "#" + t).join(" "));
     }
+  }
+  const tl = timelineEntries();
+  if (tl.length) {
+    const cal = worldCalendar();
+    parts.push("", "## 연표");
+    for (const x of cal.eras.slice().sort((a, b) => a.start - b.start)) parts.push(`- 시대: **${x.name}** (${eraRangeText(x, cal)})`);
+    parts.push("");
+    for (const e of tl) parts.push(`- **${rangeText(e.when, cal)}** ${e.name} (\`${e.id}\`)${e.summary ? ` — ${e.summary}` : ""}`);
   }
   const safe = w.name.replace(/[\\/:*?"<>|]/g, "_");
   download(`${safe}.md`, parts.join("\n").replace(/\n{3,}/g, "\n\n"), "text/markdown");
@@ -4079,6 +4689,8 @@ function bindGlobal() {
 async function init() {
   bindGlobal();
   bindGraph();
+  bindTimeline();
+  bindTheme();
   updateCostBadge();
   state.worlds = (await idb.get("worlds")) || [];
   const want = LS.get("lk.world", null);
