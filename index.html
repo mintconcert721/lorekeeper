@@ -39,6 +39,14 @@
   --t-item: #5B57A8;
   --t-concept: #2F7468;
   --t-other: #66706F;
+  --t-c1: #A8475A;
+  --t-c2: #2C7A8A;
+  --t-c3: #76691C;
+  --t-c4: #6A4E9E;
+  --t-c5: #B05F2B;
+  --t-c6: #3B7A4D;
+  --t-c7: #9C4379;
+  --t-c8: #4A6278;
   --font-display: "Hahmlet", "Noto Serif KR", "AppleMyungjo", "Batang", serif;
   --font-body: "IBM Plex Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
@@ -69,6 +77,14 @@
     --t-item: #A9A5EE;
     --t-concept: #6DBCAD;
     --t-other: #A5AFAE;
+    --t-c1: #E8919F;
+    --t-c2: #7CC4D2;
+    --t-c3: #D0C26A;
+    --t-c4: #B9A2EA;
+    --t-c5: #EBA470;
+    --t-c6: #8CCB9C;
+    --t-c7: #E39BC8;
+    --t-c8: #9DB3C8;
     color-scheme: dark;
   }
 }
@@ -461,6 +477,27 @@ main { min-height: 0; min-width: 0; position: relative; }
 .graph-card .gc-sum { margin: 0 0 6px; font-size: 13.5px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .label-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 
+/* 분류와 템플릿 */
+.tpl-status { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; padding: 10px 12px; border-radius: 12px; background: var(--accent-soft); font-size: 13.5px; }
+.tpl-status.done { background: var(--surface-2); color: var(--muted); }
+.tpl-note { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0; padding: 4px 4px 4px 10px; border-radius: 10px; background: var(--accent-soft); font-size: 13px; color: var(--ink); }
+.swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+.swatch { position: relative; display: inline-flex; }
+.swatch input { position: absolute; opacity: 0; inset: 0; margin: 0; }
+.swatch span { width: 28px; height: 28px; border-radius: 50%; border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--line); }
+.swatch input:checked + span { box-shadow: 0 0 0 2px var(--ink); }
+.swatch input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+.type-dot { display: inline-block; margin-right: 6px; vertical-align: 1px; }
+.list-item .catno { font-size: 11px; margin-left: 4px; }
+.help-box { margin-top: 16px; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; font-size: 13.5px; }
+.help-box summary { cursor: pointer; font-weight: 600; }
+.help-box .md { margin-top: 8px; }
+.imp { display: flex; flex-direction: column; gap: 8px; }
+.imp legend { font-weight: 600; color: var(--ink); }
+.form label.switch { flex-direction: row; align-items: center; justify-content: space-between; color: var(--ink); font-size: 14px; }
+.form label.switch input { width: 20px; height: 20px; flex: none; }
+.fields dd.blank { color: var(--muted); font-size: 13px; }
+
 /* 설정 화면 */
 .settings { display: flex; flex-direction: column; gap: 14px; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
@@ -636,7 +673,15 @@ const TYPE_KEYS = Object.keys(TYPES);
 const MAX_ROUNDS = 16;
 const CTX_WARN = 150000;
 
-const SYSTEM_PROMPT = `너는 '로어키퍼'라는 모바일 앱 안에서 일하는 세계관 공동 작가이자 설정 편집자다. 사용자와 대화하며 창작 세계관(세계 개요, 인물, 장소, 세력, 종족, 사건, 사물, 개념)을 함께 만들고, 앱의 설정집에 정리해 저장한다.
+/* ------------------------------------------------------------
+   프롬프트와 도구 버전
+   한 대화는 처음 요청 때의 시스템 프롬프트와 도구 정의를 끝까지 똑같이 보내야 한다.
+   중간에 바뀌면 API가 그 전에 만든 thinking 블록을 '편집된 기록'으로 본다.
+   (2026-08-31 이후 만든 계정은 400 오류, 그 전 계정은 이전 추론을 잃는다.)
+   그래서 배포한 버전의 글자는 절대 고치지 않고, 바꿀 일이 있으면 새 버전을 추가한다.
+   새 버전은 새 대화에만 쓰인다.
+   ------------------------------------------------------------ */
+const SYSTEM_V1 = `너는 '로어키퍼'라는 모바일 앱 안에서 일하는 세계관 공동 작가이자 설정 편집자다. 사용자와 대화하며 창작 세계관(세계 개요, 인물, 장소, 세력, 종족, 사건, 사물, 개념)을 함께 만들고, 앱의 설정집에 정리해 저장한다.
 
 ## 설정집 다루는 법
 - 설정집은 도구로만 읽고 쓴다. 대화의 첫 메시지에는 앱이 자동으로 붙인 [설정집 현황]이 있다. 항목은 분류번호 id(예: C-001)로 가리킨다.
@@ -646,6 +691,52 @@ const SYSTEM_PROMPT = `너는 '로어키퍼'라는 모바일 앱 안에서 일�
 - summary는 목록만 봐도 무엇인지 알 수 있는 한 줄로 쓴다. fields에는 짧은 사실(나이, 소속, 위치, 외모, 말투 등)을, body에는 서술과 배경 이야기를 담는다.
 - 삭제는 사용자가 분명히 요청했을 때만 한다.
 - [앱 알림]으로 사용자가 직접 수정한 내용이 전달되면 그것을 최신 설정으로 받아들인다.
+
+## 일관성
+- 새 설정이 기존 설정이나 세계 규칙과 충돌하면, 저장하기 전에 어느 항목의 어떤 내용과 부딪히는지 짚고 해결 방법을 2~3가지 제안한다.
+- 연표, 나이, 거리, 인물 관계처럼 숫자와 사실이 얽힌 부분은 특히 꼼꼼히 맞춘다.
+
+## 창작 태도
+- 뻔한 클리셰보다 이 세계에만 있을 법한 구체적인 디테일(관습, 은어, 물건, 모순, 비밀)을 제안한다.
+- 적절할 때 답의 끝에 이야기를 넓힐 거리(갈등의 씨앗, 아직 정해지지 않은 질문)를 1~3개 짧게 덧붙인다. 매번 붙일 필요는 없다.
+- 이 세계관의 주인은 사용자다. 사용자의 결정을 존중하고, 네 취향으로 방향을 바꾸지 않는다.
+
+## 답변 형식
+- 한국어로 답한다. 휴대폰 화면에서 읽으므로 짧은 문단과 목록을 쓰고, 표는 쓰지 않는다.
+- 항목을 언급할 때 이름 옆에 id를 붙이면(예: 서리(C-001)) 사용자가 눌러서 바로 볼 수 있다.
+- 설정집을 바꿨다면 답의 마지막에 무엇을 바꿨는지 한두 줄로 알린다. 앱이 변경 내역을 따로 표시하므로 길게 반복하지 않는다.`;
+const SYSTEM_V2 = SYSTEM_V1 + `
+
+## 대답 추천
+- 답을 마칠 때마다 맨 마지막에 suggest_replies를 단독으로 호출해, 사용자가 눌러서 바로 보낼 다음 대답 2~4개를 띄운다.
+- 선택지를 제시했다면 각 선택지를 고르는 대답을, 질문을 했다면 그럴듯한 답들을 넣는다. 필요하면 "알아서 정해 줘"처럼 맡기는 대답도 하나 넣는다.
+- 여러 개를 함께 골라도 되는 목록(받아들일 아이디어, 추가할 특징 등)이면 multiple을 true로 한다.
+- 선택지의 자세한 내용은 본문에 쓰고, 추천 대답은 사용자 입장의 짧은 문장으로 쓴다.`;
+const SYSTEM_V3 = SYSTEM_V2 + `
+
+## 첨부 파일
+- 사용자는 이미지, PDF, 텍스트 파일을 첨부할 수 있다. 텍스트 파일은 [첨부 파일: 이름] 머리말과 함께 들어온다.
+- 첨부 자료에서 설정을 뽑아 달라고 하면, 먼저 설정집과 비교해 새로 만들 항목과 고칠 항목을 짧게 정리해 보여 주고, 사용자가 동의하면 저장한다. 사용자가 바로 저장하라고 했으면 바로 저장한다.
+- 이미지는 외모, 복장, 분위기, 지형, 건축 같은 시각 정보를 구체적인 글로 옮겨 설정에 반영한다. 이미지 자체는 설정집에 저장되지 않으므로 필요한 정보는 글로 남긴다.`;
+const SYSTEM_V4 = `너는 '로어키퍼'라는 모바일 앱 안에서 일하는 세계관 공동 작가이자 설정 편집자다. 사용자와 대화하며 창작 세계관을 함께 만들고, 앱의 설정집에 분류별 항목으로 정리해 저장한다.
+
+## 설정집 다루는 법
+- 설정집은 도구로만 읽고 쓴다. 대화의 첫 메시지에는 앱이 자동으로 붙인 [설정집 현황]이 있다. 항목은 분류번호 id(예: C-001)로 가리킨다.
+- 기존 항목을 고치기 전에는 get_entries로 최신 내용을 읽는다. 새 항목을 만들기 전에는 같은 대상이 이미 있는지 확인한다.
+- 사용자가 직접 말한 설정, 또는 네 제안 중 사용자가 고른 것은 바로 저장한다. 네가 새로 떠올린 아이디어는 먼저 제안하고, 사용자가 받아들이면 저장한다. 사용자가 "알아서 채워줘"처럼 맡기면 바로 저장해도 된다.
+- 한 정보는 가장 알맞은 항목 한 곳에 저장하고, 항목 사이의 연결은 set_relation으로 표현한다.
+- summary는 목록만 봐도 무엇인지 알 수 있는 한 줄로 쓴다. fields에는 짧은 사실(나이, 소속, 위치, 외모, 말투 등)을, body에는 서술과 배경 이야기를 담는다.
+- 삭제는 사용자가 분명히 요청했을 때만 한다.
+- [앱 알림]으로 사용자가 직접 수정한 내용이 전달되면 그것을 최신 설정으로 받아들인다.
+
+## 분류와 템플릿
+- 분류(인물, 장소, 국가 등)는 사용자가 세계관마다 정한다. 목록은 [설정집 현황]에 있고, 바뀌면 [앱 알림]으로 알려 준다. 그때는 list_types로 다시 확인한다.
+- 도구의 type에는 분류 이름이나 키를 넣는다. 알맞은 분류가 없으면 가장 가까운 분류를 쓰고, 새 분류가 필요해 보이면 사용자에게 설정 화면에서 추가하도록 제안한다.
+- 템플릿이 있는 분류의 항목을 만들거나 크게 고칠 때는 먼저 get_template로 템플릿을 읽고 그 구조를 따른다.
+  - 템플릿의 "- 이름:" 줄은 fields의 키다. 키 이름을 그대로 쓰고, 아직 정해지지 않은 값은 "(미정)"으로 둔다.
+  - 템플릿의 ## 소제목은 body에 같은 이름, 같은 순서의 ## 소제목으로 쓴다. 템플릿에 없는 중요한 내용은 마지막에 "## 기타"로 둔다.
+  - ">"로 시작하는 줄이나 괄호 속 설명은 쓰는 방법에 대한 안내다. 본문에 옮기지 않는다.
+- 사용자가 "템플릿에 맞게 정리해 줘"라고 하면 기존 내용을 지우지 말고 템플릿 구조로 옮겨 담는다.
 
 ## 일관성
 - 새 설정이 기존 설정이나 세계 규칙과 충돌하면, 저장하기 전에 어느 항목의 어떤 내용과 부딪히는지 짚고 해결 방법을 2~3가지 제안한다.
@@ -678,7 +769,7 @@ const SYSTEM_PROMPT = `너는 '로어키퍼'라는 모바일 앱 안에서 일�
 const STR = { type: "string" };
 const STR_ARR = { type: "array", items: { type: "string" } };
 const STR_MAP = { type: "object", additionalProperties: { type: "string" } };
-const TOOLS = [
+const TOOLS_V3 = [
   {
     name: "search_entries",
     description: "설정집에서 항목을 찾는다. query는 이름, 별칭, 요약, 태그, 속성, 본문에서 부분 일치로 찾는다. query 없이 부르면 전체 목록을 준다. 결과에는 id, 종류, 이름, 요약만 있다. 자세한 내용은 get_entries로 읽는다.",
@@ -782,8 +873,83 @@ const TOOLS = [
     },
   },
 ].map((t) => ({ ...t, eager_input_streaming: true }));
+const TOOLS_V1 = TOOLS_V3.filter((t) => t.name !== "suggest_replies");
+const TOOLS_V2 = TOOLS_V3;
+const toolV3 = (name) => TOOLS_V3.find((t) => t.name === name);
+const TYPE_PARAM = { type: "string", description: "분류 이름이나 키. 예: 인물, 국가. [설정집 현황]이나 list_types의 분류 목록에서 고른다." };
+const TOOLS_V4 = [
+  {
+    name: "search_entries",
+    description: toolV3("search_entries").description,
+    input_schema: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "찾을 말. 여러 단어면 모두 포함한 항목을 찾는다." },
+        type: { type: "string", description: "분류 이름이나 키로 좁힌다." },
+      },
+    },
+    eager_input_streaming: true,
+  },
+  toolV3("get_entries"),
+  {
+    name: "create_entry",
+    description: "새 설정 항목을 만든다. 같은 분류에 같은 이름이 있으면 실패하므로 먼저 search_entries로 확인한다. 분류에 템플릿이 있으면 먼저 get_template로 구조를 읽고 그대로 따른다. 성공하면 새 id를 돌려준다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        type: TYPE_PARAM,
+        name: { type: "string" },
+        summary: { type: "string", description: "목록에서 보일 한 줄 요약. 80자 이내." },
+        aliases: { ...STR_ARR, description: "별칭, 다른 표기" },
+        fields: { ...STR_MAP, description: '짧은 사실들. 템플릿이 있으면 템플릿의 키를 그대로 쓴다. 예: {"나이": "17", "소속": "P-001 잿빛 첨탑 등대"}' },
+        body: { type: "string", description: "마크다운 상세 서술. 템플릿이 있으면 템플릿의 ## 소제목을 같은 순서로 쓴다." },
+        tags: STR_ARR,
+      },
+      required: ["type", "name", "summary"],
+    },
+    eager_input_streaming: true,
+  },
+  {
+    name: "update_entry",
+    description: toolV3("update_entry").description + " 분류를 바꾸려면 type에 새 분류 이름을 넣는다.",
+    input_schema: {
+      type: "object",
+      properties: { ...toolV3("update_entry").input_schema.properties, type: TYPE_PARAM },
+      required: ["id"],
+    },
+    eager_input_streaming: true,
+  },
+  toolV3("set_relation"),
+  toolV3("delete_entry"),
+  toolV3("update_world"),
+  {
+    name: "list_types",
+    description: "현재 세계관의 분류 목록(이름, 키, ID 코드, 설명, 템플릿 유무, 항목 수)을 읽는다. [앱 알림]에서 분류가 바뀌었다고 하면 다시 읽는다.",
+    input_schema: { type: "object", properties: {} },
+    eager_input_streaming: true,
+  },
+  {
+    name: "get_template",
+    description: "분류의 템플릿(Markdown)을 읽는다. 결과에는 템플릿 원문과, 거기서 뽑은 속성(fields) 키 목록과 본문 소제목 목록이 있다.",
+    input_schema: { type: "object", properties: { type: TYPE_PARAM }, required: ["type"] },
+    eager_input_streaming: true,
+  },
+  toolV3("suggest_replies"),
+];
+const PROMPT_SETS = {
+  1: { system: SYSTEM_V1, tools: TOOLS_V1 },
+  2: { system: SYSTEM_V2, tools: TOOLS_V2 },
+  3: { system: SYSTEM_V3, tools: TOOLS_V3 },
+  4: { system: SYSTEM_V4, tools: TOOLS_V4 },
+};
+const PROMPT_CURRENT = 4;
+// 버전 정보가 없는 예전 대화는 만든 시각으로 버전을 추정한다(각 버전의 배포 완료 시각, UTC).
+const PROMPT_RELEASES = [
+  { v: 2, at: Date.parse("2026-11-01T15:35:14Z") },
+  { v: 3, at: Date.parse("2026-11-01T15:43:49Z") },
+];
 const SUGGEST = "suggest_replies";
-const SUGGEST_TOOL = TOOLS.find((t) => t.name === SUGGEST);
+const SUGGEST_TOOL = TOOLS_V4.find((t) => t.name === SUGGEST);
 
 const TOOL_STATUS = {
   search_entries: "설정집을 찾아보는 중…",
@@ -794,6 +960,8 @@ const TOOL_STATUS = {
   delete_entry: "항목을 정리하는 중…",
   update_world: "세계관 개요를 고치는 중…",
   suggest_replies: "대답 후보를 고르는 중…",
+  list_types: "분류 목록을 보는 중…",
+  get_template: "템플릿을 읽는 중…",
 };
 
 /* ============================================================
@@ -897,6 +1065,119 @@ const persist = {
 };
 
 /* ============================================================
+   4-1. 분류와 템플릿
+   분류는 세계관마다 정한다(world.types). 예전 세계관은 처음 읽을 때 기본 분류 8개로 채운다.
+   ============================================================ */
+const BUILTIN_DESC = {
+  character: "등장인물",
+  place: "지역, 도시, 건물 같은 장소",
+  faction: "나라, 조직, 단체",
+  species: "종족, 생물",
+  event: "역사적 사건, 전쟁, 일화",
+  item: "물건, 유물, 무기",
+  concept: "마법 체계, 기술, 종교, 관습 같은 개념",
+  other: "어디에도 맞지 않는 것",
+};
+const COLOR_CHOICES = [...TYPE_KEYS, "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"];
+const CODE_RE = /^[A-Z][A-Z0-9]{0,2}$/;
+function defaultTypes() {
+  return TYPE_KEYS.map((k) => ({ key: k, label: TYPES[k].label, code: TYPES[k].code, color: k, desc: BUILTIN_DESC[k], template: "" }));
+}
+function worldTypes(w = currentWorld()) {
+  if (!w) return defaultTypes();
+  if (!Array.isArray(w.types) || !w.types.length) w.types = defaultTypes();
+  return w.types;
+}
+const typeKeys = () => worldTypes().map((t) => t.key);
+function typeInfo(key) {
+  return worldTypes().find((t) => t.key === key)
+    || { key, label: TYPES[key]?.label || String(key), code: TYPES[key]?.code || "X", color: TYPES[key] ? key : "other", desc: "", template: "" };
+}
+function findType(ref) {
+  const raw = String(ref ?? "").trim();
+  if (!raw) return null;
+  const low = raw.toLowerCase();
+  return worldTypes().find((t) => t.key === raw)
+    || worldTypes().find((t) => t.label.toLowerCase() === low)
+    || worldTypes().find((t) => t.code.toLowerCase() === low || t.key.toLowerCase() === low)
+    || worldTypes().find((t) => t.label.replace(/\s+/g, "") === raw.replace(/\s+/g, ""))
+    || null;
+}
+function suggestCode(taken) {
+  const used = new Set([...(taken || []), ...worldTypes().map((t) => t.code)]);
+  for (const ch of "ABCDGHJLMNOQRTUVWYZ") if (!used.has(ch)) return ch;
+  for (const a of "ABCDEFGHIJKLMNOPQRSTUVWXYZ") for (const b of "ABCDEFGHIJKLMNOPQRSTUVWXYZ") if (!used.has(a + b)) return a + b;
+  return "ZZZ";
+}
+function nextCustomColor() {
+  const used = new Set(worldTypes().map((t) => t.color));
+  return ["c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"].find((c) => !used.has(c)) || "c1";
+}
+function typeListText() {
+  const counts = {};
+  for (const e of activeEntries()) counts[e.type] = (counts[e.type] || 0) + 1;
+  return worldTypes().map((t) => `- ${t.label} (키 ${t.key}, ID 코드 ${t.code})${t.desc ? ` — ${t.desc}` : ""}${t.template ? " · 템플릿 있음" : ""} · 항목 ${counts[t.key] || 0}개`).join("\n");
+}
+
+// 템플릿 해석: "- 이름: 설명" 줄은 속성(fields) 키, "## 제목"은 본문 소제목, ">"로 시작하는 줄은 작성 안내.
+function splitFrontmatter(text) {
+  const src = String(text || "").replace(/^﻿/, "").replace(/\r\n?/g, "\n");
+  const m = src.match(/^---\n([\s\S]*?)\n---\n?/);
+  if (!m) return { meta: {}, body: src.trim() };
+  const meta = {};
+  for (const line of m[1].split("\n")) {
+    const kv = line.match(/^\s*([^:：]+?)\s*[:：]\s*(.*?)\s*$/);
+    if (kv) meta[kv[1].trim().toLowerCase()] = kv[2].replace(/^["']|["']$/g, "");
+  }
+  return { meta, body: src.slice(m[0].length).trim() };
+}
+function parseTemplate(md) {
+  const fields = [];
+  const sections = [];
+  for (const line of String(md || "").split("\n")) {
+    let m;
+    if ((m = line.match(/^\s*#{2,4}\s+(.+?)\s*#*\s*$/))) { if (!sections.includes(m[1])) sections.push(m[1]); continue; }
+    if ((m = line.match(/^\s*[-*]\s+(?:\*\*)?([^:：\n*]{1,30}?)(?:\*\*)?\s*[:：]\s*(.*)$/))) {
+      const key = m[1].trim();
+      if (key && !fields.some((f) => f.key === key)) fields.push({ key, hint: m[2].trim() });
+    }
+  }
+  return { fields, sections };
+}
+function templateSkeletonBody(md) {
+  return parseTemplate(md).sections.map((s) => `## ${s}\n`).join("\n").trim();
+}
+function bodyHeadings(body) {
+  return new Set(String(body || "").split("\n").map((l) => l.match(/^\s*#{2,4}\s+(.+?)\s*#*\s*$/)?.[1]).filter(Boolean));
+}
+const isBlankValue = (v) => !String(v ?? "").trim() || /^\(?\s*미정\s*\)?$/.test(String(v).trim());
+function templateGaps(e) {
+  const t = typeInfo(e.type);
+  if (!t.template) return null;
+  const { fields, sections } = parseTemplate(t.template);
+  const heads = bodyHeadings(e.body);
+  return {
+    label: t.label,
+    fields: fields.filter((f) => isBlankValue(e.fields?.[f.key])).map((f) => f.key),
+    sections: sections.filter((s) => !heads.has(s)),
+    total: fields.length + sections.length,
+  };
+}
+// 빠진 속성 키와 소제목을 덧붙인다(기존 내용은 그대로 둔다).
+function mergeTemplate(fieldsIn, bodyIn, md) {
+  const { fields, sections } = parseTemplate(md);
+  const out = { ...fieldsIn };
+  for (const f of fields) if (!(f.key in out)) out[f.key] = "";
+  const heads = bodyHeadings(bodyIn);
+  const add = sections.filter((s) => !heads.has(s)).map((s) => `## ${s}\n`).join("\n");
+  const body = add ? `${String(bodyIn || "").trimEnd()}${bodyIn && bodyIn.trim() ? "\n\n" : ""}${add}`.trim() : bodyIn;
+  return { fields: out, body };
+}
+function templateFileText(t) {
+  return `---\n분류: ${t.label}\n코드: ${t.code}\n설명: ${t.desc || ""}\n---\n\n${t.template || ""}\n`;
+}
+
+/* ============================================================
    5. 설정집 데이터 조작
    ============================================================ */
 function findEntry(ref) {
@@ -912,7 +1193,7 @@ function findEntry(ref) {
 }
 function nextId(type) {
   const w = currentWorld();
-  const code = TYPES[type].code;
+  const code = typeInfo(type).code;
   w.counters = w.counters || {};
   let n = w.counters[code] || 0;
   let id;
@@ -940,12 +1221,12 @@ function incoming(id) {
 }
 function assertUniqueName(type, name, exceptId) {
   const dup = activeEntries().find((e) => e.type === type && e.name === name && e.id !== exceptId);
-  if (dup) throw new Error(`같은 이름의 ${TYPES[type].label} 항목이 이미 있습니다: ${dup.id}`);
+  if (dup) throw new Error(`같은 이름의 ${typeInfo(type).label} 항목이 이미 있습니다: ${dup.id}`);
 }
 function createEntry(d, by) {
   const name = String(d.name || "").trim();
   if (!name) throw new Error("이름이 비어 있습니다.");
-  if (!TYPES[d.type]) throw new Error("알 수 없는 종류입니다.");
+  if (!worldTypes().some((t) => t.key === d.type)) throw new Error(`분류 '${d.type}'가 없습니다. 쓸 수 있는 분류: ${worldTypes().map((t) => t.label).join(", ")}`);
   assertUniqueName(d.type, name);
   const now = Date.now();
   const e = {
@@ -961,7 +1242,7 @@ function createEntry(d, by) {
 }
 function updateEntry(e, p, by, reason) {
   const nextName = p.name !== undefined ? String(p.name).trim() || e.name : e.name;
-  const nextType = p.type !== undefined && TYPES[p.type] ? p.type : e.type;
+  const nextType = p.type !== undefined && worldTypes().some((t) => t.key === p.type) ? p.type : e.type;
   assertUniqueName(nextType, nextName, e.id);
   pushHistory(e, by, reason);
   e.name = nextName;
@@ -1046,10 +1327,10 @@ function scoreEntry(e, terms) {
   return total;
 }
 function indexLine(e) {
-  return `${e.id} ${TYPES[e.type]?.label || e.type} ${e.name}${e.aliases?.length ? ` (${e.aliases.join(", ")})` : ""} — ${cut(e.summary, 70)}`;
+  return `${e.id} ${typeInfo(e.type).label} ${e.name}${e.aliases?.length ? ` (${e.aliases.join(", ")})` : ""} — ${cut(e.summary, 70)}`;
 }
 function entryToText(e) {
-  const lines = [`## ${e.id} · ${TYPES[e.type]?.label || e.type} · ${e.name}${e.deleted ? " (휴지통)" : ""}`];
+  const lines = [`## ${e.id} · ${typeInfo(e.type).label} · ${e.name}${e.deleted ? " (휴지통)" : ""}`];
   if (e.aliases?.length) lines.push(`별칭: ${e.aliases.join(", ")}`);
   lines.push(`요약: ${e.summary || "(없음)"}`);
   const f = Object.entries(e.fields || {});
@@ -1092,7 +1373,11 @@ function validateInput(schema, input) {
 const TOOL_IMPL = {
   search_entries({ query, type }) {
     let list = activeEntries();
-    if (type) list = list.filter((e) => e.type === type);
+    if (type) {
+      const t = findType(type);
+      if (!t) throw new Error(`분류 '${type}'가 없습니다. 쓸 수 있는 분류: ${worldTypes().map((x) => x.label).join(", ")}`);
+      list = list.filter((e) => e.type === t.key);
+    }
     const q = (query || "").trim().toLowerCase();
     if (q) {
       const terms = q.split(/\s+/);
@@ -1118,15 +1403,47 @@ const TOOL_IMPL = {
     };
   },
   create_entry(input) {
-    const e = createEntry(input, "claude");
-    return { content: `생성됨: ${e.id} (${TYPES[e.type].label} · ${e.name})`, action: { kind: "create", text: `${TYPES[e.type].label} ${e.name}`, ref: e.id }, changed: true };
+    const t = findType(input.type);
+    if (!t) throw new Error(`분류 '${input.type}'가 없습니다. 쓸 수 있는 분류: ${worldTypes().map((x) => x.label).join(", ")}`);
+    const e = createEntry({ ...input, type: t.key }, "claude");
+    const gaps = templateGaps(e);
+    const note = gaps && (gaps.fields.length || gaps.sections.length)
+      ? `\n템플릿에서 아직 비어 있는 칸: ${[...gaps.fields, ...gaps.sections.map((s) => "## " + s)].join(", ")}`
+      : "";
+    return { content: `생성됨: ${e.id} (${t.label} · ${e.name})${note}`, action: { kind: "create", text: `${t.label} ${e.name}`, ref: e.id }, changed: true };
   },
   update_entry(input) {
     const e = findEntry(input.id);
     if (!e || e.deleted) throw new Error(`${input.id} 항목이 없습니다. search_entries로 id를 확인하세요.`);
     if (input.body !== undefined && input.append_body !== undefined) throw new Error("body와 append_body는 함께 쓸 수 없습니다.");
-    updateEntry(e, input, "claude", input.reason);
-    return { content: `수정됨: ${e.id} (${e.name})`, action: { kind: "update", text: `${TYPES[e.type].label} ${e.name}`, ref: e.id }, changed: true };
+    const patch = { ...input };
+    if (input.type !== undefined) {
+      const t = findType(input.type);
+      if (!t) throw new Error(`분류 '${input.type}'가 없습니다. 쓸 수 있는 분류: ${worldTypes().map((x) => x.label).join(", ")}`);
+      patch.type = t.key;
+    }
+    updateEntry(e, patch, "claude", input.reason);
+    return { content: `수정됨: ${e.id} (${e.name})`, action: { kind: "update", text: `${typeInfo(e.type).label} ${e.name}`, ref: e.id }, changed: true };
+  },
+  list_types() {
+    return { content: `분류 ${worldTypes().length}개:\n${typeListText()}`, action: { kind: "read", text: "분류 목록 확인" } };
+  },
+  get_template({ type }) {
+    const t = findType(type);
+    if (!t) throw new Error(`분류 '${type}'가 없습니다. 쓸 수 있는 분류: ${worldTypes().map((x) => x.label).join(", ")}`);
+    if (!t.template.trim()) return { content: `'${t.label}' 분류에는 템플릿이 없다. 자유 형식으로 쓴다.`, action: { kind: "read", text: `템플릿 · ${t.label}` } };
+    const { fields, sections } = parseTemplate(t.template);
+    return {
+      content: [
+        `# ${t.label} 템플릿`,
+        `속성(fields) 키: ${fields.length ? fields.map((f) => f.key).join(", ") : "(없음)"}`,
+        `본문 소제목: ${sections.length ? sections.join(", ") : "(없음)"}`,
+        "",
+        "--- 템플릿 원문 ---",
+        t.template,
+      ].join("\n"),
+      action: { kind: "read", text: `템플릿 · ${t.label}` },
+    };
   },
   set_relation({ from_id, to_id, label, reverse_label, remove }) {
     const a = findEntry(from_id);
@@ -1155,7 +1472,7 @@ const TOOL_IMPL = {
     const e = findEntry(id);
     if (!e || e.deleted) throw new Error(`${id} 항목이 없습니다.`);
     trashEntry(e, "claude", reason);
-    return { content: `휴지통으로 옮김: ${e.id} (${e.name})`, action: { kind: "delete", text: `${TYPES[e.type].label} ${e.name}`, ref: e.id }, changed: true };
+    return { content: `휴지통으로 옮김: ${e.id} (${e.name})`, action: { kind: "delete", text: `${typeInfo(e.type).label} ${e.name}`, ref: e.id }, changed: true };
   },
   suggest_replies() {
     // 다른 도구와 섞여 호출된 경우에만 여기로 온다. 단독 호출은 runAgent에서 처리한다.
@@ -1170,8 +1487,8 @@ const TOOL_IMPL = {
   },
 };
 
-function runTool(name, input) {
-  const tool = TOOLS.find((t) => t.name === name);
+function runTool(name, input, tools) {
+  const tool = tools.find((t) => t.name === name);
   if (!tool) return { content: `알 수 없는 도구: ${name}`, is_error: true };
   const problem = validateInput(tool.input_schema, input);
   if (problem) return { content: JSON.stringify({ error: problem, INVALID_JSON: JSON.stringify(input) }), is_error: true };
@@ -1203,21 +1520,42 @@ function addCost(v) {
   updateCostBadge();
 }
 
-function buildParams() {
+// 대화의 프롬프트 버전. 새 대화는 최신 버전으로 시작하고, 끝까지 그 버전을 쓴다.
+function threadVersion(thread) {
+  if (thread.promptVersion) return thread.promptVersion;
+  let v = 1;
+  for (const r of PROMPT_RELEASES) if ((thread.createdAt || 0) >= r.at) v = r.v;
+  const usedSuggest = state.conv.api.some((m) => Array.isArray(m.content) && m.content.some((b) => b.type === "tool_use" && b.name === SUGGEST));
+  if (v < 2 && usedSuggest) v = 2;
+  thread.promptVersion = v; // 한 번 정하면 고정한다
+  return v;
+}
+function promptSetFor(thread) {
+  return PROMPT_SETS[thread ? threadVersion(thread) : PROMPT_CURRENT] || PROMPT_SETS[PROMPT_CURRENT];
+}
+
+function buildParams(thread) {
   const m = PRICES[settings.model];
+  const set = promptSetFor(thread);
   const params = {
     model: settings.model,
     max_tokens: 64000,
-    system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
-    tools: TOOLS,
+    system: [{ type: "text", text: set.system, cache_control: { type: "ephemeral" } }],
+    tools: set.tools,
     messages: state.conv.api.slice(),
-    thinking: { type: "adaptive", display: settings.showThinking ? "summarized" : "omitted" },
+    thinking: {
+      type: "adaptive",
+      display: settings.showThinking ? "summarized" : "omitted",
+      // 기록이 어긋나더라도 오류 대신 해당 thinking 블록만 버리고 계속한다(안전장치).
+      block_binding: { prefix_mismatch_behavior: "drop_block" },
+    },
     output_config: { effort: settings.effort },
     cache_control: { type: "ephemeral" },
+    betas: ["thinking-binding-controls-2026-08-01"],
   };
   if (m?.fallback) {
     // 안전 정책 오판으로 거절되면 서버가 권장 모델로 자동 재시도한다.
-    params.betas = ["server-side-fallback-2026-07-01"];
+    params.betas.push("server-side-fallback-2026-07-01");
     params.fallbacks = "default";
   }
   return params;
@@ -1225,29 +1563,41 @@ function buildParams() {
 
 function contextNoteFor(thread) {
   const w = currentWorld();
+  const v = threadVersion(thread);
   if (!thread.contextSent) {
     const list = activeEntries();
     const shown = list.slice(0, 400);
-    return [
+    const lines = [
       "[설정집 현황 · 앱이 자동으로 첨부함]",
       worldOverviewText(w),
       "",
+    ];
+    if (v >= 4) lines.push("분류 목록 (항목을 만들 때 이 중 하나를 쓴다. 템플릿이 있는 분류는 get_template로 구조를 확인한다):", typeListText(), "");
+    lines.push(
       `항목 ${list.length}개${list.length > shown.length ? ` (앞의 ${shown.length}개만 표시, 나머지는 search_entries로 찾을 것)` : ""}:`,
       ...(shown.length ? shown.map(indexLine) : ["(아직 없음)"]),
-    ].join("\n");
+    );
+    return lines.join("\n");
   }
-  const changes = state.log.filter((c) => c.by === "user" && c.at > (thread.syncedAt || 0));
+  // 분류·템플릿 변경 알림은 그 도구를 가진 대화(버전 4 이상)에만 보낸다.
+  const changes = state.log.filter((c) => c.by === "user" && c.at > (thread.syncedAt || 0) && (c.action !== "types" || v >= 4));
   if (!changes.length) return null;
-  const label = { create: "추가", update: "수정", delete: "삭제", restore: "복구", purge: "완전 삭제", relation: "관계 변경", world: "세계관 개요 수정" };
+  const label = { create: "추가", update: "수정", delete: "삭제", restore: "복구", purge: "완전 삭제", relation: "관계 변경", world: "세계관 개요 수정", types: "분류·템플릿 변경" };
   const seen = new Set();
   const lines = [];
   for (const c of changes.slice().reverse()) {
-    const key = (c.id || "world") + c.action;
+    const key = (c.id || "world") + c.action + (c.action === "types" ? c.note : "");
     if (seen.has(key)) continue;
     seen.add(key);
-    lines.push(c.id ? `- ${c.id} ${c.name}: ${label[c.action] || c.action}` : `- ${label[c.action] || c.action}`);
+    if (c.id) lines.push(`- ${c.id} ${c.name}: ${label[c.action] || c.action}`);
+    else if (c.action === "types") lines.push(`- ${label.types}: ${c.note}`);
+    else lines.push(`- ${label[c.action] || c.action}`);
   }
-  return ["[앱 알림: 사용자가 대화 밖에서 직접 바꾼 내용. 필요하면 get_entries로 최신 내용을 읽을 것]", ...lines.reverse()].join("\n");
+  const typesChanged = changes.some((c) => c.action === "types");
+  const head = typesChanged
+    ? "[앱 알림: 사용자가 대화 밖에서 직접 바꾼 내용. 필요하면 get_entries로 최신 내용을 읽고, 분류나 템플릿이 바뀌었으면 list_types와 get_template로 다시 확인할 것]"
+    : "[앱 알림: 사용자가 대화 밖에서 직접 바꾼 내용. 필요하면 get_entries로 최신 내용을 읽을 것]";
+  return [head, ...lines.reverse()].join("\n");
 }
 
 function apiMessage(err) {
@@ -1368,7 +1718,7 @@ async function runAgent() {
       const blockParts = new Map();
       let message;
       try {
-        const stream = client.beta.messages.stream(buildParams());
+        const stream = client.beta.messages.stream(buildParams(thread));
         live.stream = stream;
         for await (const ev of stream) handleEvent(ev, item, blockParts);
         message = await stream.finalMessage();
@@ -1384,6 +1734,8 @@ async function runAgent() {
         continue;
       }
 
+      const dropped = (message.input_transformations || []).filter((x) => x.reason === "prefix_binding_mismatch");
+      if (dropped.length) console.warn("대화 기록이 어긋나 이전 추론 일부를 버렸습니다", dropped);
       const turnCost = calcCost(message.usage, message.model);
       item.cost += turnCost;
       item.model = message.model;
@@ -1426,7 +1778,7 @@ async function runAgent() {
       }
       const results = [];
       for (const tu of toolUses) {
-        const r = runTool(tu.name, tu.input);
+        const r = runTool(tu.name, tu.input, promptSetFor(thread).tools);
         results.push({ type: "tool_result", tool_use_id: tu.id, content: r.content, ...(r.is_error ? { is_error: true } : {}) });
         if (r.action) item.parts.push({ kind: "action", action: r.action });
         if (r.changed) dataChanged = true;
@@ -1633,7 +1985,7 @@ function inline(s) {
     .replace(/`([^`]+)`/g, "<code>$1</code>")
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
     .replace(/(^|[^*\w])\*(?!\s)([^*\n]+?)\*(?!\w)/g, "$1<em>$2</em>")
-    .replace(/\b([CPFSEIKX]-\d{3,})\b/g, '<button type="button" class="ref" data-ref="$1">$1</button>');
+    .replace(/\b([A-Z][A-Z0-9]{0,2}-\d{3,})\b/g, (m, id) => (findEntry(id) ? `<button type="button" class="ref" data-ref="${id}">${id}</button>` : m));
 }
 function md(src) {
   const lines = String(src || "").replace(/\r/g, "").split("\n");
@@ -1918,7 +2270,7 @@ function updateComposer() {
   $("#input").placeholder = !state.busy && currentSuggest() ? "위에서 고르거나 직접 입력하세요" : "세계관에 대해 이야기해 보세요";
 }
 async function createThread(firstText) {
-  const t = { id: uid(), title: cut(firstText, 30) || "새 대화", createdAt: Date.now(), updatedAt: Date.now(), contextSent: false, syncedAt: 0, lastCtx: 0 };
+  const t = { id: uid(), title: cut(firstText, 30) || "새 대화", createdAt: Date.now(), updatedAt: Date.now(), contextSent: false, syncedAt: 0, lastCtx: 0, promptVersion: PROMPT_CURRENT };
   state.threads.push(t);
   state.threadId = t.id;
   state.conv = { api: [], display: [] };
@@ -1974,7 +2326,7 @@ function openThreadsSheet() {
 /* ============================================================
    11. 화면: 설정집
    ============================================================ */
-function typeColor(type) { return `var(--t-${TYPES[type] ? type : "other"})`; }
+function typeColor(type) { return `var(--t-${typeInfo(type).color || "other"})`; }
 function entryCard(e) {
   return `<button class="entry-card" type="button" data-ref="${e.id}" style="--tc:${typeColor(e.type)}">
     <span class="catno">${e.id}</span>
@@ -2025,14 +2377,15 @@ function renderCodexResults() {
     const terms = q.split(/\s+/);
     list = list.filter((e) => scoreEntry(e, terms) > 0);
   }
-  const groups = TYPE_KEYS.map((k) => ({ k, items: list.filter((e) => e.type === k).sort((a, b) => a.id.localeCompare(b.id)) })).filter((g) => g.items.length);
+  const groups = typeKeys().map((k) => ({ k, items: list.filter((e) => e.type === k).sort((a, b) => a.id.localeCompare(b.id)) })).filter((g) => g.items.length);
   const trashCount = state.entries.length - all.length;
   box.innerHTML = `
     <div class="type-chips" role="toolbar" aria-label="종류">
       <button class="type-chip" type="button" data-type="all" aria-pressed="${state.codexType === "all"}">전체<span class="n">${all.length}</span></button>
-      ${TYPE_KEYS.map((k) => `<button class="type-chip" type="button" data-type="${k}" aria-pressed="${state.codexType === k}">${TYPES[k].label}<span class="n">${counts[k] || 0}</span></button>`).join("")}
+      ${typeKeys().map((k) => `<button class="type-chip" type="button" data-type="${k}" aria-pressed="${state.codexType === k}">${esc(typeInfo(k).label)}<span class="n">${counts[k] || 0}</span></button>`).join("")}
     </div>
-    ${groups.length ? groups.map((g) => `<h3 class="group-title">${TYPES[g.k].label} · ${g.items.length}</h3><div class="entry-list">${g.items.map(entryCard).join("")}</div>`).join("")
+    <div class="row"><button class="btn btn-ghost btn-small" type="button" data-act="types">분류·템플릿 관리</button></div>
+    ${groups.length ? groups.map((g) => `<h3 class="group-title">${esc(typeInfo(g.k).label)} · ${g.items.length}</h3><div class="entry-list">${g.items.map(entryCard).join("")}</div>`).join("")
       : `<div class="empty-state"><h3>${q || state.codexType !== "all" ? "조건에 맞는 항목이 없습니다" : "설정집이 비어 있습니다"}</h3><p>대화 탭에서 Claude와 이야기하면 항목이 여기에 쌓입니다.</p></div>`}
     ${trashCount ? `<div class="row" style="margin-top:20px"><button class="btn btn-small" type="button" data-act="trash">휴지통 ${trashCount}</button></div>` : ""}`;
 }
@@ -2052,12 +2405,13 @@ function openEntry(ref) {
   const fields = Object.entries(e.fields || {});
   openSheet(`
     <div class="entry-head" style="--tc:${typeColor(e.type)}">
-      <span class="catno">${e.id}</span><span>${TYPES[e.type]?.label || e.type}</span>${e.deleted ? '<span class="pill pill-danger">휴지통</span>' : ""}
+      <span class="catno">${e.id}</span><span>${esc(typeInfo(e.type).label)}</span>${e.deleted ? '<span class="pill pill-danger">휴지통</span>' : ""}
     </div>
     <h2 class="entry-name">${esc(e.name)}</h2>
     ${e.aliases?.length ? `<p class="aliases">${esc(e.aliases.join(" · "))}</p>` : ""}
     <p class="summary">${esc(e.summary)}</p>
-    ${fields.length ? `<dl class="fields">${fields.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : ""}
+    ${templateStatusHTML(e)}
+    ${fields.length ? `<dl class="fields">${fields.map(([k, v]) => `<div><dt>${esc(k)}</dt>${isBlankValue(v) ? `<dd class="blank">미정</dd>` : `<dd>${esc(v)}</dd>`}</div>`).join("")}</dl>` : ""}
     ${e.body ? `<p class="section-label">본문</p><div class="md">${md(e.body)}</div>` : ""}
     ${relationsHTML(e)}
     ${e.tags?.length ? `<p class="section-label">태그</p><div>${e.tags.map((t) => `<span class="tag">#${esc(t)}</span>`).join("")}</div>` : ""}
@@ -2072,8 +2426,17 @@ function openEntry(ref) {
       if (refBtn) { openEntry(refBtn.dataset.ref); return; }
       const act = ev.target.closest("[data-act]")?.dataset.act;
       if (!act) return;
-      if (act !== "develop" && act !== "history" && act !== "graph" && state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 고쳐 주세요"); return; }
-      if (act === "graph") {
+      if (!["develop", "history", "graph", "tpl-ask"].includes(act) && state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 고쳐 주세요"); return; }
+      if (act === "tpl-fill") {
+        const merged = mergeTemplate(e.fields || {}, e.body || "", typeInfo(e.type).template);
+        updateEntry(e, { fields: merged.fields, body: merged.body }, "user", "템플릿 칸 추가");
+        await persist.world();
+        renderCodex(); openEntry(e.id); toast("템플릿 칸을 추가했습니다");
+      } else if (act === "tpl-ask") {
+        closeSheet();
+        switchView("chat");
+        fillInput(`${e.name}(${e.id})를 ${typeInfo(e.type).label} 템플릿에 맞게 정리하고 빈 칸을 채워 줘. 기존 내용은 지우지 마. `);
+      } else if (act === "graph") {
         closeSheet();
         showInGraph(e.id);
       } else if (act === "develop") {
@@ -2125,8 +2488,18 @@ function openHistory(e) {
     };
   });
 }
-function kvRow(k = "", v = "") {
-  return `<div class="kv-row"><input class="fk" placeholder="이름 (예: 나이)" value="${esc(k)}" aria-label="속성 이름"><input class="fv" placeholder="내용" value="${esc(v)}" aria-label="속성 내용"><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button></div>`;
+function kvRow(k = "", v = "", hint = "") {
+  return `<div class="kv-row"><input class="fk" placeholder="이름 (예: 나이)" value="${esc(k)}" aria-label="속성 이름"><input class="fv" placeholder="${esc(hint || "내용")}" value="${esc(v)}" aria-label="속성 내용"><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button></div>`;
+}
+function templateStatusHTML(e) {
+  if (e.deleted) return "";
+  const g = templateGaps(e);
+  if (!g || !g.total) return "";
+  const missing = [...g.fields, ...g.sections.map((s) => `## ${s}`)];
+  if (!missing.length) return `<div class="tpl-status done"><span><b>${esc(g.label)} 템플릿</b>을 모두 채웠습니다</span></div>`;
+  const list = missing.slice(0, 6).join(", ") + (missing.length > 6 ? ` 외 ${missing.length - 6}개` : "");
+  return `<div class="tpl-status"><span><b>${esc(g.label)} 템플릿</b> 빈 칸 ${missing.length}개: ${esc(list)}</span>
+    <div class="row"><button class="btn btn-small" type="button" data-act="tpl-fill">빈 칸 추가</button><button class="btn btn-small btn-primary" type="button" data-act="tpl-ask">Claude에게 채우기</button></div></div>`;
 }
 function relRow(selfId, to = "", label = "") {
   const opts = activeEntries().filter((x) => x.id !== selfId).sort((a, b) => a.id.localeCompare(b.id))
@@ -2135,11 +2508,12 @@ function relRow(selfId, to = "", label = "") {
 }
 function openEditor(e, presetType) {
   const isNew = !e;
-  const d = e ? e : { type: presetType || (state.codexType !== "all" ? state.codexType : "character"), name: "", aliases: [], summary: "", fields: {}, body: "", tags: [], relations: [] };
+  const d = e ? e : { type: presetType || (state.codexType !== "all" ? state.codexType : typeKeys()[0]), name: "", aliases: [], summary: "", fields: {}, body: "", tags: [], relations: [] };
   const selfId = e?.id || "";
   openSheet(`<h2 class="sheet-title">${isNew ? "새 항목" : `${esc(e.id)} 편집`}</h2>
     <form class="form" id="entryForm">
-      <label>종류<select id="f-type">${TYPE_KEYS.map((k) => `<option value="${k}"${k === d.type ? " selected" : ""}>${TYPES[k].label}</option>`).join("")}</select></label>
+      <label>분류<select id="f-type">${typeKeys().map((k) => `<option value="${k}"${k === d.type ? " selected" : ""}>${esc(typeInfo(k).label)}</option>`).join("")}</select></label>
+      <p class="tpl-note" id="f-tpl" hidden></p>
       <label>이름<input id="f-name" required value="${esc(d.name)}"></label>
       <label>별칭 <small>쉼표로 구분</small><input id="f-aliases" value="${esc((d.aliases || []).join(", "))}"></label>
       <label>한 줄 요약<input id="f-summary" value="${esc(d.summary)}"></label>
@@ -2160,7 +2534,29 @@ function openEditor(e, presetType) {
       else if (add?.dataset.add === "rel") $("#f-rels", root).insertAdjacentHTML("beforeend", relRow(selfId));
       else if (ev.target.closest("[data-del-row]")) ev.target.closest(".kv-row").remove();
       else if (ev.target.closest('[data-act="cancel"]')) { if (e) openEntry(e.id); else closeSheet(); }
+      else if (ev.target.closest('[data-act="tpl-apply"]')) { applyTemplate(typeInfo($("#f-type", root).value), false); touched = true; }
     };
+    // 템플릿: 새 항목은 고른 분류의 템플릿 칸으로 미리 채운다(직접 입력을 시작하기 전까지).
+    let touched = !isNew;
+    root.addEventListener("input", (ev) => { if (ev.target.closest("#f-fields, #f-body")) touched = true; });
+    const applyTemplate = (t, replace) => {
+      const box = $("#f-fields", root);
+      const body = $("#f-body", root);
+      if (replace) box.innerHTML = "";
+      const have = new Set($$(".fk", box).map((i) => i.value.trim()));
+      for (const f of parseTemplate(t.template).fields) if (!have.has(f.key)) box.insertAdjacentHTML("beforeend", kvRow(f.key, "", f.hint));
+      body.value = replace ? templateSkeletonBody(t.template) : mergeTemplate({}, body.value, t.template).body;
+    };
+    const refreshTemplate = (fresh) => {
+      const t = typeInfo($("#f-type", root).value);
+      const note = $("#f-tpl", root);
+      note.hidden = !t.template;
+      if (!t.template) return;
+      note.innerHTML = `<span>${esc(t.label)} 템플릿이 있습니다</span><button type="button" class="btn btn-ghost btn-small" data-act="tpl-apply">템플릿 칸 채워 넣기</button>`;
+      if (fresh && !touched) applyTemplate(t, true);
+    };
+    $("#f-type", root).addEventListener("change", () => refreshTemplate(true));
+    refreshTemplate(isNew);
     root.onsubmit = async (ev) => {
       ev.preventDefault();
       if (state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 저장해 주세요"); return; }
@@ -2281,6 +2677,7 @@ function openWorldForm(existing) {
       <label>핵심 전제 <small>한두 문장</small><textarea id="w-premise" rows="3">${esc(w.premise)}</textarea></label>
       <label>분위기 · 문체<input id="w-tone" value="${esc(w.tone)}" placeholder="예: 쓸쓸하지만 따뜻한 해양 판타지"></label>
       <label>세계 규칙 <small>깨지면 안 되는 규칙, 한 줄에 하나</small><textarea id="w-rules" rows="4">${esc(w.rules)}</textarea></label>
+      ${!existing && currentWorld() ? `<label class="switch">「${esc(currentWorld().name)}」의 분류·템플릿 그대로 쓰기<input type="checkbox" id="w-copy-types"${worldTypes().some((t) => t.template) ? " checked" : ""}></label>` : ""}
       <div class="sheet-actions">
         <button class="btn" type="button" data-act="cancel">취소</button>
         <button class="btn btn-primary" type="submit">${existing ? "저장" : "만들기"}</button>
@@ -2321,8 +2718,9 @@ function openWorldForm(existing) {
         closeSheet(); renderWorldName(); renderCodex(); toast("저장했습니다");
       } else {
         const now = Date.now();
+        const copyTypes = $("#w-copy-types", root)?.checked ? clone(worldTypes()) : undefined;
         closeSheet();
-        await addWorld({ id: uid(), ...data, counters: {}, createdAt: now, updatedAt: now, entryCount: 0 });
+        await addWorld({ id: uid(), ...data, ...(copyTypes ? { types: copyTypes } : {}), counters: {}, createdAt: now, updatedAt: now, entryCount: 0 });
         switchView("chat");
         toast("새 세계관을 만들었습니다");
       }
@@ -2664,7 +3062,7 @@ function renderGraphChrome() {
   const counts = {};
   for (const n of graph.nodes.values()) counts[n.entry.type] = (counts[n.entry.type] || 0) + 1;
   const isolated = [...graph.nodes.values()].filter((n) => n.degree === 0).length;
-  $("#graphTypes").innerHTML = TYPE_KEYS.filter((k) => counts[k]).map((k) => `<button class="type-chip" type="button" data-gtype="${k}" aria-pressed="${!graph.hiddenTypes.has(k)}"><span class="tdot" style="background:${typeColor(k)}"></span>${TYPES[k].label}<span class="n">${counts[k]}</span></button>`).join("")
+  $("#graphTypes").innerHTML = typeKeys().filter((k) => counts[k]).map((k) => `<button class="type-chip" type="button" data-gtype="${k}" aria-pressed="${!graph.hiddenTypes.has(k)}"><span class="tdot" style="background:${typeColor(k)}"></span>${esc(typeInfo(k).label)}<span class="n">${counts[k]}</span></button>`).join("")
     + (isolated ? `<button class="type-chip isolated" type="button" data-gtype="__isolated" aria-pressed="${!graph.hideIsolated}">연결 없는 항목<span class="n">${isolated}</span></button>` : "");
 
   // 빈 화면 안내
@@ -2695,7 +3093,7 @@ function renderGraphChrome() {
   if (sel && graph.vis.has(sel.id) && !graph.linkFrom) {
     const e = sel.entry;
     card.hidden = false;
-    card.innerHTML = `<div class="entry-head" style="--tc:${typeColor(e.type)}"><span class="catno">${e.id}</span><span>${TYPES[e.type]?.label || e.type}</span><span class="pill">연결 ${sel.degree}</span></div>
+    card.innerHTML = `<div class="entry-head" style="--tc:${typeColor(e.type)}"><span class="catno">${e.id}</span><span>${esc(typeInfo(e.type).label)}</span><span class="pill">연결 ${sel.degree}</span></div>
       <strong class="gc-name">${esc(e.name)}</strong>
       <p class="gc-sum">${esc(e.summary || "요약 없음")}</p>
       <div class="row">
@@ -2962,6 +3360,414 @@ function onGraphBackgroundTap() {
 }
 
 /* ============================================================
+   12-2. 분류와 템플릿 관리
+   ============================================================ */
+const SAMPLE_TEMPLATES = [
+  { fileName: "캐릭터.md", text: `---
+분류: 캐릭터
+기존분류: 인물
+설명: 이야기에 등장하는 인물
+---
+# 캐릭터 템플릿
+
+- 나이:
+- 성별:
+- 출신:
+- 소속:
+- 직업·역할:
+- 한 줄 콘셉트: 이 인물을 한 문장으로
+
+## 외모
+> 첫인상, 체격, 눈에 띄는 특징, 즐겨 입는 옷
+
+## 성격
+> 장점과 결점, 버릇, 말투
+
+## 목표와 두려움
+> 무엇을 원하고, 무엇을 잃을까 두려워하는가
+
+## 배경
+> 지금의 인물을 만든 과거의 사건
+
+## 관계
+> 중요한 인물과의 관계. 관계도에도 잇는다
+
+## 비밀
+> 다른 인물이나 독자가 아직 모르는 것
+` },
+  { fileName: "국가.md", text: `---
+분류: 국가
+코드: N
+설명: 나라, 왕국, 공화국, 도시국가
+---
+# 국가 템플릿
+
+- 정식 국호:
+- 수도:
+- 정치 체제:
+- 통치자:
+- 인구:
+- 공용어:
+- 화폐:
+- 국교·신앙:
+
+## 지리와 기후
+
+## 역사
+> 건국, 전쟁, 몰락 같은 큰 사건을 시대순으로
+
+## 사회와 문화
+> 계층, 관습, 축제, 금기
+
+## 경제
+
+## 군사
+
+## 외교
+> 주변 나라와의 관계. 관계도에도 잇는다
+
+## 갈등의 씨앗
+> 지금 이 나라 안팎에서 터질 수 있는 문제
+` },
+  { fileName: "마법.md", text: `---
+분류: 마법
+코드: M
+설명: 마법 체계, 주문, 의식
+---
+# 마법 템플릿
+
+- 계통:
+- 발동 조건:
+- 대가·제약:
+- 쓸 수 있는 사람:
+- 위험도:
+
+## 원리
+> 이 마법이 왜, 어떻게 작동하는가
+
+## 쓰는 방법
+
+## 한계와 대가
+> 무엇을 할 수 없고, 쓰면 무엇을 잃는가
+
+## 사회적 위치
+> 사람들이 이 마법을 어떻게 보는가, 법과 금기
+
+## 알려진 사용자
+
+## 역사
+` },
+  { fileName: "아이템.md", text: `---
+분류: 아이템
+기존분류: 사물
+설명: 물건, 유물, 무기, 도구
+---
+# 아이템 템플릿
+
+- 종류:
+- 희귀도:
+- 재질:
+- 현재 소유자:
+- 있는 곳:
+
+## 생김새
+
+## 능력과 효과
+
+## 대가와 제약
+
+## 내력
+> 누가 만들었고 어떤 손을 거쳐 왔는가
+
+## 얽힌 이야기
+` },
+  { fileName: "고유 명사.md", text: `---
+분류: 고유 명사
+코드: G
+설명: 이 세계만의 용어, 칭호, 은어를 모은 용어집
+---
+# 고유 명사 템플릿
+
+- 읽는 법:
+- 어원:
+- 쓰이는 곳:
+- 비슷한 말:
+
+## 뜻
+
+## 쓰임새와 예문
+> 등장인물이 실제로 쓰는 문장 예시
+
+## 유래
+` },
+];
+
+function templateItem(fileName, text) {
+  const { meta, body } = splitFrontmatter(text);
+  const base = String(fileName || "").replace(/\.(md|markdown|txt)$/i, "").trim();
+  return {
+    fileName,
+    label: meta["분류"] || meta["이름"] || meta.name || meta.label || base,
+    code: String(meta["코드"] || meta.code || "").toUpperCase(),
+    desc: meta["설명"] || meta.description || meta.desc || "",
+    base: meta["기존분류"] || meta.base || "",
+    template: body,
+  };
+}
+async function readTemplateFiles(files) {
+  const items = [];
+  for (const f of [...files].slice(0, 30)) {
+    try {
+      const { data } = await prepareText(f);
+      items.push(templateItem(f.name, data));
+    } catch (err) { toast(`${f.name}: ${err?.message || err}`); }
+  }
+  return items;
+}
+function entryCountByType() {
+  const counts = {};
+  for (const e of state.entries) counts[e.type] = (counts[e.type] || 0) + 1;
+  return counts;
+}
+async function commitTypes(newTypes, note) {
+  const w = currentWorld();
+  w.types = newTypes;
+  w.updatedAt = Date.now();
+  logChange("user", "types", null, note);
+  await Promise.all([persist.worlds(), persist.log()]);
+  renderCodex();
+}
+
+function openTypesSheet() {
+  const w = currentWorld();
+  if (!w) { toast("먼저 세계관을 만드세요"); return; }
+  const counts = entryCountByType();
+  openSheet(`<h2 class="sheet-title">분류와 템플릿</h2>
+    <p class="meta" style="margin:0 0 12px">「${esc(w.name)}」의 분류입니다. 분류에 Markdown 템플릿을 붙이면 Claude가 그 분류의 항목을 같은 구조로 쓰고, 직접 만들 때도 칸이 미리 채워집니다.</p>
+    <ul class="list-plain">${worldTypes().map((t) => {
+      const p = parseTemplate(t.template);
+      return `<li><button class="list-item" type="button" data-type-edit="${t.key}">
+        <span class="t"><span class="tdot type-dot" style="background:var(--t-${t.color})"></span>${esc(t.label)} <span class="catno" style="--tc:var(--t-${t.color})">${esc(t.code)}</span></span>
+        <span class="s">${t.template ? `템플릿 · 칸 ${p.fields.length} · 소제목 ${p.sections.length}` : "템플릿 없음"} · 항목 ${counts[t.key] || 0}개${t.desc ? ` · ${esc(t.desc)}` : ""}</span>
+      </button></li>`;
+    }).join("")}</ul>
+    <div class="sheet-actions">
+      <button class="btn btn-primary" type="button" data-ts="add">분류 추가</button>
+      <button class="btn" type="button" data-ts="import">md 파일로 가져오기</button>
+      <button class="btn" type="button" data-ts="sample">예시 템플릿</button>
+    </div>
+    <input type="file" id="tplFiles" accept=".md,.markdown,.txt,text/markdown,text/plain" multiple hidden>
+    <details class="help-box">
+      <summary>템플릿 쓰는 법</summary>
+      <div class="md">${md(`- \`- 이름: 설명\` 형식의 줄은 **속성 칸**이 됩니다. 설명은 입력 안내로 쓰입니다.
+- \`## 제목\`은 **본문 소제목**이 됩니다.
+- \`>\`로 시작하는 줄은 Claude에게 주는 **작성 안내**입니다. 본문에는 옮겨지지 않습니다.
+- 파일 맨 위에 아래처럼 쓰면 가져올 때 이름, 코드, 설명이 자동으로 채워집니다. \`기존분류\`를 쓰면 그 분류에 템플릿을 붙입니다.
+
+\`\`\`
+---
+분류: 국가
+코드: N
+설명: 나라, 왕국, 공화국
+기존분류: 세력
+---
+\`\`\``)}</div>
+    </details>`, (root) => {
+    root.onclick = async (ev) => {
+      const edit = ev.target.closest("[data-type-edit]");
+      if (edit) { openTypeEditor(edit.dataset.typeEdit); return; }
+      const act = ev.target.closest("[data-ts]")?.dataset.ts;
+      if (act === "add") openTypeEditor(null);
+      else if (act === "import") $("#tplFiles", root).click();
+      else if (act === "sample") openTemplateImport(SAMPLE_TEMPLATES.map((s) => templateItem(s.fileName, s.text)));
+    };
+    $("#tplFiles", root).onchange = async (ev) => {
+      const items = await readTemplateFiles(ev.target.files);
+      ev.target.value = "";
+      if (items.length) openTemplateImport(items);
+    };
+  });
+}
+
+function openTypeEditor(key) {
+  const existing = key ? worldTypes().find((t) => t.key === key) : null;
+  const t = existing || { key: null, label: "", code: suggestCode(), color: nextCustomColor(), desc: "", template: "" };
+  const counts = entryCountByType();
+  const others = worldTypes().filter((x) => x.key !== t.key);
+  openSheet(`<h2 class="sheet-title">${existing ? "분류 편집" : "분류 추가"}</h2>
+    <form class="form" id="typeForm">
+      <label>이름<input id="t-label" required value="${esc(t.label)}" placeholder="예: 국가"></label>
+      <label>ID 코드 <small>영문 대문자 1~3자. 항목 번호 앞글자(예: N-001). 바꿔도 이미 있는 번호는 그대로입니다.</small><input id="t-code" required value="${esc(t.code)}" maxlength="3" autocapitalize="characters" autocomplete="off"></label>
+      <label>설명 <small>Claude가 이 분류를 언제 쓸지 판단하는 데 씁니다</small><input id="t-desc" value="${esc(t.desc)}" placeholder="예: 나라, 왕국, 공화국"></label>
+      <fieldset><legend>색</legend><div class="swatches">${COLOR_CHOICES.map((c) => `<label class="swatch"><input type="radio" name="t-color" value="${c}"${c === t.color ? " checked" : ""}><span style="background:var(--t-${c})"></span></label>`).join("")}</div></fieldset>
+      <label>템플릿 <small>Markdown</small><textarea id="t-template" rows="12" placeholder="- 수도:&#10;- 정치 체제:&#10;&#10;## 역사&#10;> 건국부터 지금까지">${esc(t.template)}</textarea></label>
+      <p class="meta" id="t-parsed"></p>
+      <div class="row">
+        <button class="btn btn-small" type="button" data-te="load">md 파일에서 불러오기</button>
+        <button class="btn btn-small" type="button" data-te="download"${t.template ? "" : " disabled"}>md 내려받기</button>
+      </div>
+      <input type="file" id="t-file" accept=".md,.markdown,.txt,text/markdown,text/plain" hidden>
+      ${existing ? `<fieldset id="t-delete-box" hidden><legend>분류 삭제</legend>
+        <p class="meta" style="margin:0 0 8px">이 분류의 항목 ${counts[t.key] || 0}개(휴지통 포함)를 옮길 분류를 고르세요.</p>
+        <select id="t-move">${others.map((o) => `<option value="${o.key}">${esc(o.label)}</option>`).join("")}</select>
+        <div class="row" style="margin-top:8px"><button class="btn btn-danger-solid btn-small" type="button" data-te="delete-confirm">옮기고 삭제</button></div>
+      </fieldset>` : ""}
+      <div class="sheet-actions">
+        <button class="btn" type="button" data-te="back">돌아가기</button>
+        <button class="btn btn-primary" type="submit">저장</button>
+        ${existing ? `<button class="btn btn-danger" type="button" data-te="delete">삭제</button>` : ""}
+      </div>
+    </form>`, (root) => {
+    const tpl = $("#t-template", root);
+    const showParsed = () => {
+      const p = parseTemplate(tpl.value);
+      $("#t-parsed", root).textContent = tpl.value.trim()
+        ? `속성 칸 ${p.fields.length}개${p.fields.length ? `: ${p.fields.map((f) => f.key).slice(0, 8).join(", ")}${p.fields.length > 8 ? " …" : ""}` : ""} · 소제목 ${p.sections.length}개${p.sections.length ? `: ${p.sections.slice(0, 6).join(", ")}${p.sections.length > 6 ? " …" : ""}` : ""}`
+        : "템플릿이 없으면 자유 형식으로 씁니다.";
+    };
+    showParsed();
+    tpl.addEventListener("input", showParsed);
+    $("#t-code", root).addEventListener("input", (ev) => { ev.target.value = ev.target.value.toUpperCase(); });
+    $("#t-file", root).onchange = async (ev) => {
+      const items = await readTemplateFiles(ev.target.files);
+      ev.target.value = "";
+      const it = items[0];
+      if (!it) return;
+      tpl.value = it.template;
+      if (!$("#t-label", root).value.trim()) $("#t-label", root).value = it.label;
+      if (it.desc && !$("#t-desc", root).value.trim()) $("#t-desc", root).value = it.desc;
+      showParsed();
+      toast(`${it.fileName}을(를) 불러왔습니다. 저장해야 반영됩니다`);
+    };
+    root.onclick = async (ev) => {
+      const act = ev.target.closest("[data-te]")?.dataset.te;
+      if (!act) return;
+      if (act === "back") openTypesSheet();
+      else if (act === "load") $("#t-file", root).click();
+      else if (act === "download") download(`${t.label || "템플릿"}.md`, templateFileText({ ...t, template: tpl.value }), "text/markdown");
+      else if (act === "delete") {
+        if (worldTypes().length <= 1) { toast("분류는 하나 이상 있어야 합니다"); return; }
+        if (!(counts[t.key] || 0)) {
+          if (!(await confirmBox(`'${t.label}' 분류를 삭제할까요?`, "삭제", true))) return;
+          await commitTypes(others, `${t.label} 분류 삭제`);
+          openTypesSheet();
+          toast("분류를 삭제했습니다");
+        } else $("#t-delete-box", root).hidden = false;
+      } else if (act === "delete-confirm") {
+        if (state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 바꿔 주세요"); return; }
+        const target = $("#t-move", root).value;
+        const moved = state.entries.filter((e) => e.type === t.key);
+        if (!(await confirmBox(`항목 ${moved.length}개를 '${typeInfo(target).label}'(으)로 옮기고 '${t.label}' 분류를 삭제할까요?`, "옮기고 삭제", true))) return;
+        for (const e of moved) {
+          pushHistory(e, "user", `분류 '${t.label}' 삭제로 옮김`);
+          e.type = target;
+          e.updatedAt = Date.now();
+          e.updatedBy = "user";
+          logChange("user", "update", e, "분류 변경");
+        }
+        await persist.world();
+        await commitTypes(others, `${t.label} 분류 삭제(항목은 ${typeInfo(target).label}(으)로 옮김)`);
+        openTypesSheet();
+        toast("항목을 옮기고 분류를 삭제했습니다");
+      }
+    };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      if (state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 바꿔 주세요"); return; }
+      const label = $("#t-label", root).value.trim();
+      const code = $("#t-code", root).value.trim().toUpperCase();
+      const desc = $("#t-desc", root).value.trim();
+      const color = root.querySelector('input[name="t-color"]:checked')?.value || t.color;
+      const template = tpl.value.replace(/\r\n?/g, "\n").trim();
+      if (!label) { toast("이름을 넣어 주세요"); return; }
+      if (others.some((o) => o.label.toLowerCase() === label.toLowerCase())) { toast(`'${label}' 분류가 이미 있습니다`); return; }
+      if (!CODE_RE.test(code)) { toast("ID 코드는 영문 대문자로 시작하는 1~3자여야 합니다"); return; }
+      if (others.some((o) => o.code === code)) { toast(`코드 ${code}는 다른 분류가 쓰고 있습니다`); return; }
+      const next = { key: t.key || `u_${uid()}`, label, code, color, desc, template };
+      const list = existing ? worldTypes().map((x) => (x.key === t.key ? next : x)) : [...worldTypes(), next];
+      const what = existing
+        ? [existing.label !== label && `이름 ${existing.label}→${label}`, existing.code !== code && `코드 ${code}`, existing.template !== template && "템플릿 수정", existing.desc !== desc && "설명 수정"].filter(Boolean).join(", ")
+        : "새 분류";
+      await commitTypes(list, `${label}${what ? ` (${what})` : ""}`);
+      openTypesSheet();
+      toast("저장했습니다");
+    };
+  });
+}
+
+function openTemplateImport(items) {
+  const types = worldTypes();
+  const taken = new Set(types.map((t) => t.code));
+  const rows = items.map((it) => {
+    const byLabel = types.find((t) => t.label === it.label) || (it.base && types.find((t) => t.label === it.base));
+    let code = it.code;
+    if (!CODE_RE.test(code) || taken.has(code)) code = suggestCode([...taken]);
+    if (!byLabel) taken.add(code);
+    return { ...it, target: byLabel ? byLabel.key : "__new", code };
+  });
+  openSheet(`<h2 class="sheet-title">템플릿 가져오기</h2>
+    <p class="meta" style="margin:0 0 12px">파일마다 분류를 정해 주세요. 기존 분류에 연결하면 그 분류의 이름도 아래 이름으로 바뀌고, 템플릿은 새것으로 바뀝니다.</p>
+    <form class="form" id="importTplForm">
+      ${rows.map((r, i) => {
+        const p = parseTemplate(r.template);
+        return `<fieldset class="imp" data-i="${i}">
+          <legend>${esc(r.fileName)}</legend>
+          <label class="switch">가져오기<input type="checkbox" class="imp-on" checked></label>
+          <label>분류 이름<input class="imp-label" value="${esc(r.label)}"></label>
+          <label>연결<select class="imp-target"><option value="__new"${r.target === "__new" ? " selected" : ""}>새 분류로 추가</option>${types.map((t) => `<option value="${t.key}"${r.target === t.key ? " selected" : ""}>기존 분류: ${esc(t.label)}</option>`).join("")}</select></label>
+          <label class="imp-code-wrap"${r.target === "__new" ? "" : " hidden"}>ID 코드 <small>영문 대문자 1~3자</small><input class="imp-code" value="${esc(r.code)}" maxlength="3" autocomplete="off"></label>
+          <label>설명<input class="imp-desc" value="${esc(r.desc)}"></label>
+          <p class="meta" style="margin:0">속성 칸 ${p.fields.length}개 · 소제목 ${p.sections.length}개</p>
+        </fieldset>`;
+      }).join("")}
+      <div class="sheet-actions">
+        <button class="btn" type="button" data-imp="back">돌아가기</button>
+        <button class="btn btn-primary" type="submit">가져오기</button>
+      </div>
+    </form>`, (root) => {
+    root.addEventListener("change", (ev) => {
+      if (ev.target.matches(".imp-target")) ev.target.closest(".imp").querySelector(".imp-code-wrap").hidden = ev.target.value !== "__new";
+    });
+    root.onclick = (ev) => { if (ev.target.closest('[data-imp="back"]')) openTypesSheet(); };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      if (state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 바꿔 주세요"); return; }
+      const list = worldTypes().map((t) => ({ ...t }));
+      const done = [];
+      for (const fs of $$(".imp", root)) {
+        if (!$(".imp-on", fs).checked) continue;
+        const r = rows[Number(fs.dataset.i)];
+        const label = $(".imp-label", fs).value.trim();
+        const target = $(".imp-target", fs).value;
+        const desc = $(".imp-desc", fs).value.trim();
+        if (!label) { toast(`${r.fileName}: 분류 이름을 넣어 주세요`); return; }
+        if (target === "__new") {
+          const code = $(".imp-code", fs).value.trim().toUpperCase();
+          if (!CODE_RE.test(code)) { toast(`${r.fileName}: ID 코드는 영문 대문자로 시작하는 1~3자여야 합니다`); return; }
+          if (list.some((t) => t.code === code)) { toast(`${r.fileName}: 코드 ${code}가 이미 쓰이고 있습니다`); return; }
+          const used = new Set(list.map((t) => t.color));
+          const color = ["c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"].find((c) => !used.has(c)) || "c1";
+          list.push({ key: `u_${uid()}`, label, code, color, desc, template: r.template });
+        } else {
+          const t = list.find((x) => x.key === target);
+          t.label = label;
+          t.template = r.template;
+          if (desc) t.desc = desc;
+        }
+        done.push(label);
+      }
+      const labels = list.map((t) => t.label.toLowerCase());
+      const dup = labels.find((l, i) => labels.indexOf(l) !== i);
+      if (dup) { toast(`'${dup}' 이름의 분류가 둘 이상입니다. 이름을 바꿔 주세요`); return; }
+      if (!done.length) { toast("가져올 파일을 하나 이상 고르세요"); return; }
+      await commitTypes(list, `템플릿 가져오기: ${done.join(", ")}`);
+      openTypesSheet();
+      toast(`템플릿 ${done.length}개를 가져왔습니다`);
+    };
+  });
+}
+
+/* ============================================================
    13. 화면: 설정
    ============================================================ */
 async function renderSettings() {
@@ -2983,6 +3789,12 @@ async function renderSettings() {
         </div>
       </form>
       <p>이 앱 전용 키를 만들고, Console에서 월 사용 한도를 걸어 두는 것을 권합니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>분류와 템플릿</h2>
+      <p>${currentWorld() ? `「${esc(currentWorld().name)}」의 분류(캐릭터, 국가, 마법, 아이템, 고유 명사 등)를 정하고, 분류마다 Markdown 템플릿을 붙여 항목 형식을 맞춥니다.` : "세계관을 만들면 분류와 템플릿을 정할 수 있습니다."}</p>
+      <div class="row"><button class="btn" type="button" data-act="types"${currentWorld() ? "" : " disabled"}>분류와 템플릿 관리</button></div>
     </section>
 
     <section class="card">
@@ -3133,10 +3945,10 @@ function exportMarkdown() {
   const w = currentWorld();
   if (!w) return;
   const parts = [`# ${w.name}`, "", w.premise ? `> ${w.premise}` : "", "", w.tone ? `**분위기 · 문체**: ${w.tone}` : "", "", w.rules ? `## 세계 규칙\n\n${w.rules}` : ""];
-  for (const k of TYPE_KEYS) {
+  for (const k of typeKeys()) {
     const list = activeEntries().filter((e) => e.type === k).sort((a, b) => a.id.localeCompare(b.id));
     if (!list.length) continue;
-    parts.push("", `## ${TYPES[k].label}`);
+    parts.push("", `## ${typeInfo(k).label}`);
     for (const e of list) {
       parts.push("", `### ${e.name} \`${e.id}\``);
       if (e.aliases?.length) parts.push(`*별칭: ${e.aliases.join(", ")}*`);
@@ -3253,6 +4065,7 @@ function bindGlobal() {
     else if (act === "edit-world") { const w = currentWorld(); if (w) openWorldForm(w); }
     else if (act === "new-entry") { if (state.busy) toast("Claude가 작업 중입니다"); else openEditor(null); }
     else if (act === "trash") openTrash();
+    else if (act === "types") openTypesSheet();
     else if (act === "retry") { if (!state.busy) runAgent(); }
   });
   document.addEventListener("keydown", (e) => {
