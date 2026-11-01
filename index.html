@@ -649,6 +649,58 @@ main { min-height: 0; min-width: 0; position: relative; }
   background: var(--ink); color: var(--bg);
   padding: 8px 14px; border-radius: 10px; font-size: 13.5px;
 }
+
+/* 설정집 구역 탭 */
+.seg-tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; margin: 0 0 12px; padding: 3px; border-radius: 12px; background: var(--surface-2); }
+.seg-tabs::-webkit-scrollbar { display: none; }
+.seg-tabs button { flex: 1 0 auto; padding: 7px 8px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); font: 600 13px var(--font-body); white-space: nowrap; }
+@media (max-width: 370px) { .seg-tabs { gap: 2px; } .seg-tabs button { padding: 6px 5px; font-size: 12px; letter-spacing: -.02em; } }
+.seg-tabs button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }
+.seg-tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.ms-card .catno { font-family: var(--font-body); }
+.ms-body { margin-top: 8px; font-size: 15.5px; line-height: 1.75; }
+.sense-card { display: flex; flex-direction: column; gap: 6px; background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--tc, var(--line)); border-radius: 12px; padding: 10px 12px; }
+.sense-head { display: flex; align-items: center; gap: 8px; }
+.sense-head strong { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sense-head .catno { padding: 0; }
+.sense-list { margin: 0; display: grid; gap: 4px; }
+.sense-list > div { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 8px; font-size: 14px; }
+.sense-list dt { color: var(--muted); font-size: 12.5px; padding-top: 1px; }
+.sense-list dd { margin: 0; }
+.sense-card .md { font-size: 14px; }
+.q-cards { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.q-card { display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); }
+.q-card .eyebrow { font-size: 11px; letter-spacing: .08em; color: var(--accent); }
+.q-text { margin: 0; font: 600 17px/1.5 var(--font-display); text-wrap: pretty; }
+.gen-results { margin-top: 12px; }
+.gen-item { display: flex; align-items: center; gap: 4px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.gen-item > span { flex: 1; min-width: 0; }
+.gen-item .meta { margin: 0; font-size: 13px; }
+/* 항목 그림 */
+.entry-card.has-img { grid-template-columns: 52px auto minmax(0, 1fr); }
+.entry-card.has-img .esum, .entry-card.has-img .etags { grid-column: 3; }
+.ecard-img { grid-row: span 3; width: 52px; height: 52px; object-fit: cover; border-radius: 9px; background: var(--surface-2); }
+.entry-img-btn { display: block; width: 100%; margin: 0 0 12px; padding: 0; border: 0; border-radius: 14px; overflow: hidden; background: var(--surface-2); }
+.entry-img { display: block; width: 100%; max-height: 240px; object-fit: cover; }
+.entry-img-btn.full .entry-img { max-height: none; object-fit: contain; }
+.img-edit { display: flex; flex-direction: column; gap: 8px; }
+.img-edit img { width: 120px; height: 120px; object-fit: cover; border-radius: 12px; border: 1px solid var(--line); }
+/* 감각·관점 */
+.sense-fields > div { grid-template-columns: 52px minmax(0, 1fr); }
+.persp-list { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 12px; }
+.persp { margin: 0; padding: 8px 12px; border-left: 3px solid var(--accent); background: var(--surface-2); border-radius: 0 10px 10px 0; }
+.persp-by { display: block; font-size: 12.5px; color: var(--muted); }
+.persp p { margin: 4px 0 0; font-size: 14.5px; }
+.persp-row { display: flex; flex-direction: column; gap: 4px; padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--line); }
+.persp-row textarea { width: 100%; }
+.inline-label { display: grid !important; grid-template-columns: 44px minmax(0, 1fr); align-items: center; gap: 8px; }
+.inline-label > span { font-size: 13px; color: var(--muted); }
+/* 창작 도구 · 모드 */
+.ct { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-bottom: 10px; background: var(--bg); }
+.ct summary { cursor: pointer; font-weight: 700; font-size: 15px; }
+.ct .meta { margin: 6px 0 8px; }
+.mode-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 8px var(--gutter-r) 0 var(--gutter-l); padding: 6px 6px 6px 12px; border-radius: 12px; background: var(--accent-soft); font-size: 13px; }
+.mode-bar > span { flex: 1 1 180px; min-width: 0; }
 </style>
 </head>
 <body>
@@ -679,11 +731,15 @@ main { min-height: 0; min-width: 0; position: relative; }
           <span>Claude API 키를 넣어야 대화할 수 있습니다.</span>
           <button class="btn btn-small btn-primary" type="button" data-goto="settings">키 입력</button>
         </div>
+        <div id="modeBar" class="mode-bar" hidden></div>
         <div id="attachTray" class="attach-tray" aria-label="첨부한 파일" hidden></div>
         <p id="attachNote" class="attach-note" hidden></p>
         <form id="composer" class="composer">
           <button id="attachBtn" class="icon-btn attach-btn" type="button" aria-label="파일 첨부">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 11.5l-8.2 8.2a5 5 0 0 1-7.1-7.1l8.6-8.6a3.4 3.4 0 0 1 4.8 4.8l-8.5 8.5a1.7 1.7 0 0 1-2.4-2.4l7.7-7.7"/></svg>
+          </button>
+          <button id="toolsBtn" class="icon-btn attach-btn" type="button" aria-label="창작 도구">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>
           </button>
           <input id="fileInput" type="file" multiple hidden accept="image/*,application/pdf,.pdf,.txt,.md,.markdown,.csv,.json,text/plain,text/markdown">
           <textarea id="input" rows="1" placeholder="세계관에 대해 이야기해 보세요" aria-label="메시지"></textarea>
@@ -1201,6 +1257,108 @@ const TOOLS_V6 = [
     eager_input_streaming: true,
   },
 ];
+// v7: 원고함(장면·세계 속 문서·시뮬레이션·인터뷰), 인물 인터뷰, 관점별 서술, 감각, 이름 규칙.
+const SYSTEM_V7 = SYSTEM_V6 + `
+
+## 원고함
+- 장면, 세계 속 문서(편지·수배서·경전 구절·신문 기사·노래 가사 등), 시뮬레이션, 인터뷰 기록처럼 설정 항목이 아닌 글은 save_manuscript로 원고함에 저장한다. refs에 관련 항목 id를 넣는다. 원고함의 글은 get_manuscripts로 읽는다.
+- 세계 속 문서는 그 세계 사람이 실제로 쓴 것처럼, 그 세계의 말투·용어·관습·이름 규칙에 맞게 쓴다. 문서에 대한 설명은 respond의 message에 짧게 덧붙인다.
+
+## 시뮬레이션
+- "N년 뒤" 시뮬레이션을 부탁받으면 확정 설정, 세력 관계, 갈등을 근거로 서로 다른 미래 2~3가지를 쓴다. 각 미래는 save_manuscript(kind 시뮬레이션)로 저장하고, 새로 생길 만한 인물·사건·세력은 status 초안으로 만든다. 확정 설정은 바꾸지 않는다.
+
+## 인물 인터뷰
+- 대화의 첫 메시지에 [인물 인터뷰]가 있으면 그 인물이 되어 1인칭으로 답한다. 먼저 get_entries로 인물과 가까운 항목을 읽고, 성격·말투·아는 범위를 지킨다. 그 인물이 알 수 없는 것은 모른다고 한다.
+- 사용자가 (( )) 안에 쓴 말은 인물 밖에서 작가에게 하는 말이다. 그때는 작가로서 답한다.
+- 인터뷰 중 새로 드러난 사실은 바로 저장하지 않는다. 사용자가 "인터뷰 정리"를 부탁하면 새 사실을 모아 설정에 넣을 것과 고칠 것을 제안하고, 인터뷰 요약을 원고함(kind 인터뷰)에 저장한다.
+
+## 관점별 서술
+- 같은 사건이나 인물을 세력이나 인물마다 다르게 알거나 믿는 내용은 set_perspective로 그 항목에 기록한다. 항목 본문은 실제로 일어난 일, 관점별 서술은 누가 무엇을 믿는가다.
+
+## 감각과 이름
+- 장소 같은 항목의 소리·냄새·빛·촉감·맛은 senses에 짧은 묘사로 넣는다.
+- 이름 규칙이 있는 분류나 나라의 이름을 지을 때는 그 규칙을 따른다. 규칙은 [설정집 현황]에 있고, set_naming_rule로 만들거나 고친다.`;
+const toolV6 = (name) => TOOLS_V6.find((t) => t.name === name);
+const SENSE_KEYS = ["소리", "냄새", "빛", "촉감", "맛"];
+const SENSES_PARAM = { type: "object", additionalProperties: { type: "string" }, description: '감각 묘사. 키는 소리, 냄새, 빛, 촉감, 맛. 예: {"소리": "멀리서 울리는 무적", "냄새": "젖은 소금"}' };
+const MS_KINDS = ["장면", "문서", "시뮬레이션", "인터뷰", "메모"];
+const TOOLS_V7 = [
+  toolV6("search_entries"),
+  toolV6("get_entries"),
+  {
+    name: "create_entry",
+    description: toolV6("create_entry").description + " 장소 같은 항목은 senses에 감각 묘사를 넣을 수 있다.",
+    input_schema: { type: "object", properties: { ...toolV6("create_entry").input_schema.properties, senses: SENSES_PARAM }, required: ["type", "name", "summary"] },
+    eager_input_streaming: true,
+  },
+  {
+    name: "update_entry",
+    description: toolV6("update_entry").description + " senses를 넣으면 그 감각 칸만 덮어쓴다(빈 문자열이면 지운다).",
+    input_schema: { type: "object", properties: { ...toolV6("update_entry").input_schema.properties, senses: SENSES_PARAM }, required: ["id"] },
+    eager_input_streaming: true,
+  },
+  toolV6("set_relation"),
+  toolV6("delete_entry"),
+  toolV6("update_world"),
+  toolV6("list_types"),
+  toolV6("get_template"),
+  toolV6("get_timeline"),
+  toolV6("set_calendar"),
+  {
+    name: "set_perspective",
+    description: "한 항목(사건·인물 등)에 대해 어떤 세력이나 인물이 알거나 믿는 내용을 기록한다. 같은 by가 있으면 바꾼다. remove가 true면 그 관점을 지운다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        id: { type: "string", description: "관점을 달 항목 id" },
+        by: { type: "string", description: "누구의 관점인지. 항목 id(세력·인물)나 이름" },
+        text: { type: "string", description: "그 쪽이 알거나 믿는 내용" },
+        remove: { type: "boolean" },
+      },
+      required: ["id", "by"],
+    },
+    eager_input_streaming: true,
+  },
+  {
+    name: "save_manuscript",
+    description: "원고함에 글을 저장한다(장면, 세계 속 문서, 시뮬레이션, 인터뷰 기록, 메모). id를 주면 그 원고를 고친다. 성공하면 원고 id를 돌려준다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        id: { type: "string", description: "고칠 원고 id(새로 만들 때는 넣지 않는다)" },
+        title: { type: "string" },
+        kind: { type: "string", enum: MS_KINDS },
+        body: { type: "string", description: "마크다운 본문" },
+        refs: { ...STR_ARR, description: "관련 항목 id" },
+      },
+      required: ["title", "kind", "body"],
+    },
+    eager_input_streaming: true,
+  },
+  {
+    name: "get_manuscripts",
+    description: "원고함을 읽는다. id를 주면 그 원고 전문을, 없으면 목록(id, 종류, 제목, 관련 항목)을 준다. query로 제목과 본문을 찾는다.",
+    input_schema: { type: "object", properties: { id: { type: "string" }, query: { type: "string" } } },
+    eager_input_streaming: true,
+  },
+  {
+    name: "set_naming_rule",
+    description: "이름 규칙을 만들거나 고친다(같은 name이면 덮어쓴다). rules에는 음절 구조, 자주 쓰는 소리와 어미, 피할 소리, 성(姓)·지명 규칙을 쓴다. remove가 true면 지운다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        name: { type: "string", description: "규칙 이름. 예: 에델 공화국식 이름" },
+        applies_to: { ...STR_ARR, description: "적용 대상(분류 이름이나 항목 id·이름)" },
+        rules: { type: "string" },
+        examples: STR_ARR,
+        remove: { type: "boolean" },
+      },
+      required: ["name"],
+    },
+    eager_input_streaming: true,
+  },
+  toolV6("respond"),
+];
 const PROMPT_SETS = {
   1: { system: SYSTEM_V1, tools: TOOLS_V1 },
   2: { system: SYSTEM_V2, tools: TOOLS_V2 },
@@ -1208,8 +1366,9 @@ const PROMPT_SETS = {
   4: { system: SYSTEM_V4, tools: TOOLS_V4 },
   5: { system: SYSTEM_V5, tools: TOOLS_V5 },
   6: { system: SYSTEM_V6, tools: TOOLS_V6 },
+  7: { system: SYSTEM_V7, tools: TOOLS_V7 },
 };
-const PROMPT_CURRENT = 6;
+const PROMPT_CURRENT = 7;
 // 버전 정보가 없는 예전 대화는 만든 시각으로 버전을 추정한다(각 버전의 배포 완료 시각, UTC).
 const PROMPT_RELEASES = [
   { v: 2, at: Date.parse("2026-11-01T15:35:14Z") },
@@ -1263,6 +1422,10 @@ const TOOL_STATUS = {
   get_template: "템플릿을 읽는 중…",
   get_timeline: "연표를 살피는 중…",
   respond: "답을 쓰는 중…",
+  set_perspective: "관점을 기록하는 중…",
+  save_manuscript: "원고함에 저장하는 중…",
+  get_manuscripts: "원고함을 읽는 중…",
+  set_naming_rule: "이름 규칙을 정리하는 중…",
   set_calendar: "달력을 정리하는 중…",
 };
 
@@ -1349,6 +1512,12 @@ const state = {
   tlQuery: "",
   tlHidden: new Set(),
   tlHighlight: null,
+  manuscripts: [],      // 현재 세계관의 원고함
+  images: {},           // 현재 세계관의 항목 그림 { 항목 id: { data, at } }
+  codexTab: "entries",
+  msKind: "all",
+  msQuery: "",
+  pendingMode: null,    // 다음에 만들 대화의 모드(인물 인터뷰 등)
 };
 let live = null;
 const qrSelected = new Set(); // 여러 개 고르기에서 체크한 추천 대답 번호
@@ -1373,7 +1542,9 @@ const persist = {
   log: () => idb.set("log:" + state.worldId, state.log.slice(-500)),
   threads: () => idb.set("threads:" + state.worldId, state.threads),
   conv: () => (state.threadId ? idb.set("conv:" + state.threadId, clone(state.conv)) : Promise.resolve()),
-  world: () => Promise.all([persist.entries(), persist.log()]),
+  world: () => Promise.all([persist.entries(), persist.log(), persist.ms()]),
+  ms: () => (state.worldId ? idb.set("ms:" + state.worldId, state.manuscripts) : Promise.resolve()),
+  images: () => (state.worldId ? idb.set("imgs:" + state.worldId, state.images) : Promise.resolve()),
 };
 
 /* ============================================================
@@ -1611,6 +1782,8 @@ function createEntry(d, by) {
     fields: d.fields || {}, body: d.body || "", tags: d.tags || [],
     relations: d.relations || [],
     status: statusKey(d.status) || "canon",
+    ...(d.senses && Object.keys(d.senses).length ? { senses: Object.fromEntries(Object.entries(d.senses).filter(([, v]) => String(v).trim())) } : {}),
+    ...(d.perspectives?.length ? { perspectives: d.perspectives } : {}),
     ...(normalizeWhen(d.when) ? { when: normalizeWhen(d.when) } : {}),
     createdAt: now, updatedAt: now, updatedBy: by, history: [],
   };
@@ -1635,6 +1808,13 @@ function updateEntry(e, p, by, reason) {
   if (p.append_body) e.body = (e.body ? e.body.trimEnd() + "\n\n" : "") + p.append_body;
   if (p.relations !== undefined) e.relations = p.relations;
   if (p.status !== undefined && statusKey(p.status)) e.status = statusKey(p.status);
+  if (p.perspectives !== undefined) e.perspectives = p.perspectives;
+  if (p.sensesAll !== undefined) e.senses = p.sensesAll;
+  if (p.senses) {
+    const next = { ...(e.senses || {}) };
+    for (const [k, v] of Object.entries(p.senses)) { if (String(v).trim()) next[k] = String(v).trim(); else delete next[k]; }
+    e.senses = next;
+  }
   if (p.when !== undefined) { const w = normalizeWhen(p.when); if (w) e.when = w; else delete e.when; }
   e.updatedAt = Date.now();
   e.updatedBy = by;
@@ -1681,6 +1861,8 @@ function restoreVersion(e, h) {
   for (const k of ["type", "name", "aliases", "summary", "fields", "body", "tags", "relations"]) e[k] = data[k];
   if (data.when) e.when = data.when; else delete e.when;
   e.status = statusOf(data);
+  if (data.senses) e.senses = data.senses; else delete e.senses;
+  if (data.perspectives) e.perspectives = data.perspectives; else delete e.perspectives;
   e.updatedAt = Date.now(); e.updatedBy = "user";
   logChange("user", "update", e, "이전 버전으로 되돌림");
 }
@@ -1725,6 +1907,10 @@ function entryToText(e) {
   if (out.length || inc.length) lines.push("관계:", ...out, ...inc);
   if (e.tags?.length) lines.push(`태그: ${e.tags.map((t) => "#" + t).join(" ")}`);
   if (e.when) lines.push(`시점: ${rangeText(e.when)}${spanText(e.when) ? ` (${spanText(e.when)})` : ""}${e.when.label ? ` · 표기 "${e.when.label}"` : ""}`);
+  const senses = Object.entries(e.senses || {});
+  if (senses.length) lines.push("감각:", ...senses.map(([k, v]) => `- ${k}: ${v}`));
+  if (e.perspectives?.length) lines.push("관점별 서술:", ...e.perspectives.map((x) => `- ${perspectiveName(x.by)}: ${x.text}`));
+  if (state.images[e.id]?.data) lines.push("그림: 있음");
   lines.push(`최종 수정: ${fmtDate(e.updatedAt)} (${e.updatedBy === "user" ? "사용자 직접" : "Claude"})`);
   return lines.join("\n");
 }
@@ -1765,6 +1951,44 @@ function validateInput(schema, input) {
   return null;
 }
 
+function perspectiveName(by) {
+  const e = findEntry(by);
+  return e && e.id === by ? `${e.name}(${e.id})` : String(by);
+}
+const worldNaming = (w = currentWorld()) => (Array.isArray(w?.naming) ? w.naming : []);
+function saveManuscript(d, by) {
+  const now = Date.now();
+  if (!String(d.title || "").trim()) throw new Error("제목이 필요합니다.");
+  if (!MS_KINDS.includes(d.kind)) throw new Error(`kind는 ${MS_KINDS.join(", ")} 중 하나여야 합니다.`);
+  const refs = (d.refs || []).map((r) => findEntry(r)?.id).filter(Boolean);
+  if (d.id) {
+    const m = state.manuscripts.find((x) => x.id === d.id);
+    if (!m) throw new Error(`${d.id} 원고가 없습니다.`);
+    Object.assign(m, { title: String(d.title).trim(), kind: d.kind, body: String(d.body || ""), refs, updatedAt: now, by });
+    logChange(by, "manuscript", null, `원고 수정: ${m.title}`);
+    return m;
+  }
+  const m = { id: `ms-${uid().slice(-6)}`, title: String(d.title).trim(), kind: d.kind, body: String(d.body || ""), refs, createdAt: now, updatedAt: now, by };
+  state.manuscripts.push(m);
+  logChange(by, "manuscript", null, `원고 추가: ${m.title}`);
+  return m;
+}
+// 대화와 별개로 Claude에게 한 번 묻는다(이름 만들기, 맞춤 질문 등). 대화 기록에는 남지 않는다.
+// 짧은 단발 요청(이름 짓기, 질문 카드). 생각은 끌 수 없어서(Opus 5.5) 깊이를 low로 두고,
+// 생각에 쓰는 토큰도 max_tokens에 들어가므로 넉넉히 잡는다.
+async function quickAsk(system, user, maxTokens = 8000) {
+  if (!settings.apiKey) { toast("설정에서 API 키를 먼저 넣으세요"); switchView("settings"); return null; }
+  const client = new Anthropic({ apiKey: settings.apiKey, dangerouslyAllowBrowser: true });
+  const m = PRICES[settings.model];
+  const params = { model: settings.model, max_tokens: maxTokens, system, messages: [{ role: "user", content: user }], output_config: { effort: "low" } };
+  if (m?.fallback) { params.betas = ["server-side-fallback-2026-07-01"]; params.fallbacks = "default"; }
+  const msg = await client.beta.messages.create(params);
+  addCost(calcCost(msg.usage, msg.model));
+  if (msg.stop_reason === "refusal") throw new Error("안전 정책에 따라 답할 수 없습니다");
+  const text = msg.content.filter((b) => b.type === "text").map((b) => b.text).join("\n");
+  if (msg.stop_reason === "max_tokens" && !text.trim()) throw new Error("답이 길어져 끊겼습니다. 다시 시도해 주세요");
+  return text;
+}
 function whenFromInput(input, base) {
   const has = ["time_start", "time_end", "time_label"].some((k) => input[k] !== undefined);
   if (!has) return undefined;
@@ -1811,7 +2035,7 @@ const TOOL_IMPL = {
     if (input.status !== undefined && !statusKey(input.status)) throw new Error("status는 확정, 초안, 폐기 중 하나여야 합니다.");
     const t = findType(input.type);
     if (!t) throw new Error(`분류 '${input.type}'가 없습니다. 쓸 수 있는 분류: ${worldTypes().map((x) => x.label).join(", ")}`);
-    const e = createEntry({ ...input, type: t.key, when: whenFromInput(input) }, "claude");
+    const e = createEntry({ ...input, type: t.key, when: whenFromInput(input), perspectives: undefined }, "claude");
     const gaps = templateGaps(e);
     const note = gaps && (gaps.fields.length || gaps.sections.length)
       ? `\n템플릿에서 아직 비어 있는 칸: ${[...gaps.fields, ...gaps.sections.map((s) => "## " + s)].join(", ")}`
@@ -1879,6 +2103,46 @@ const TOOL_IMPL = {
     w.updatedAt = Date.now();
     logChange("claude", "calendar", null, "달력·시대 수정");
     return { content: "달력을 고쳤다.\n" + calendarText(), action: { kind: "world", text: "달력·시대" }, changed: true };
+  },
+  set_perspective({ id, by, text, remove }) {
+    const e = findEntry(id);
+    if (!e || e.deleted) throw new Error(`${id} 항목이 없습니다.`);
+    const who = findEntry(by);
+    const key = who ? who.id : String(by).trim();
+    if (!key) throw new Error("by가 필요합니다.");
+    const list = (e.perspectives || []).filter((x) => x.by !== key);
+    if (!remove) {
+      if (!String(text || "").trim()) throw new Error("text가 필요합니다.");
+      list.push({ by: key, text: String(text).trim() });
+    }
+    updateEntry(e, { perspectives: list }, "claude", remove ? "관점 삭제" : "관점 기록");
+    return { content: `${remove ? "관점 삭제" : "관점 기록"}: ${e.id} ${e.name} ← ${perspectiveName(key)}`, action: { kind: "update", text: `${e.name} · ${perspectiveName(key)}의 관점`, ref: e.id }, changed: true };
+  },
+  save_manuscript({ id, title, kind, body, refs }) {
+    const ms = saveManuscript({ id, title, kind, body, refs }, "claude");
+    return { content: `원고함 저장: ${ms.id} (${ms.kind} · ${ms.title})`, action: { kind: "create", text: `원고 ${ms.title}`, ms: ms.id }, changed: true };
+  },
+  get_manuscripts({ id, query }) {
+    if (id) {
+      const m = state.manuscripts.find((x) => x.id === id);
+      if (!m) throw new Error(`${id} 원고가 없습니다.`);
+      return { content: `# ${m.title} (${m.kind}, ${m.id})\n관련 항목: ${(m.refs || []).join(", ") || "없음"}\n\n${m.body}`, action: { kind: "read", text: `원고 · ${m.title}` } };
+    }
+    let list = state.manuscripts.slice().sort((a, b) => b.updatedAt - a.updatedAt);
+    const q = String(query || "").trim().toLowerCase();
+    if (q) list = list.filter((m) => `${m.title} ${m.body}`.toLowerCase().includes(q));
+    return { content: list.length ? list.slice(0, 50).map((m) => `- ${m.id} [${m.kind}] ${m.title}${m.refs?.length ? ` · ${m.refs.join(", ")}` : ""}`).join("\n") : "원고가 없습니다.", action: { kind: "read", text: "원고함 확인" } };
+  },
+  set_naming_rule({ name, applies_to, rules, examples, remove }) {
+    const w = currentWorld();
+    const prev = worldNaming(w).find((r) => r.name === String(name).trim());
+    if (remove && !prev) throw new Error(`'${name}' 이름 규칙이 없습니다.`);
+    const list = worldNaming(w).filter((r) => r !== prev);
+    if (!remove) list.push({ id: prev?.id || uid(), name: String(name).trim(), applies: applies_to || [], rules: String(rules || "").trim(), examples: examples || [] });
+    w.naming = list;
+    w.updatedAt = Date.now();
+    logChange("claude", "naming", null, `이름 규칙: ${name}`);
+    return { content: `${remove ? "이름 규칙 삭제" : "이름 규칙 저장"}: ${name}`, action: { kind: "world", text: `이름 규칙 ${name}` }, changed: true };
   },
   list_types() {
     return { content: `분류 ${worldTypes().length}개:\n${typeListText()}`, action: { kind: "read", text: "분류 목록 확인" } };
@@ -2032,6 +2296,14 @@ function contextNoteFor(thread) {
       "",
     ];
     if (v >= 5) lines.push(calendarText(), "");
+    if (v >= 7) {
+      const rules = worldNaming();
+      lines.push(rules.length ? `이름 규칙:\n${rules.map((r) => `- ${r.name}${r.applies?.length ? ` (적용: ${r.applies.join(", ")})` : ""}: ${cut(r.rules, 160)}${r.examples?.length ? ` · 예: ${r.examples.slice(0, 6).join(", ")}` : ""}`).join("\n")}` : "이름 규칙: 없음", `원고함: ${state.manuscripts.length}편${state.manuscripts.length ? " (get_manuscripts로 읽는다)" : ""}`, "");
+      if (thread.mode?.type === "interview") {
+        const who = findEntry(thread.mode.ref);
+        if (who) lines.push(`[인물 인터뷰] 대상: ${who.id} ${who.name}. 이 대화에서 너는 ${who.name}이(가) 되어 1인칭으로 답한다. (( )) 안의 말은 작가로서 받는다. "인터뷰 정리"를 부탁받으면 새로 드러난 사실을 정리해 제안하고 요약을 원고함에 저장한다.`, "");
+      }
+    }
     if (v >= 4) lines.push("분류 목록 (항목을 만들 때 이 중 하나를 쓴다. 템플릿이 있는 분류는 get_template로 구조를 확인한다):", typeListText(), "");
     lines.push(
       `항목 ${list.length}개${list.length > shown.length ? ` (앞의 ${shown.length}개만 표시, 나머지는 search_entries로 찾을 것)` : ""}${discardedCount ? ` · 폐기된 항목 ${discardedCount}개는 뺐다(search_entries의 include_discarded로 찾을 수 있다)` : ""}:`,
@@ -2040,18 +2312,19 @@ function contextNoteFor(thread) {
     return lines.join("\n");
   }
   // 분류·템플릿 변경 알림은 그 도구를 가진 대화(버전 4 이상)에만 보낸다.
-  const changes = state.log.filter((c) => c.by === "user" && c.at > (thread.syncedAt || 0) && (c.action !== "types" || v >= 4) && (c.action !== "calendar" || v >= 5));
+  const changes = state.log.filter((c) => c.by === "user" && c.at > (thread.syncedAt || 0) && (c.action !== "types" || v >= 4) && (c.action !== "calendar" || v >= 5) && ((c.action !== "naming" && c.action !== "manuscript") || v >= 7));
   if (!changes.length) return null;
-  const label = { create: "추가", update: "수정", delete: "삭제", restore: "복구", purge: "완전 삭제", relation: "관계 변경", world: "세계관 개요 수정", types: "분류·템플릿 변경", calendar: "달력·시대 변경" };
+  const label = { create: "추가", update: "수정", delete: "삭제", restore: "복구", purge: "완전 삭제", relation: "관계 변경", world: "세계관 개요 수정", types: "분류·템플릿 변경", calendar: "달력·시대 변경", naming: "이름 규칙 변경", manuscript: "원고함 변경" };
   const seen = new Set();
   const lines = [];
   for (const c of changes.slice().reverse()) {
-    const key = (c.id || "world") + c.action + (c.action === "types" ? c.note : "");
+    const key = (c.id || "world") + c.action + (["types", "naming", "manuscript"].includes(c.action) ? c.note : "");
     if (seen.has(key)) continue;
     seen.add(key);
     if (c.id) lines.push(`- ${c.id} ${c.name}: ${label[c.action] || c.action}`);
     else if (c.action === "types") lines.push(`- ${label.types}: ${c.note}`);
     else if (c.action === "calendar") lines.push(`- ${label.calendar}:\n${calendarText()}`);
+    else if (c.action === "naming" || c.action === "manuscript") lines.push(`- ${label[c.action]}: ${c.note}`);
     else lines.push(`- ${label[c.action] || c.action}`);
   }
   const typesChanged = changes.some((c) => c.action === "types");
@@ -2718,6 +2991,7 @@ function renderChat() {
   if (live) live.el = log.querySelector(`.msg-assistant[data-i="${state.conv.display.indexOf(live.item)}"]`);
   const t = currentThread();
   $("#threadTitle").textContent = t ? t.title : "";
+  renderModeBar(t);
   const ctx = t?.lastCtx || 0;
   const meter = $("#ctxMeter");
   meter.textContent = ctx ? `맥락 ${fmtTok(ctx)}` : "";
@@ -2725,6 +2999,17 @@ function renderChat() {
   meter.title = ctx > CTX_WARN ? "대화가 길어 요청마다 비용이 큽니다. 새 대화를 시작해 보세요." : "";
   updateComposer();
   scrollChatToBottom(true);
+}
+function renderModeBar(t = currentThread()) {
+  const bar = $("#modeBar");
+  const mode = t ? t.mode : state.pendingMode;
+  const who = mode?.type === "interview" ? findEntry(mode.ref) : null;
+  bar.hidden = !who;
+  $("#input").placeholder = who ? `${who.name}에게 말을 걸어 보세요` : "세계관에 대해 이야기해 보세요";
+  if (!who) { bar.innerHTML = ""; return; }
+  bar.innerHTML = t
+    ? `<span><b>${esc(who.name)} 인터뷰 중</b> · (( )) 안에 쓰면 작가로서 말합니다</span><button class="btn btn-small" type="button" data-mode="wrap">인터뷰 정리</button><button class="btn btn-small btn-ghost" type="button" data-mode="end">끝내기</button>`
+    : `<span><b>${esc(who.name)} 인터뷰</b>를 이 대화에서 시작합니다</span><button class="btn btn-small btn-ghost" type="button" data-mode="cancel">취소</button>`;
 }
 let liveFrame = 0;
 function scheduleLive() {
@@ -2756,7 +3041,9 @@ function updateComposer() {
   $("#input").placeholder = !state.busy && currentSuggest() ? "위에서 고르거나 직접 입력하세요" : "세계관에 대해 이야기해 보세요";
 }
 async function createThread(firstText) {
-  const t = { id: uid(), title: cut(firstText, 30) || "새 대화", createdAt: Date.now(), updatedAt: Date.now(), contextSent: false, syncedAt: 0, lastCtx: 0, promptVersion: PROMPT_CURRENT };
+  const t = { id: uid(), title: cut(firstText, 30) || "새 대화", createdAt: Date.now(), updatedAt: Date.now(), contextSent: false, syncedAt: 0, lastCtx: 0, promptVersion: PROMPT_CURRENT, ...(state.pendingMode ? { mode: state.pendingMode } : {}) };
+  if (state.pendingMode?.type === "interview") { const who = findEntry(state.pendingMode.ref); if (who) t.title = `${who.name} 인터뷰`; }
+  state.pendingMode = null;
   state.threads.push(t);
   state.threadId = t.id;
   state.conv = { api: [], display: [] };
@@ -2765,20 +3052,34 @@ async function createThread(firstText) {
   return t;
 }
 async function openThread(id) {
+  state.pendingMode = null;
   state.threadId = id;
   state.conv = (await idb.get("conv:" + id)) || { api: [], display: [] };
   qrSelected.clear();
   LS.set("lk.thread", id);
   renderChat();
 }
-function newThread() {
-  if (state.busy) { toast("응답이 끝난 뒤에 바꿀 수 있습니다"); return; }
+function newThread(mode = null) {
+  if (state.busy) { toast("응답이 끝난 뒤에 바꿀 수 있습니다"); return false; }
   state.threadId = null;
+  state.pendingMode = mode;
   state.conv = { api: [], display: [] };
   qrSelected.clear();
   LS.set("lk.thread", null);
   renderChat();
   switchView("chat");
+  return true;
+}
+// 새 대화를 열고 입력창에 요청을 채운다(보내기 전에 고칠 수 있게).
+function startInNewThread(text, mode = null) {
+  if (!newThread(mode)) return false;
+  fillInput(text);
+  return true;
+}
+function startInterview(id) {
+  const who = findEntry(id);
+  if (!who) return;
+  if (startInNewThread("안녕하세요. 먼저 자기소개를 부탁드려요.", { type: "interview", ref: who.id })) toast(`${who.name} 인터뷰를 시작합니다`);
 }
 function openThreadsSheet() {
   if (state.busy) { toast("응답이 끝난 뒤에 바꿀 수 있습니다"); return; }
@@ -2818,8 +3119,11 @@ function statusBadge(e) {
   const st = statusOf(e);
   return st === "canon" ? "" : `<span class="st-badge st-${st}">${STATUS[st]}</span>`;
 }
+const entryImage = (id) => (state.images[id]?.data ? state.images[id].data : "");
 function entryCard(e) {
-  return `<button class="entry-card${statusOf(e) === "discarded" ? " discarded" : ""}" type="button" data-ref="${e.id}" style="--tc:${typeColor(e.type)}">
+  const img = entryImage(e.id);
+  return `<button class="entry-card${statusOf(e) === "discarded" ? " discarded" : ""}${img ? " has-img" : ""}" type="button" data-ref="${e.id}" style="--tc:${typeColor(e.type)}">
+    ${img ? `<img class="ecard-img" src="${img}" alt="" loading="lazy">` : ""}
     <span class="catno">${e.id}</span>
     <span class="ename">${esc(e.name)} ${statusBadge(e)}</span>
     <span class="esum">${esc(e.summary || "요약 없음")}</span>
@@ -2839,7 +3143,9 @@ function renderCodex() {
   }
   // 검색창에 입력 중이면 입력란은 그대로 두고 결과만 다시 그린다(휴대폰 키보드가 닫히지 않게).
   if (document.activeElement?.id === "codexSearch" && $("#codexResults")) { renderCodexResults(); return; }
+  if (state.codexTab !== "entries") { renderCodexTab(root); return; }
   root.innerHTML = `
+    ${codexTabsHTML()}
     <section class="world-card">
       <span class="eyebrow">세계관 개요</span>
       <h2>${esc(w.name)}</h2>
@@ -2971,6 +3277,409 @@ function openChecksSheet() {
   });
 }
 
+/* ---- 설정집 구역: 원고함 · 감각 사전 · 질문 카드 · 이름 규칙 ---- */
+const CODEX_TABS = [["entries", "항목"], ["ms", "원고함"], ["senses", "감각 사전"], ["questions", "질문 카드"], ["naming", "이름 규칙"]];
+function codexTabsHTML() {
+  return `<div class="seg-tabs" role="tablist">${CODEX_TABS.map(([k, l]) => `<button type="button" role="tab" data-ctab="${k}" aria-selected="${state.codexTab === k}">${l}</button>`).join("")}</div>`;
+}
+function renderCodexTab(root) {
+  if (document.activeElement && root.contains(document.activeElement) && document.activeElement.matches("input[type=search]") && $("#ctabResults")) { renderCodexTabResults(); return; }
+  const head = codexTabsHTML();
+  const t = state.codexTab;
+  if (t === "ms") {
+    root.innerHTML = `${head}
+      <div class="codex-tools"><input id="msSearch" type="search" placeholder="원고 찾기" value="${esc(state.msQuery)}" aria-label="원고 찾기"><button class="btn btn-primary" type="button" data-act="ms-new">새 원고</button></div>
+      <div id="ctabResults"></div>`;
+    $("#msSearch", root).oninput = (e) => { state.msQuery = e.target.value; renderCodexTabResults(); };
+  } else if (t === "senses") {
+    root.innerHTML = `${head}
+      <p class="meta" style="margin:12px 0 0">장소마다 소리·냄새·빛·촉감·맛을 모아 둡니다. 장면을 쓸 때 꺼내 쓰세요.</p>
+      <div class="codex-tools"><input id="senseSearch" type="search" placeholder="감각 사전 찾기" aria-label="감각 사전 찾기"></div>
+      <div id="ctabResults"></div>`;
+    $("#senseSearch", root).oninput = () => renderCodexTabResults();
+  } else if (t === "questions") {
+    root.innerHTML = `${head}<div id="ctabResults"></div>`;
+  } else {
+    root.innerHTML = `${head}
+      <p class="meta" style="margin:12px 0 0">나라·종족·가문마다 이름 짓는 규칙을 정해 두면, 그 규칙에 맞는 이름을 만들 수 있습니다. Claude도 이름을 지을 때 따릅니다.</p>
+      <div class="row" style="margin-top:10px"><button class="btn btn-primary" type="button" data-act="naming-new">새 규칙</button><button class="btn" type="button" data-act="naming-ask">Claude에게 규칙 만들어 달라기</button></div>
+      <div id="ctabResults"></div>`;
+  }
+  renderCodexTabResults();
+}
+function renderCodexTabResults() {
+  const box = $("#ctabResults");
+  if (!box) return;
+  const t = state.codexTab;
+  if (t === "ms") {
+    const counts = {};
+    for (const m of state.manuscripts) counts[m.kind] = (counts[m.kind] || 0) + 1;
+    let list = state.manuscripts.slice().sort((a, b) => b.updatedAt - a.updatedAt);
+    if (state.msKind !== "all") list = list.filter((m) => m.kind === state.msKind);
+    const q = state.msQuery.trim().toLowerCase();
+    if (q) list = list.filter((m) => `${m.title} ${m.body}`.toLowerCase().includes(q));
+    box.innerHTML = `<div class="type-chips" role="toolbar" aria-label="원고 종류"><button class="type-chip" type="button" data-mskind="all" aria-pressed="${state.msKind === "all"}">전체<span class="n">${state.manuscripts.length}</span></button>${MS_KINDS.map((k) => `<button class="type-chip" type="button" data-mskind="${k}" aria-pressed="${state.msKind === k}">${k}<span class="n">${counts[k] || 0}</span></button>`).join("")}</div>
+      ${list.length ? `<div class="entry-list" style="margin-top:12px">${list.map((m) => `<button class="entry-card ms-card" type="button" data-ms="${m.id}"><span class="catno">${esc(m.kind)}</span><span class="ename">${esc(m.title)}</span><span class="esum">${esc(cut(m.body.replace(/[#>*_`-]/g, " "), 120))}</span><span class="etags">${fmtDate(m.updatedAt)}${m.refs?.length ? ` · 관련 ${m.refs.map((r) => esc(nameOf(r))).slice(0, 4).join(", ")}` : ""}</span></button>`).join("")}</div>`
+        : `<div class="empty-state"><h3>${state.manuscripts.length ? "조건에 맞는 원고가 없습니다" : "원고함이 비어 있습니다"}</h3><p>대화 입력창 옆의 창작 도구에서 장면, 세계 속 문서, 시뮬레이션을 만들거나, 직접 새 원고를 쓰세요.</p></div>`}`;
+  } else if (t === "senses") {
+    const q = ($("#senseSearch")?.value || "").trim().toLowerCase();
+    let list = liveEntries().filter((e) => Object.keys(e.senses || {}).length);
+    if (q) list = list.filter((e) => `${e.name} ${Object.values(e.senses).join(" ")}`.toLowerCase().includes(q));
+    const placeLike = (e) => e.type === "place" || /장소|지역|국가|도시/.test(typeInfo(e.type).label);
+    list.sort((a, b) => (placeLike(b) - placeLike(a)) || a.name.localeCompare(b.name, "ko"));
+    const empty = liveEntries().filter((e) => placeLike(e) && !Object.keys(e.senses || {}).length);
+    box.innerHTML = `${list.length ? `<div class="entry-list" style="margin-top:12px">${list.map((e) => `<section class="sense-card" style="--tc:${typeColor(e.type)}">
+        <div class="sense-head"><span class="catno">${e.id}</span><strong>${esc(e.name)}</strong><button type="button" class="btn btn-ghost btn-small" data-sense-copy="${e.id}">복사</button><button type="button" class="btn btn-ghost btn-small" data-sense-edit="${e.id}">편집</button></div>
+        <dl class="sense-list">${SENSE_KEYS.filter((k) => e.senses[k]).concat(Object.keys(e.senses).filter((k) => !SENSE_KEYS.includes(k))).map((k) => `<div><dt>${esc(k)}</dt><dd>${esc(e.senses[k])}</dd></div>`).join("")}</dl>
+      </section>`).join("")}</div>` : `<div class="empty-state"><h3>감각이 기록된 항목이 없습니다</h3><p>항목 편집의 '감각' 칸에 적거나, Claude에게 장소의 소리와 냄새를 정해 달라고 해 보세요.</p></div>`}
+      ${empty.length ? `<div class="tl-missing"><strong>감각이 비어 있는 장소 ${empty.length}곳</strong><p class="meta" style="margin:4px 0 8px">${esc(empty.slice(0, 12).map((e) => e.name).join(", "))}</p><button class="btn btn-small" type="button" data-act="senses-ask">Claude에게 채워 달라기</button></div>` : ""}`;
+  } else if (t === "questions") {
+    renderQuestions(box);
+  } else {
+    const rules = worldNaming();
+    box.innerHTML = rules.length ? `<div class="entry-list" style="margin-top:12px">${rules.map((r) => `<section class="sense-card">
+        <div class="sense-head"><strong>${esc(r.name)}</strong><button type="button" class="btn btn-ghost btn-small" data-naming-gen="${r.id}">이름 만들기</button><button type="button" class="btn btn-ghost btn-small" data-naming-edit="${r.id}">편집</button></div>
+        ${r.applies?.length ? `<p class="meta" style="margin:0">적용: ${esc(r.applies.join(", "))}</p>` : ""}
+        <div class="md">${md(r.rules || "")}</div>
+        ${r.examples?.length ? `<p class="meta" style="margin:0">예: ${esc(r.examples.join(", "))}</p>` : ""}
+      </section>`).join("")}</div>` : `<div class="empty-state"><h3>이름 규칙이 없습니다</h3><p>예: "에델 공화국 사람 이름은 두 음절, 받침 없이 '-엘', '-린'으로 끝난다."</p></div>`;
+  }
+}
+
+/* ---- 질문 카드 ---- */
+const QUESTION_BANK = [
+  ["생활", "이 세계 사람들의 하루는 몇 시에 시작해 무엇으로 끝나나요?"], ["생활", "가장 흔한 집은 어떤 재료로, 어떤 모양으로 짓나요?"], ["생활", "사람들은 시간을 어떻게 재고, 하루를 어떻게 나누나요?"],
+  ["음식", "평범한 사람의 아침 식사는 무엇인가요?"], ["음식", "잔칫날에만 먹는 음식과 그 이유는?"], ["음식", "먹으면 안 되는 음식이 있나요? 왜 금기가 되었나요?"],
+  ["의례", "아이가 태어나면 어떤 일을 하나요?"], ["의례", "어른이 되었다고 인정받는 의식이 있나요?"], ["의례", "결혼이나 동맹은 어떻게 맺고, 무엇으로 증명하나요?"],
+  ["죽음", "죽은 사람은 어떻게 보내나요? 장례식의 모습은?"], ["죽음", "사람들은 죽은 뒤에 무엇이 있다고 믿나요?"],
+  ["믿음", "사람들이 가장 두려워하는 것은 무엇인가요?"], ["믿음", "널리 퍼진 미신이나 징조 하나를 정해 보세요."], ["믿음", "신이나 초월적 존재와 사람의 관계는 어떤가요?"],
+  ["법과 질서", "가장 무거운 죄는 무엇이고, 어떤 벌을 받나요?"], ["법과 질서", "다툼이 생기면 누가, 어떤 방식으로 판결하나요?"], ["법과 질서", "권력자가 바뀌는 방법은 무엇인가요?"],
+  ["경제", "사람들은 무엇으로 값을 치르나요? 화폐가 없다면 무엇을 주고받나요?"], ["경제", "이 세계에서 가장 귀한 물건이나 자원은?"], ["경제", "가난한 사람과 부자의 삶은 무엇이 가장 다른가요?"],
+  ["지식", "아이들은 무엇을, 누구에게 배우나요?"], ["지식", "글을 읽고 쓸 수 있는 사람은 얼마나 되나요?"], ["지식", "잃어버렸거나 금지된 지식이 있나요?"],
+  ["예술과 놀이", "아이들이 즐겨 하는 놀이는?"], ["예술과 놀이", "모두가 아는 노래나 이야기가 있나요? 무슨 내용인가요?"], ["예술과 놀이", "축제는 언제, 무엇을 기념해 열리나요?"],
+  ["자연", "계절은 어떻게 바뀌고, 사람들은 계절을 어떻게 부르나요?"], ["자연", "이 세계에만 있는 동식물 하나를 정해 보세요."], ["자연", "사람들이 가장 두려워하는 자연 현상은?"],
+  ["언어", "서로 인사할 때 뭐라고 말하나요?"], ["언어", "욕이나 저주로 쓰이는 말은 무엇이고 왜 그런가요?"], ["언어", "같은 말을 쓰지만 지역마다 다른 사투리가 있나요?"],
+  ["역사", "모두가 기억하는 가장 큰 사건은 무엇이고, 사람마다 어떻게 다르게 기억하나요?"], ["역사", "지금은 사라졌지만 한때 번성했던 것이 있나요?"],
+  ["관계", "가족은 어떤 모습이고, 누가 집안의 일을 결정하나요?"], ["관계", "이방인은 어떤 대접을 받나요?"], ["관계", "우정이나 의형제를 맺는 특별한 방식이 있나요?"],
+  ["기술", "먼 곳에 소식을 전하는 방법은?"], ["기술", "병이나 상처는 어떻게 고치나요?"], ["기술", "사람들은 어떻게, 얼마나 빨리 이동하나요?"],
+  ["금기", "입 밖에 내면 안 되는 이름이나 말이 있나요?"], ["금기", "어디에는 절대 가면 안 된다고 하나요? 그 이유는?"],
+];
+const QUESTIONS = QUESTION_BANK.map(([cat, q], i) => ({ id: `q${i + 1}`, cat, q }));
+function worldQA(w = currentWorld()) {
+  if (!w) return { done: {}, skipped: {}, custom: [] };
+  w.qa = w.qa || { done: {}, skipped: {}, custom: [] };
+  w.qa.done = w.qa.done || {}; w.qa.skipped = w.qa.skipped || {}; w.qa.custom = w.qa.custom || [];
+  return w.qa;
+}
+function todaysQuestions() {
+  const qa = worldQA();
+  const pool = [...qa.custom, ...QUESTIONS].filter((x) => !qa.done[x.id] && !qa.skipped[x.id]);
+  const day = new Date().toISOString().slice(0, 10);
+  return pool.map((x) => ({ x, k: hashNum(`${state.worldId}|${day}|${x.id}`) - (x.custom ? 1 : 0) })).sort((a, b) => a.k - b.k).slice(0, 3).map((o) => o.x);
+}
+function renderQuestions(box) {
+  const qa = worldQA();
+  const all = [...qa.custom, ...QUESTIONS];
+  const done = all.filter((x) => qa.done[x.id]);
+  const cards = todaysQuestions();
+  box.innerHTML = `<p class="meta" style="margin:12px 0 0">오늘의 질문으로 생각지 못한 생활 영역을 채워 보세요. 정한 질문 ${done.length} / 전체 ${all.length}</p>
+    ${cards.length ? `<div class="q-cards">${cards.map((c) => `<section class="q-card"><span class="eyebrow">${esc(c.cat)}</span><p class="q-text">${esc(c.q)}</p>
+      <div class="row"><button class="btn btn-small btn-primary" type="button" data-q-ask="${c.id}">대화로 답하기</button><button class="btn btn-small" type="button" data-q-done="${c.id}">정했음</button><button class="btn btn-small btn-ghost" type="button" data-q-skip="${c.id}">건너뛰기</button></div></section>`).join("")}</div>`
+      : `<div class="empty-state"><h3>모든 질문을 다뤘습니다</h3></div>`}
+    <div class="row" style="margin-top:12px"><button class="btn" type="button" data-act="q-custom">이 세계에 맞춘 질문 받기(Claude)</button></div>
+    ${done.length ? `<details class="tl-missing"><summary>정한 질문 ${done.length}개</summary><ul class="list-plain" style="margin-top:8px">${done.map((x) => `<li class="meta">${esc(x.q)} <button class="btn btn-ghost btn-small" type="button" data-q-undo="${x.id}">되돌리기</button></li>`).join("")}</ul></details>` : ""}`;
+}
+async function markQuestion(id, kind) {
+  const qa = worldQA();
+  const w = currentWorld();
+  if (kind === "undo") { delete qa.done[id]; delete qa.skipped[id]; } else qa[kind][id] = Date.now();
+  w.updatedAt = Date.now();
+  await persist.worlds();
+  renderCodexTabResults();
+}
+async function askCustomQuestions(btn) {
+  const w = currentWorld();
+  btn.disabled = true;
+  btn.textContent = "질문을 만드는 중…";
+  try {
+    const known = liveEntries().slice(0, 120).map(indexLine).join("\n");
+    const text = await quickAsk(
+      "너는 세계관 설계를 돕는 편집자다. 작가가 아직 정하지 않은 생활 영역을 짚는 질문을 만든다. 한 줄에 하나씩 '분야 | 질문' 형식으로만 쓰고 다른 말은 쓰지 않는다.",
+      `세계관: ${w.name}\n핵심 전제: ${w.premise || "(없음)"}\n규칙:\n${w.rules || "(없음)"}\n\n이미 정한 항목:\n${known || "(없음)"}\n\n이 세계에 꼭 맞는, 아직 정해지지 않았을 법한 질문 5개를 만들어 줘.`,
+    );
+    if (!text) return;
+    const qa = worldQA();
+    const added = text.split("\n").map((l) => l.replace(/^\s*[-*\d.)]+\s*/, "").trim()).filter((l) => l.includes("|")).slice(0, 8)
+      .map((l) => { const [cat, ...rest] = l.split("|"); return { id: `c-${uid().slice(-6)}`, cat: cat.trim() || "맞춤", q: rest.join("|").trim(), custom: true }; })
+      .filter((x) => x.q);
+    qa.custom.unshift(...added);
+    w.updatedAt = Date.now();
+    await persist.worlds();
+    toast(`질문 ${added.length}개를 받았습니다`);
+  } catch (err) {
+    toast(describeError(err));
+  } finally {
+    renderCodexTabResults();
+  }
+}
+
+/* ---- 원고 ---- */
+function openManuscript(id) {
+  const m = state.manuscripts.find((x) => x.id === id);
+  if (!m) return;
+  openSheet(`<div class="entry-head"><span class="catno">${esc(m.kind)}</span><span>${fmtDate(m.updatedAt)} · ${m.by === "user" ? "직접 씀" : "Claude"}</span></div>
+    <h2 class="entry-name">${esc(m.title)}</h2>
+    ${m.refs?.length ? `<p class="meta" style="margin:4px 0 10px">관련: ${m.refs.map((r) => `<button type="button" class="ref" data-ref="${r}">${r}</button> ${esc(nameOf(r))}`).join(" ")}</p>` : ""}
+    <div class="md ms-body">${md(m.body)}</div>
+    <div class="sheet-actions">
+      <button class="btn btn-primary" type="button" data-act="ms-continue">대화로 이어 쓰기</button>
+      <button class="btn" type="button" data-act="ms-edit">편집</button>
+      <button class="btn" type="button" data-act="ms-copy">복사</button>
+      <button class="btn btn-danger" type="button" data-act="ms-delete">삭제</button>
+    </div>`, (root) => {
+    root.onclick = async (ev) => {
+      const ref = ev.target.closest("[data-ref]");
+      if (ref) { openEntry(ref.dataset.ref); return; }
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "ms-continue") { closeSheet(); newThread(); fillInput(`원고 '${m.title}'(${m.id})를 읽고 이어서 써 줘. 다 쓰면 같은 원고에 저장해 줘. `); }
+      else if (act === "ms-edit") openMsEditor(m);
+      else if (act === "ms-copy") { try { await navigator.clipboard.writeText(`# ${m.title}\n\n${m.body}`); toast("복사했습니다"); } catch { toast("복사하지 못했습니다"); } }
+      else if (act === "ms-delete") {
+        if (!(await confirmBox(`'${m.title}' 원고를 지울까요?`, "지우기", true))) return;
+        state.manuscripts = state.manuscripts.filter((x) => x !== m);
+        await addTombstone("manuscripts", `${state.worldId}:${m.id}`);
+        logChange("user", "manuscript", null, `원고 삭제: ${m.title}`);
+        await persist.world();
+        closeSheet(); renderCodex(); toast("지웠습니다");
+      }
+    };
+  });
+}
+function openMsEditor(m) {
+  const isNew = !m;
+  const d = m || { title: "", kind: "메모", body: "", refs: [] };
+  openSheet(`<h2 class="sheet-title">${isNew ? "새 원고" : "원고 편집"}</h2>
+    <form class="form" id="msForm">
+      <label>제목<input id="m-title" required value="${esc(d.title)}"></label>
+      <label>종류<select id="m-kind">${MS_KINDS.map((k) => `<option${k === d.kind ? " selected" : ""}>${k}</option>`).join("")}</select></label>
+      <label>본문 <small>마크다운</small><textarea id="m-body" rows="14">${esc(d.body)}</textarea></label>
+      <label>관련 항목 <small>이름이나 번호, 쉼표로 구분</small><input id="m-refs" value="${esc((d.refs || []).join(", "))}"></label>
+      <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div>
+    </form>`, (root) => {
+    root.onclick = (ev) => { if (ev.target.closest('[data-act="cancel"]')) { if (m) openManuscript(m.id); else closeSheet(); } };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      if (state.busy) { toast("Claude가 작업 중입니다"); return; }
+      try {
+        const saved = saveManuscript({ id: m?.id, title: $("#m-title", root).value, kind: $("#m-kind", root).value, body: $("#m-body", root).value, refs: splitList($("#m-refs", root).value) }, "user");
+        await persist.world();
+        renderCodex();
+        openManuscript(saved.id);
+        toast("저장했습니다");
+      } catch (err) { toast(err.message); }
+    };
+  });
+}
+
+/* ---- 이름 규칙 ---- */
+function openNamingEditor(rule) {
+  const r = rule || { name: "", applies: [], rules: "", examples: [] };
+  openSheet(`<h2 class="sheet-title">${rule ? "이름 규칙 편집" : "새 이름 규칙"}</h2>
+    <form class="form" id="namingForm">
+      <label>규칙 이름<input id="n-name" required value="${esc(r.name)}" placeholder="예: 에델 공화국식 이름"></label>
+      <label>적용 대상 <small>분류 이름이나 항목 이름, 쉼표로 구분</small><input id="n-applies" value="${esc((r.applies || []).join(", "))}" placeholder="예: 에델 공화국, 호수 엘프"></label>
+      <label>규칙 <small>음절 구조, 자주 쓰는 소리·어미, 피할 소리, 성(姓)·지명 규칙</small><textarea id="n-rules" rows="7" placeholder="- 두 음절이 기본, 받침은 ㄴ·ㄹ만&#10;- 여성 이름은 -엘, 남성 이름은 -란으로 끝난다&#10;- 성은 태어난 호수의 이름을 딴다">${esc(r.rules)}</textarea></label>
+      <label>예시 이름 <small>쉼표로 구분</small><input id="n-examples" value="${esc((r.examples || []).join(", "))}"></label>
+      <div class="sheet-actions">
+        <button class="btn" type="button" data-act="cancel">취소</button>
+        <button class="btn btn-primary" type="submit">저장</button>
+        ${rule ? `<button class="btn btn-danger" type="button" data-act="naming-delete">삭제</button>` : ""}
+      </div>
+    </form>`, (root) => {
+    root.onclick = async (ev) => {
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "cancel") closeSheet();
+      if (act === "naming-delete") {
+        if (!(await confirmBox(`'${r.name}' 규칙을 지울까요?`, "지우기", true))) return;
+        const w = currentWorld();
+        w.naming = worldNaming().filter((x) => x.id !== r.id);
+        w.updatedAt = Date.now();
+        logChange("user", "naming", null, `이름 규칙 삭제: ${r.name}`);
+        await Promise.all([persist.worlds(), persist.log()]);
+        closeSheet(); renderCodex();
+      }
+    };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      const name = $("#n-name", root).value.trim();
+      if (!name) { toast("규칙 이름을 넣어 주세요"); return; }
+      const w = currentWorld();
+      const next = { id: r.id || uid(), name, applies: splitList($("#n-applies", root).value), rules: $("#n-rules", root).value.trim(), examples: splitList($("#n-examples", root).value) };
+      w.naming = rule ? worldNaming().map((x) => (x.id === r.id ? next : x)) : [...worldNaming(), next];
+      w.updatedAt = Date.now();
+      logChange("user", "naming", null, `이름 규칙: ${name}`);
+      await Promise.all([persist.worlds(), persist.log()]);
+      closeSheet(); renderCodex(); toast("저장했습니다");
+    };
+  });
+}
+function openNameGenerator(rule) {
+  openSheet(`<h2 class="sheet-title">이름 만들기</h2>
+    <p class="meta" style="margin:0 0 10px">규칙: ${esc(rule.name)}</p>
+    <form class="form" id="genForm">
+      <div class="time-row">
+        <label>개수<select id="g-count"><option>5</option><option selected>10</option><option>20</option></select></label>
+        <label>용도<input id="g-hint" placeholder="선택 · 예: 여성 이름, 지명"></label>
+      </div>
+      <div class="row"><button class="btn btn-primary" type="submit">만들기</button></div>
+    </form>
+    <div id="genResults" class="gen-results"></div>`, (root) => {
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      const box = $("#genResults", root);
+      const btn = root.querySelector('#genForm button[type="submit"]');
+      btn.disabled = true;
+      box.innerHTML = `<p class="status-line">이름을 짓는 중…</p>`;
+      try {
+        const existing = liveEntries().map((e) => e.name).slice(0, 200).join(", ");
+        const text = await quickAsk(
+          "너는 판타지 세계관의 이름 짓기를 돕는다. 주어진 이름 규칙을 엄격히 따른다. 한 줄에 하나씩 '이름 | 느낌이나 뜻(짧게)' 형식으로만 쓰고 다른 말은 쓰지 않는다. 이미 있는 이름과 겹치지 않게 한다.",
+          `이름 규칙: ${rule.name}\n적용 대상: ${(rule.applies || []).join(", ") || "-"}\n규칙:\n${rule.rules || "-"}\n예시: ${(rule.examples || []).join(", ") || "-"}\n용도: ${$("#g-hint", root).value.trim() || "사람 이름"}\n이미 있는 이름: ${existing || "-"}\n\n이름 ${$("#g-count", root).value}개를 만들어 줘.`,
+        );
+        if (text === null) { box.innerHTML = ""; return; }
+        const names = text.split("\n").map((l) => l.replace(/^\s*[-*\d.)]+\s*/, "").trim()).filter(Boolean).map((l) => { const [n, ...rest] = l.split("|"); return { n: n.trim(), note: rest.join("|").trim() }; }).filter((x) => x.n && x.n.length <= 30);
+        box.innerHTML = names.length ? `<ul class="list-plain">${names.map((x, i) => `<li class="gen-item"><span><strong>${esc(x.n)}</strong>${x.note ? ` <span class="meta">${esc(x.note)}</span>` : ""}</span><button class="btn btn-ghost btn-small" type="button" data-gen-copy="${i}">복사</button><button class="btn btn-ghost btn-small" type="button" data-gen-new="${i}">새 항목으로</button></li>`).join("")}</ul>` : `<p class="meta">이름을 받지 못했습니다. 다시 시도해 주세요.</p>`;
+        box.onclick = async (e2) => {
+          const c = e2.target.closest("[data-gen-copy]");
+          const nw = e2.target.closest("[data-gen-new]");
+          if (c) { try { await navigator.clipboard.writeText(names[Number(c.dataset.genCopy)].n); toast("복사했습니다"); } catch { toast("복사하지 못했습니다"); } }
+          if (nw) { const x = names[Number(nw.dataset.genNew)]; openEditor(null, null, { name: x.n, summary: x.note }); }
+        };
+      } catch (err) {
+        box.innerHTML = `<p class="note note-error">${esc(describeError(err))}</p>`;
+      } finally { btn.disabled = false; }
+    };
+  });
+}
+
+/* ---- 창작 도구 ---- */
+const DOC_KINDS = ["편지", "수배서", "경전 구절", "신문 기사", "노래 가사", "공문·포고문", "일기", "전설·민담", "광고·전단", "교과서 한 쪽"];
+function entryOptions(filter, selected = "") {
+  return liveEntries().filter(filter).sort((a, b) => a.id.localeCompare(b.id)).map((x) => `<option value="${x.id}"${x.id === selected ? " selected" : ""}>${x.id} ${esc(x.name)}</option>`).join("");
+}
+function openCreativeTools() {
+  if (!currentWorld()) { toast("먼저 세계관을 만드세요"); return; }
+  if (state.busy) { toast("응답이 끝난 뒤에 쓸 수 있습니다"); return; }
+  const chars = entryOptions((x) => isCharacterType(x.type));
+  const names = `<datalist id="ctNames">${liveEntries().map((x) => `<option value="${esc(x.name)}">`).join("")}</datalist>`;
+  openSheet(`<h2 class="sheet-title">창작 도구</h2>
+    <p class="meta" style="margin:0 0 12px">새 대화를 열고 요청을 입력창에 채웁니다. 고친 뒤 보내세요. 결과물은 원고함에 저장됩니다.</p>
+    ${names}
+    <details class="ct" open><summary>인물 인터뷰</summary>
+      <p class="meta">인물이 1인칭으로 답합니다. 대화로 성격과 말투를 확인하고, 끝나면 '인터뷰 정리'로 새로 드러난 사실을 설정에 넣습니다.</p>
+      ${chars ? `<div class="form"><label>인물<select id="ct-who">${chars}</select></label><div class="row"><button class="btn btn-primary btn-small" type="button" data-ct="interview">인터뷰 시작</button></div></div>` : `<p class="meta">인물 분류의 항목이 아직 없습니다.</p>`}
+    </details>
+    <details class="ct"><summary>세계 속 문서</summary>
+      <p class="meta">그 세계 사람이 실제로 쓴 글을 만듭니다. 세계가 '살아 있는' 느낌을 줍니다.</p>
+      <div class="form">
+        <label>종류<select id="ct-doc">${DOC_KINDS.map((k) => `<option>${k}</option>`).join("")}</select></label>
+        <label>쓴 사람·관련 항목 <small>쉼표로 구분, 선택</small><input id="ct-doc-refs" list="ctNames" placeholder="예: 리아나, 등대 교단"></label>
+        <label>내용 메모 <small>선택</small><input id="ct-doc-memo" placeholder="예: 내전 직후, 검열을 피하려고 돌려 말하는 편지"></label>
+        <div class="row"><button class="btn btn-primary btn-small" type="button" data-ct="doc">요청 채우기</button></div>
+      </div>
+    </details>
+    <details class="ct"><summary>N년 뒤 시뮬레이션</summary>
+      <p class="meta">지금 설정이 그대로 흘러가면 어떻게 될지 서로 다른 미래 2~3가지를 씁니다. 새 인물·사건은 초안으로 들어갑니다.</p>
+      <div class="form">
+        <div class="time-row"><label>몇 년 뒤<input id="ct-years" type="number" inputmode="numeric" min="1" value="50"></label><label>초점 <small>선택</small><input id="ct-focus" list="ctNames" placeholder="예: 북부 연합"></label></div>
+        <label>바꿔 볼 조건 <small>선택</small><input id="ct-if" placeholder="예: 만약 왕이 암살당하지 않았다면"></label>
+        <div class="row"><button class="btn btn-primary btn-small" type="button" data-ct="sim">요청 채우기</button></div>
+      </div>
+    </details>
+    <details class="ct"><summary>장면 쓰기</summary>
+      <p class="meta">설정을 장면으로 확인합니다. 쓰다 보면 비어 있는 설정이 드러납니다.</p>
+      <div class="form">
+        <label>등장 항목 <small>쉼표로 구분</small><input id="ct-scene-refs" list="ctNames" placeholder="예: 리아나, 회색 등대"></label>
+        <label>장면<input id="ct-scene" placeholder="예: 리아나가 처음 등대에 오르는 밤"></label>
+        <label>시점 <small>선택</small><select id="ct-pov"><option value="">알아서</option><option>1인칭</option><option>3인칭 제한</option><option>3인칭 전지</option></select></label>
+        <div class="row"><button class="btn btn-primary btn-small" type="button" data-ct="scene">요청 채우기</button></div>
+      </div>
+    </details>
+    <details class="ct"><summary>관점별 서술</summary>
+      <p class="meta">같은 사건을 세력이나 인물마다 어떻게 다르게 기억하는지 정합니다.</p>
+      <div class="form">
+        <label>대상 항목<select id="ct-persp">${entryOptions(() => true)}</select></label>
+        <label>누구의 관점 <small>쉼표로 구분, 비우면 Claude가 고름</small><input id="ct-persp-by" list="ctNames" placeholder="예: 왕실, 반란군, 평민"></label>
+        <div class="row"><button class="btn btn-primary btn-small" type="button" data-ct="persp">요청 채우기</button></div>
+      </div>
+    </details>`, (root) => {
+    root.onclick = (ev) => {
+      const b = ev.target.closest("[data-ct]");
+      if (!b) return;
+      const v = (id) => ($("#" + id, root)?.value || "").trim();
+      const k = b.dataset.ct;
+      if (k === "interview") { const id = v("ct-who"); closeSheet(); startInterview(id); return; }
+      let text = "";
+      if (k === "doc") {
+        const refs = v("ct-doc-refs");
+        text = `세계 속 문서를 하나 써 줘. 종류: ${v("ct-doc")}.${refs ? ` 쓴 사람·관련: ${refs}.` : ""}${v("ct-doc-memo") ? ` 내용: ${v("ct-doc-memo")}.` : ""} 그 세계 사람이 실제로 쓴 것처럼 쓰고, 원고함(kind 문서)에 저장해 줘. 문서를 쓰며 새로 정한 사실이 있으면 따로 알려 줘. `;
+      } else if (k === "sim") {
+        const years = Math.max(1, Math.round(Number(v("ct-years")) || 50));
+        text = `${years}년 뒤 시뮬레이션: 지금 확정 설정과 세력 관계, 갈등이 그대로 흘러가면 ${years}년 뒤 이 세계는 어떻게 될까?${v("ct-focus") ? ` 특히 ${v("ct-focus")}을(를) 중심으로.` : ""}${v("ct-if") ? ` 조건: ${v("ct-if")}.` : ""} 서로 다른 미래 2~3가지를 써서 각각 원고함에 저장하고, 새로 생길 인물·사건·세력은 초안으로 만들어 줘. `;
+      } else if (k === "scene") {
+        if (!v("ct-scene")) { toast("장면을 적어 주세요"); return; }
+        text = `장면을 써 줘: ${v("ct-scene")}.${v("ct-scene-refs") ? ` 등장: ${v("ct-scene-refs")}.` : ""}${v("ct-pov") ? ` 시점: ${v("ct-pov")}.` : ""} 설정집과 감각 사전을 참고하고, 다 쓰면 원고함(kind 장면)에 저장해 줘. 쓰다가 비어 있는 설정이 드러나면 마지막에 짚어 줘. `;
+      } else if (k === "persp") {
+        const e = findEntry(v("ct-persp"));
+        if (!e) { toast("대상 항목을 골라 주세요"); return; }
+        text = `${e.name}(${e.id})을(를) ${v("ct-persp-by") ? `${v("ct-persp-by")} 각각의 관점에서` : "이 세계의 서로 다른 세력이나 인물의 관점에서"} 어떻게 알고 믿고 있는지 정해 줘. 누가 무엇을 숨기거나 왜곡하는지도. 정해지면 set_perspective로 기록해 줘. `;
+      }
+      closeSheet();
+      startInNewThread(text);
+    };
+  });
+}
+
+function bindCodexTabs() {
+  $("#codex").addEventListener("click", async (e) => {
+    const tabBtn = e.target.closest("[data-ctab]");
+    if (tabBtn) { state.codexTab = tabBtn.dataset.ctab; renderCodex(); return; }
+    const kind = e.target.closest("[data-mskind]");
+    if (kind) { state.msKind = kind.dataset.mskind; renderCodexTabResults(); return; }
+    const ms = e.target.closest("[data-ms]");
+    if (ms) { openManuscript(ms.dataset.ms); return; }
+    const sc = e.target.closest("[data-sense-copy]");
+    if (sc) {
+      const en = findEntry(sc.dataset.senseCopy);
+      try { await navigator.clipboard.writeText(`${en.name}\n${Object.entries(en.senses || {}).map(([k, v]) => `${k}: ${v}`).join("\n")}`); toast("복사했습니다"); } catch { toast("복사하지 못했습니다"); }
+      return;
+    }
+    const se = e.target.closest("[data-sense-edit]");
+    if (se) { if (state.busy) { toast("Claude가 작업 중입니다"); return; } openEditor(findEntry(se.dataset.senseEdit), null, { focusSenses: true }); return; }
+    const qAsk = e.target.closest("[data-q-ask]");
+    if (qAsk) {
+      const q = [...worldQA().custom, ...QUESTIONS].find((x) => x.id === qAsk.dataset.qAsk);
+      switchView("chat");
+      fillInput(`질문 카드: ${q.q}\n이 세계에서는 어떨지 같이 정해 보자. 정해지면 알맞은 항목에 저장해 줘. `);
+      return;
+    }
+    for (const [attr, kindName] of [["qDone", "done"], ["qSkip", "skipped"], ["qUndo", "undo"]]) {
+      const el = e.target.closest(`[data-${attr.replace(/[A-Z]/g, (c) => "-" + c.toLowerCase())}]`);
+      if (el) { await markQuestion(el.dataset[attr], kindName); return; }
+    }
+    const ng = e.target.closest("[data-naming-gen]");
+    if (ng) { openNameGenerator(worldNaming().find((r) => r.id === ng.dataset.namingGen)); return; }
+    const ne = e.target.closest("[data-naming-edit]");
+    if (ne) { openNamingEditor(worldNaming().find((r) => r.id === ne.dataset.namingEdit)); return; }
+    const act = e.target.closest("[data-act]")?.dataset.act;
+    if (act === "ms-new") openMsEditor(null);
+    else if (act === "naming-new") openNamingEditor(null);
+    else if (act === "naming-ask") { startInNewThread("이 세계의 나라·종족마다 이름 규칙을 만들어 줘. 음절 구조, 자주 쓰는 소리와 어미, 성(姓)과 지명 규칙, 예시 이름까지 정해서 set_naming_rule로 저장해 줘. "); }
+    else if (act === "senses-ask") { startInNewThread("감각이 비어 있는 장소들의 소리·냄새·빛·촉감·맛을 그 장소답게 정해서 senses에 채워 줘. 확정 설정과 어긋나지 않게. "); }
+    else if (act === "q-custom") askCustomQuestions(e.target.closest("[data-act]"));
+  });
+}
+
 function relationsHTML(e) {
   const out = (e.relations || []).map((r) => {
     const t = findEntry(r.to);
@@ -2984,7 +3693,11 @@ function openEntry(ref) {
   const e = findEntry(ref);
   if (!e) { toast(`${ref} 항목을 찾을 수 없습니다`); return; }
   const fields = Object.entries(e.fields || {});
+  const img = entryImage(e.id);
+  const senses = Object.entries(e.senses || {}).filter(([, v]) => v);
+  const canInterview = !e.deleted && isCharacterType(e.type) && statusOf(e) !== "discarded";
   openSheet(`
+    ${img ? `<button type="button" class="entry-img-btn" data-act="img-zoom" aria-label="그림 크게 보기"><img class="entry-img" src="${img}" alt="${esc(e.name)} 그림"></button>` : ""}
     <div class="entry-head" style="--tc:${typeColor(e.type)}">
       <span class="catno">${e.id}</span><span>${esc(typeInfo(e.type).label)}</span>${statusBadge(e)}${e.deleted ? '<span class="pill pill-danger">휴지통</span>' : ""}
     </div>
@@ -2997,21 +3710,36 @@ function openEntry(ref) {
     ${templateStatusHTML(e)}
     ${fields.length ? `<dl class="fields">${fields.map(([k, v]) => `<div><dt>${esc(k)}</dt>${isBlankValue(v) ? `<dd class="blank">미정</dd>` : `<dd>${esc(v)}</dd>`}</div>`).join("")}</dl>` : ""}
     ${e.body ? `<p class="section-label">본문</p><div class="md">${md(e.body)}</div>` : ""}
+    ${senses.length ? `<p class="section-label">감각</p><dl class="fields sense-fields">${senses.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : ""}
+    ${e.perspectives?.length ? `<p class="section-label">관점별 서술</p><div class="persp-list">${e.perspectives.map((x) => { const by = findEntry(x.by); return `<blockquote class="persp"><span class="persp-by">${by ? `<button type="button" class="ref" data-ref="${by.id}">${by.id}</button> ${esc(by.name)}` : esc(x.by)}의 관점</span><p>${esc(x.text)}</p></blockquote>`; }).join("")}</div>` : ""}
     ${relationsHTML(e)}
     ${e.tags?.length ? `<p class="section-label">태그</p><div>${e.tags.map((t) => `<span class="tag">#${esc(t)}</span>`).join("")}</div>` : ""}
     <p class="meta">${fmtDate(e.updatedAt)} 수정 · ${e.updatedBy === "user" ? "직접 수정" : "Claude"} · 이력 ${e.history?.length || 0}개</p>
     <div class="sheet-actions">
       ${e.deleted
         ? `<button class="btn btn-primary" type="button" data-act="restore">되살리기</button><button class="btn" type="button" data-act="history">이력</button><button class="btn btn-danger" type="button" data-act="purge">완전히 지우기</button>`
-        : `<button class="btn btn-primary" type="button" data-act="develop">대화로 발전시키기</button><button class="btn" type="button" data-act="edit">편집</button><button class="btn" type="button" data-act="graph">관계도</button><button class="btn" type="button" data-act="history">이력</button><button class="btn btn-danger" type="button" data-act="trash-entry">삭제</button>`}
+        : `<button class="btn btn-primary" type="button" data-act="develop">대화로 발전시키기</button>${canInterview ? `<button class="btn" type="button" data-act="interview">인터뷰</button>` : ""}<button class="btn" type="button" data-act="edit">편집</button><button class="btn" type="button" data-act="persp">관점 더하기</button>${img ? `<button class="btn" type="button" data-act="img-ask">그림으로 묘사 받기</button>` : ""}<button class="btn" type="button" data-act="graph">관계도</button><button class="btn" type="button" data-act="history">이력</button><button class="btn btn-danger" type="button" data-act="trash-entry">삭제</button>`}
     </div>`, (root) => {
     root.onclick = async (ev) => {
       const refBtn = ev.target.closest("[data-ref]");
       if (refBtn) { openEntry(refBtn.dataset.ref); return; }
       const act = ev.target.closest("[data-act]")?.dataset.act;
       if (!act) return;
-      if (!["develop", "history", "graph", "tpl-ask", "timeline"].includes(act) && state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 고쳐 주세요"); return; }
+      if (!["develop", "history", "graph", "tpl-ask", "timeline", "img-zoom"].includes(act) && state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 고쳐 주세요"); return; }
       if (act === "timeline") { closeSheet(); showInTimeline(e.id); return; }
+      if (act === "img-zoom") { ev.target.closest(".entry-img-btn").classList.toggle("full"); return; }
+      if (act === "interview") { closeSheet(); startInterview(e.id); return; }
+      if (act === "persp") { closeSheet(); startInNewThread(`${e.name}(${e.id})을(를) 이 세계의 서로 다른 세력이나 인물은 어떻게 알고 믿고 있는지 정해 줘. 누가 무엇을 숨기거나 왜곡하는지도. 정해지면 set_perspective로 기록해 줘. `); return; }
+      if (act === "img-ask") {
+        closeSheet();
+        switchView("chat");
+        try {
+          fillInput(`첨부한 그림은 ${e.name}(${e.id})의 모습이야. 그림을 보고 외모·옷차림·분위기를 설정에 넣을 만하게 묘사해서 제안해 줘. 기존 설정과 다른 점이 있으면 짚어 줘. `);
+          const blob = await (await fetch(img)).blob();
+          await addFiles([new File([blob], `${e.name}.jpg`, { type: "image/jpeg" })]);
+        } catch { toast("그림을 첨부하지 못했습니다"); }
+        return;
+      }
       if (act.startsWith("st-")) {
         const st = act.slice(3);
         updateEntry(e, { status: st }, "user", `상태: ${STATUS[st]}`);
@@ -3053,6 +3781,7 @@ function openEntry(ref) {
       } else if (act === "purge") {
         if (!(await confirmBox(`'${e.name}'을(를) 완전히 지웁니다. 되돌릴 수 없습니다.`, "완전히 지우기", true))) return;
         purgeEntry(e);
+        if (state.images[e.id]?.data) { state.images[e.id] = { data: "", at: Date.now() }; await persist.images(); }
         await persist.world();
         closeSheet(); renderCodex(); toast("완전히 지웠습니다");
       }
@@ -3099,10 +3828,24 @@ function relRow(selfId, to = "", label = "") {
     .map((x) => `<option value="${x.id}"${x.id === to ? " selected" : ""}>${x.id} ${esc(x.name)}</option>`).join("");
   return `<div class="kv-row"><input class="rl" placeholder="관계 (예: 스승)" value="${esc(label)}" aria-label="관계 이름"><select class="rt" aria-label="대상 항목"><option value="">대상 선택</option>${opts}</select><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button></div>`;
 }
+function perspRow(by = "", text = "") {
+  const who = findEntry(by);
+  return `<div class="persp-row"><div class="kv-row"><input class="pb" list="perspNames" placeholder="누구의 관점 (항목 이름이나 번호)" value="${esc(who ? `${who.id} ${who.name}` : by)}" aria-label="관점 주체"><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button></div><textarea class="pt" rows="2" placeholder="그들은 이렇게 알고 있다" aria-label="관점 내용">${esc(text)}</textarea></div>`;
+}
+// 항목 그림: 긴 변 512px JPEG data URL
+async function entryPicture(file) {
+  if (!/^image\//.test(file.type || "") && !/\.(png|jpe?g|gif|webp|heic|avif)$/i.test(file.name)) throw new Error("그림 파일만 넣을 수 있습니다");
+  const { img, url } = await loadImage(file);
+  try { return await blobToDataURL(await drawScaled(img, 512, "image/jpeg", 0.82)); }
+  finally { URL.revokeObjectURL(url); }
+}
 function openEditor(e, presetType, opts = {}) {
   const isNew = !e;
-  const d = e ? e : { type: presetType || (state.codexType !== "all" ? state.codexType : typeKeys()[0]), name: "", aliases: [], summary: "", fields: {}, body: "", tags: [], relations: [] };
+  const d = e ? e : { type: presetType || (state.codexType !== "all" ? state.codexType : typeKeys()[0]), name: opts.name || "", aliases: [], summary: opts.summary || "", fields: {}, body: "", tags: [], relations: [] };
   const selfId = e?.id || "";
+  let newImage; // undefined: 그대로, "": 빼기, data URL: 새 그림
+  const curImage = e ? entryImage(e.id) : "";
+  const extraSenses = Object.keys(d.senses || {}).filter((k) => !SENSE_KEYS.includes(k));
   openSheet(`<h2 class="sheet-title">${isNew ? "새 항목" : `${esc(e.id)} 편집`}</h2>
     <form class="form" id="entryForm">
       <label>분류<select id="f-type">${typeKeys().map((k) => `<option value="${k}"${k === d.type ? " selected" : ""}>${esc(typeInfo(k).label)}</option>`).join("")}</select></label>
@@ -3114,6 +3857,18 @@ function openEditor(e, presetType, opts = {}) {
       <fieldset><legend>속성</legend><div id="f-fields">${Object.entries(d.fields || {}).map(([k, v]) => kvRow(k, v)).join("")}</div>
         <button type="button" class="btn btn-ghost btn-small" data-add="field">속성 추가</button></fieldset>
       <label>본문 <small>마크다운</small><textarea id="f-body" rows="8">${esc(d.body)}</textarea></label>
+      <fieldset id="f-senses"><legend>감각</legend>
+        ${[...SENSE_KEYS, ...extraSenses].map((k) => `<label class="inline-label"><span>${esc(k)}</span><input class="sense-in" data-k="${esc(k)}" value="${esc(d.senses?.[k] || "")}" placeholder="${{ 소리: "예: 밤마다 들리는 종소리", 냄새: "예: 젖은 돌과 소금", 빛: "예: 푸른 등불", 촉감: "예: 끈적한 바닷바람", 맛: "예: 짠맛이 도는 빵" }[k] || ""}"></label>`).join("")}
+      </fieldset>
+      <fieldset><legend>관점별 서술</legend><p class="meta" style="margin:0">세력이나 인물이 이 항목을 어떻게 알고 믿는지 적습니다.</p><div id="f-persp">${(d.perspectives || []).map((x) => perspRow(x.by, x.text)).join("")}</div>
+        <button type="button" class="btn btn-ghost btn-small" data-add="persp">관점 추가</button></fieldset>
+      <fieldset><legend>그림</legend>
+        <div class="img-edit"><img id="f-img-prev" alt="" ${curImage ? `src="${curImage}"` : "hidden"}>
+          <div class="row"><button type="button" class="btn btn-small" data-act="img-pick">${curImage ? "그림 바꾸기" : "그림 고르기"}</button><button type="button" class="btn btn-small btn-ghost" data-act="img-clear" ${curImage ? "" : "hidden"}>그림 빼기</button></div>
+          <input id="f-img" type="file" accept="image/*" hidden>
+          <p class="meta" style="margin:0">긴 변 512px로 줄여 이 기기에 저장합니다(동기화 포함). 대화에는 보내지 않습니다.</p>
+        </div>
+      </fieldset>
       <fieldset id="f-time"><legend>연표</legend>
         <div class="time-row">
           <label>시작 연도<input id="f-ts" inputmode="decimal" value="${d.when ? esc(String(d.when.start)) : ""}" placeholder="예: 312"></label>
@@ -3125,6 +3880,7 @@ function openEditor(e, presetType, opts = {}) {
       <fieldset><legend>관계</legend><div id="f-rels">${(d.relations || []).map((r) => relRow(selfId, r.to, r.label)).join("")}</div>
         <button type="button" class="btn btn-ghost btn-small" data-add="rel">관계 추가</button></fieldset>
       <label>태그 <small>쉼표로 구분</small><input id="f-tags" value="${esc((d.tags || []).join(", "))}"></label>
+      <datalist id="perspNames">${liveEntries().filter((x) => x.id !== selfId).map((x) => `<option value="${x.id} ${esc(x.name)}">`).join("")}</datalist>
       <div class="sheet-actions">
         <button class="btn" type="button" data-act="cancel">취소</button>
         <button class="btn btn-primary" type="submit">저장</button>
@@ -3134,7 +3890,14 @@ function openEditor(e, presetType, opts = {}) {
       const add = ev.target.closest("[data-add]");
       if (add?.dataset.add === "field") $("#f-fields", root).insertAdjacentHTML("beforeend", kvRow());
       else if (add?.dataset.add === "rel") $("#f-rels", root).insertAdjacentHTML("beforeend", relRow(selfId));
-      else if (ev.target.closest("[data-del-row]")) ev.target.closest(".kv-row").remove();
+      else if (add?.dataset.add === "persp") $("#f-persp", root).insertAdjacentHTML("beforeend", perspRow());
+      else if (ev.target.closest('[data-act="img-pick"]')) $("#f-img", root).click();
+      else if (ev.target.closest('[data-act="img-clear"]')) {
+        newImage = "";
+        $("#f-img-prev", root).hidden = true;
+        ev.target.closest('[data-act="img-clear"]').hidden = true;
+      }
+      else if (ev.target.closest("[data-del-row]")) (ev.target.closest(".persp-row") || ev.target.closest(".kv-row")).remove();
       else if (ev.target.closest('[data-act="cancel"]')) { if (e) openEntry(e.id); else closeSheet(); }
       else if (ev.target.closest('[data-act="tpl-apply"]')) { applyTemplate(typeInfo($("#f-type", root).value), false); touched = true; }
     };
@@ -3159,6 +3922,18 @@ function openEditor(e, presetType, opts = {}) {
     };
     $("#f-type", root).addEventListener("change", () => refreshTemplate(true));
     refreshTemplate(isNew);
+    $("#f-img", root).onchange = async (ev) => {
+      const file = ev.target.files?.[0];
+      ev.target.value = "";
+      if (!file) return;
+      try {
+        newImage = await entryPicture(file);
+        const prev = $("#f-img-prev", root);
+        prev.src = newImage; prev.hidden = false;
+        root.querySelector('[data-act="img-clear"]').hidden = false;
+      } catch (err) { toast(err.message); }
+    };
+    if (opts.focusSenses) requestAnimationFrame(() => { $("#f-senses", root).scrollIntoView({ block: "start" }); $(".sense-in", root).focus(); });
     if (opts.focusTime) {
       const ts = $("#f-ts", root);
       requestAnimationFrame(() => { $("#f-time", root).scrollIntoView({ block: "center" }); ts.focus(); });
@@ -3189,6 +3964,18 @@ function openEditor(e, presetType, opts = {}) {
         tags: splitList($("#f-tags", root).value).map((t) => t.replace(/^#/, "")),
         relations,
       };
+      const senses = {};
+      for (const inp of $$(".sense-in", root)) if (inp.value.trim()) senses[inp.dataset.k] = inp.value.trim();
+      const perspectives = [];
+      for (const row of $$("#f-persp .persp-row", root)) {
+        const byText = $(".pb", row).value.trim();
+        const text = $(".pt", row).value.trim();
+        if (!byText || !text) continue;
+        const by = findEntry(byText.split(" ")[0])?.id || findEntry(byText)?.id || byText;
+        if (!perspectives.some((x) => x.by === by)) perspectives.push({ by, text });
+      }
+      if (isNew) { data.senses = senses; data.perspectives = perspectives; }
+      else { data.sensesAll = senses; data.perspectives = perspectives; }
       // 연표 시점: 비우면 연표에서 뺀다
       const tsText = $("#f-ts", root).value.trim();
       const teText = $("#f-te", root).value.trim();
@@ -3203,6 +3990,7 @@ function openEditor(e, presetType, opts = {}) {
         let saved;
         if (isNew) saved = createEntry(data, "user");
         else { updateEntry(e, data, "user", "직접 편집"); saved = e; }
+        if (newImage !== undefined && (newImage || curImage)) { state.images[saved.id] = { data: newImage, at: Date.now() }; await persist.images(); }
         await persist.world();
         renderCodex();
         openEntry(saved.id);
@@ -3261,6 +4049,8 @@ async function openWorld(id) {
   state.entries = (await idb.get("entries:" + id)) || [];
   state.log = (await idb.get("log:" + id)) || [];
   state.threads = (await idb.get("threads:" + id)) || [];
+  state.manuscripts = (await idb.get("ms:" + id)) || [];
+  state.images = (await idb.get("imgs:" + id)) || {};
   state.codexType = "all";
   state.codexQuery = "";
   state.tlHidden.clear();
@@ -3313,12 +4103,12 @@ function openWorldForm(existing) {
         const id = w.id;
         await addTombstone("worlds", id);
         const threads = (await idb.get("threads:" + id)) || [];
-        await Promise.all([idb.del("entries:" + id), idb.del("log:" + id), idb.del("threads:" + id), idb.del("graph:" + id), ...threads.map((t) => idb.del("conv:" + t.id))]);
+        await Promise.all([idb.del("entries:" + id), idb.del("log:" + id), idb.del("threads:" + id), idb.del("graph:" + id), idb.del("ms:" + id), idb.del("imgs:" + id), ...threads.map((t) => idb.del("conv:" + t.id))]);
         state.worlds = state.worlds.filter((x) => x.id !== id);
         await persist.worlds();
         closeSheet();
         if (state.worlds[0]) await openWorld(state.worlds[0].id);
-        else { state.worldId = null; state.entries = []; state.log = []; state.threads = []; state.threadId = null; state.conv = { api: [], display: [] }; renderWorldName(); renderChat(); renderCodex(); }
+        else { state.worldId = null; state.entries = []; state.log = []; state.threads = []; state.manuscripts = []; state.images = {}; state.threadId = null; state.conv = { api: [], display: [] }; renderWorldName(); renderChat(); renderCodex(); }
         toast("세계관을 지웠습니다");
       }
     };
@@ -4639,11 +5429,12 @@ function bindTheme() {
    - lorekeeper/index.json   : 세계관 목록과 삭제 기록(tombstones)
    - lorekeeper/w/<세계관>.json : 항목, 변경 기록, 대화 목록, 관계도 위치
    - lorekeeper/c/<대화>.json  : 대화 기록
+   - lorekeeper/i/<세계관>.json : 항목 그림(있을 때만)
    한 번 동기화할 때 바뀐 파일만 모아 커밋 하나로 올리고, 그 사이 다른 기기가
    먼저 올렸으면(fast-forward 실패) 다시 받아 합친 뒤 올린다.
    ============================================================ */
 const SYNC_DIR = "lorekeeper";
-const SYNC_KEY_RE = /^(worlds$|entries:|log:|threads:|graph:|conv:|sync:tombstones$)/;
+const SYNC_KEY_RE = /^(worlds$|entries:|log:|threads:|graph:|conv:|ms:|imgs:|sync:tombstones$)/;
 const syncCfg = Object.assign(
   { enabled: false, repo: "", token: "", device: "", auto: true, lastSyncAt: 0, lastCommit: "", shas: {}, lastError: "" },
   LS.get("lk.sync", {}),
@@ -4756,7 +5547,7 @@ async function remoteHead() {
 async function flushLocal() {
   if (!state.worldId) return;
   syncState.applying = true;
-  try { await Promise.all([persist.world(), persist.threads(), persist.worlds(), persist.conv()]); }
+  try { await Promise.all([persist.world(), persist.threads(), persist.worlds(), persist.conv(), persist.images()]); }
   finally { syncState.applying = false; }
 }
 async function loadLocalSnapshot() {
@@ -4771,6 +5562,8 @@ async function loadLocalSnapshot() {
       log: (await idb.get("log:" + w.id)) || [],
       threads,
       graph: (await idb.get("graph:" + w.id)) || null,
+      ms: (await idb.get("ms:" + w.id)) || [],
+      images: (await idb.get("imgs:" + w.id)) || {},
     };
     for (const t of threads) convs[t.id] = (await idb.get("conv:" + t.id)) || null;
   }
@@ -4778,13 +5571,17 @@ async function loadLocalSnapshot() {
 }
 const worldPath = (id) => `${SYNC_DIR}/w/${id}.json`;
 const convPath = (id) => `${SYNC_DIR}/c/${id}.json`;
+const imgPath = (id) => `${SYNC_DIR}/i/${id}.json`;
+const emptyWorldData = () => ({ entries: [], log: [], threads: [], graph: null, ms: [], images: {} });
 const INDEX_PATH = `${SYNC_DIR}/index.json`;
 function serializeSnapshot(snap) {
   const files = {};
   files[INDEX_PATH] = JSON.stringify({ app: "lorekeeper-sync", version: 1, worlds: snap.worlds, tombstones: snap.tomb });
   for (const w of snap.worlds) {
-    const d = snap.data[w.id] || { entries: [], log: [], threads: [], graph: null };
-    files[worldPath(w.id)] = JSON.stringify({ entries: d.entries, log: d.log, threads: d.threads, graph: d.graph });
+    const d = snap.data[w.id] || emptyWorldData();
+    // 원고가 없으면 예전 형식 그대로 둔다(바뀐 것 없이 다시 올리지 않게)
+    files[worldPath(w.id)] = JSON.stringify({ entries: d.entries, log: d.log, threads: d.threads, graph: d.graph, ...(d.ms?.length ? { ms: d.ms } : {}) });
+    if (d.images && Object.keys(d.images).length) files[imgPath(w.id)] = JSON.stringify(d.images);
     for (const t of d.threads) if (snap.convs[t.id]) files[convPath(t.id)] = JSON.stringify(snap.convs[t.id]);
   }
   return files;
@@ -4793,7 +5590,7 @@ function serializeSnapshot(snap) {
 // ---- 합치기 ----
 function mergeTombstones(a, b) {
   const out = { worlds: {}, threads: {}, entries: {} };
-  for (const src of [a, b]) for (const k of ["worlds", "threads", "entries"]) for (const [id, at] of Object.entries(src?.[k] || {})) out[k][id] = Math.max(out[k][id] || 0, at);
+  for (const src of [a, b]) for (const k of ["worlds", "threads", "entries", "manuscripts"]) for (const [id, at] of Object.entries(src?.[k] || {})) { out[k] = out[k] || {}; out[k][id] = Math.max(out[k][id] || 0, at); }
   const cutoff = Date.now() - 90 * 24 * 3600 * 1000; // 90일 지난 삭제 기록은 정리
   for (const k of Object.keys(out)) for (const [id, at] of Object.entries(out[k])) if (at < cutoff) delete out[k][id];
   return out;
@@ -4865,7 +5662,28 @@ function mergeWorldData(local, remote) {
   const lg = local.graph;
   const rg = remote.graph;
   const graphData = !lg ? rg || null : !rg ? lg : (rg.savedAt || 0) > (lg.savedAt || 0) ? rg : lg;
-  return { entries: [...out.values()], log, threads: [...threads.values()], graph: graphData, renames };
+  // 원고: 같은 id면 나중에 고친 쪽. 번호가 옮겨진 항목을 가리키던 이 기기 원고의 refs도 고친다
+  const ms = new Map((local.ms || []).map((m) => [m.id, renameRefs(m, renames)]));
+  for (const r of remote.ms || []) {
+    const l = ms.get(r.id);
+    if (!l || (r.updatedAt || 0) > (l.updatedAt || 0)) ms.set(r.id, r);
+  }
+  const images = moveImages(local.images || {}, renames);
+  return { entries: [...out.values()], log, threads: [...threads.values()], graph: graphData, ms: [...ms.values()], images, renames };
+}
+function renameRefs(m, renames) {
+  return renames && m.refs?.some((r) => renames[r]) ? { ...m, refs: m.refs.map((r) => renames[r] || r) } : m;
+}
+function moveImages(images, renames) {
+  if (!renames || !Object.keys(renames).length) return images;
+  const out = {};
+  for (const [id, v] of Object.entries(images)) out[renames[id] || id] = v;
+  return out;
+}
+function mergeImages(local = {}, remote = {}) {
+  const out = { ...local };
+  for (const [id, v] of Object.entries(remote)) if (!out[id] || (v?.at || 0) > (out[id].at || 0)) out[id] = v;
+  return out;
 }
 const isPrefix = (a, b) => a.length <= b.length && JSON.stringify(a) === JSON.stringify(b.slice(0, a.length));
 function mergeConv(local, remote) {
@@ -4890,6 +5708,11 @@ function applyTombstones(snap) {
     });
     const ids = new Set(d.entries.map((e) => e.id));
     for (const e of d.entries) if (e.relations?.some((r) => !ids.has(r.to))) e.relations = e.relations.filter((r) => ids.has(r.to));
+    d.ms = (d.ms || []).filter((m) => { const at = t.manuscripts?.[`${w.id}:${m.id}`]; return !(at && at >= (m.updatedAt || 0)); });
+    // 완전히 지운 항목의 그림, 빼기만 표시된 오래된 그림 기록은 정리한다
+    const imgs = {};
+    for (const [id, v] of Object.entries(d.images || {})) if (ids.has(id) && (v?.data || (v?.at || 0) > Date.now() - 90 * 24 * 3600 * 1000)) imgs[id] = v;
+    d.images = imgs;
     const counters = { ...(w.counters || {}) };
     for (const e of d.entries) {
       const m = e.id.match(/^([A-Z][A-Z0-9]{0,2})-(\d+)$/);
@@ -4923,8 +5746,12 @@ async function syncOnce() {
   }
   for (const w of merged.worlds) {
     const r = got[worldPath(w.id)];
-    if (!merged.data[w.id]) merged.data[w.id] = r ? { entries: r.entries || [], log: r.log || [], threads: r.threads || [], graph: r.graph || null } : { entries: [], log: [], threads: [], graph: null };
-    else if (r) merged.data[w.id] = mergeWorldData(merged.data[w.id], r);
+    const ri = got[imgPath(w.id)];
+    if (!merged.data[w.id]) merged.data[w.id] = r ? { entries: r.entries || [], log: r.log || [], threads: r.threads || [], graph: r.graph || null, ms: r.ms || [], images: ri || {} } : { ...emptyWorldData(), images: ri || {} };
+    else {
+      if (r) merged.data[w.id] = mergeWorldData(merged.data[w.id], r);
+      if (ri) merged.data[w.id].images = mergeImages(merged.data[w.id].images, ri);
+    }
   }
   for (const p of Object.keys(got)) {
     if (!p.startsWith(`${SYNC_DIR}/c/`)) continue;
@@ -4956,11 +5783,12 @@ async function syncOnce() {
     for (const w of merged.worlds) {
       if (after[worldPath(w.id)] !== before[worldPath(w.id)]) {
         const d = merged.data[w.id];
-        await Promise.all([idb.set("entries:" + w.id, d.entries), idb.set("log:" + w.id, d.log), idb.set("threads:" + w.id, d.threads), d.graph ? idb.set("graph:" + w.id, d.graph) : idb.del("graph:" + w.id)]);
+        await Promise.all([idb.set("entries:" + w.id, d.entries), idb.set("log:" + w.id, d.log), idb.set("threads:" + w.id, d.threads), d.graph ? idb.set("graph:" + w.id, d.graph) : idb.del("graph:" + w.id), idb.set("ms:" + w.id, d.ms || [])]);
         localChanged = true;
       }
+      if (after[imgPath(w.id)] !== before[imgPath(w.id)]) { await idb.set("imgs:" + w.id, merged.data[w.id].images || {}); localChanged = true; }
     }
-    for (const w of local.worlds) if (!liveWorlds.has(w.id)) { await Promise.all(["entries:", "log:", "threads:", "graph:"].map((k) => idb.del(k + w.id))); localChanged = true; }
+    for (const w of local.worlds) if (!liveWorlds.has(w.id)) { await Promise.all(["entries:", "log:", "threads:", "graph:", "ms:", "imgs:"].map((k) => idb.del(k + w.id))); localChanged = true; }
     const liveThreads = new Set(merged.worlds.flatMap((w) => merged.data[w.id].threads.map((t) => t.id)));
     for (const id of Object.keys(merged.convs)) {
       if (!liveThreads.has(id)) { if (local.convs[id] !== undefined) { await idb.del("conv:" + id); localChanged = true; } continue; }
@@ -5002,7 +5830,7 @@ async function reloadAfterSync(changedConvs) {
   state.worlds = (await idb.get("worlds")) || [];
   resetGraphCache();
   if (!state.worlds.length) {
-    state.worldId = null; state.entries = []; state.log = []; state.threads = []; state.threadId = null; state.conv = { api: [], display: [] };
+    state.worldId = null; state.entries = []; state.log = []; state.threads = []; state.manuscripts = []; state.images = {}; state.threadId = null; state.conv = { api: [], display: [] };
     renderWorldName(); renderChat(); renderCodex();
     return;
   }
@@ -5010,6 +5838,8 @@ async function reloadAfterSync(changedConvs) {
   state.entries = (await idb.get("entries:" + state.worldId)) || [];
   state.log = (await idb.get("log:" + state.worldId)) || [];
   state.threads = (await idb.get("threads:" + state.worldId)) || [];
+  state.manuscripts = (await idb.get("ms:" + state.worldId)) || [];
+  state.images = (await idb.get("imgs:" + state.worldId)) || {};
   if (state.threadId && !state.threads.some((t) => t.id === state.threadId)) { state.threadId = null; state.conv = { api: [], display: [] }; }
   else if (state.threadId && changedConvs.has(state.threadId)) state.conv = (await idb.get("conv:" + state.threadId)) || { api: [], display: [] };
   renderWorldName();
@@ -5315,7 +6145,7 @@ function download(filename, text, type) {
   setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
 async function exportAll() {
-  if (state.worldId) await Promise.all([persist.world(), persist.threads(), persist.conv(), persist.worlds()]);
+  if (state.worldId) await Promise.all([persist.world(), persist.threads(), persist.conv(), persist.worlds(), persist.images()]);
   const data = { app: "lorekeeper", version: 1, exportedAt: new Date().toISOString(), worlds: [] };
   for (const w of state.worlds) {
     const threads = (await idb.get("threads:" + w.id)) || [];
@@ -5326,6 +6156,8 @@ async function exportAll() {
       entries: (await idb.get("entries:" + w.id)) || [],
       log: (await idb.get("log:" + w.id)) || [],
       graph: (await idb.get("graph:" + w.id)) || null,
+      manuscripts: (await idb.get("ms:" + w.id)) || [],
+      images: (await idb.get("imgs:" + w.id)) || {},
       threads,
       convs,
     });
@@ -5349,6 +6181,8 @@ async function importBackup(file) {
       idb.set("entries:" + id, x.entries || []),
       idb.set("log:" + id, x.log || []),
       x.graph ? idb.set("graph:" + id, x.graph) : idb.del("graph:" + id),
+      idb.set("ms:" + id, x.manuscripts || []),
+      idb.set("imgs:" + id, x.images || {}),
       idb.set("threads:" + id, x.threads || []),
       ...Object.entries(x.convs || {}).filter(([, v]) => v).map(([tid, v]) => idb.set("conv:" + tid, v)),
     ]);
@@ -5377,6 +6211,9 @@ function exportMarkdown() {
       const rel = (e.relations || []).map((r) => `- ${r.label} → ${nameOf(r.to)} (\`${r.to}\`)`);
       if (rel.length) parts.push("", "**관계**", ...rel);
       if (e.when) parts.push("", `*시점: ${rangeText(e.when)}${e.when.label ? ` · ${e.when.label}` : ""}*`);
+      const sn = Object.entries(e.senses || {}).filter(([, v]) => v);
+      if (sn.length) parts.push("", "**감각**", ...sn.map(([kk, v]) => `- ${kk}: ${v}`));
+      if (e.perspectives?.length) parts.push("", "**관점별 서술**", ...e.perspectives.map((x) => `- ${nameOf(x.by) === "(없는 항목)" ? x.by : nameOf(x.by)}: ${x.text}`));
       if (e.tags?.length) parts.push("", e.tags.map((t) => "#" + t).join(" "));
     }
   }
@@ -5387,6 +6224,15 @@ function exportMarkdown() {
     for (const x of cal.eras.slice().sort((a, b) => a.start - b.start)) parts.push(`- 시대: **${x.name}** (${eraRangeText(x, cal)})`);
     parts.push("");
     for (const e of tl) parts.push(`- **${rangeText(e.when, cal)}** ${e.name} (\`${e.id}\`)${e.summary ? ` — ${e.summary}` : ""}`);
+  }
+  const rules = worldNaming(w);
+  if (rules.length) {
+    parts.push("", "## 이름 규칙");
+    for (const r of rules) parts.push("", `### ${r.name}`, r.applies?.length ? `*적용: ${r.applies.join(", ")}*` : "", "", r.rules || "", r.examples?.length ? `\n예: ${r.examples.join(", ")}` : "");
+  }
+  if (state.manuscripts.length) {
+    parts.push("", "## 원고함");
+    for (const m of state.manuscripts.slice().sort((a, b) => a.createdAt - b.createdAt)) parts.push("", `### ${m.title} (${m.kind})`, "", m.body);
   }
   const safe = w.name.replace(/[\\/:*?"<>|]/g, "_");
   download(`${safe}.md`, parts.join("\n").replace(/\n{3,}/g, "\n\n"), "text/markdown");
@@ -5417,11 +6263,18 @@ function bindGlobal() {
   $("#worldBtn").onclick = openWorldSheet;
   $("#costBadge").onclick = () => switchView("settings");
   $("#threadsBtn").onclick = openThreadsSheet;
-  $("#newThreadBtn").onclick = newThread;
+  $("#newThreadBtn").onclick = () => newThread();
   $("#chatLog").addEventListener("click", onChatClick);
 
   // 첨부: 버튼, 붙여넣기, 끌어다 놓기
   $("#attachBtn").onclick = () => $("#fileInput").click();
+  $("#toolsBtn").onclick = () => openCreativeTools();
+  $("#modeBar").onclick = (e) => {
+    const m = e.target.closest("[data-mode]")?.dataset.mode;
+    if (m === "wrap") fillInput("인터뷰 정리: 이번 인터뷰에서 새로 드러난 사실을 모아서, 설정에 넣을 것과 고칠 것을 제안해 줘. 인터뷰 요약은 원고함에 저장해 줘. ((작가로서 답해 줘)) ");
+    else if (m === "end") newThread();
+    else if (m === "cancel") { state.pendingMode = null; renderModeBar(); }
+  };
   $("#fileInput").onchange = (e) => { addFiles(e.target.files); e.target.value = ""; };
   $("#attachTray").onclick = (e) => {
     const x = e.target.closest("[data-att-remove]");
@@ -5513,6 +6366,7 @@ function bindGlobal() {
 
 async function init() {
   bindGlobal();
+  bindCodexTabs();
   bindGraph();
   bindTimeline();
   bindTheme();
