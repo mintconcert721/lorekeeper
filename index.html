@@ -567,6 +567,30 @@ main { min-height: 0; min-width: 0; position: relative; }
 .when-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin: 6px 0; font-size: 14px; }
 .when-line .lbl { font-size: 11px; letter-spacing: .08em; color: var(--muted); }
 
+/* 상태 */
+.st-badge { display: inline-block; font: 600 11px var(--font-body); padding: 1px 7px; border-radius: 999px; vertical-align: 1px; }
+.st-draft { background: var(--accent-soft); color: var(--accent); border: 1px dashed var(--accent); }
+.st-discarded { background: var(--surface-2); color: var(--muted); }
+.entry-card.discarded { opacity: .6; }
+.entry-card.discarded .ename { text-decoration: line-through; }
+.st-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 8px 0; padding: 8px 12px; border-radius: 12px; background: var(--surface-2); font-size: 13.5px; }
+.st-actions span { flex: 1; min-width: 160px; }
+.status-chips { margin-top: 6px; }
+.seg { display: flex; gap: 6px; }
+.seg label { flex: 1; display: flex; }
+.seg input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.seg span { flex: 1; text-align: center; padding: 7px 0; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); background: var(--bg); font-size: 14px; }
+.seg input:checked + span { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.seg input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+.g-node.draft .dot { stroke: var(--muted); stroke-dasharray: 3 2; fill-opacity: .55; }
+.tl-row.draft .tl-card { border-style: dashed; }
+.check-group { margin-top: 14px; }
+.check-group h3 { margin: 0 0 6px; font-size: 14px; display: flex; gap: 6px; align-items: center; }
+.check-group h3 .n { font: 12px var(--font-mono); color: var(--muted); }
+.check-item { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+.check-item .txt { flex: 1 1 100%; }
+.sev-warn { color: var(--danger); }
+
 /* 분류와 템플릿 */
 .tpl-status { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; padding: 10px 12px; border-radius: 12px; background: var(--accent-soft); font-size: 13.5px; }
 .tpl-status.done { background: var(--surface-2); color: var(--muted); }
@@ -1118,14 +1142,74 @@ const TOOLS_V5 = [
   },
   toolV4("suggest_replies"),
 ];
+// v6: 답 전체를 respond 도구의 message로 전한다. Opus 5.5·Sonnet 5.5는 도구 호출 앞에 쓴 글을
+// 요약된 thinking 블록으로 돌려주므로, 선택지 설명이 잘려 보이던 문제를 막는다(도구 입력은 요약되지 않는다).
+// 항목 상태(확정·초안·폐기)도 더한다.
+const SYSTEM_V6 = SYSTEM_V5.replace(SYSTEM_V2.slice(SYSTEM_V1.length), `
+
+## 답하는 방법
+- 사용자에게 할 말은 모두 respond 도구의 message에 마크다운으로 쓴다. 도구 호출 앞뒤에 따로 쓴 글은 사용자 화면에 요약되거나 보이지 않는다.
+- 답을 마칠 때마다 맨 마지막에 respond를 단독으로 한 번 호출한다. 다른 도구를 쓸 일이 있으면 먼저 끝내고, 그 결과를 본 뒤에 respond를 부른다.
+- 선택지를 제시할 때는 각 선택지의 내용, 장점과 단점, 이야기에 미칠 영향을 message 안에 자세히 쓴다. options에는 각 선택지를 고르는 사용자 입장의 짧은 대답을 2~4개 넣고, 필요하면 "알아서 정해 줘"처럼 맡기는 대답도 하나 넣는다.
+- 여러 개를 함께 골라도 되는 목록(받아들일 아이디어, 추가할 특징 등)이면 multiple을 true로 한다.`) + `
+
+## 확정과 초안
+- 항목마다 상태가 있다: 확정(기본), 초안, 폐기. [설정집 현황]과 검색 결과에서 초안은 [초안]으로 표시되고, 폐기된 항목은 빠진다.
+- 확정만 이 세계의 사실로 다룬다. 초안은 아직 정해지지 않은 후보로 다루고, 확정 설정과 부딪혀도 모순으로 보지 않는다. 폐기된 항목은 사용자가 꺼내 달라고 할 때만 참고한다.
+- 사용자가 아직 고르지 않은 네 아이디어를 기록해 둘 때는 status를 "초안"으로 저장한다. 사용자가 고르면 "확정"으로 바꾸고, 사용자가 버린 안은 지우지 말고 "폐기"로 바꾼다.`;
+const toolV5 = (name) => TOOLS_V5.find((t) => t.name === name);
+const STATUS_PARAM = { type: "string", enum: ["확정", "초안", "폐기"], description: "항목 상태. 확정(이 세계의 사실), 초안(아직 고르지 않은 후보), 폐기(버린 안)" };
+const TOOLS_V6 = [
+  {
+    name: "search_entries",
+    description: toolV5("search_entries").description + " 폐기된 항목은 include_discarded가 true일 때만 나온다.",
+    input_schema: { type: "object", properties: { ...toolV5("search_entries").input_schema.properties, include_discarded: { type: "boolean", description: "폐기된 항목도 찾는다." } } },
+    eager_input_streaming: true,
+  },
+  toolV5("get_entries"),
+  {
+    name: "create_entry",
+    description: toolV5("create_entry").description + " 사용자가 아직 고르지 않은 네 아이디어를 기록할 때는 status를 초안으로 한다.",
+    input_schema: { type: "object", properties: { ...toolV5("create_entry").input_schema.properties, status: STATUS_PARAM }, required: ["type", "name", "summary"] },
+    eager_input_streaming: true,
+  },
+  {
+    name: "update_entry",
+    description: toolV5("update_entry").description + " status로 확정·초안·폐기를 바꾼다.",
+    input_schema: { type: "object", properties: { ...toolV5("update_entry").input_schema.properties, status: STATUS_PARAM }, required: ["id"] },
+    eager_input_streaming: true,
+  },
+  toolV5("set_relation"),
+  toolV5("delete_entry"),
+  toolV5("update_world"),
+  toolV5("list_types"),
+  toolV5("get_template"),
+  toolV5("get_timeline"),
+  toolV5("set_calendar"),
+  {
+    name: "respond",
+    description: "사용자에게 답을 전한다. 답을 마칠 때마다 맨 마지막에 이 도구만 단독으로 한 번 호출한다. message에는 사용자에게 할 말 전체를 마크다운으로 쓴다(선택지를 제시하면 각 선택지의 자세한 설명까지). options에는 사용자가 눌러서 보낼 다음 대답 후보를 넣는다. 결과는 사용자의 다음 메시지와 함께 돌아온다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        message: { type: "string", description: "사용자에게 보일 답 전체(마크다운)." },
+        options: { ...STR_ARR, description: '사용자 입장의 짧은 다음 대답 2~4개. 예: ["A안으로 할게", "B안으로 하되 나이는 더 어리게", "알아서 정해 줘"]' },
+        multiple: { type: "boolean", description: "여러 개를 함께 골라도 되는 목록이면 true" },
+      },
+      required: ["message"],
+    },
+    eager_input_streaming: true,
+  },
+];
 const PROMPT_SETS = {
   1: { system: SYSTEM_V1, tools: TOOLS_V1 },
   2: { system: SYSTEM_V2, tools: TOOLS_V2 },
   3: { system: SYSTEM_V3, tools: TOOLS_V3 },
   4: { system: SYSTEM_V4, tools: TOOLS_V4 },
   5: { system: SYSTEM_V5, tools: TOOLS_V5 },
+  6: { system: SYSTEM_V6, tools: TOOLS_V6 },
 };
-const PROMPT_CURRENT = 5;
+const PROMPT_CURRENT = 6;
 // 버전 정보가 없는 예전 대화는 만든 시각으로 버전을 추정한다(각 버전의 배포 완료 시각, UTC).
 const PROMPT_RELEASES = [
   { v: 2, at: Date.parse("2026-11-01T15:35:14Z") },
@@ -1133,6 +1217,38 @@ const PROMPT_RELEASES = [
 ];
 const SUGGEST = "suggest_replies";
 const SUGGEST_TOOL = TOOLS_V4.find((t) => t.name === SUGGEST);
+const RESPOND = "respond";
+const RESPOND_TOOL = TOOLS_V6.find((t) => t.name === RESPOND);
+const REPLY_TOOLS = new Set([SUGGEST, RESPOND]);
+// 스트리밍 중인 도구 입력(JSON 조각)에서 문자열 값 하나를 꺼낸다(아직 닫히지 않았어도 지금까지의 글자).
+function partialJsonString(src, key) {
+  const m = new RegExp(`"${key}"\\s*:\\s*"`).exec(src);
+  if (!m) return "";
+  let i = m.index + m[0].length;
+  let out = "";
+  const ESC = { n: "\n", t: "\t", r: "\r", b: "\b", f: "\f", '"': '"', "\\": "\\", "/": "/" };
+  while (i < src.length) {
+    const ch = src[i];
+    if (ch === '"') break;
+    if (ch === "\\") {
+      const nx = src[i + 1];
+      if (nx === undefined) break;
+      if (nx === "u") {
+        const hex = src.slice(i + 2, i + 6);
+        if (hex.length < 4) break;
+        out += String.fromCharCode(parseInt(hex, 16));
+        i += 6;
+        continue;
+      }
+      out += ESC[nx] ?? nx;
+      i += 2;
+      continue;
+    }
+    out += ch;
+    i++;
+  }
+  return out;
+}
 
 const TOOL_STATUS = {
   search_entries: "설정집을 찾아보는 중…",
@@ -1146,6 +1262,7 @@ const TOOL_STATUS = {
   list_types: "분류 목록을 보는 중…",
   get_template: "템플릿을 읽는 중…",
   get_timeline: "연표를 살피는 중…",
+  respond: "답을 쓰는 중…",
   set_calendar: "달력을 정리하는 중…",
 };
 
@@ -1228,6 +1345,7 @@ const state = {
   busy: false,
   codexType: "all",
   codexQuery: "",
+  codexStatus: new Set(["canon", "draft"]),
   tlQuery: "",
   tlHidden: new Set(),
   tlHighlight: null,
@@ -1238,6 +1356,12 @@ const qrSelected = new Set(); // 여러 개 고르기에서 체크한 추천 대
 const currentWorld = () => state.worlds.find((w) => w.id === state.worldId) || null;
 const currentThread = () => state.threads.find((t) => t.id === state.threadId) || null;
 const activeEntries = () => state.entries.filter((e) => !e.deleted);
+// 항목 상태: 확정(기본)·초안·폐기
+const STATUS = { canon: "확정", draft: "초안", discarded: "폐기" };
+const STATUS_KEYS = Object.keys(STATUS);
+const statusOf = (e) => (STATUS[e?.status] ? e.status : "canon");
+const statusKey = (v) => ({ 확정: "canon", 초안: "draft", 폐기: "discarded" })[v] || (STATUS[v] ? v : null);
+const liveEntries = () => activeEntries().filter((e) => statusOf(e) !== "discarded"); // 휴지통·폐기를 뺀 항목
 
 const persist = {
   worlds: () => idb.set("worlds", state.worlds),
@@ -1411,7 +1535,7 @@ function eraRangeText(era, cal = worldCalendar()) {
   return `${fmtYear(era.start, cal)}${Number.isFinite(era.end) ? ` ~ ${fmtYear(era.end, cal)}` : " ~"}`;
 }
 function timelineEntries() {
-  return activeEntries()
+  return liveEntries()
     .filter((e) => e.when && Number.isFinite(e.when.start))
     .sort((a, b) => a.when.start - b.when.start || (a.when.end ?? a.when.start) - (b.when.end ?? b.when.start) || a.id.localeCompare(b.id));
 }
@@ -1486,6 +1610,7 @@ function createEntry(d, by) {
     aliases: d.aliases || [], summary: String(d.summary || "").trim(),
     fields: d.fields || {}, body: d.body || "", tags: d.tags || [],
     relations: d.relations || [],
+    status: statusKey(d.status) || "canon",
     ...(normalizeWhen(d.when) ? { when: normalizeWhen(d.when) } : {}),
     createdAt: now, updatedAt: now, updatedBy: by, history: [],
   };
@@ -1509,6 +1634,7 @@ function updateEntry(e, p, by, reason) {
   if (p.body !== undefined) e.body = p.body;
   if (p.append_body) e.body = (e.body ? e.body.trimEnd() + "\n\n" : "") + p.append_body;
   if (p.relations !== undefined) e.relations = p.relations;
+  if (p.status !== undefined && statusKey(p.status)) e.status = statusKey(p.status);
   if (p.when !== undefined) { const w = normalizeWhen(p.when); if (w) e.when = w; else delete e.when; }
   e.updatedAt = Date.now();
   e.updatedBy = by;
@@ -1554,6 +1680,7 @@ function restoreVersion(e, h) {
   pushHistory(e, "user", "되돌리기 전 상태");
   for (const k of ["type", "name", "aliases", "summary", "fields", "body", "tags", "relations"]) e[k] = data[k];
   if (data.when) e.when = data.when; else delete e.when;
+  e.status = statusOf(data);
   e.updatedAt = Date.now(); e.updatedBy = "user";
   logChange("user", "update", e, "이전 버전으로 되돌림");
 }
@@ -1583,10 +1710,11 @@ function scoreEntry(e, terms) {
   return total;
 }
 function indexLine(e) {
-  return `${e.id} ${typeInfo(e.type).label} ${e.name}${e.aliases?.length ? ` (${e.aliases.join(", ")})` : ""} — ${cut(e.summary, 70)}${e.when ? ` · ${rangeText(e.when)}` : ""}`;
+  return `${statusOf(e) !== "canon" ? `[${STATUS[statusOf(e)]}] ` : ""}${e.id} ${typeInfo(e.type).label} ${e.name}${e.aliases?.length ? ` (${e.aliases.join(", ")})` : ""} — ${cut(e.summary, 70)}${e.when ? ` · ${rangeText(e.when)}` : ""}`;
 }
 function entryToText(e) {
   const lines = [`## ${e.id} · ${typeInfo(e.type).label} · ${e.name}${e.deleted ? " (휴지통)" : ""}`];
+  if (statusOf(e) !== "canon") lines.push(`상태: ${STATUS[statusOf(e)]}`);
   if (e.aliases?.length) lines.push(`별칭: ${e.aliases.join(", ")}`);
   lines.push(`요약: ${e.summary || "(없음)"}`);
   const f = Object.entries(e.fields || {});
@@ -1648,8 +1776,8 @@ function whenFromInput(input, base) {
   return { start, end, label };
 }
 const TOOL_IMPL = {
-  search_entries({ query, type }) {
-    let list = activeEntries();
+  search_entries({ query, type, include_discarded }) {
+    let list = include_discarded ? activeEntries() : liveEntries();
     if (type) {
       const t = findType(type);
       if (!t) throw new Error(`분류 '${type}'가 없습니다. 쓸 수 있는 분류: ${worldTypes().map((x) => x.label).join(", ")}`);
@@ -1680,6 +1808,7 @@ const TOOL_IMPL = {
     };
   },
   create_entry(input) {
+    if (input.status !== undefined && !statusKey(input.status)) throw new Error("status는 확정, 초안, 폐기 중 하나여야 합니다.");
     const t = findType(input.type);
     if (!t) throw new Error(`분류 '${input.type}'가 없습니다. 쓸 수 있는 분류: ${worldTypes().map((x) => x.label).join(", ")}`);
     const e = createEntry({ ...input, type: t.key, when: whenFromInput(input) }, "claude");
@@ -1687,13 +1816,14 @@ const TOOL_IMPL = {
     const note = gaps && (gaps.fields.length || gaps.sections.length)
       ? `\n템플릿에서 아직 비어 있는 칸: ${[...gaps.fields, ...gaps.sections.map((s) => "## " + s)].join(", ")}`
       : "";
-    return { content: `생성됨: ${e.id} (${t.label} · ${e.name})${e.when ? ` · 연표 ${rangeText(e.when)}` : ""}${note}`, action: { kind: "create", text: `${t.label} ${e.name}`, ref: e.id }, changed: true };
+    return { content: `생성됨: ${e.id} (${t.label} · ${e.name})${statusOf(e) !== "canon" ? ` · ${STATUS[statusOf(e)]}` : ""}${e.when ? ` · 연표 ${rangeText(e.when)}` : ""}${note}`, action: { kind: "create", text: `${t.label} ${e.name}`, ref: e.id }, changed: true };
   },
   update_entry(input) {
     const e = findEntry(input.id);
     if (!e || e.deleted) throw new Error(`${input.id} 항목이 없습니다. search_entries로 id를 확인하세요.`);
     if (input.body !== undefined && input.append_body !== undefined) throw new Error("body와 append_body는 함께 쓸 수 없습니다.");
     const patch = { ...input };
+    if (input.status !== undefined && !statusKey(input.status)) throw new Error("status는 확정, 초안, 폐기 중 하나여야 합니다.");
     if (input.type !== undefined) {
       const t = findType(input.type);
       if (!t) throw new Error(`분류 '${input.type}'가 없습니다. 쓸 수 있는 분류: ${worldTypes().map((x) => x.label).join(", ")}`);
@@ -1799,6 +1929,9 @@ const TOOL_IMPL = {
     trashEntry(e, "claude", reason);
     return { content: `휴지통으로 옮김: ${e.id} (${e.name})`, action: { kind: "delete", text: `${typeInfo(e.type).label} ${e.name}`, ref: e.id }, changed: true };
   },
+  respond() {
+    return { content: "표시하지 않았다: 다른 도구와 같은 차례에 호출됐다. 다른 작업을 모두 마친 뒤 맨 마지막에 respond만 단독으로 호출할 것.", is_error: true };
+  },
   suggest_replies() {
     // 다른 도구와 섞여 호출된 경우에만 여기로 온다. 단독 호출은 runAgent에서 처리한다.
     return { content: "표시하지 않았다: 다른 도구와 같은 차례에 호출됐다. 모든 작업과 답변을 마친 뒤 맨 마지막에 suggest_replies만 단독으로 호출할 것.", is_error: true };
@@ -1890,8 +2023,9 @@ function contextNoteFor(thread) {
   const w = currentWorld();
   const v = threadVersion(thread);
   if (!thread.contextSent) {
-    const list = activeEntries();
+    const list = v >= 6 ? liveEntries() : activeEntries();
     const shown = list.slice(0, 400);
+    const discardedCount = activeEntries().length - list.length;
     const lines = [
       "[설정집 현황 · 앱이 자동으로 첨부함]",
       worldOverviewText(w),
@@ -1900,7 +2034,7 @@ function contextNoteFor(thread) {
     if (v >= 5) lines.push(calendarText(), "");
     if (v >= 4) lines.push("분류 목록 (항목을 만들 때 이 중 하나를 쓴다. 템플릿이 있는 분류는 get_template로 구조를 확인한다):", typeListText(), "");
     lines.push(
-      `항목 ${list.length}개${list.length > shown.length ? ` (앞의 ${shown.length}개만 표시, 나머지는 search_entries로 찾을 것)` : ""}:`,
+      `항목 ${list.length}개${list.length > shown.length ? ` (앞의 ${shown.length}개만 표시, 나머지는 search_entries로 찾을 것)` : ""}${discardedCount ? ` · 폐기된 항목 ${discardedCount}개는 뺐다(search_entries의 include_discarded로 찾을 수 있다)` : ""}:`,
       ...(shown.length ? shown.map(indexLine) : ["(아직 없음)"]),
     );
     return lines.join("\n");
@@ -1952,7 +2086,7 @@ function pendingResults(picked) {
   if (!pending?.length) return [];
   return pending.map(({ id, ok }) => (ok
     ? { type: "tool_result", tool_use_id: id, content: picked ? "사용자가 추천한 대답 중에서 골랐다. 대답은 이어지는 메시지에 있다." : "사용자가 추천 대신 직접 입력했다. 대답은 이어지는 메시지에 있다." }
-    : { type: "tool_result", tool_use_id: id, content: "입력이 올바르지 않아 표시하지 못했다. options는 비어 있지 않은 문자열 배열이어야 한다.", is_error: true }));
+    : { type: "tool_result", tool_use_id: id, content: "입력이 올바르지 않아 표시하지 못했다. message는 문자열, options는 문자열 배열이어야 한다.", is_error: true }));
 }
 function currentSuggest() {
   if (!state.conv.pending?.length) return null;
@@ -2011,7 +2145,19 @@ function handleEvent(ev, item, blockParts) {
       blockParts.set(ev.index, p);
       live.status = "";
     } else if (b.type === "tool_use") {
-      live.status = TOOL_STATUS[b.name] || "설정집 작업 중…";
+      if (b.name === RESPOND) {
+        const p = { kind: "text", text: "", respondId: b.id, _json: "" };
+        item.parts.push(p);
+        blockParts.set(ev.index, p);
+        live.status = "";
+      } else {
+        // 예전 대화(v2~v5): 대답 추천 바로 앞의 진행 메모(요약된 thinking)는 답의 일부이므로 본문으로 보여 준다
+        if (b.name === SUGGEST) {
+          const prev = blockParts.get(ev.index - 1);
+          if (prev && prev.kind === "thinking" && prev.text.trim()) { prev.kind = "text"; delete prev.streaming; }
+        }
+        live.status = TOOL_STATUS[b.name] || "설정집 작업 중…";
+      }
     } else if (b.type === "fallback") {
       item.parts.push({ kind: "note", tone: "info", text: `안전 정책 판단으로 ${b.to?.model || "다른 모델"}이 이어서 답합니다.` });
     }
@@ -2020,6 +2166,7 @@ function handleEvent(ev, item, blockParts) {
     if (!p) return;
     if (ev.delta.type === "thinking_delta") p.text += ev.delta.thinking;
     else if (ev.delta.type === "text_delta") p.text += ev.delta.text;
+    else if (ev.delta.type === "input_json_delta" && p.respondId) { p._json += ev.delta.partial_json; p.text = partialJsonString(p._json, "message"); }
   } else if (ev.type === "content_block_stop") {
     const p = blockParts.get(ev.index);
     if (p && p.kind === "thinking") { p.streaming = false; live.status = "정리하는 중…"; }
@@ -2084,15 +2231,24 @@ async function runAgent() {
       }
       state.conv.api.push({ role: "assistant", content: clone(message.content) });
       if (message.stop_reason === "pause_turn") { await persist.conv(); continue; }
-      if (toolUses.length && toolUses.every((b) => b.name === SUGGEST)) {
-        // 대답 추천만 부른 차례: 여기서 끝내고, 도구 결과는 사용자의 다음 메시지와 함께 보낸다.
+      if (toolUses.length && toolUses.every((b) => REPLY_TOOLS.has(b.name))) {
+        // 답(respond)이나 대답 추천만 부른 차례: 여기서 끝내고, 도구 결과는 사용자의 다음 메시지와 함께 보낸다.
         let shown = null;
+        const okIds = new Set();
         for (const tu of toolUses) {
-          const problem = validateInput(SUGGEST_TOOL.input_schema, tu.input);
-          const options = problem ? [] : [...new Set(tu.input.options.map((o) => cut(o, 160)).filter(Boolean))].slice(0, 6);
+          const schema = tu.name === RESPOND ? RESPOND_TOOL.input_schema : SUGGEST_TOOL.input_schema;
+          const problem = validateInput(schema, tu.input);
+          if (tu.name === RESPOND) {
+            const part = item.parts.find((p) => p.respondId === tu.id);
+            if (!problem) {
+              okIds.add(tu.id);
+              if (part) part.text = tu.input.message; else item.parts.push({ kind: "text", text: tu.input.message, respondId: tu.id });
+            } else if (part) item.parts.splice(item.parts.indexOf(part), 1);
+          } else if (!problem) okIds.add(tu.id);
+          const options = problem ? [] : [...new Set((tu.input.options || []).map((o) => cut(o, 160)).filter(Boolean))].slice(0, 6);
           if (!shown && options.length) shown = { id: tu.id, options, multiple: !!tu.input.multiple };
         }
-        state.conv.pending = toolUses.map((tu) => ({ id: tu.id, ok: shown?.id === tu.id }));
+        state.conv.pending = toolUses.map((tu) => ({ id: tu.id, ok: okIds.has(tu.id) }));
         if (shown) item.suggest = { options: shown.options, multiple: shown.multiple };
         qrSelected.clear();
         finished = true;
@@ -2103,6 +2259,8 @@ async function runAgent() {
         finished = true;
         break;
       }
+      const mixedRespond = new Set(toolUses.filter((b) => b.name === RESPOND).map((b) => b.id));
+      if (mixedRespond.size) item.parts = item.parts.filter((p) => !mixedRespond.has(p.respondId));
       const results = [];
       for (const tu of toolUses) {
         const r = runTool(tu.name, tu.input, promptSetFor(thread).tools);
@@ -2124,7 +2282,7 @@ async function runAgent() {
     item.parts.push({ kind: "note", tone: "error", text: describeError(err) });
   } finally {
     item.parts = item.parts.filter((p) => !(p.kind === "thinking" && !p.text.trim()));
-    for (const p of item.parts) delete p.streaming;
+    for (const p of item.parts) { delete p.streaming; delete p._json; }
     live = null;
     state.busy = false;
     if (thread) thread.updatedAt = Date.now();
@@ -2656,10 +2814,14 @@ function openThreadsSheet() {
    11. 화면: 설정집
    ============================================================ */
 function typeColor(type) { return `var(--t-${typeInfo(type).color || "other"})`; }
+function statusBadge(e) {
+  const st = statusOf(e);
+  return st === "canon" ? "" : `<span class="st-badge st-${st}">${STATUS[st]}</span>`;
+}
 function entryCard(e) {
-  return `<button class="entry-card" type="button" data-ref="${e.id}" style="--tc:${typeColor(e.type)}">
+  return `<button class="entry-card${statusOf(e) === "discarded" ? " discarded" : ""}" type="button" data-ref="${e.id}" style="--tc:${typeColor(e.type)}">
     <span class="catno">${e.id}</span>
-    <span class="ename">${esc(e.name)}</span>
+    <span class="ename">${esc(e.name)} ${statusBadge(e)}</span>
     <span class="esum">${esc(e.summary || "요약 없음")}</span>
     ${e.tags?.length ? `<span class="etags">${e.tags.map((t) => "#" + esc(t)).join(" ")}</span>` : ""}
   </button>`;
@@ -2698,7 +2860,10 @@ function renderCodex() {
 function renderCodexResults() {
   const box = $("#codexResults");
   if (!box) return;
-  const all = activeEntries();
+  const everything = activeEntries();
+  const stCounts = { canon: 0, draft: 0, discarded: 0 };
+  for (const e of everything) stCounts[statusOf(e)]++;
+  const all = everything.filter((e) => state.codexStatus.has(statusOf(e)));
   const counts = {};
   for (const e of all) counts[e.type] = (counts[e.type] || 0) + 1;
   let list = state.codexType === "all" ? all : all.filter((e) => e.type === state.codexType);
@@ -2708,16 +2873,102 @@ function renderCodexResults() {
     list = list.filter((e) => scoreEntry(e, terms) > 0);
   }
   const groups = typeKeys().map((k) => ({ k, items: list.filter((e) => e.type === k).sort((a, b) => a.id.localeCompare(b.id)) })).filter((g) => g.items.length);
-  const trashCount = state.entries.length - all.length;
+  const trashCount = state.entries.length - everything.length;
   box.innerHTML = `
     <div class="type-chips" role="toolbar" aria-label="종류">
       <button class="type-chip" type="button" data-type="all" aria-pressed="${state.codexType === "all"}">전체<span class="n">${all.length}</span></button>
       ${typeKeys().map((k) => `<button class="type-chip" type="button" data-type="${k}" aria-pressed="${state.codexType === k}">${esc(typeInfo(k).label)}<span class="n">${counts[k] || 0}</span></button>`).join("")}
     </div>
-    <div class="row"><button class="btn btn-ghost btn-small" type="button" data-act="types">분류·템플릿 관리</button></div>
+    <div class="type-chips status-chips" role="toolbar" aria-label="상태">${STATUS_KEYS.map((k) => `<button class="type-chip" type="button" data-status="${k}" aria-pressed="${state.codexStatus.has(k)}">${STATUS[k]}<span class="n">${stCounts[k]}</span></button>`).join("")}</div>
+    <div class="row"><button class="btn btn-ghost btn-small" type="button" data-act="types">분류·템플릿 관리</button><button class="btn btn-ghost btn-small" type="button" data-act="checks">설정 점검</button></div>
     ${groups.length ? groups.map((g) => `<h3 class="group-title">${esc(typeInfo(g.k).label)} · ${g.items.length}</h3><div class="entry-list">${g.items.map(entryCard).join("")}</div>`).join("")
       : `<div class="empty-state"><h3>${q || state.codexType !== "all" ? "조건에 맞는 항목이 없습니다" : "설정집이 비어 있습니다"}</h3><p>대화 탭에서 Claude와 이야기하면 항목이 여기에 쌓입니다.</p></div>`}
     ${trashCount ? `<div class="row" style="margin-top:20px"><button class="btn btn-small" type="button" data-act="trash">휴지통 ${trashCount}</button></div>` : ""}`;
+}
+
+// 설정 점검: 앱이 바로 계산할 수 있는 구멍과 모순을 모은다(비용 없음).
+function computeChecks() {
+  const list = liveEntries();
+  const byId = new Map(state.entries.map((e) => [e.id, e]));
+  const issues = [];
+  const add = (group, sev, text, refs) => issues.push({ group, sev, text, refs });
+  // 연표: 인물이 태어나기 전에 끝났거나 죽은 뒤에 일어난 일과 이어져 있다
+  for (const c of list.filter((e) => isCharacterType(e.type) && e.when)) {
+    const links = new Set([...(c.relations || []).map((r) => r.to), ...incoming(c.id).map((x) => x.from.id)]);
+    for (const id of links) {
+      const ev = byId.get(id);
+      if (!ev || ev.deleted || statusOf(ev) === "discarded" || !ev.when || isCharacterType(ev.type)) continue;
+      const evEnd = ev.when.end ?? ev.when.start;
+      if (evEnd < c.when.start) add("연표 확인", "warn", `${c.name}은(는) ${fmtYear(c.when.start)}에 태어났는데, 그 전에 끝난 ${ev.name}(${rangeText(ev.when)})과 이어져 있습니다.`, [c.id, ev.id]);
+      if (c.when.end != null && ev.when.start > c.when.end) add("연표 확인", "warn", `${c.name}은(는) ${fmtYear(c.when.end)}에 죽었는데, 그 뒤의 ${ev.name}(${rangeText(ev.when)})과 이어져 있습니다.`, [c.id, ev.id]);
+    }
+  }
+  // 폐기된 항목이나 휴지통 항목과 연결
+  for (const e of list) {
+    for (const r of e.relations || []) {
+      const t = byId.get(r.to);
+      if (t && (t.deleted || statusOf(t) === "discarded")) add("버린 항목과 연결", "warn", `${e.name} → ${r.label} → ${t.name}(${t.deleted ? "휴지통" : "폐기"})`, [e.id, t.id]);
+    }
+  }
+  // 같은 이름을 여러 항목이 쓴다
+  const names = new Map();
+  for (const e of list) for (const n of [e.name, ...(e.aliases || [])]) {
+    const k = String(n).trim().toLowerCase();
+    if (!k) continue;
+    if (!names.has(k)) names.set(k, new Set());
+    names.get(k).add(e);
+  }
+  for (const [n, set] of names) if (set.size > 1) add("이름 겹침", "warn", `'${n}'을(를) ${[...set].map((e) => `${e.name}(${e.id})`).join(", ")}이(가) 함께 씁니다.`, [...set].map((e) => e.id));
+  // 채울 곳
+  for (const e of list) {
+    const g = templateGaps(e);
+    if (g && g.fields.length + g.sections.length) {
+      const miss = [...g.fields, ...g.sections.map((x) => "## " + x)];
+      add("템플릿 빈 칸", "info", `${e.name}: ${miss.slice(0, 5).join(", ")}${miss.length > 5 ? ` 외 ${miss.length - 5}개` : ""}`, [e.id]);
+    }
+  }
+  for (const e of list) if (!String(e.summary || "").trim()) add("요약 없음", "info", e.name, [e.id]);
+  for (const e of list) if (!e.when && isEventType(e.type)) add("시점 없는 사건", "info", e.name, [e.id]);
+  const linked = new Set();
+  for (const e of list) for (const r of e.relations || []) if (byId.get(r.to) && statusOf(byId.get(r.to)) !== "discarded") { linked.add(e.id); linked.add(r.to); }
+  for (const e of list) if (!linked.has(e.id)) add("관계 없는 항목", "info", e.name, [e.id]);
+  const drafts = list.filter((e) => statusOf(e) === "draft");
+  if (drafts.length) add("확정을 기다리는 초안", "info", `${drafts.length}개: ${drafts.slice(0, 8).map((e) => e.name).join(", ")}${drafts.length > 8 ? " …" : ""}`, drafts.map((e) => e.id));
+  return issues;
+}
+function openChecksSheet() {
+  if (!currentWorld()) { toast("먼저 세계관을 만드세요"); return; }
+  const issues = computeChecks();
+  const groups = [];
+  for (const it of issues) {
+    let g = groups.find((x) => x.name === it.group);
+    if (!g) { g = { name: it.group, sev: it.sev, items: [] }; groups.push(g); }
+    g.items.push(it);
+  }
+  groups.sort((a, b) => (a.sev === b.sev ? 0 : a.sev === "warn" ? -1 : 1));
+  const warns = issues.filter((x) => x.sev === "warn");
+  openSheet(`<h2 class="sheet-title">설정 점검</h2>
+    <p class="meta" style="margin:0">확정·초안 항목 ${liveEntries().length}개를 살폈습니다. ${warns.length ? `확인이 필요한 곳 ${warns.length}개, ` : "모순으로 보이는 곳은 없고, "}채울 곳 ${issues.length - warns.length}개가 있습니다.</p>
+    ${groups.map((g) => `<section class="check-group"><h3 class="${g.sev === "warn" ? "sev-warn" : ""}">${esc(g.name)} <span class="n">${g.items.length}</span></h3>
+      ${g.items.slice(0, 30).map((it) => `<div class="check-item"><span class="txt">${esc(it.text)}</span>${it.refs.slice(0, 4).map((id) => `<button type="button" class="ref" data-ref="${id}">${id}</button>`).join("")}</div>`).join("")}
+      ${g.items.length > 30 ? `<p class="meta">외 ${g.items.length - 30}개</p>` : ""}</section>`).join("") || `<p>살펴볼 항목이 아직 없습니다.</p>`}
+    <section class="card" style="margin-top:16px">
+      <h2>Claude 심층 점검</h2>
+      <p>앱이 찾을 수 없는 세계 규칙 위반, 서술끼리의 모순, 거리·나이 불일치를 Claude가 확정 설정을 읽고 찾습니다. 새 대화에 요청을 채워 두니, 내용을 보고 보내세요. 설정 양만큼 비용이 듭니다.</p>
+      <div class="row"><button class="btn btn-primary" type="button" data-act="deep-check">요청 채우기</button></div>
+    </section>`, (root) => {
+    root.onclick = (ev) => {
+      const ref = ev.target.closest("[data-ref]");
+      if (ref) { openEntry(ref.dataset.ref); return; }
+      if (ev.target.closest('[data-act="deep-check"]')) {
+        if (state.busy) { toast("Claude가 작업 중입니다"); return; }
+        const found = warns.slice(0, 15).map((x) => `- ${x.text}`);
+        closeSheet();
+        newThread();
+        fillInput(`설정 전체를 점검해 줘. 확정된 항목을 기준으로 세계 규칙 위반, 서술끼리의 모순, 연표·나이·거리 불일치, 어긋난 관계를 찾아서 항목별로 알려 주고, 고칠 방법을 2~3가지씩 제안해 줘. 고치는 건 내가 고른 다음에 해.${found.length ? `\n\n앱이 먼저 찾은 것:\n${found.join("\n")}` : ""}`);
+      }
+    };
+  });
 }
 
 function relationsHTML(e) {
@@ -2735,13 +2986,14 @@ function openEntry(ref) {
   const fields = Object.entries(e.fields || {});
   openSheet(`
     <div class="entry-head" style="--tc:${typeColor(e.type)}">
-      <span class="catno">${e.id}</span><span>${esc(typeInfo(e.type).label)}</span>${e.deleted ? '<span class="pill pill-danger">휴지통</span>' : ""}
+      <span class="catno">${e.id}</span><span>${esc(typeInfo(e.type).label)}</span>${statusBadge(e)}${e.deleted ? '<span class="pill pill-danger">휴지통</span>' : ""}
     </div>
     <h2 class="entry-name">${esc(e.name)}</h2>
     ${e.aliases?.length ? `<p class="aliases">${esc(e.aliases.join(" · "))}</p>` : ""}
     <p class="summary">${esc(e.summary)}</p>
     ${e.when ? `<p class="when-line"><span class="lbl">시점</span><span>${esc(rangeText(e.when))}${spanText(e.when) ? ` (${esc(spanText(e.when))})` : ""}${e.when.label ? ` · ${esc(e.when.label)}` : ""}</span>${e.deleted ? "" : `<button class="btn btn-ghost btn-small" type="button" data-act="timeline">연표에서 보기</button>`}</p>`
       : !e.deleted && isEventType(e.type) ? `<p class="when-line"><span class="lbl">시점</span><span class="meta" style="margin:0">아직 연표에 없습니다</span><button class="btn btn-ghost btn-small" type="button" data-act="set-time">시점 넣기</button></p>` : ""}
+    ${!e.deleted && statusOf(e) !== "canon" ? `<div class="st-actions">${statusOf(e) === "draft" ? `<span>아직 정하지 않은 초안입니다.</span><button class="btn btn-small btn-primary" type="button" data-act="st-canon">확정으로</button><button class="btn btn-small" type="button" data-act="st-discarded">폐기</button>` : `<span>버린 안입니다. 연표와 관계도에서 빠집니다.</span><button class="btn btn-small" type="button" data-act="st-draft">초안으로 되살리기</button>`}</div>` : ""}
     ${templateStatusHTML(e)}
     ${fields.length ? `<dl class="fields">${fields.map(([k, v]) => `<div><dt>${esc(k)}</dt>${isBlankValue(v) ? `<dd class="blank">미정</dd>` : `<dd>${esc(v)}</dd>`}</div>`).join("")}</dl>` : ""}
     ${e.body ? `<p class="section-label">본문</p><div class="md">${md(e.body)}</div>` : ""}
@@ -2760,6 +3012,13 @@ function openEntry(ref) {
       if (!act) return;
       if (!["develop", "history", "graph", "tpl-ask", "timeline"].includes(act) && state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 고쳐 주세요"); return; }
       if (act === "timeline") { closeSheet(); showInTimeline(e.id); return; }
+      if (act.startsWith("st-")) {
+        const st = act.slice(3);
+        updateEntry(e, { status: st }, "user", `상태: ${STATUS[st]}`);
+        await persist.world();
+        renderCodex(); openEntry(e.id); toast(`${STATUS[st]}(으)로 바꿨습니다`);
+        return;
+      }
       if (act === "set-time") { openEditor(e, null, { focusTime: true }); return; }
       if (act === "tpl-fill") {
         const merged = mergeTemplate(e.fields || {}, e.body || "", typeInfo(e.type).template);
@@ -2848,6 +3107,7 @@ function openEditor(e, presetType, opts = {}) {
     <form class="form" id="entryForm">
       <label>분류<select id="f-type">${typeKeys().map((k) => `<option value="${k}"${k === d.type ? " selected" : ""}>${esc(typeInfo(k).label)}</option>`).join("")}</select></label>
       <p class="tpl-note" id="f-tpl" hidden></p>
+      <fieldset><legend>상태</legend><div class="seg">${STATUS_KEYS.map((k) => `<label><input type="radio" name="f-status" value="${k}"${statusOf(d) === k ? " checked" : ""}><span>${STATUS[k]}</span></label>`).join("")}</div></fieldset>
       <label>이름<input id="f-name" required value="${esc(d.name)}"></label>
       <label>별칭 <small>쉼표로 구분</small><input id="f-aliases" value="${esc((d.aliases || []).join(", "))}"></label>
       <label>한 줄 요약<input id="f-summary" value="${esc(d.summary)}"></label>
@@ -2925,6 +3185,7 @@ function openEditor(e, presetType, opts = {}) {
         fields,
         body: $("#f-body", root).value,
         when: null,
+        status: root.querySelector('input[name="f-status"]:checked')?.value || "canon",
         tags: splitList($("#f-tags", root).value).map((t) => t.replace(/^#/, "")),
         relations,
       };
@@ -3153,7 +3414,7 @@ function saveGraphPositions() {
 }
 
 function buildGraphModel() {
-  const entries = activeEntries();
+  const entries = liveEntries();
   const ids = new Set(entries.map((e) => e.id));
   const old = graph.nodes;
   const nodes = new Map();
@@ -3309,7 +3570,7 @@ function buildGraphDOM() {
     const n = graph.nodes.get(id);
     n.r = nodeRadius(n);
     const g = document.createElementNS(SVG_NS, "g");
-    g.setAttribute("class", "g-node");
+    g.setAttribute("class", `g-node${statusOf(n.entry) === "draft" ? " draft" : ""}`);
     g.dataset.id = id;
     g.innerHTML = `<circle class="halo" r="${n.r + 5}"></circle><circle class="dot" r="${n.r}" style="fill:${typeColor(n.entry.type)}"></circle><text y="${n.r + 15}">${esc(cut(n.entry.name, 12))}</text>`;
     nG.appendChild(g);
@@ -4199,11 +4460,11 @@ function renderTimelineResults() {
     let extra = "";
     if (e.when.end != null) extra = isCharacterType(e.type) ? `향년 ${fmtYearNum(e.when.end - e.when.start)}` : spanText(e.when, cal);
     else if (isCharacterType(e.type) && cal.now !== null && cal.now >= start) extra = `지금 ${fmtYearNum(cal.now - start)}살`;
-    html += `<div class="tl-row${state.tlHighlight === e.id ? " hl" : ""}" id="tl-${e.id}" style="--tc:${typeColor(e.type)}">
+    html += `<div class="tl-row${state.tlHighlight === e.id ? " hl" : ""}${statusOf(e) === "draft" ? " draft" : ""}" id="tl-${e.id}" style="--tc:${typeColor(e.type)}">
       <div class="tl-year">${esc(fmtYearNum(start))}</div>
       <div class="tl-axis"><span class="tl-dot${e.when.end != null ? " span" : ""}"></span></div>
       <button class="tl-card" type="button" data-ref="${e.id}">
-        <span class="tl-meta"><span class="catno">${e.id}</span> ${esc(t.label)}</span>
+        <span class="tl-meta"><span class="catno">${e.id}</span> ${esc(t.label)}${statusOf(e) === "draft" ? ' <span class="st-badge st-draft">초안</span>' : ""}</span>
         <span class="tl-name">${esc(e.name)}</span>
         <span class="tl-when">${esc(e.when.label || rangeText(e.when, cal))}${e.when.label ? ` · ${esc(rangeText(e.when, cal))}` : ""}${extra ? ` · ${esc(extra)}` : ""}</span>
         ${e.summary ? `<span class="tl-sum">${esc(e.summary)}</span>` : ""}
@@ -5103,11 +5364,11 @@ function exportMarkdown() {
   if (!w) return;
   const parts = [`# ${w.name}`, "", w.premise ? `> ${w.premise}` : "", "", w.tone ? `**분위기 · 문체**: ${w.tone}` : "", "", w.rules ? `## 세계 규칙\n\n${w.rules}` : ""];
   for (const k of typeKeys()) {
-    const list = activeEntries().filter((e) => e.type === k).sort((a, b) => a.id.localeCompare(b.id));
+    const list = liveEntries().filter((e) => e.type === k).sort((a, b) => a.id.localeCompare(b.id));
     if (!list.length) continue;
     parts.push("", `## ${typeInfo(k).label}`);
     for (const e of list) {
-      parts.push("", `### ${e.name} \`${e.id}\``);
+      parts.push("", `### ${e.name} \`${e.id}\`${statusOf(e) === "draft" ? " (초안)" : ""}`);
       if (e.aliases?.length) parts.push(`*별칭: ${e.aliases.join(", ")}*`);
       parts.push("", e.summary || "");
       const f = Object.entries(e.fields || {});
@@ -5223,6 +5484,13 @@ function bindGlobal() {
     if (sug) { input.value = sug.dataset.suggest; autosize(input); input.focus(); return; }
     const chip = e.target.closest("[data-type]");
     if (chip && e.target.closest("#codex")) { state.codexType = chip.dataset.type; renderCodexResults(); return; }
+    const stChip = e.target.closest("[data-status]");
+    if (stChip && e.target.closest("#codex")) {
+      const k = stChip.dataset.status;
+      if (state.codexStatus.has(k)) { if (state.codexStatus.size > 1) state.codexStatus.delete(k); } else state.codexStatus.add(k);
+      renderCodexResults();
+      return;
+    }
     const act = e.target.closest("[data-act]")?.dataset.act;
     if (!act) return;
     if (inSheet && !["new-world", "load-sample", "edit-world"].includes(act)) return;
@@ -5232,6 +5500,7 @@ function bindGlobal() {
     else if (act === "new-entry") { if (state.busy) toast("Claude가 작업 중입니다"); else openEditor(null); }
     else if (act === "trash") openTrash();
     else if (act === "types") openTypesSheet();
+    else if (act === "checks") openChecksSheet();
     else if (act === "retry") { if (!state.busy) runAgent(); }
   });
   document.addEventListener("keydown", (e) => {
