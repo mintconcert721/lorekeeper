@@ -178,8 +178,22 @@ main { min-height: 0; min-width: 0; position: relative; }
   align-self: flex-end; max-width: 86%;
   background: var(--user-bubble);
   padding: 10px 14px; border-radius: 16px 16px 4px 16px;
-  white-space: pre-wrap;
+  display: flex; flex-direction: column; gap: 8px;
 }
+.msg-text { white-space: pre-wrap; }
+.msg-files { display: flex; flex-wrap: wrap; gap: 6px; }
+.msg-thumb { padding: 0; border: 0; background: none; border-radius: 10px; overflow: hidden; width: 96px; height: 96px; }
+.msg-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.file-chip {
+  display: inline-flex; align-items: center; gap: 6px; max-width: 100%; min-width: 0;
+  padding: 4px 10px 4px 6px; border-radius: 8px; background: var(--surface); font-size: 13px;
+}
+.file-chip .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.ftype {
+  flex: none; font: 600 10px var(--font-mono); letter-spacing: .04em;
+  color: var(--accent-ink); background: var(--accent); border-radius: 4px; padding: 2px 4px;
+}
+.preview-img { width: 100%; border-radius: 12px; display: block; }
 .msg-assistant { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
 .msg-meta { font: 11px var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
 .status-line { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; }
@@ -241,6 +255,22 @@ main { min-height: 0; min-width: 0; position: relative; }
   font-size: 16px; line-height: 1.45;
 }
 .composer .btn { min-height: 42px; border-radius: 14px; }
+.attach-btn { flex: none; display: grid; place-items: center; width: 42px; min-height: 42px; border-radius: 14px; }
+.attach-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.attach-tray { display: flex; gap: 8px; overflow-x: auto; padding: 8px var(--gutter-r) 0 var(--gutter-l); scrollbar-width: none; }
+.attach-tray::-webkit-scrollbar { display: none; }
+.att {
+  flex: none; display: flex; align-items: center; gap: 8px; max-width: 250px;
+  padding: 6px 2px 6px 6px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg);
+}
+.att img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; flex: none; }
+.att .ftype { width: 40px; height: 40px; display: grid; place-items: center; font-size: 11px; padding: 0; border-radius: 8px; }
+.att-meta { display: flex; flex-direction: column; min-width: 0; }
+.att-name { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.att-sub { font: 11px var(--font-mono); color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.att-x { flex: none; border: 0; background: none; color: var(--muted); width: 34px; height: 34px; font-size: 18px; }
+.attach-note { margin: 6px var(--gutter-r) 0 var(--gutter-l); font-size: 12px; color: var(--danger); }
+#view-chat.dragging .composer-wrap { outline: 2px dashed var(--accent); outline-offset: -4px; }
 .empty-chat { display: flex; flex-direction: column; gap: 14px; padding-top: 8px; }
 .empty-chat h2 { margin: 0; font: 700 22px/1.35 var(--font-display); text-wrap: balance; }
 .empty-chat p { margin: 0; color: var(--muted); }
@@ -395,7 +425,7 @@ main { min-height: 0; min-width: 0; position: relative; }
 .dialog-panel p { margin: 0; white-space: pre-wrap; }
 .toast {
   position: fixed; z-index: 70; left: 50%; transform: translateX(-50%);
-  bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  top: calc(var(--app-top, 0px) + env(safe-area-inset-top, 0px) + 64px);
   width: max-content; max-width: calc(100% - 32px);
   background: var(--ink); color: var(--bg);
   padding: 8px 14px; border-radius: 10px; font-size: 13.5px;
@@ -428,7 +458,13 @@ main { min-height: 0; min-width: 0; position: relative; }
           <span>Claude API 키를 넣어야 대화할 수 있습니다.</span>
           <button class="btn btn-small btn-primary" type="button" data-goto="settings">키 입력</button>
         </div>
+        <div id="attachTray" class="attach-tray" aria-label="첨부한 파일" hidden></div>
+        <p id="attachNote" class="attach-note" hidden></p>
         <form id="composer" class="composer">
+          <button id="attachBtn" class="icon-btn attach-btn" type="button" aria-label="파일 첨부">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 11.5l-8.2 8.2a5 5 0 0 1-7.1-7.1l8.6-8.6a3.4 3.4 0 0 1 4.8 4.8l-8.5 8.5a1.7 1.7 0 0 1-2.4-2.4l7.7-7.7"/></svg>
+          </button>
+          <input id="fileInput" type="file" multiple hidden accept="image/*,application/pdf,.pdf,.txt,.md,.markdown,.csv,.json,text/plain,text/markdown">
           <textarea id="input" rows="1" placeholder="세계관에 대해 이야기해 보세요" aria-label="메시지"></textarea>
           <button id="sendBtn" class="btn btn-primary" type="submit">보내기</button>
         </form>
@@ -533,7 +569,12 @@ const SYSTEM_PROMPT = `너는 '로어키퍼'라는 모바일 앱 안에서 일�
 - 답을 마칠 때마다 맨 마지막에 suggest_replies를 단독으로 호출해, 사용자가 눌러서 바로 보낼 다음 대답 2~4개를 띄운다.
 - 선택지를 제시했다면 각 선택지를 고르는 대답을, 질문을 했다면 그럴듯한 답들을 넣는다. 필요하면 "알아서 정해 줘"처럼 맡기는 대답도 하나 넣는다.
 - 여러 개를 함께 골라도 되는 목록(받아들일 아이디어, 추가할 특징 등)이면 multiple을 true로 한다.
-- 선택지의 자세한 내용은 본문에 쓰고, 추천 대답은 사용자 입장의 짧은 문장으로 쓴다.`;
+- 선택지의 자세한 내용은 본문에 쓰고, 추천 대답은 사용자 입장의 짧은 문장으로 쓴다.
+
+## 첨부 파일
+- 사용자는 이미지, PDF, 텍스트 파일을 첨부할 수 있다. 텍스트 파일은 [첨부 파일: 이름] 머리말과 함께 들어온다.
+- 첨부 자료에서 설정을 뽑아 달라고 하면, 먼저 설정집과 비교해 새로 만들 항목과 고칠 항목을 짧게 정리해 보여 주고, 사용자가 동의하면 저장한다. 사용자가 바로 저장하라고 했으면 바로 저장한다.
+- 이미지는 외모, 복장, 분위기, 지형, 건축 같은 시각 정보를 구체적인 글로 옮겨 설정에 반영한다. 이미지 자체는 설정집에 저장되지 않으므로 필요한 정보는 글로 남긴다.`;
 
 /* ============================================================
    2. 도구 정의
@@ -1127,6 +1168,7 @@ function describeError(err) {
   }
   if (err instanceof Anthropic.InternalServerError) return `Anthropic 서버가 일시적으로 응답하지 않습니다(${err.status}). 잠시 후 다시 시도하세요.`;
   if (err instanceof Anthropic.APIConnectionError) return "네트워크에 연결할 수 없습니다. 인터넷 연결을 확인하세요.";
+  if (err instanceof Anthropic.APIError && err.status === 413) return "요청이 너무 큽니다(최대 32MB). 첨부가 많은 대화라면 새 대화에서 다시 시도하세요.";
   if (err instanceof Anthropic.APIError) return `API 오류 ${err.status ?? ""}: ${apiMessage(err)}`;
   return `오류: ${err?.message || err}`;
 }
@@ -1145,20 +1187,35 @@ function currentSuggest() {
   return last && last.role === "assistant" && last.suggest ? last.suggest : null;
 }
 
-async function sendMessage(text, picked = false) {
-  if (state.busy) return;
-  if (!settings.apiKey) { toast("설정에서 API 키를 먼저 넣으세요"); switchView("settings"); return; }
-  if (!currentWorld()) { toast("먼저 세계관을 만드세요"); openWorldSheet(); return; }
+function canSend() {
+  if (state.busy) return false;
+  if (!settings.apiKey) { toast("설정에서 API 키를 먼저 넣으세요"); switchView("settings"); return false; }
+  if (!currentWorld()) { toast("먼저 세계관을 만드세요"); openWorldSheet(); return false; }
+  if (attachments.some((a) => a.status !== "ready")) { toast("첨부 파일을 준비하는 중입니다. 잠시 후 보내세요"); return false; }
+  return true;
+}
+
+async function sendMessage(typed, picked = false) {
+  if (!canSend()) return;
+  const atts = attachments.slice();
+  const text = typed || (atts.length ? "첨부한 파일을 봐 줘." : "");
+  if (!text) return;
+  attachments = [];
+  renderAttachTray();
   let thread = currentThread();
-  if (!thread) thread = await createThread(text);
+  if (!thread) thread = await createThread(typed || (atts[0] ? `첨부: ${atts[0].name}` : text));
   const blocks = pendingResults(picked);
   state.conv.pending = null;
   qrSelected.clear();
   const note = contextNoteFor(thread);
   if (note) blocks.push({ type: "text", text: note });
+  for (const a of atts) blocks.push(attachmentBlock(a));
   blocks.push({ type: "text", text });
   state.conv.api.push({ role: "user", content: blocks });
-  state.conv.display.push({ role: "user", text, at: Date.now() });
+  state.conv.display.push({
+    role: "user", text, at: Date.now(),
+    ...(atts.length ? { files: atts.map((a) => ({ name: a.name, kind: a.kind, size: a.size, thumb: a.thumb || null })) } : {}),
+  });
   thread.contextSent = true;
   thread.syncedAt = Date.now();
   thread.updatedAt = Date.now();
@@ -1308,6 +1365,168 @@ function stopAgent() {
   if (!live) return;
   live.stopped = true;
   try { live.stream?.abort(); } catch { /* 이미 끝남 */ }
+}
+
+/* ============================================================
+   7-1. 첨부 파일
+   ============================================================ */
+const ATT_LIMITS = {
+  count: 10,                       // 한 메시지에 붙일 수 있는 파일 수
+  pdfBytes: 20 * 1024 * 1024,      // PDF 한 개 (base64로 늘어나도 요청 한도 32MB 안에 들도록)
+  textChars: 300000,               // 텍스트 파일 글자 수
+  threadB64: 24 * 1024 * 1024,     // 한 대화에 쌓이는 첨부 총량(매 요청마다 다시 보내므로)
+  imageEdge: 1568,                 // 이미지 긴 변. 더 크면 토큰이 크게 늘어 줄여서 보낸다.
+  countB64: 8 * 1024 * 1024,       // 이보다 큰 파일은 토큰 미리 계산을 건너뛴다(데이터 절약)
+};
+const OK_IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+let attachments = []; // 입력창에 올려 둔 파일
+
+const fmtSize = (n) => (n >= 1048576 ? (n / 1048576).toFixed(1) + "MB" : Math.max(1, Math.round(n / 1024)) + "KB");
+function kindOf(file) {
+  const t = (file.type || "").toLowerCase();
+  const n = (file.name || "").toLowerCase();
+  if (t.startsWith("image/") || /\.(heic|heif)$/.test(n)) return "image";
+  if (t === "application/pdf" || n.endsWith(".pdf")) return "pdf";
+  if (t.startsWith("text/") || t === "application/json" || /\.(txt|md|markdown|csv|tsv|json|log)$/.test(n)) return "text";
+  return null;
+}
+function blobToDataURL(blob) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = () => reject(r.error || new Error("파일을 읽을 수 없습니다"));
+    r.readAsDataURL(blob);
+  });
+}
+async function blobToBase64(blob) {
+  const url = await blobToDataURL(blob);
+  return url.slice(url.indexOf(",") + 1);
+}
+function loadImage(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => resolve({ img, url });
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("이 브라우저에서 열 수 없는 이미지입니다")); };
+    img.src = url;
+  });
+}
+function drawScaled(img, maxEdge, type, quality) {
+  const scale = Math.min(1, maxEdge / Math.max(img.naturalWidth, img.naturalHeight));
+  const w = Math.max(1, Math.round(img.naturalWidth * scale));
+  const h = Math.max(1, Math.round(img.naturalHeight * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const g = canvas.getContext("2d");
+  if (type === "image/jpeg") { g.fillStyle = "#ffffff"; g.fillRect(0, 0, w, h); }
+  g.drawImage(img, 0, 0, w, h);
+  return new Promise((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("이미지 변환에 실패했습니다"))), type, quality));
+}
+async function prepareImage(file) {
+  const { img, url } = await loadImage(file);
+  try {
+    let blob = file;
+    let type = (file.type || "").toLowerCase();
+    const tooBig = Math.max(img.naturalWidth, img.naturalHeight) > ATT_LIMITS.imageEdge;
+    if (!OK_IMAGE_TYPES.includes(type) || tooBig || file.size > 3.5 * 1024 * 1024) {
+      blob = await drawScaled(img, ATT_LIMITS.imageEdge, "image/jpeg", 0.86);
+      type = "image/jpeg";
+    }
+    const thumb = await blobToDataURL(await drawScaled(img, 480, "image/jpeg", 0.8));
+    return { mediaType: type, data: await blobToBase64(blob), size: blob.size, thumb };
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+async function preparePdf(file) {
+  if (file.size > ATT_LIMITS.pdfBytes) throw new Error(`PDF는 ${fmtSize(ATT_LIMITS.pdfBytes)}까지 첨부할 수 있습니다`);
+  return { mediaType: "application/pdf", data: await blobToBase64(file), size: file.size };
+}
+async function prepareText(file) {
+  const buf = await file.arrayBuffer();
+  let text = new TextDecoder("utf-8").decode(buf);
+  const broken = (text.match(/�/g) || []).length;
+  if (broken > Math.max(3, text.length * 0.002)) {
+    // 윈도우 메모장 등에서 저장한 한글 파일(EUC-KR)
+    try { text = new TextDecoder("euc-kr").decode(buf); } catch { /* 디코더 미지원 */ }
+  }
+  text = text.replace(/^﻿/, "");
+  if (!text.trim()) throw new Error("빈 파일입니다");
+  if (text.length > ATT_LIMITS.textChars) throw new Error(`텍스트가 너무 깁니다(${ATT_LIMITS.textChars.toLocaleString("ko-KR")}자까지)`);
+  return { mediaType: "text/plain", data: text, size: file.size };
+}
+function attachmentBlock(a) {
+  if (a.kind === "image") return { type: "image", source: { type: "base64", media_type: a.mediaType, data: a.data } };
+  if (a.kind === "pdf") return { type: "document", source: { type: "base64", media_type: "application/pdf", data: a.data }, title: a.name };
+  return { type: "text", text: `[첨부 파일: ${a.name}]\n${a.data}` };
+}
+function threadAttachBytes() {
+  let n = 0;
+  for (const m of state.conv.api) {
+    if (!Array.isArray(m.content)) continue;
+    for (const b of m.content) if ((b.type === "image" || b.type === "document") && b.source?.type === "base64") n += b.source.data.length;
+  }
+  return n;
+}
+const trayBytes = () => attachments.reduce((s, a) => s + (a.kind === "text" ? 0 : a.data?.length || 0), 0);
+
+async function addFiles(fileList) {
+  const files = [...(fileList || [])];
+  if (!files.length) return;
+  if (!currentWorld()) { toast("먼저 세계관을 만드세요"); return; }
+  for (const file of files) {
+    if (attachments.length >= ATT_LIMITS.count) { toast(`한 번에 ${ATT_LIMITS.count}개까지 첨부할 수 있습니다`); break; }
+    const kind = kindOf(file);
+    if (!kind) { toast(`${file.name}: 이미지, PDF, 텍스트 파일만 첨부할 수 있습니다`); continue; }
+    const a = { id: uid(), name: file.name || "사진.jpg", kind, status: "processing", size: file.size, tokens: null };
+    attachments.push(a);
+    renderAttachTray();
+    try {
+      Object.assign(a, kind === "image" ? await prepareImage(file) : kind === "pdf" ? await preparePdf(file) : await prepareText(file));
+      if (threadAttachBytes() + trayBytes() > ATT_LIMITS.threadB64) throw new Error("이 대화에 첨부가 너무 많습니다. 새 대화에서 첨부하세요");
+      a.status = "ready";
+      countAttachment(a);
+    } catch (err) {
+      attachments = attachments.filter((x) => x !== a);
+      toast(`${a.name}: ${err?.message || err}`);
+    }
+    renderAttachTray();
+  }
+}
+async function countAttachment(a) {
+  // 토큰 수 확인(count_tokens)은 응답을 만들지 않으며 무료입니다(분당 횟수 제한 있음).
+  if (!settings.apiKey || (a.data?.length || 0) > ATT_LIMITS.countB64) return;
+  try {
+    const client = new Anthropic({ apiKey: settings.apiKey, dangerouslyAllowBrowser: true });
+    const r = await client.messages.countTokens({
+      model: settings.model,
+      messages: [{ role: "user", content: [attachmentBlock(a), { type: "text", text: "." }] }],
+    });
+    a.tokens = r.input_tokens;
+  } catch (err) {
+    console.warn("첨부 토큰 계산 실패", err);
+    a.tokens = -1;
+  }
+  if (attachments.includes(a)) renderAttachTray();
+}
+function attSub(a) {
+  if (a.status === "processing") return "준비 중…";
+  const parts = [fmtSize(a.size)];
+  if (a.tokens > 0) parts.push(`약 ${fmtTok(a.tokens)} 토큰`, fmtUSD((a.tokens * (PRICES[settings.model]?.in || 4)) / 1e6));
+  else if (a.tokens === null && settings.apiKey) parts.push("토큰 계산 중…");
+  return parts.join(" · ");
+}
+function renderAttachTray() {
+  const tray = $("#attachTray");
+  tray.hidden = !attachments.length;
+  tray.innerHTML = attachments.map((a) => `<div class="att">${a.thumb ? `<img src="${a.thumb}" alt="">` : `<span class="ftype">${a.kind === "pdf" ? "PDF" : "TXT"}</span>`}<span class="att-meta"><span class="att-name">${esc(a.name)}</span><span class="att-sub">${esc(attSub(a))}</span></span><button type="button" class="att-x" data-att-remove="${a.id}" aria-label="${esc(a.name)} 첨부 빼기">×</button></div>`).join("");
+  const total = attachments.reduce((s, a) => s + (a.tokens > 0 ? a.tokens : 0), 0);
+  const note = $("#attachNote");
+  note.hidden = total < 50000;
+  note.textContent = total >= 50000
+    ? `첨부가 약 ${fmtTok(total)} 토큰입니다. 이 대화에서는 이후 요청마다 함께 보내지므로(캐시되면 훨씬 저렴), 큰 자료는 새 대화에서 쓰는 편이 비용이 적습니다.`
+    : "";
 }
 
 /* ============================================================
@@ -1527,6 +1746,22 @@ function onQuickReply(e) {
   if (e.target.closest("[data-qr-send]") && qrSelected.size) { sendMessage(composeMulti(s), true); return; }
   if (e.target.closest("[data-qr-compose]") && qrSelected.size) fillInput(composeMulti(s));
 }
+function userBubble(m, i) {
+  const files = (m.files || []).map((f, k) => (f.thumb
+    ? `<button type="button" class="msg-thumb" data-preview="${i}:${k}" aria-label="${esc(f.name)} 크게 보기"><img src="${f.thumb}" alt=""></button>`
+    : `<span class="file-chip"><span class="ftype">${f.kind === "pdf" ? "PDF" : "TXT"}</span><span class="name">${esc(f.name)}</span></span>`)).join("");
+  return `<div class="msg-user">${files ? `<div class="msg-files">${files}</div>` : ""}<span class="msg-text">${esc(m.text)}</span></div>`;
+}
+function onChatClick(e) {
+  const pv = e.target.closest("[data-preview]");
+  if (pv) {
+    const [i, k] = pv.dataset.preview.split(":").map(Number);
+    const f = state.conv.display[i]?.files?.[k];
+    if (f?.thumb) openSheet(`<h2 class="sheet-title">${esc(f.name)}</h2><img class="preview-img" src="${f.thumb}" alt="${esc(f.name)}"><p class="meta">기기에 저장해 둔 미리보기입니다. Claude에게는 더 큰 해상도로 보냈습니다.</p>`);
+    return;
+  }
+  onQuickReply(e);
+}
 function renderChat() {
   const log = $("#chatLog");
   const d = state.conv.display;
@@ -1534,7 +1769,7 @@ function renderChat() {
     log.innerHTML = emptyChatHTML();
   } else {
     log.innerHTML = d.map((m, i) => {
-      if (m.role === "user") return `<div class="msg-user">${esc(m.text)}</div>`;
+      if (m.role === "user") return userBubble(m, i);
       const isLive = live && live.item === m;
       return `<div class="msg-assistant" data-i="${i}">${assistantInner(m, isLive)}</div>`;
     }).join("");
@@ -2216,7 +2451,30 @@ function bindGlobal() {
   $("#costBadge").onclick = () => switchView("settings");
   $("#threadsBtn").onclick = openThreadsSheet;
   $("#newThreadBtn").onclick = newThread;
-  $("#chatLog").addEventListener("click", onQuickReply);
+  $("#chatLog").addEventListener("click", onChatClick);
+
+  // 첨부: 버튼, 붙여넣기, 끌어다 놓기
+  $("#attachBtn").onclick = () => $("#fileInput").click();
+  $("#fileInput").onchange = (e) => { addFiles(e.target.files); e.target.value = ""; };
+  $("#attachTray").onclick = (e) => {
+    const x = e.target.closest("[data-att-remove]");
+    if (!x) return;
+    attachments = attachments.filter((a) => a.id !== x.dataset.attRemove);
+    renderAttachTray();
+  };
+  const chatView = $("#view-chat");
+  chatView.addEventListener("dragover", (e) => {
+    if (![...(e.dataTransfer?.types || [])].includes("Files")) return;
+    e.preventDefault();
+    chatView.classList.add("dragging");
+  });
+  chatView.addEventListener("dragleave", (e) => { if (!chatView.contains(e.relatedTarget)) chatView.classList.remove("dragging"); });
+  chatView.addEventListener("drop", (e) => {
+    chatView.classList.remove("dragging");
+    if (!e.dataTransfer?.files?.length) return;
+    e.preventDefault();
+    addFiles(e.dataTransfer.files);
+  });
 
   const input = $("#input");
   input.addEventListener("input", () => autosize(input));
@@ -2228,6 +2486,12 @@ function bindGlobal() {
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); $("#composer").requestSubmit(); }
   });
+  input.addEventListener("paste", (e) => {
+    const files = [...(e.clipboardData?.files || [])];
+    if (!files.length) return;
+    e.preventDefault();
+    addFiles(files);
+  });
   // 보내기 버튼을 눌러도 입력란 포커스가 유지되게 한다. 포커스가 빠지면 키보드가 닫히며 레이아웃이 밀려 버튼을 놓친다.
   $("#sendBtn").addEventListener("pointerdown", (e) => e.preventDefault());
   $("#sendBtn").addEventListener("mousedown", (e) => e.preventDefault());
@@ -2235,7 +2499,8 @@ function bindGlobal() {
     e.preventDefault();
     if (state.busy) { stopAgent(); return; }
     const text = input.value.trim();
-    if (!text) return;
+    if (!text && !attachments.length) return;
+    if (!canSend()) return; // 보낼 수 없으면 입력한 글을 지우지 않는다
     input.value = "";
     autosize(input);
     sendMessage(text);
