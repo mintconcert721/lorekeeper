@@ -209,6 +209,20 @@ main { min-height: 0; min-width: 0; position: relative; }
 .note { margin: 0; font-size: 13px; padding: 8px 12px; border-radius: 10px; background: var(--surface-2); }
 .note-error { background: var(--danger-soft); color: var(--danger); }
 .retry-row { display: flex; justify-content: center; }
+.quick-replies { display: flex; flex-direction: column; gap: 8px; }
+.qr-row { display: flex; gap: 6px; align-items: stretch; }
+.qr {
+  flex: 1; min-width: 0; text-align: left;
+  border: 1px solid var(--accent); border-radius: 12px;
+  background: var(--accent-soft); color: var(--ink);
+  padding: 10px 14px; font-size: 14.5px; line-height: 1.45;
+}
+.qr:active { transform: translateY(1px); }
+.qr-toggle { display: flex; align-items: flex-start; gap: 10px; background: var(--surface); border-color: var(--line); }
+.qr-toggle[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+.qr-box { flex: none; width: 18px; height: 18px; margin-top: 2px; border: 1.5px solid var(--muted); border-radius: 5px; }
+.qr-toggle[aria-pressed="true"] .qr-box { background: var(--accent); border-color: var(--accent); box-shadow: inset 0 0 0 3px var(--accent-soft); }
+@media (prefers-reduced-motion: reduce) { .qr:active { transform: none; } }
 .composer-wrap { border-top: 1px solid var(--line); background: var(--surface); }
 .banner {
   margin: 8px var(--gutter-r) 0 var(--gutter-l);
@@ -513,7 +527,13 @@ const SYSTEM_PROMPT = `너는 '로어키퍼'라는 모바일 앱 안에서 일�
 ## 답변 형식
 - 한국어로 답한다. 휴대폰 화면에서 읽으므로 짧은 문단과 목록을 쓰고, 표는 쓰지 않는다.
 - 항목을 언급할 때 이름 옆에 id를 붙이면(예: 서리(C-001)) 사용자가 눌러서 바로 볼 수 있다.
-- 설정집을 바꿨다면 답의 마지막에 무엇을 바꿨는지 한두 줄로 알린다. 앱이 변경 내역을 따로 표시하므로 길게 반복하지 않는다.`;
+- 설정집을 바꿨다면 답의 마지막에 무엇을 바꿨는지 한두 줄로 알린다. 앱이 변경 내역을 따로 표시하므로 길게 반복하지 않는다.
+
+## 대답 추천
+- 답을 마칠 때마다 맨 마지막에 suggest_replies를 단독으로 호출해, 사용자가 눌러서 바로 보낼 다음 대답 2~4개를 띄운다.
+- 선택지를 제시했다면 각 선택지를 고르는 대답을, 질문을 했다면 그럴듯한 답들을 넣는다. 필요하면 "알아서 정해 줘"처럼 맡기는 대답도 하나 넣는다.
+- 여러 개를 함께 골라도 되는 목록(받아들일 아이디어, 추가할 특징 등)이면 multiple을 true로 한다.
+- 선택지의 자세한 내용은 본문에 쓰고, 추천 대답은 사용자 입장의 짧은 문장으로 쓴다.`;
 
 /* ============================================================
    2. 도구 정의
@@ -612,7 +632,21 @@ const TOOLS = [
       properties: { name: STR, premise: STR, tone: STR, rules: STR },
     },
   },
+  {
+    name: "suggest_replies",
+    description: "답을 마친 뒤 맨 마지막에 이 도구만 단독으로 호출해, 사용자가 눌러서 바로 보낼 수 있는 다음 대답 후보를 화면에 띄운다. 다른 도구와 같은 차례에 섞어 부르면 표시되지 않는다. 결과는 사용자의 다음 메시지와 함께 돌아오므로, 호출한 뒤에는 아무것도 덧붙이지 않는다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        options: { ...STR_ARR, description: '사용자 입장에서 쓴 짧은 대답 2~4개(각 40자 안팎). 예: ["A안으로 할게", "B안으로 하되 나이는 더 어리게", "알아서 정해 줘"]' },
+        multiple: { type: "boolean", description: "여러 개를 함께 골라도 되는 목록이면 true. 예: 받아들일 아이디어 고르기" },
+      },
+      required: ["options"],
+    },
+  },
 ].map((t) => ({ ...t, eager_input_streaming: true }));
+const SUGGEST = "suggest_replies";
+const SUGGEST_TOOL = TOOLS.find((t) => t.name === SUGGEST);
 
 const TOOL_STATUS = {
   search_entries: "설정집을 찾아보는 중…",
@@ -622,6 +656,7 @@ const TOOL_STATUS = {
   set_relation: "관계를 잇는 중…",
   delete_entry: "항목을 정리하는 중…",
   update_world: "세계관 개요를 고치는 중…",
+  suggest_replies: "대답 후보를 고르는 중…",
 };
 
 /* ============================================================
@@ -705,6 +740,7 @@ const state = {
   codexQuery: "",
 };
 let live = null;
+const qrSelected = new Set(); // 여러 개 고르기에서 체크한 추천 대답 번호
 
 const currentWorld = () => state.worlds.find((w) => w.id === state.worldId) || null;
 const currentThread = () => state.threads.find((t) => t.id === state.threadId) || null;
@@ -984,6 +1020,10 @@ const TOOL_IMPL = {
     trashEntry(e, "claude", reason);
     return { content: `휴지통으로 옮김: ${e.id} (${e.name})`, action: { kind: "delete", text: `${TYPES[e.type].label} ${e.name}`, ref: e.id }, changed: true };
   },
+  suggest_replies() {
+    // 다른 도구와 섞여 호출된 경우에만 여기로 온다. 단독 호출은 runAgent에서 처리한다.
+    return { content: "표시하지 않았다: 다른 도구와 같은 차례에 호출됐다. 모든 작업과 답변을 마친 뒤 맨 마지막에 suggest_replies만 단독으로 호출할 것.", is_error: true };
+  },
   update_world(input) {
     const w = currentWorld();
     for (const k of ["name", "premise", "tone", "rules"]) if (input[k] !== undefined) w[k] = input[k];
@@ -1091,13 +1131,29 @@ function describeError(err) {
   return `오류: ${err?.message || err}`;
 }
 
-async function sendMessage(text) {
+// 대답 추천 도구의 결과는 사용자의 다음 메시지 맨 앞에 붙여 보낸다(추가 API 호출 없이 차례를 끝내기 위해).
+function pendingResults(picked) {
+  const pending = state.conv.pending;
+  if (!pending?.length) return [];
+  return pending.map(({ id, ok }) => (ok
+    ? { type: "tool_result", tool_use_id: id, content: picked ? "사용자가 추천한 대답 중에서 골랐다. 대답은 이어지는 메시지에 있다." : "사용자가 추천 대신 직접 입력했다. 대답은 이어지는 메시지에 있다." }
+    : { type: "tool_result", tool_use_id: id, content: "입력이 올바르지 않아 표시하지 못했다. options는 비어 있지 않은 문자열 배열이어야 한다.", is_error: true }));
+}
+function currentSuggest() {
+  if (!state.conv.pending?.length) return null;
+  const last = state.conv.display[state.conv.display.length - 1];
+  return last && last.role === "assistant" && last.suggest ? last.suggest : null;
+}
+
+async function sendMessage(text, picked = false) {
   if (state.busy) return;
   if (!settings.apiKey) { toast("설정에서 API 키를 먼저 넣으세요"); switchView("settings"); return; }
   if (!currentWorld()) { toast("먼저 세계관을 만드세요"); openWorldSheet(); return; }
   let thread = currentThread();
   if (!thread) thread = await createThread(text);
-  const blocks = [];
+  const blocks = pendingResults(picked);
+  state.conv.pending = null;
+  qrSelected.clear();
   const note = contextNoteFor(thread);
   if (note) blocks.push({ type: "text", text: note });
   blocks.push({ type: "text", text });
@@ -1196,6 +1252,20 @@ async function runAgent() {
       }
       state.conv.api.push({ role: "assistant", content: clone(message.content) });
       if (message.stop_reason === "pause_turn") { await persist.conv(); continue; }
+      if (toolUses.length && toolUses.every((b) => b.name === SUGGEST)) {
+        // 대답 추천만 부른 차례: 여기서 끝내고, 도구 결과는 사용자의 다음 메시지와 함께 보낸다.
+        let shown = null;
+        for (const tu of toolUses) {
+          const problem = validateInput(SUGGEST_TOOL.input_schema, tu.input);
+          const options = problem ? [] : [...new Set(tu.input.options.map((o) => cut(o, 160)).filter(Boolean))].slice(0, 6);
+          if (!shown && options.length) shown = { id: tu.id, options, multiple: !!tu.input.multiple };
+        }
+        state.conv.pending = toolUses.map((tu) => ({ id: tu.id, ok: shown?.id === tu.id }));
+        if (shown) item.suggest = { options: shown.options, multiple: shown.multiple };
+        qrSelected.clear();
+        finished = true;
+        break;
+      }
       if (!toolUses.length) {
         if (message.stop_reason === "max_tokens") item.parts.push({ kind: "note", tone: "info", text: "답변이 길이 제한에 걸려 끝까지 나오지 않았습니다. '계속'이라고 보내면 이어서 씁니다." });
         finished = true;
@@ -1411,6 +1481,52 @@ function emptyChatHTML() {
     <div class="suggestions">${ideas.map((t) => `<button class="suggestion" type="button" data-suggest="${esc(t)}">${esc(t)}</button>`).join("")}</div>
   </div>`;
 }
+function quickRepliesHTML(s) {
+  if (s.multiple) {
+    const n = qrSelected.size;
+    return `<div class="quick-replies" id="quickReplies" role="group" aria-label="대답 고르기">
+      <span class="eyebrow">여러 개 골라서 답하기</span>
+      ${s.options.map((o, k) => `<button type="button" class="qr qr-toggle" data-qr-toggle="${k}" aria-pressed="${qrSelected.has(k)}"><span class="qr-box" aria-hidden="true"></span><span>${esc(o)}</span></button>`).join("")}
+      <div class="row">
+        <button type="button" class="btn btn-primary btn-small" data-qr-send${n ? "" : " disabled"}>${n ? `고른 ${n}개로 답하기` : "하나 이상 고르세요"}</button>
+        <button type="button" class="btn btn-small" data-qr-compose${n ? "" : " disabled"}>고쳐서 보내기</button>
+      </div>
+    </div>`;
+  }
+  return `<div class="quick-replies" id="quickReplies" role="group" aria-label="대답 고르기">
+    <span class="eyebrow">눌러서 바로 답하기 · ✎는 고쳐서 보내기</span>
+    ${s.options.map((o, k) => `<div class="qr-row"><button type="button" class="qr" data-qr="${k}">${esc(o)}</button><button type="button" class="icon-btn" data-qr-edit="${k}" aria-label="고쳐서 보내기">✎</button></div>`).join("")}
+  </div>`;
+}
+function composeMulti(s) {
+  const picked = [...qrSelected].sort((a, b) => a - b).map((k) => `- ${s.options[k]}`);
+  return `이렇게 할게:\n${picked.join("\n")}`;
+}
+function fillInput(text) {
+  const input = $("#input");
+  input.value = text;
+  autosize(input);
+  input.focus();
+  try { input.setSelectionRange(text.length, text.length); } catch { /* 일부 브라우저 */ }
+}
+function onQuickReply(e) {
+  const s = currentSuggest();
+  if (!s || state.busy) return;
+  const one = e.target.closest("[data-qr]");
+  if (one) { sendMessage(s.options[Number(one.dataset.qr)], true); return; }
+  const edit = e.target.closest("[data-qr-edit]");
+  if (edit) { fillInput(s.options[Number(edit.dataset.qrEdit)]); return; }
+  const toggle = e.target.closest("[data-qr-toggle]");
+  if (toggle) {
+    const k = Number(toggle.dataset.qrToggle);
+    if (qrSelected.has(k)) qrSelected.delete(k); else qrSelected.add(k);
+    const box = $("#quickReplies");
+    if (box) box.outerHTML = quickRepliesHTML(s);
+    return;
+  }
+  if (e.target.closest("[data-qr-send]") && qrSelected.size) { sendMessage(composeMulti(s), true); return; }
+  if (e.target.closest("[data-qr-compose]") && qrSelected.size) fillInput(composeMulti(s));
+}
 function renderChat() {
   const log = $("#chatLog");
   const d = state.conv.display;
@@ -1426,6 +1542,8 @@ function renderChat() {
     if (!state.busy && last && last.role === "user") {
       log.insertAdjacentHTML("beforeend", `<div class="retry-row"><button class="btn btn-small" type="button" data-act="retry">다시 시도</button></div>`);
     }
+    const sug = !state.busy && currentSuggest();
+    if (sug) log.insertAdjacentHTML("beforeend", quickRepliesHTML(sug));
   }
   if (live) live.el = log.querySelector(`.msg-assistant[data-i="${state.conv.display.indexOf(live.item)}"]`);
   const t = currentThread();
@@ -1465,6 +1583,7 @@ function updateComposer() {
   btn.classList.toggle("btn-primary", !state.busy);
   btn.classList.toggle("btn-danger", state.busy);
   $("#keyBanner").hidden = !!settings.apiKey;
+  $("#input").placeholder = !state.busy && currentSuggest() ? "위에서 고르거나 직접 입력하세요" : "세계관에 대해 이야기해 보세요";
 }
 async function createThread(firstText) {
   const t = { id: uid(), title: cut(firstText, 30) || "새 대화", createdAt: Date.now(), updatedAt: Date.now(), contextSent: false, syncedAt: 0, lastCtx: 0 };
@@ -1478,6 +1597,7 @@ async function createThread(firstText) {
 async function openThread(id) {
   state.threadId = id;
   state.conv = (await idb.get("conv:" + id)) || { api: [], display: [] };
+  qrSelected.clear();
   LS.set("lk.thread", id);
   renderChat();
 }
@@ -1485,6 +1605,7 @@ function newThread() {
   if (state.busy) { toast("응답이 끝난 뒤에 바꿀 수 있습니다"); return; }
   state.threadId = null;
   state.conv = { api: [], display: [] };
+  qrSelected.clear();
   LS.set("lk.thread", null);
   renderChat();
   switchView("chat");
@@ -2095,6 +2216,7 @@ function bindGlobal() {
   $("#costBadge").onclick = () => switchView("settings");
   $("#threadsBtn").onclick = openThreadsSheet;
   $("#newThreadBtn").onclick = newThread;
+  $("#chatLog").addEventListener("click", onQuickReply);
 
   const input = $("#input");
   input.addEventListener("input", () => autosize(input));
