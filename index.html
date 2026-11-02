@@ -849,6 +849,7 @@ main { min-height: 0; min-width: 0; position: relative; }
 .pick-list { display: flex; flex-direction: column; gap: 2px; max-height: 55vh; overflow-y: auto; }
 .pick { display: flex; align-items: center; gap: 10px; padding: 8px 4px; border-bottom: 1px solid var(--line); }
 .pick input { width: 20px; height: 20px; flex: none; }
+.form label.pick { flex-direction: row; align-items: flex-start; color: var(--ink); font-size: 14px; }
 /* 비교표 */
 .cmp-wrap { max-height: 62vh; }
 .cmp { font-size: 13px; }
@@ -985,6 +986,12 @@ dd.blank.warn { color: var(--danger); }
 .j-pt.cur text { fill: var(--bg); }
 .journey-list { margin: 6px 0 8px; padding-left: 20px; font-size: 13px; max-height: 120px; overflow-y: auto; }
 .journey-list li.cur { font-weight: 700; color: var(--accent); }
+/* 공통 작성 규칙 */
+.common-rules { margin-top: 16px; }
+.common-rules textarea { width: 100%; }
+.ref-rule { margin: 0 0 8px; padding: 8px 10px; border-radius: 10px; background: var(--surface-2); font-size: 13.5px; line-height: 1.6; }
+.cr-find .pick, .imp-clean .pick { align-items: flex-start; }
+.cr-find .pick span, .imp-clean .pick span { font-size: 14px; line-height: 1.5; }
 /* 원고 · 집필 */
 .ms-views { margin: 12px 0 0; }
 .work-chips { margin-top: 12px; }
@@ -2674,6 +2681,46 @@ function suggestCode(taken) {
 function nextCustomColor() {
   const used = new Set(worldTypes().map((t) => t.color));
   return ["c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"].find((c) => !used.has(c)) || "c1";
+}
+/* ---- 공통 작성 규칙: 모든 분류에 함께 적용되는 Claude 작성 안내와, 분류 목록으로 만드는 참조 규칙 ---- */
+const REF_LINE_RE = /다른\s*(항목|분류)[^\n]{0,20}참조\s*(할\s*때|시)/;
+const GUIDE_PREFIX_RE = /^Claude\s*작성\s*(지침|안내)\s*[:：]\s*/;
+const isGuideLine = (l) => /^\s*>/.test(l);
+const normGuide = (line) => String(line || "").replace(/^\s*>\s?/, "").replace(GUIDE_PREFIX_RE, "").trim();
+const worldCommonRules = (w = currentWorld()) => [...new Set(String(w?.commonRules || "").split("\n").map(normGuide).filter(Boolean))];
+function refRuleText(w = currentWorld()) {
+  const types = worldTypes(w);
+  return `다른 항목을 참조할 때는 가능하면 ${types.map((t) => `${t.label} ${t.code}`).join(", ")}의 식별자(예: ${types[0]?.code || "C"}-001)와 이름을 함께 적는다. 분류가 바뀌어도 이 목록이 템플릿 안의 참조 안내보다 우선한다.`;
+}
+function commonRulesText(w = currentWorld()) {
+  return ["공통 작성 규칙(모든 분류에 적용):", ...worldCommonRules(w).map((r) => `- ${r}`), `- ${refRuleText(w)}`].join("\n");
+}
+// 여러 템플릿에 반복된 작성 안내 줄(참조 안내 줄은 앱이 만들어 주므로 뺀다)
+function repeatedGuides(templates, min = 2) {
+  const counts = new Map();
+  for (const t of templates) {
+    const seen = new Set();
+    for (const l of String(t || "").split("\n")) {
+      if (!isGuideLine(l)) continue;
+      const n = normGuide(l);
+      if (!n || REF_LINE_RE.test(n) || seen.has(n)) continue;
+      seen.add(n);
+      counts.set(n, (counts.get(n) || 0) + 1);
+    }
+  }
+  return [...counts].filter(([, c]) => c >= min).map(([text, count]) => ({ text, count }));
+}
+const guideSet = (t) => new Set(String(t || "").split("\n").filter(isGuideLine).map(normGuide).filter(Boolean));
+const hasRefLine = (t) => [...guideSet(t)].some((n) => REF_LINE_RE.test(n));
+function cleanupTemplate(template, remove, dropRef = true) {
+  const out = String(template || "").split("\n").filter((l) => {
+    if (!isGuideLine(l)) return true;
+    const n = normGuide(l);
+    if (!n) return true;
+    if (dropRef && REF_LINE_RE.test(n)) return false;
+    return !remove.has(n);
+  });
+  return out.join("\n").replace(/\n{3,}/g, "\n\n").replace(/^\n+/, "");
 }
 function typeListText() {
   const counts = {};
@@ -4382,13 +4429,15 @@ const TOOL_IMPL = {
   get_template({ type }) {
     const t = findType(type);
     if (!t) throw new Error(`분류 '${type}'가 없습니다. 쓸 수 있는 분류: ${worldTypes().map((x) => x.label).join(", ")}`);
-    if (!t.template.trim()) return { content: `'${t.label}' 분류에는 템플릿이 없다. 자유 형식으로 쓴다.`, action: { kind: "read", text: `템플릿 · ${t.label}` } };
+    if (!t.template.trim()) return { content: `'${t.label}' 분류에는 템플릿이 없다. 자유 형식으로 쓴다.\n\n${commonRulesText()}`, action: { kind: "read", text: `템플릿 · ${t.label}` } };
     const { fields, sections } = parseTemplate(t.template);
     return {
       content: [
         `# ${t.label} 템플릿`,
         `속성(fields) 키: ${fields.length ? fields.map((f) => f.key).join(", ") : "(없음)"}`,
         `본문 소제목: ${sections.length ? sections.join(", ") : "(없음)"}`,
+        "",
+        commonRulesText(),
         "",
         "--- 템플릿 원문 ---",
         t.template,
@@ -4568,6 +4617,7 @@ function contextNoteFor(thread) {
       }
     }
     if (v >= 4) lines.push("분류 목록 (항목을 만들 때 이 중 하나를 쓴다. 템플릿이 있는 분류는 get_template로 구조를 확인한다):", typeListText(), "");
+    if (v >= 4) lines.push(commonRulesText(w), "");
     lines.push(
       `항목 ${list.length}개${list.length > shown.length ? ` (앞의 ${shown.length}개만 표시, 나머지는 search_entries로 찾을 것)` : ""}${discardedCount ? ` · 폐기된 항목 ${discardedCount}개는 뺐다(search_entries의 include_discarded로 찾을 수 있다)` : ""}:`,
       ...(shown.length ? shown.map(indexLine) : ["(아직 없음)"]),
@@ -11715,6 +11765,15 @@ function openTypesSheet() {
       <button class="btn" type="button" data-ts="import">md 파일로 가져오기</button>
       <button class="btn" type="button" data-ts="sample">예시 템플릿</button>
     </div>
+    <section class="card common-rules">
+      <h2>공통 작성 규칙</h2>
+      <p class="meta" style="margin:0 0 8px">모든 분류에 함께 적용되는 Claude 작성 안내입니다. 한 줄에 하나씩 쓰세요. 템플릿마다 같은 줄을 반복해 적지 않아도 됩니다.</p>
+      <textarea id="cr-text" rows="4" aria-label="공통 작성 규칙" placeholder="예: 확정되지 않은 설정은 임의로 단정하지 말고 미정이라고 표기하세요.">${esc(worldCommonRules(w).join("\n"))}</textarea>
+      <p class="meta" style="margin:8px 0 4px">자동으로 붙는 참조 규칙 <small>분류 목록으로 만들어 집니다</small></p>
+      <p class="ref-rule">${esc(refRuleText(w))}</p>
+      <div class="row"><button class="btn btn-small btn-primary" type="button" data-ts="cr-save">규칙 저장</button><button class="btn btn-small" type="button" data-ts="cr-find">템플릿에서 공통 줄 찾기</button></div>
+      <div id="crFind"></div>
+    </section>
     <input type="file" id="tplFiles" accept=".md,.markdown,.txt,text/markdown,text/plain" multiple hidden>
     <details class="help-box">
       <summary>템플릿 쓰는 법</summary>
@@ -11737,6 +11796,41 @@ function openTypesSheet() {
       if (edit) { openTypeEditor(edit.dataset.typeEdit); return; }
       const act = ev.target.closest("[data-ts]")?.dataset.ts;
       if (act === "add") openTypeEditor(null);
+      else if (act === "cr-save") {
+        w.commonRules = [...new Set($("#cr-text", root).value.split("\n").map(normGuide).filter(Boolean))].join("\n");
+        w.updatedAt = Date.now();
+        logChange("user", "types", null, "공통 작성 규칙");
+        await Promise.all([persist.worlds(), persist.log()]);
+        toast("저장했습니다");
+        openTypesSheet();
+      } else if (act === "cr-find") {
+        const have = new Set(worldCommonRules(w));
+        const cands = repeatedGuides(worldTypes(w).map((t) => t.template)).filter((c) => !have.has(c.text));
+        const refN = worldTypes(w).filter((t) => hasRefLine(t.template)).length;
+        const inRules = worldTypes(w).filter((t) => [...guideSet(t.template)].some((n) => have.has(n))).length;
+        const box = $("#crFind", root);
+        if (!cands.length && !refN && !inRules) { box.innerHTML = `<p class="note">여러 템플릿에 반복된 작성 안내가 없습니다.</p>`; return; }
+        box.innerHTML = `<div class="cr-find">${cands.length ? `<p class="meta" style="margin:8px 0 4px">여러 템플릿에 반복된 작성 안내 ${cands.length}줄</p>${cands.map((c, i) => `<label class="pick"><input type="checkbox" class="crf-line" value="${i}" checked><span>${esc(c.text)} <small class="meta">템플릿 ${c.count}개</small></span></label>`).join("")}` : ""}
+          <label class="pick"><input type="checkbox" id="crf-strip" checked><span>공통 규칙에 있는 줄${refN ? `과 참조 안내 줄(템플릿 ${refN}개)` : ""}을 각 템플릿에서 빼기</span></label>
+          <div class="row"><button class="btn btn-small btn-primary" type="button" data-ts="cr-move">${cands.length ? "공통 규칙으로 옮기기" : "템플릿 정리하기"}</button></div></div>`;
+        box.dataset.cands = JSON.stringify(cands);
+      } else if (act === "cr-move") {
+        if (state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 바꿔 주세요"); return; }
+        const box = $("#crFind", root);
+        const cands = JSON.parse(box.dataset.cands || "[]");
+        const picked = $$(".crf-line:checked", box).map((i) => cands[Number(i.value)].text);
+        const rules = [...new Set([...worldCommonRules(w), ...picked])];
+        w.commonRules = rules.join("\n");
+        let changed = 0;
+        let list = worldTypes(w);
+        if ($("#crf-strip", box).checked) {
+          const set = new Set(rules);
+          list = list.map((t) => { const next = cleanupTemplate(t.template, set, true); if (next !== t.template) changed++; return { ...t, template: next }; });
+        }
+        await commitTypes(list, `공통 작성 규칙 정리${changed ? `: 템플릿 ${changed}개` : ""}`);
+        openTypesSheet();
+        toast(`${picked.length ? `${picked.length}줄을 공통 규칙으로 옮겼습니다` : "정리했습니다"}${changed ? ` · 템플릿 ${changed}개에서 뺐습니다` : ""}`);
+      }
       else if (act === "import") $("#tplFiles", root).click();
       else if (act === "sample") openTemplateImport(SAMPLE_TEMPLATES.map((s) => templateItem(s.fileName, s.text)));
     };
@@ -11864,9 +11958,21 @@ function openTemplateImport(items) {
     if (!byLabel) taken.add(code);
     return { ...it, target: byLabel ? byLabel.key : "__new", code };
   });
+  const have = new Set(worldCommonRules());
+  const inFiles = (text) => items.filter((it) => guideSet(it.template).has(text)).length;
+  const cleanCands = [
+    ...[...have].map((text) => ({ text, count: inFiles(text), inRules: true })).filter((c) => c.count),
+    ...repeatedGuides(items.map((it) => it.template)).filter((c) => !have.has(c.text)),
+  ];
+  const refN = items.filter((it) => hasRefLine(it.template)).length;
   openSheet(`<h2 class="sheet-title">템플릿 가져오기</h2>
     <p class="meta" style="margin:0 0 12px">파일마다 분류를 정해 주세요. 기존 분류에 연결하면 그 분류의 이름도 아래 이름으로 바뀌고, 템플릿은 새것으로 바뀝니다.</p>
     <form class="form" id="importTplForm">
+      ${cleanCands.length || refN ? `<fieldset class="imp-clean"><legend>공통 줄 정리</legend>
+        <p class="meta" style="margin:0 0 6px">여러 파일에 같은 작성 안내가 있습니다. 고른 줄은 공통 작성 규칙으로 옮기고 각 템플릿에서 뺍니다.</p>
+        ${cleanCands.map((c, i) => `<label class="pick"><input type="checkbox" class="cl-line" value="${i}" checked><span>${esc(c.text)} <small class="meta">${c.inRules ? `이미 공통 규칙에 있음 · 파일 ${c.count}개` : `파일 ${c.count}개`}</small></span></label>`).join("")}
+        ${refN ? `<label class="pick"><input type="checkbox" class="cl-ref" checked><span>참조 안내 줄(인물 C, 장소 P…) 빼기 <small class="meta">파일 ${refN}개 · 앱이 분류 목록으로 만들어 붙입니다</small></span></label>` : ""}
+      </fieldset>` : ""}
       ${rows.map((r, i) => {
         const p = parseTemplate(r.template);
         return `<fieldset class="imp" data-i="${i}">
@@ -11893,6 +11999,10 @@ function openTemplateImport(items) {
       if (state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 바꿔 주세요"); return; }
       const list = worldTypes().map((t) => ({ ...t }));
       const done = [];
+      const picked = $$(".cl-line:checked", root).map((i) => cleanCands[Number(i.value)].text);
+      const dropRef = !!$(".cl-ref", root)?.checked;
+      const strip = new Set(picked);
+      const tidy = (tpl) => (picked.length || dropRef ? cleanupTemplate(tpl, strip, dropRef) : tpl);
       for (const fs of $$(".imp", root)) {
         if (!$(".imp-on", fs).checked) continue;
         const r = rows[Number(fs.dataset.i)];
@@ -11906,11 +12016,11 @@ function openTemplateImport(items) {
           if (list.some((t) => t.code === code)) { toast(`${r.fileName}: 코드 ${code}가 이미 쓰이고 있습니다`); return; }
           const used = new Set(list.map((t) => t.color));
           const color = ["c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"].find((c) => !used.has(c)) || "c1";
-          list.push({ key: `u_${uid()}`, label, code, color, desc, template: r.template });
+          list.push({ key: `u_${uid()}`, label, code, color, desc, template: tidy(r.template) });
         } else {
           const t = list.find((x) => x.key === target);
           t.label = label;
-          t.template = r.template;
+          t.template = tidy(r.template);
           if (desc) t.desc = desc;
         }
         done.push(label);
@@ -11919,9 +12029,11 @@ function openTemplateImport(items) {
       const dup = labels.find((l, i) => labels.indexOf(l) !== i);
       if (dup) { toast(`'${dup}' 이름의 분류가 둘 이상입니다. 이름을 바꿔 주세요`); return; }
       if (!done.length) { toast("가져올 파일을 하나 이상 고르세요"); return; }
-      await commitTypes(list, `템플릿 가져오기: ${done.join(", ")}`);
+      const added = picked.filter((x) => !worldCommonRules().includes(x));
+      if (added.length) currentWorld().commonRules = [...worldCommonRules(), ...added].join("\n");
+      await commitTypes(list, `템플릿 가져오기: ${done.join(", ")}${added.length ? ` · 공통 규칙 ${added.length}줄` : ""}`);
       openTypesSheet();
-      toast(`템플릿 ${done.length}개를 가져왔습니다`);
+      toast(`템플릿 ${done.length}개를 가져왔습니다${added.length ? ` · 공통 규칙에 ${added.length}줄을 더했습니다` : ""}`);
     };
   });
 }
