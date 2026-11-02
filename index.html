@@ -1106,6 +1106,24 @@ body.writing { overflow: hidden; }
 .prop-row input { margin-top: 3px; flex: none; }
 .prop-row > span { min-width: 0; overflow-wrap: anywhere; }
 .pill-new { background: var(--accent-soft); color: var(--accent); }
+/* 비밀과 앎 */
+.secret-row { display: flex; gap: 8px; align-items: flex-start; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.secret-row .txt { flex: 1; min-width: 0; overflow-wrap: anywhere; line-height: 1.5; }
+.pill.sec-0 { background: color-mix(in srgb, var(--t-character) 20%, var(--surface)); }
+.pill.sec-1 { background: color-mix(in srgb, var(--t-event) 22%, var(--surface)); }
+.pill.sec-2 { background: color-mix(in srgb, var(--t-place) 20%, var(--surface)); }
+.learn-row { display: grid; grid-template-columns: 1fr 1.4fr auto; gap: 4px; margin-bottom: 6px; }
+.learn-row .ls { grid-column: 1 / 3; }
+.learn-row select, .learn-row input { min-width: 0; }
+.know-scroll { overflow-x: auto; margin: 0 -2px; -webkit-overflow-scrolling: touch; }
+.know-table { border-collapse: collapse; font-size: 12.5px; min-width: 100%; }
+.know-table th, .know-table td { border: 1px solid var(--line); padding: 4px 6px; vertical-align: top; text-align: left; min-width: 72px; }
+.know-table tr:first-child th { background: var(--surface-2); white-space: nowrap; }
+.know-chip { display: inline-block; margin: 1px 2px 1px 0; padding: 1px 6px; border-radius: 6px; background: var(--surface-2); font-size: 11.5px; }
+.know-chip.sec { background: color-mix(in srgb, var(--t-event) 24%, var(--surface)); }
+.know-sec { padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; overflow-wrap: anywhere; }
+.know-sec p { margin: 4px 0; }
+.know-gaps li { padding: 1px 0; }
 .pill.sev-high { background: var(--danger-soft); color: var(--danger); }
 .pill.sev-mid { background: color-mix(in srgb, var(--t-event) 22%, var(--surface)); }
 .check-issue { align-items: flex-start; justify-content: space-between; }
@@ -2576,6 +2594,51 @@ const TOOLS_V13 = [
   },
   toolV12("respond"),
 ];
+// v14: 비밀과 공개 단계, 장면마다 인물이 알게 되는 것(learns). 장면은 독자에게 드러낼 때가 안 된 비밀을 드러내지 않는다.
+const SECRET_LEVELS = ["작가만", "일부 인물", "세상"];
+const SYSTEM_V14 = SYSTEM_V13 + `
+
+## 비밀과 앎
+- 비밀은 그 비밀이 걸린 항목에 set_secret으로 기록한다: 내용, 아는 범위(작가만 / 일부 인물 / 세상: 세상 사람은 다 알고 독자만 모름), 처음부터 아는 인물, 독자에게 드러낼 곳(장이나 장면), 새어 나가면 안 되는 낱말.
+- 장면을 쓰기 전에 get_plan(scene_id)의 '비밀과 앎'을 본다. 아직 독자에게 드러낼 때가 안 된 비밀은 본문에서 드러내지 않고 암시까지만 한다. 이 장면에서 드러내기로 한 비밀은 분명히 드러낸다.
+- 시점 인물이 아직 모르는 사실은 그 인물의 생각이나 서술로 쓰지 않는다. 다른 인물도 모르는 사실을 아는 것처럼 말하거나 행동하게 하지 않는다.
+- 장면에서 인물이 새로 알게 되는 것은 set_scene_card의 learns로 기록한다(관련 비밀이 있으면 secret_id를 단다).`;
+const toolV13 = (name) => TOOLS_V13.find((t) => t.name === name);
+const TOOLS_V14 = [
+  ...TOOLS_V13.filter((t) => !["set_scene_card", "respond"].includes(t.name)),
+  {
+    ...toolV13("set_scene_card"),
+    description: toolV13("set_scene_card").description + " learns는 이 장면에서 인물이 새로 알게 되는 것의 목록이며, 주면 통째로 바뀐다(빈 배열이면 지움).",
+    input_schema: {
+      ...toolV13("set_scene_card").input_schema,
+      properties: {
+        ...toolV13("set_scene_card").input_schema.properties,
+        learns: { type: "array", items: { type: "object", properties: { who: { type: "string", description: "알게 되는 인물 항목 id" }, what: { type: "string", description: "알게 되는 것" }, secret_id: { type: "string", description: "관련 비밀 id(있으면)" } }, required: ["who"] } },
+      },
+    },
+  },
+  {
+    name: "set_secret",
+    description: "항목에 걸린 비밀을 만들거나 고친다. secret_id가 있으면 그 비밀에서 준 칸만 바꾸고(빈 값이면 지움), 없으면 새로 만든다. remove가 true면 지운다. 아는 인물을 넣으면 아는 범위는 적어도 '일부 인물'이 된다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        entry_id: { type: "string", description: "비밀이 걸린 항목 id" },
+        secret_id: { type: "string" },
+        text: { type: "string", description: "비밀의 내용" },
+        level: { type: "string", enum: SECRET_LEVELS, description: "아는 범위. 세상 = 세상 사람은 다 알고 독자만 모름" },
+        knowers: { type: "array", items: { type: "string" }, description: "처음부터 아는 인물·세력 항목 id. 주면 통째로 바뀐다" },
+        reveal_at: { type: "string", description: "독자에게 드러낼 장면 id나 장 id(빈 문자열이면 정하지 않음)" },
+        keys: { type: "array", items: { type: "string" }, description: "드러날 때까지 본문에 나오면 안 되는 낱말(새어 나감 점검용)" },
+        note: { type: "string" },
+        remove: { type: "boolean" },
+      },
+      required: ["entry_id"],
+    },
+    eager_input_streaming: true,
+  },
+  toolV13("respond"),
+];
 const PROMPT_SETS = {
   1: { system: SYSTEM_V1, tools: TOOLS_V1 },
   2: { system: SYSTEM_V2, tools: TOOLS_V2 },
@@ -2590,8 +2653,9 @@ const PROMPT_SETS = {
   11: { system: SYSTEM_V11, tools: TOOLS_V11 },
   12: { system: SYSTEM_V12, tools: TOOLS_V12 },
   13: { system: SYSTEM_V13, tools: TOOLS_V13 },
+  14: { system: SYSTEM_V14, tools: TOOLS_V14 },
 };
-const PROMPT_CURRENT = 13;
+const PROMPT_CURRENT = 14;
 // 버전 정보가 없는 예전 대화는 만든 시각으로 버전을 추정한다(각 버전의 배포 완료 시각, UTC).
 const PROMPT_RELEASES = [
   { v: 2, at: Date.parse("2026-11-01T15:35:14Z") },
@@ -2674,6 +2738,7 @@ const TOOL_STATUS = {
   get_plan: "이야기 계획을 읽는 중…",
   set_plan: "이야기 계획을 정리하는 중…",
   set_scene_card: "장면 카드를 쓰는 중…",
+  set_secret: "비밀을 적는 중…",
 };
 
 /* ============================================================
@@ -3621,7 +3686,7 @@ function updateEntry(e, p, by, reason) {
   if (p.magicAll !== undefined) setOrDrop("magic", mergeStrMap({}, p.magicAll, MAGIC_IDS));
   if (p.magic) setOrDrop("magic", mergeStrMap(e.magic, p.magic, MAGIC_IDS));
   if (p.magicOn !== undefined) { if (p.magicOn) e.magicOn = true; else delete e.magicOn; }
-  for (const k of ["rumors", "spells", "rulings", "holes"]) if (p[k] !== undefined) setOrDrop(k, p[k]);
+  for (const k of ["rumors", "spells", "rulings", "holes", "secrets"]) if (p[k] !== undefined) setOrDrop(k, p[k]);
   if (p.artifact !== undefined) setOrDrop("artifact", p.artifact);
   // 종족·세력
   if (p.speciesAll !== undefined) setOrDrop("species", mergeStrMap({}, p.speciesAll, SPECIES_IDS));
@@ -3743,6 +3808,7 @@ function entryToText(e) {
   if (senses.length) lines.push("감각:", ...senses.map(([k, v]) => `- ${k}: ${v}`));
   if (e.perspectives?.length) lines.push("관점별 서술:", ...e.perspectives.map((x) => `- ${perspectiveName(x.by)}: ${x.text}`));
   if (state.images[e.id]?.data) lines.push("그림: 있음");
+  if (e.secrets?.length) lines.push("비밀:", ...e.secrets.map((s) => `- ${secretLine({ ...s, owner: e })}`));
   lines.push(...characterText(e), ...placeMagicText(e), ...speciesFactionText(e), ...eventItemText(e));
   lines.push(`최종 수정: ${fmtDate(e.updatedAt)} (${e.updatedBy === "user" ? "사용자 직접" : "Claude"})`);
   return lines.join("\n");
@@ -4060,6 +4126,7 @@ function mergeCard(cur, p) {
   }
   if (p.turn !== undefined) { if (String(p.turn ?? "").trim()) { if (!CARD_TURNS.includes(p.turn)) throw new Error(`turn은 ${CARD_TURNS.join(", ")} 중 하나여야 합니다.`); next.turn = p.turn; } else delete next.turn; }
   if (p.tension !== undefined) { if (p.tension === null || p.tension === "") delete next.tension; else { const n = Math.round(Number(p.tension)); if (!(n >= 1 && n <= 5)) throw new Error("tension은 1에서 5 사이여야 합니다."); next.tension = n; } }
+  if (p.learns !== undefined) { const l = normalizeLearns(p.learns); if (l.length) next.learns = l; else delete next.learns; }
   return next;
 }
 function cardWhenText(c) {
@@ -4077,6 +4144,7 @@ function cardText(m, full = true) {
   if (c.goal || c.conflict || c.outcome) lines.push(`목표: ${c.goal || "?"} → 갈등: ${c.conflict || "?"} → 결과: ${c.outcome || "?"}`);
   if (full && (c.reaction || c.dilemma || c.decision)) lines.push(`반응: ${c.reaction || "?"} → 딜레마: ${c.dilemma || "?"} → 결정: ${c.decision || "?"}`);
   if (c.value || c.turn || c.tension) lines.push([c.value ? `가치: ${c.value}${c.turn ? ` ${c.turn}` : ""}` : c.turn ? `전환 ${c.turn}` : "", c.tension ? `긴장 ${c.tension}/5` : ""].filter(Boolean).join(" · "));
+  if (c.learns?.length) lines.push(`알게 됨: ${c.learns.map((l) => `${nameOf(l.who)} ← ${l.what}${l.secret ? ` (${l.secret})` : ""}`).join(" / ")}`);
   return lines.join("\n");
 }
 // 진행: 장 요약, 카드, 본문
@@ -4146,6 +4214,8 @@ function sceneContextText(m) {
   lines.push(next ? `다음 장면 ${next.id} 「${next.title}」: ${hasCard(next) ? cut([next.card.summary, next.card.goal && `목표 ${next.card.goal}`].filter(Boolean).join(" · "), 200) : "카드 없음"}` : "다음 장면: 없음(계획의 마지막 장면)");
   const ser = serialOf(work);
   if (ser && ch) { const cn = workScenes(work, ch.id).reduce((a, x) => a + textStats(x.body).withSpace, 0); lines.push(`연재: 이 회차 ${cn}자 / 목표 ${ser.target}자${workScenes(work, ch.id).at(-1) === m ? " · 이 장면이 회차의 끝" : ""}`); }
+  const kt = sceneKnowledgeText(m);
+  if (kt) lines.push(kt);
   return lines.join("\n");
 }
 // 장면의 앞뒤를 고려한 짧은 계획 요약(첫 메시지)
@@ -4268,6 +4338,136 @@ function sceneStatusText(m) {
   if (d.travel?.fastest) lines.push(`앞 장소에서 오는 길: ${fmtDays(d.travel.fastest.days)}(${d.travel.fastest.mode})${d.travel.gap != null ? ` · 앞 장면과 ${d.travel.gap}일 차이` : ""}`);
   if (d.warnings.length) lines.push(`주의: ${d.warnings.join(" / ")}`);
   return lines.join("\n");
+}
+/* ---- 비밀과 앎(v14) ----
+   e.secrets = [{ id, text, level: 작가만|일부 인물|세상, knowers: [id], reveal: {kind: ms|ch, id, work}, keys: [], note }]
+   ms.card.learns = [{ who, what, secret }]  이 장면에서 인물이 새로 알게 되는 것 */
+const SECRET_LEVEL_TEXT = { 작가만: "작가만 앎", "일부 인물": "일부 인물만 앎", 세상: "세상은 알고 독자만 모름" };
+const allSecrets = () => liveEntries().flatMap((e) => (e.secrets || []).map((s) => ({ ...s, owner: e })));
+function findSecret(id) {
+  const t = String(id ?? "").trim();
+  if (!t) return null;
+  for (const e of liveEntries()) { const s = (e.secrets || []).find((x) => x.id === t); if (s) return { s, e }; }
+  return null;
+}
+function resolveReveal(ref) {
+  const t = String(ref ?? "").trim();
+  if (!t) return null;
+  const m = state.manuscripts.find((x) => x.id === t);
+  if (m) { if (!m.workId || !findWork(m.workId)) throw new Error(`${t}은(는) 작품에 속한 장면이 아닙니다.`); return { kind: "ms", id: m.id, work: m.workId }; }
+  for (const wk of worldWorks()) { const ch = (wk.chapters || []).find((c) => c.id === t || c.title === t); if (ch) return { kind: "ch", id: ch.id, work: wk.id }; }
+  throw new Error(`'${t}' 장면이나 장이 없습니다. 장면 id(ms-…)나 장 id(ch-…)를 넣으세요.`);
+}
+// 작품의 장면 순서에서 독자가 비밀을 알게 되는 자리(없으면 Infinity)
+function revealIndex(work, rv) {
+  if (!rv || rv.work !== work.id) return Infinity;
+  const order = workOrder(work);
+  if (rv.kind === "ms") { const i = order.findIndex((m) => m.id === rv.id); return i < 0 ? Infinity : i; }
+  const i = order.findIndex((m) => m.chapterId === rv.id);
+  if (i >= 0) return i;
+  const chs = work.chapters || [];
+  const ci = chs.findIndex((c) => c.id === rv.id);
+  if (ci < 0) return Infinity;
+  return chs.slice(0, ci).reduce((a, c) => a + workScenes(work, c.id).length, 0);
+}
+function revealText(rv) {
+  if (!rv) return "아직 정하지 않음";
+  const wk = findWork(rv.work);
+  if (!wk) return "(없는 작품)";
+  if (rv.kind === "ms") { const m = state.manuscripts.find((x) => x.id === rv.id); return `「${wk.title}」 › ${m ? m.title : "(없는 장면)"}`; }
+  const ch = chapterOf(wk, rv.id);
+  return `「${wk.title}」 › ${ch ? chapterLabel(wk, ch) : "(없는 장)"}`;
+}
+function normalizeLearns(list) {
+  return (list || []).map((x) => {
+    const who = findEntry(x.who);
+    if (!who || who.deleted) throw new Error(`알게 되는 인물 '${x.who}' 항목이 없습니다.`);
+    const sec = String(x.secret_id ?? x.secret ?? "").trim();
+    const found = sec ? findSecret(sec) : null;
+    if (sec && !found) throw new Error(`비밀 '${sec}'이(가) 없습니다.`);
+    const what = String(x.what || "").trim() || (found ? found.s.text : "");
+    if (!what) throw new Error("learns의 what(알게 되는 것)이 필요합니다.");
+    return { who: who.id, what, ...(sec ? { secret: sec } : {}) };
+  }).filter((x, i, a) => a.findIndex((y) => y.who === x.who && y.what === x.what) === i);
+}
+// 세력이 알면 그 세력과 이어진 인물도 안다
+function memberOf(who, fid) {
+  const x = findEntry(who);
+  const f = findEntry(fid);
+  if (!f || !isFactionType(f.type)) return false;
+  return !!x && ((x.relations || []).some((r) => r.to === fid) || (findEntry(fid)?.relations || []).some((r) => r.to === who));
+}
+function knowledgeOf(work) {
+  const order = workOrder(work);
+  const secrets = allSecrets();
+  const revealAt = new Map(secrets.map((s) => [s.id, revealIndex(work, s.reveal)]));
+  const learnAt = new Map();
+  const events = [];
+  order.forEach((m, i) => {
+    for (const l of m.card?.learns || []) {
+      events.push({ i, m, ...l });
+      if (l.secret && !(learnAt.get(l.secret) <= i)) learnAt.set(l.secret, i);
+    }
+  });
+  const readerAt = (sid) => Math.min(revealAt.get(sid) ?? Infinity, learnAt.get(sid) ?? Infinity);
+  const knowsAt = (who, sid, i) => {
+    const s = secrets.find((x) => x.id === sid);
+    if (!s) return false;
+    if (s.level === "세상") return true;
+    if ((s.knowers || []).some((k) => k === who || memberOf(who, k))) return true;
+    return events.some((ev) => ev.i < i && ev.who === who && ev.secret === sid);
+  };
+  const learnedAt = (who, sid) => { const ev = events.find((x) => x.who === who && x.secret === sid); return ev ? ev.i : null; };
+  return { order, secrets, events, revealAt, readerAt, knowsAt, learnedAt };
+}
+function sceneKnowledge(m) {
+  const work = m && findWork(m.workId);
+  if (!work) return null;
+  const K = knowledgeOf(work);
+  const i = K.order.indexOf(m);
+  if (i < 0) return null;
+  const pov = m.card?.pov && findEntry(m.card.pov);
+  const cast = [m.card?.pov, ...(m.card?.cast || [])].filter(Boolean);
+  const revealHere = K.secrets.filter((s) => K.revealAt.get(s.id) === i);
+  const hidden = K.secrets.filter((s) => K.readerAt(s.id) > i && !revealHere.includes(s));
+  const known = K.secrets.filter((s) => K.readerAt(s.id) < i);
+  const povKnows = pov ? K.secrets.filter((s) => K.knowsAt(pov.id, s.id, i)) : [];
+  const povNot = pov ? K.secrets.filter((s) => !K.knowsAt(pov.id, s.id, i)) : [];
+  const irony = pov ? povNot.filter((s) => K.readerAt(s.id) < i) : [];
+  const mystery = K.secrets.filter((s) => K.readerAt(s.id) > i && cast.some((c) => K.knowsAt(c, s.id, i)));
+  return { work, K, i, pov, revealHere, hidden, known, povKnows, povNot, irony, mystery, learns: m.card?.learns || [] };
+}
+// 드러낼 곳보다 앞선 장면 본문에 '새어 나가면 안 되는 낱말'이 나오면
+function secretLeaks(work) {
+  const K = knowledgeOf(work);
+  const out = [];
+  for (const s of K.secrets) {
+    if (!s.keys?.length) continue;
+    const r = K.readerAt(s.id);
+    if (!Number.isFinite(r)) continue;
+    K.order.forEach((m, i) => {
+      if (i >= r) return;
+      const key = s.keys.find((k) => String(m.body || "").includes(k));
+      if (key) out.push({ s, m, key, at: i });
+    });
+  }
+  return out;
+}
+function secretLine(s) {
+  return `${s.id} ${s.owner?.name || ""}: ${s.text} [${SECRET_LEVEL_TEXT[s.level] || s.level}]${s.knowers?.length ? ` · 아는 이 ${s.knowers.map(nameOf).join(", ")}` : ""} · 독자에게 드러낼 곳 ${revealText(s.reveal)}${s.keys?.length ? ` · 새면 안 되는 낱말 ${s.keys.join(", ")}` : ""}`;
+}
+function sceneKnowledgeText(m) {
+  const k = sceneKnowledge(m);
+  if (!k) return "";
+  const lines = ["비밀과 앎:"];
+  if (k.hidden.length) lines.push(`- 아직 독자에게 드러낼 때가 아닌 비밀(본문에서 드러내지 말고 암시까지만): ${k.hidden.map((s) => `${s.id} ${cut(s.text, 60)}`).join(" / ")}`);
+  if (k.revealHere.length) lines.push(`- 이 장면에서 독자에게 드러낼 비밀: ${k.revealHere.map((s) => `${s.id} ${cut(s.text, 80)}`).join(" / ")}`);
+  if (k.pov) {
+    lines.push(`- 시점 인물 ${k.pov.name}이(가) 이 장면 시작 때 아는 비밀: ${k.povKnows.map((s) => cut(s.text, 50)).join(" / ") || "없음"}`);
+    if (k.povNot.length) lines.push(`- ${k.pov.name}이(가) 아직 모르는 비밀(그 인물의 생각으로 쓰지 말 것): ${k.povNot.map((s) => cut(s.text, 50)).join(" / ")}`);
+  }
+  if (k.learns.length) lines.push(`- 이 장면에서 알게 되는 것: ${k.learns.map((l) => `${nameOf(l.who)} ← ${l.what}`).join(" / ")}`);
+  return lines.length > 1 ? lines.join("\n") : "";
 }
 // 본문 속 설정 인식: 이름·별칭(두 글자 이상)을 긴 것부터 찾고 겹치는 자리는 한 번만 센다
 function entityTerms() {
@@ -4789,6 +4989,33 @@ const TOOL_IMPL = {
     const ch = work && chapterOf(work, m.chapterId);
     return { content: `장면 카드 ${id ? "고침" : "만듦"}: ${m.id} 「${m.title}」${ch ? ` · ${work.title} › ${chapterLabel(work, ch)}` : ""}\n${cardText(m)}`, action: { kind: id ? "update" : "create", text: `카드 · ${m.title}`, ms: m.id }, changed: true };
   },
+  set_secret({ entry_id, secret_id, text, level, knowers, reveal_at, keys, note, remove }) {
+    const e = findEntry(entry_id);
+    if (!e || e.deleted) throw new Error(`${entry_id} 항목이 없습니다.`);
+    const list = (e.secrets || []).map((s) => ({ ...s }));
+    let s = secret_id ? list.find((x) => x.id === secret_id) : null;
+    if (secret_id && !s) throw new Error(`${e.name}에는 비밀 '${secret_id}'가 없습니다. 비밀 id: ${list.map((x) => x.id).join(", ") || "없음"}`);
+    if (remove) {
+      if (!s) throw new Error("지울 비밀의 secret_id가 필요합니다.");
+      updateEntry(e, { secrets: list.filter((x) => x !== s) }, "claude", "비밀 삭제");
+      return { content: `비밀 삭제: ${s.id} · ${e.name}`, action: { kind: "update", text: `비밀 삭제 · ${e.name}`, ref: e.id }, changed: true };
+    }
+    // 바꾸기 전에 모두 검사한다
+    if (!s && !String(text || "").trim()) throw new Error("새 비밀에는 text가 필요합니다.");
+    if (level !== undefined && level !== "" && !SECRET_LEVELS.includes(level)) throw new Error(`level은 ${SECRET_LEVELS.join(", ")} 중 하나여야 합니다.`);
+    const kn = knowers !== undefined ? (knowers || []).map((k) => { const x = findEntry(k); if (!x || x.deleted) throw new Error(`아는 이 '${k}' 항목이 없습니다.`); return x.id; }) : undefined;
+    const rv = reveal_at !== undefined ? resolveReveal(reveal_at) : undefined;
+    if (!s) { s = { id: `sc-${uid().slice(-6)}`, text: "", level: "작가만", knowers: [] }; list.push(s); }
+    if (text !== undefined && String(text).trim()) s.text = String(text).trim();
+    if (level) s.level = level;
+    if (kn) s.knowers = [...new Set(kn)];
+    if (rv !== undefined) { if (rv) s.reveal = rv; else delete s.reveal; }
+    if (keys !== undefined) { const k = (keys || []).map((x) => String(x).trim()).filter(Boolean); if (k.length) s.keys = k; else delete s.keys; }
+    if (note !== undefined) { const t = String(note || "").trim(); if (t) s.note = t; else delete s.note; }
+    if (s.level === "작가만" && s.knowers.length) s.level = "일부 인물";
+    updateEntry(e, { secrets: list }, "claude", secret_id ? "비밀 고침" : "비밀");
+    return { content: `비밀 ${secret_id ? "고침" : "만듦"}: ${secretLine({ ...s, owner: e })}`, action: { kind: "update", text: `비밀 · ${e.name}`, ref: e.id }, changed: true };
+  },
   set_rumor({ id, text, truth, note, remove }) {
     const e = findEntry(id);
     if (!e || e.deleted) throw new Error(`${id} 항목이 없습니다.`);
@@ -5139,6 +5366,10 @@ function contextNoteFor(thread) {
         if (v >= 13) {
           const planned = works.filter((wk) => planOf(wk).paragraph || planOf(wk).synopsis || (wk.chapters || []).some((c) => c.summary) || workOrder(wk).some(hasCard));
           if (planned.length) lines.push(`이야기 계획(장면 본문은 카드 범위 안에서 쓴다. 자세한 것은 get_plan):\n${planned.slice(0, 4).map(planBriefText).join("\n")}`);
+        }
+        if (v >= 14) {
+          const ss = allSecrets();
+          if (ss.length) lines.push(`비밀 ${ss.length}개(장면을 쓸 때 get_plan의 '비밀과 앎'을 본다):\n${ss.slice(0, 15).map((s) => `- ${secretLine(s)}`).join("\n")}${ss.length > 15 ? `\n외 ${ss.length - 15}개` : ""}`);
         }
       }
       if (v >= 11) {
@@ -6099,7 +6330,7 @@ function renderCodexResults() {
       ${typeKeys().map((k) => `<button class="type-chip" type="button" data-type="${k}" aria-pressed="${state.codexType === k}">${esc(typeInfo(k).label)}<span class="n">${counts[k] || 0}</span></button>`).join("")}
     </div>
     <div class="type-chips status-chips" role="toolbar" aria-label="상태">${STATUS_KEYS.map((k) => `<button class="type-chip" type="button" data-status="${k}" aria-pressed="${state.codexStatus.has(k)}">${STATUS[k]}<span class="n">${stCounts[k]}</span></button>`).join("")}</div>
-    <div class="row"><button class="btn btn-ghost btn-small" type="button" data-act="types">분류·템플릿 관리</button><button class="btn btn-ghost btn-small" type="button" data-act="checks">설정 점검</button><button class="btn btn-ghost btn-small" type="button" data-act="coverage">빈 곳 지도</button><button class="btn btn-ghost btn-small" type="button" data-act="compare">비교</button><button class="btn btn-ghost btn-small" type="button" data-act="comp-table">구성표</button><button class="btn btn-ghost btn-small" type="button" data-act="economy">화폐·물가</button><button class="btn btn-ghost btn-small" type="button" data-act="tech">기술 수준</button><button class="btn btn-ghost btn-small" type="button" data-act="presence">등장 비중</button><button class="btn btn-ghost btn-small" type="button" data-act="place-tree">장소 계층</button><button class="btn btn-ghost btn-small" type="button" data-act="travel">길과 이동</button></div>
+    <div class="row"><button class="btn btn-ghost btn-small" type="button" data-act="types">분류·템플릿 관리</button><button class="btn btn-ghost btn-small" type="button" data-act="checks">설정 점검</button><button class="btn btn-ghost btn-small" type="button" data-act="coverage">빈 곳 지도</button><button class="btn btn-ghost btn-small" type="button" data-act="secrets">비밀과 앎</button><button class="btn btn-ghost btn-small" type="button" data-act="compare">비교</button><button class="btn btn-ghost btn-small" type="button" data-act="comp-table">구성표</button><button class="btn btn-ghost btn-small" type="button" data-act="economy">화폐·물가</button><button class="btn btn-ghost btn-small" type="button" data-act="tech">기술 수준</button><button class="btn btn-ghost btn-small" type="button" data-act="presence">등장 비중</button><button class="btn btn-ghost btn-small" type="button" data-act="place-tree">장소 계층</button><button class="btn btn-ghost btn-small" type="button" data-act="travel">길과 이동</button></div>
     ${groups.length ? groups.map((g) => `<h3 class="group-title">${esc(typeInfo(g.k).label)} · ${g.items.length}</h3><div class="entry-list">${g.items.map(entryCard).join("")}</div>`).join("")
       : `<div class="empty-state"><h3>${q || state.codexType !== "all" ? "조건에 맞는 항목이 없습니다" : "설정집이 비어 있습니다"}</h3><p>대화 탭에서 Claude와 이야기하면 항목이 여기에 쌓입니다.</p></div>`}
     ${trashCount ? `<div class="row" style="margin-top:20px"><button class="btn btn-small" type="button" data-act="trash">휴지통 ${trashCount}</button></div>` : ""}`;
@@ -6552,12 +6783,12 @@ function renderWorks(box) {
       <div class="row"><button class="btn btn-small" type="button" data-act="work-edit">작품 설정</button><button class="btn btn-small" type="button" data-act="ch-add">장 추가</button><button class="btn btn-small btn-primary" type="button" data-act="work-ask">Claude와 구성 짜기</button></div>
     </section>
     <div class="seg-tabs wk-tabs" role="tablist" aria-label="작품 보기">${WORK_TABS.map(([k, l]) => `<button type="button" role="tab" data-wtab="${k}" aria-selected="${tab === k}">${l}</button>`).join("")}</div>
-    ${tab === "plan" ? ladderHTML(cur) : tab === "board" ? boardHTML(cur) : `${(cur.chapters || []).length ? (cur.chapters || []).map(chapterHTML).join("") : `<p class="meta" style="margin-top:12px">'장 추가'로 첫 장을 만드세요.</p>`}
+    ${tab === "plan" ? ladderHTML(cur) : tab === "board" ? boardHTML(cur) : tab === "know" ? knowHTML(cur) : `${(cur.chapters || []).length ? (cur.chapters || []).map(chapterHTML).join("") : `<p class="meta" style="margin-top:12px">'장 추가'로 첫 장을 만드세요.</p>`}
     ${lost.length ? `<section class="ch-sec"><div class="ch-head"><b>장 없음</b><span class="meta">장면 ${lost.length}</span></div><div class="sc-list" data-ch="">${lost.map(sceneRow).join("")}</div></section>` : ""}`}
     ${outside ? `<p class="meta" style="margin-top:14px">작품 밖 원고 ${outside}개는 '모든 원고'에 있습니다. 원고 화면의 '작품에 넣기'로 옮길 수 있습니다.</p>` : ""}`;
 }
 /* ---- 작품 › 계획(구조 사다리) · 카드판 ---- */
-const WORK_TABS = [["scenes", "구성"], ["plan", "계획"], ["board", "카드판"]];
+const WORK_TABS = [["scenes", "구성"], ["plan", "계획"], ["board", "카드판"], ["know", "앎"]];
 const lvBadge = (s) => `<span class="lv-badge lv-${s}">${PLAN_STATUS[s]}</span>`;
 function ladderHTML(work) {
   const p = planOf(work);
@@ -6635,6 +6866,7 @@ function openCardEditor(work, m, chId = null) {
       ${chars.length ? `<fieldset><legend>함께 나오는 인물</legend><div class="pick-box">${chars.map((x) => `<label class="pick"><input type="checkbox" data-cast="${x.id}"${(c.cast || []).includes(x.id) ? " checked" : ""}> ${esc(x.name)}</label>`).join("")}</div></fieldset>` : ""}
       <fieldset><legend>장면: 목표 → 갈등 → 결과</legend>${txt("goal", "목표", 2, "시점 인물이 얻으려는 것")}${txt("conflict", "갈등", 2, "그것을 막는 것")}${txt("outcome", "결과", 2, "장면이 끝나는 지점. 본문은 여기서 끝납니다")}</fieldset>
       <details${c.reaction || c.dilemma || c.decision ? " open" : ""}><summary>후속: 반응 → 딜레마 → 결정</summary>${txt("reaction", "반응")}${txt("dilemma", "딜레마")}${txt("decision", "결정", 2, "다음 장면의 목표가 됩니다")}</details>
+      <fieldset><legend>이 장면에서 알게 되는 것</legend><div id="cd-learns">${(c.learns || []).map(learnRowHTML).join("")}</div><button class="btn btn-small btn-ghost" type="button" data-act="cd-learn-add">더하기</button>${m && sceneKnowledge(m)?.revealHere.length ? `<p class="meta">이 장면에서 독자에게 드러낼 비밀: ${sceneKnowledge(m).revealHere.map((s) => esc(cut(s.text, 40))).join(" / ")}</p>` : ""}</fieldset>
       <div class="time-row"><label>바뀌는 가치<input data-ck="value" value="${esc(c.value || "")}" placeholder="예: 신뢰"></label><label>전환<select id="cd-turn"><option value="">모름</option>${CARD_TURNS.map((t) => `<option${c.turn === t ? " selected" : ""}>${t}</option>`).join("")}</select></label></div>
       <fieldset><legend>긴장도</legend><div class="seg">${["", 1, 2, 3, 4, 5].map((n) => `<label><input type="radio" name="cd-ten" value="${n}"${String(c.tension ?? "") === String(n) ? " checked" : ""}><span>${n || "없음"}</span></label>`).join("")}</div></fieldset>
       <div class="sheet-actions">${m && m.card ? `<button class="btn btn-danger" type="button" data-act="cd-del">카드 지우기</button>` : ""}${m ? `<button class="btn" type="button" data-act="cd-status">현황판</button>` : ""}<button class="btn" type="button" data-act="cancel">취소</button><button class="btn" type="submit" data-ok="0">저장</button><button class="btn btn-primary" type="submit" data-ok="1">저장하고 확정</button></div>
@@ -6644,6 +6876,9 @@ function openCardEditor(work, m, chId = null) {
       const sb = ev.target.closest("[data-ok]");
       if (sb) okFlag = sb.dataset.ok === "1";
       const act = ev.target.closest("[data-act]")?.dataset.act;
+      const dl = ev.target.closest("[data-del-learn]");
+      if (dl) { dl.closest(".learn-row").remove(); return; }
+      if (act === "cd-learn-add") { $("#cd-learns", root).insertAdjacentHTML("beforeend", learnRowHTML()); return; }
       if (act === "cancel") closeSheet();
       else if (act === "cd-status") openSceneStatus(m);
       else if (act === "cd-del") {
@@ -6669,6 +6904,7 @@ function openCardEditor(work, m, chId = null) {
       p.day = $("#cd-day", root).value.trim();
       p.turn = $("#cd-turn", root).value;
       p.tension = $$('[name="cd-ten"]', root).find((x) => x.checked)?.value ?? "";
+      p.learns = $$(".learn-row", root).map((r) => ({ who: $(".lw", r).value, what: $(".lt", r).value.trim(), secret_id: $(".ls", r).value })).filter((x) => x.who && (x.what || x.secret_id));
       let card;
       try { card = mergeCard(m?.card, p); } catch (err) { toast(err.message); return; }
       let target = m;
@@ -6700,7 +6936,8 @@ function openSceneStatus(m) {
     ${d.season ? `<section class="check-group"><h3>날씨와 계절</h3><p class="small">${esc([d.season.name ? `${d.season.name}${d.season.guess ? "(달로 어림)" : ""}${d.season.text ? `: ${d.season.text}` : ""}` : "", d.season.climate, d.season.weather].filter(Boolean).join(" · ") || "이 장소의 기후 정보가 없습니다.")}</p></section>` : ""}
     ${d.observances.length ? `<section class="check-group"><h3>그날의 기념일</h3>${d.observances.map((o) => `<div class="check-item"><span class="txt">${esc(o.name)} (${esc(o.kind)}) · ${esc(dayText(o))}${o.desc ? ` — ${esc(cut(o.desc, 80))}` : ""}</span></div>`).join("")}</section>` : ""}
     ${d.events.length ? `<section class="check-group"><h3>같은 해의 사건</h3>${d.events.map((x) => `<div class="check-item">${ref(x.e)}<span class="txt">${esc(rangeText(x.e.when))}${x.linked ? " · 이 장면의 인물·장소와 이어짐" : ""}</span></div>`).join("")}</section>` : ""}
-    ${d.travel ? `<section class="check-group"><h3>앞 장면에서 오는 길</h3><p class="small">「${esc(d.travel.prev.title)}」의 ${esc(d.travel.from?.name || "?")} → ${esc(place.name)}: ${d.travel.fastest ? `가장 빨리 ${fmtDays(d.travel.fastest.days)}(${esc(d.travel.fastest.mode)}, ${Math.round(d.travel.fastest.dist * 10) / 10}${esc(worldTravel().unit)})` : "이어진 길 기록 없음"}${d.travel.gap != null ? ` · 두 장면 사이 ${d.travel.gap}일` : ""}</p></section>` : ""}`, (root) => {
+    ${d.travel ? `<section class="check-group"><h3>앞 장면에서 오는 길</h3><p class="small">「${esc(d.travel.prev.title)}」의 ${esc(d.travel.from?.name || "?")} → ${esc(place.name)}: ${d.travel.fastest ? `가장 빨리 ${fmtDays(d.travel.fastest.days)}(${esc(d.travel.fastest.mode)}, ${Math.round(d.travel.fastest.dist * 10) / 10}${esc(worldTravel().unit)})` : "이어진 길 기록 없음"}${d.travel.gap != null ? ` · 두 장면 사이 ${d.travel.gap}일` : ""}</p></section>` : ""}
+    ${knowStatusHTML(m)}`, (root) => {
     root.onclick = (ev) => { const r = ev.target.closest("[data-ref]"); if (r) openEntry(r.dataset.ref); };
   });
 }
@@ -6907,6 +7144,7 @@ function localPlanIssues(work, serial = false) {
     if (c.turn === "＋→＋" || c.turn === "－→－") add(m.id, "카드", `「${m.title}」: ${c.value ? `가치(${c.value})가` : "가치가"} 바뀌지 않습니다(${c.turn}). 장면이 이야기를 움직이는지 보세요.`);
     for (const w of sceneStatusData(m).warnings) add(m.id, "세계관", `「${m.title}」: ${w}`);
   }
+  for (const l of secretLeaks(work)) add(l.m.id, "비밀", `「${l.m.title}」: 드러낼 곳(${revealText(l.s.reveal)})보다 앞에서 '${l.key}'이(가) 나옵니다 — ${cut(l.s.text, 40)}`);
   const ser = serialOf(work);
   if (serial && ser) {
     for (const ch of work.chapters || []) {
@@ -6917,7 +7155,7 @@ function localPlanIssues(work, serial = false) {
   }
   return out;
 }
-const CHECK_KINDS = ["결말로 안 이어짐", "위 단계와 어긋남", "목표·갈등·전환 없음", "인과 끊김", "계획 밖 전개", "인물 동기", "설정 모순", "속도", "회차 끝", "초반 몰입", "기타"];
+const CHECK_KINDS = ["결말로 안 이어짐", "위 단계와 어긋남", "목표·갈등·전환 없음", "인과 끊김", "계획 밖 전개", "인물 동기", "설정 모순", "비밀 새어 나감", "앎 모순", "속도", "회차 끝", "초반 몰입", "기타"];
 async function runStructureCheck(work, mode, btn) {
   const serial = mode === "serial";
   const local = localPlanIssues(work, serial);
@@ -6926,7 +7164,7 @@ async function runStructureCheck(work, mode, btn) {
   const ex = (t, n) => { const s = String(t || "").replace(/\s+/g, " ").trim(); return s.length <= n * 2 ? s : `${s.slice(0, n)} … ${s.slice(-n)}`; };
   const bodies = scenes.slice(0, 80).map((m) => `### ${m.id} 「${m.title}」 (${textStats(m.body).withSpace}자)\n${ex(m.body, 260)}`).join("\n\n");
   const serialPart = serial && ser ? `\n\n연재 정보: 장 하나가 한 회차, 목표 ${ser.target}자.\n${(work.chapters || []).map((ch, i) => { const sc = workScenes(work, ch.id); const all = sc.map((m) => m.body || "").join("\n"); return `- ${i + 1}화 「${ch.title}」 ${textStats(all).withSpace}자${all.trim() ? `\n  끝부분: …${all.trim().slice(-350).replace(/\s+/g, " ")}${i < 3 ? `\n  앞부분: ${all.trim().slice(0, 500).replace(/\s+/g, " ")}…` : ""}` : ""}`; }).join("\n")}` : "";
-  const r = await planAsk(`${planWorldBrief(work)}\n\n${planText(work)}\n\n본문(앞뒤 발췌):\n${bodies || "(본문 없음)"}${serialPart}\n\n앱이 이미 찾은 것(다시 쓰지 않는다):\n${local.map((x) => `- ${x.problem}`).join("\n") || "(없음)"}\n\n${serial ? "연재 점검: 회차마다 끝이 다음 화를 궁금하게 끊기는지, 초반 3화 안에 사건이 시작되고 주인공의 목표가 드러나는지, 회차 분량과 속도가 맞는지 본다. 구조 문제도 크면 함께 적는다." : "구조 점검: 계획이 결말로 이어지는지, 아래 단계(장 요약·카드·본문)가 위 단계에서 벗어나지 않는지, 장면마다 목표·갈등·결과와 가치 전환이 있는지, 장면 사이 인과가 이어지는지(앞 장면의 결정이 다음 장면의 목표로), 계획에 없는 전개가 본문에 새어 들었는지, 인물 동기와 설정이 맞는지, 속도가 고른지 본다."}\n- ref에는 문제가 있는 장면 id(ms-…), 장 id(ch-…), 계획 전체면 plan을 넣는다.\n- 실제로 고칠 만한 문제만, 중요한 것부터 많아야 15개. 문제가 없으면 issues를 비운다.\n- suggestion은 바로 해 볼 수 있는 고칠 방법 하나.`, { type: "object", properties: { summary: S_STR, issues: { type: "array", items: { type: "object", properties: { ref: S_STR, kind: { type: "string", enum: CHECK_KINDS }, severity: { type: "string", enum: ["높음", "중간", "낮음"] }, problem: S_STR, suggestion: S_STR }, required: ["ref", "kind", "severity", "problem", "suggestion"], additionalProperties: false } } }, required: ["summary", "issues"], additionalProperties: false }, btn, 20000);
+  const r = await planAsk(`${planWorldBrief(work)}\n\n${planText(work)}\n\n${secretsForWorkText(work)}\n\n본문(앞뒤 발췌):\n${bodies || "(본문 없음)"}${serialPart}\n\n앱이 이미 찾은 것(다시 쓰지 않는다):\n${local.map((x) => `- ${x.problem}`).join("\n") || "(없음)"}\n\n${serial ? "연재 점검: 회차마다 끝이 다음 화를 궁금하게 끊기는지, 초반 3화 안에 사건이 시작되고 주인공의 목표가 드러나는지, 회차 분량과 속도가 맞는지 본다. 구조 문제도 크면 함께 적는다." : "구조 점검: 계획이 결말로 이어지는지, 아래 단계(장 요약·카드·본문)가 위 단계에서 벗어나지 않는지, 장면마다 목표·갈등·결과와 가치 전환이 있는지, 장면 사이 인과가 이어지는지(앞 장면의 결정이 다음 장면의 목표로), 계획에 없는 전개가 본문에 새어 들었는지, 인물 동기와 설정이 맞는지, 속도가 고른지 본다. 비밀이 독자에게 드러낼 곳보다 먼저 새어 나갔는지, 인물이 알기 전에 아는 것처럼 말하거나 행동하는지도 본다."}\n- ref에는 문제가 있는 장면 id(ms-…), 장 id(ch-…), 계획 전체면 plan을 넣는다.\n- 실제로 고칠 만한 문제만, 중요한 것부터 많아야 15개. 문제가 없으면 issues를 비운다.\n- suggestion은 바로 해 볼 수 있는 고칠 방법 하나.`, { type: "object", properties: { summary: S_STR, issues: { type: "array", items: { type: "object", properties: { ref: S_STR, kind: { type: "string", enum: CHECK_KINDS }, severity: { type: "string", enum: ["높음", "중간", "낮음"] }, problem: S_STR, suggestion: S_STR }, required: ["ref", "kind", "severity", "problem", "suggestion"], additionalProperties: false } } }, required: ["summary", "issues"], additionalProperties: false }, btn, 20000);
   if (!r) return;
   const order = { 높음: 0, 중간: 1, 낮음: 2 };
   work.check = { at: Date.now(), mode, summary: String(r.summary || ""), issues: (r.issues || []).sort((a, b) => order[a.severity] - order[b.severity]).slice(0, 15), local };
@@ -6979,7 +7217,7 @@ function gotoPlanRef(work, ref) {
    ============================================================ */
 const AUDIT_KEEP = 6;
 const AUDIT_KINDS = ["템플릿·공통 규칙", "항목 안 모순", "다른 항목과 모순", "세계 규칙 위반", "연표·나이", "빈 핵심 정보", "참조 오류", "기타"];
-const STORY_KINDS = ["연속성", "시간선", "인물", "플롯 허점", "회수 안 된 복선", "사라진 가닥", "설정 위반", "계획 대비", "속도", "기타"];
+const STORY_KINDS = ["연속성", "시간선", "인물", "플롯 허점", "회수 안 된 복선", "사라진 가닥", "설정 위반", "계획 대비", "비밀 새어 나감", "앎 모순", "속도", "기타"];
 const SEVS = ["높음", "중간", "낮음"];
 const AUDIT_MODELS = ["claude-opus-5-5", "claude-sonnet-5-5"];
 const audit = { list: null, wid: null, running: null, stop: false };
@@ -7273,6 +7511,7 @@ const STORY_SYS = `너는 장편 소설의 원고 검토 편집자다. 작품 �
 - 회수 안 된 복선과 사라진 줄거리 가닥
 - 설정 위반: 마법 규칙, 기술 수준, 세력 관계, 물가
 - 계획 대비: 계획(한 문단, 장 요약, 장면 카드)에서 벗어난 장면
+- 비밀과 앎: 독자에게 드러낼 곳보다 먼저 새어 나간 비밀, 알기 전에 아는 것처럼 행동하는 인물
 - 속도: 지나치게 늘어지거나 서두르는 구간
 refs에는 문제가 드러나는 장면 id(ms-…)를 넣고, evidence에는 근거 문장이나 기록을 인용한다. 실제로 고칠 만한 문제만, 중요한 것부터 많아야 25개. 한국어로 쓴다.`;
 async function estimateStoryAudit(workIds, model, recModel) {
@@ -7324,7 +7563,7 @@ async function runStoryAudit(rep, onProgress = () => {}) {
       const body = storyBodyText(scenes, recs, rep.full);
       const plans = rep.scope.works.map(findWork).filter(Boolean).map((wk) => planText(wk)).join("\n\n");
       let res;
-      try { res = await auditAsk(STORY_SYS, shared, `계획:\n${plans}\n\n주요 인물·장소 설정:\n${storyCastText(scenes)}\n\n${storyFsText()}\n\n${rep.full ? "원고 전문" : "장면 기록(원문 대신 사실만 정리한 것)"}:\n${body}\n\n작품 전체를 점검하라.`, STORY_SCHEMA, { model: rep.model, maxTokens: 20000, effort: "medium" }); }
+      try { res = await auditAsk(STORY_SYS, shared, `계획:\n${plans}\n\n주요 인물·장소 설정:\n${storyCastText(scenes)}\n\n${storyFsText()}\n\n${allSecrets().length ? `비밀:\n${allSecrets().map((s) => `- ${secretLine(s)}`).join("\n")}` : ""}\n\n${rep.full ? "원고 전문" : "장면 기록(원문 대신 사실만 정리한 것)"}:\n${body}\n\n작품 전체를 점검하라.`, STORY_SCHEMA, { model: rep.model, maxTokens: 20000, effort: "medium" }); }
       catch (err) { rep.error = apiMessage(err); }
       if (res) {
         rep.cost += res.cost;
@@ -7868,6 +8107,160 @@ function openCoverageMap() {
       }
     };
   });
+}
+/* ---- 비밀과 앎: 화면 ---- */
+function secretsHTML(e) {
+  if (e.deleted) return "";
+  const list = e.secrets || [];
+  const fieldKey = Object.keys(e.fields || {}).find((k) => /비밀/.test(k) && !isBlankValue(e.fields[k]) && !list.some((s) => s.text === String(e.fields[k]).trim()));
+  return `<p class="section-label">비밀 ${list.length ? `<span class="n">${list.length}</span>` : ""}</p>
+    ${list.map((s) => `<div class="secret-row"><span class="txt">${esc(s.text)}<br><span class="meta"><span class="pill sec-${SECRET_LEVELS.indexOf(s.level)}">${esc(SECRET_LEVEL_TEXT[s.level] || s.level)}</span>${s.knowers?.length ? ` 아는 이 ${s.knowers.map((k) => esc(nameOf(k))).join(", ")}` : ""} · 독자에게: ${esc(revealText(s.reveal))}</span></span><button class="btn btn-small btn-ghost" type="button" data-sec="edit|${s.id}">고치기</button></div>`).join("")}
+    <div class="row"><button class="btn btn-small" type="button" data-sec="add|">비밀 더하기</button>${fieldKey ? `<button class="btn btn-small btn-ghost" type="button" data-sec="field|${esc(fieldKey)}">속성 '${esc(fieldKey)}'을(를) 비밀로</button>` : ""}</div>`;
+}
+function revealOptions(sel) {
+  const key = sel ? `${sel.kind}:${sel.id}` : "";
+  return worldWorks().map((wk) => `<optgroup label="${esc(wk.title)}">${(wk.chapters || []).map((ch) => `<option value="ch:${ch.id}"${key === `ch:${ch.id}` ? " selected" : ""}>${esc(chapterLabel(wk, ch))} (장 전체)</option>${workScenes(wk, ch.id).map((m) => `<option value="ms:${m.id}"${key === `ms:${m.id}` ? " selected" : ""}>　· ${esc(m.title)}</option>`).join("")}`).join("")}</optgroup>`).join("");
+}
+function openSecretEditor(e, s = null, preset = "") {
+  const knowers = liveEntries().filter((x) => isCharacterType(x.type) || isFactionType(x.type));
+  const cur = s || { text: preset, level: "작가만", knowers: [] };
+  openSheet(`<h2 class="sheet-title">${s ? "비밀 고치기" : "비밀 더하기"} · ${esc(e.name)}</h2>
+    <form class="form" id="secretForm">
+      <label>비밀<textarea id="sc-text" rows="3" placeholder="예: 등대의 불은 사실 등대지기의 기억이 아니라 수명을 태운다">${esc(cur.text)}</textarea></label>
+      <fieldset><legend>세상에서 아는 범위</legend><div class="seg">${SECRET_LEVELS.map((l) => `<label><input type="radio" name="sc-level" value="${l}"${cur.level === l ? " checked" : ""}><span>${esc({ 작가만: "작가만", "일부 인물": "일부 인물", 세상: "세상(독자만 모름)" }[l])}</span></label>`).join("")}</div></fieldset>
+      ${knowers.length ? `<fieldset><legend>처음부터 아는 인물·세력</legend><div class="pick-box">${knowers.map((x) => `<label class="pick"><input type="checkbox" data-kn="${x.id}"${(cur.knowers || []).includes(x.id) ? " checked" : ""}> ${esc(x.name)}</label>`).join("")}</div></fieldset>` : ""}
+      <label>독자에게 드러낼 곳<select id="sc-reveal"><option value="">아직 정하지 않음</option>${revealOptions(cur.reveal)}</select></label>
+      <label>새어 나가면 안 되는 낱말 <small>쉼표로 나눔. 드러낼 곳보다 앞선 본문에 나오면 알려 줍니다</small><input id="sc-keys" value="${esc((cur.keys || []).join(", "))}"></label>
+      <label>메모 <small>선택</small><input id="sc-note" value="${esc(cur.note || "")}"></label>
+      <div class="sheet-actions">${s ? `<button class="btn btn-danger" type="button" data-act="sc-del">지우기</button>` : ""}<button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div>
+    </form>`, (root) => {
+    const done = async (list, note) => { updateEntry(e, { secrets: list }, "user", note); await persist.world(); openEntry(e.id); };
+    root.onclick = async (ev) => {
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "cancel") openEntry(e.id);
+      else if (act === "sc-del") {
+        if (!(await confirmBox("이 비밀을 지울까요? 장면 카드의 '알게 되는 것'에 이어진 기록은 남습니다.", "지우기", true))) return;
+        await done((e.secrets || []).filter((x) => x.id !== s.id), "비밀 삭제");
+      }
+    };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      const text = $("#sc-text", root).value.trim();
+      if (!text) { toast("비밀을 적어 주세요"); return; }
+      const rvSel = $("#sc-reveal", root).value;
+      const [kind, id] = rvSel.split(":");
+      const reveal = rvSel ? (kind === "ms" ? { kind, id, work: state.manuscripts.find((m) => m.id === id)?.workId } : { kind, id, work: worldWorks().find((wk) => (wk.chapters || []).some((c) => c.id === id))?.id }) : null;
+      const kn = $$("[data-kn]", root).filter((x) => x.checked).map((x) => x.dataset.kn);
+      let level = $$('[name="sc-level"]', root).find((x) => x.checked)?.value || "작가만";
+      if (level === "작가만" && kn.length) level = "일부 인물";
+      const keys = $("#sc-keys", root).value.split(/[,，]/).map((x) => x.trim()).filter(Boolean);
+      const note = $("#sc-note", root).value.trim();
+      const next = { id: s?.id || `sc-${uid().slice(-6)}`, text, level, knowers: kn, ...(reveal ? { reveal } : {}), ...(keys.length ? { keys } : {}), ...(note ? { note } : {}) };
+      const list = (e.secrets || []).filter((x) => x.id !== next.id);
+      const i = (e.secrets || []).findIndex((x) => x.id === next.id);
+      if (i >= 0) list.splice(i, 0, next); else list.push(next);
+      await done(list, s ? "비밀 고침" : "비밀");
+      toast("저장했습니다");
+    };
+  });
+}
+async function handleSecretAct(e, spec) {
+  const [kind, id] = spec.split("|");
+  if (state.busy) { toast("Claude가 작업 중입니다"); return; }
+  if (kind === "add") openSecretEditor(e, null);
+  else if (kind === "edit") openSecretEditor(e, (e.secrets || []).find((x) => x.id === id));
+  else if (kind === "field") openSecretEditor(e, null, String(e.fields?.[id] || "").trim());
+}
+// 작품 › 앎 탭
+function knowHTML(work) {
+  const K = knowledgeOf(work);
+  const chs = work.chapters || [];
+  if (!K.order.length) return `<p class="meta" style="margin-top:12px">장면이 생기면 인물마다 언제 무엇을 알게 되는지 여기 모입니다.</p>`;
+  const ids = new Set();
+  for (const m of K.order) { if (m.card?.pov) ids.add(m.card.pov); for (const c of m.card?.cast || []) ids.add(c); }
+  for (const ev of K.events) ids.add(ev.who);
+  const people = [...ids].map(findEntry).filter((x) => x && !x.deleted && isCharacterType(x.type));
+  const chOf = (i) => chs.findIndex((c) => c.id === K.order[i]?.chapterId);
+  const atLabel = (i) => { const m = K.order[i]; const ch = m && chapterOf(work, m.chapterId); return m ? `${ch ? chapterLabel(work, ch) : ""} 「${m.title}」` : ""; };
+  const head = `<tr><th>인물</th><th>처음부터</th>${chs.map((c) => `<th>${esc(chapterLabel(work, c))}</th>`).join("")}</tr>`;
+  const rows = people.map((p) => {
+    const start = K.secrets.filter((s) => K.knowsAt(p.id, s.id, 0));
+    return `<tr><th><button type="button" class="ref" data-ref="${p.id}">${esc(p.name)}</button></th><td>${start.map((s) => `<span class="know-chip sec">${esc(cut(s.text, 18))}</span>`).join("") || "<span class=\"meta\">-</span>"}</td>${chs.map((c, ci) => { const evs = K.events.filter((ev) => ev.who === p.id && chOf(ev.i) === ci); return `<td>${evs.map((ev) => `<span class="know-chip${ev.secret ? " sec" : ""}" title="${esc(ev.m.title)}">${esc(cut(ev.what, 18))}</span>`).join("")}</td>`; }).join("")}</tr>`;
+  }).join("");
+  // 비밀마다: 독자가 알게 되는 곳, 아는 인물, 독자와 인물 사이의 차이
+  const secRows = K.secrets.map((s) => {
+    const r = K.readerAt(s.id);
+    const gaps = [];
+    for (const p of people) {
+      const known0 = K.knowsAt(p.id, s.id, 0);
+      const li = K.learnedAt(p.id, s.id);
+      if (known0 && Number.isFinite(r) && r > 0) gaps.push(`${p.name}은(는) 처음부터 알고, 독자는 ${atLabel(r)}에서 앎`);
+      else if (!known0 && Number.isFinite(r) && (li == null || li > r)) gaps.push(`독자는 ${atLabel(r)}부터 알고, ${p.name}은(는) ${li == null ? "끝까지 모름" : `${atLabel(li)}에서 앎`}`);
+    }
+    const learned = K.events.filter((ev) => ev.secret === s.id);
+    return `<div class="know-sec"><b>${esc(s.text)}</b> <span class="pill sec-${SECRET_LEVELS.indexOf(s.level)}">${esc(SECRET_LEVEL_TEXT[s.level] || s.level)}</span> <button type="button" class="ref" data-ref="${s.owner.id}">${esc(s.owner.name)}</button>
+      <p class="meta">독자: ${Number.isFinite(r) ? esc(atLabel(r)) : "아직 드러낼 곳이 없음"}${s.knowers?.length ? ` · 처음부터 아는 이: ${s.knowers.map((k) => esc(nameOf(k))).join(", ")}` : ""}${learned.length ? ` · 알게 되는 장면: ${learned.map((ev) => `${esc(nameOf(ev.who))}(${esc(ev.m.title)})`).join(", ")}` : ""}</p>
+      ${gaps.length ? `<ul class="list-plain know-gaps">${gaps.slice(0, 6).map((g) => `<li class="small">${esc(g)}</li>`).join("")}</ul>` : ""}</div>`;
+  }).join("");
+  const leaks = secretLeaks(work);
+  return `<div class="know">
+    <p class="meta" style="margin:4px 2px 8px">장면 카드의 '알게 되는 것'과 항목의 비밀로 인물과 독자가 언제 무엇을 아는지 봅니다. 노란 칩은 비밀과 이어진 것입니다.</p>
+    ${leaks.length ? `<div class="plan-stale">새어 나갔을 수 있는 곳 ${leaks.length}: ${leaks.slice(0, 4).map((l) => esc(`「${l.m.title}」에 '${l.key}'`)).join(", ")}</div>` : ""}
+    ${people.length ? `<div class="know-scroll"><table class="know-table">${head}${rows}</table></div>` : `<p class="meta">카드에 시점 인물·등장인물이나 '알게 되는 것'이 없습니다.</p>`}
+    <h3 class="hub-sub">비밀의 흐름 <span class="n">${K.secrets.length}</span></h3>
+    ${secRows || `<p class="meta">아직 비밀이 없습니다. 항목 화면의 '비밀 더하기'로 넣으세요.</p>`}
+    <div class="row" style="margin-top:10px"><button class="btn btn-small" type="button" data-act="secrets">모든 비밀</button><button class="btn btn-small btn-primary" type="button" data-plan="check">구조 점검(비밀·앎 포함)</button></div>
+  </div>`;
+}
+function openSecretsOverview() {
+  if (!currentWorld()) return;
+  const all = allSecrets();
+  const leaks = worldWorks().flatMap((wk) => secretLeaks(wk).map((l) => ({ ...l, wk })));
+  const row = (s) => `<div class="check-item check-issue"><span class="txt"><button type="button" class="ref" data-ref="${s.owner.id}">${esc(s.owner.name)}</button> ${esc(s.text)}<br><span class="meta"><span class="pill sec-${SECRET_LEVELS.indexOf(s.level)}">${esc(SECRET_LEVEL_TEXT[s.level] || s.level)}</span>${s.knowers?.length ? ` 아는 이 ${s.knowers.map((k) => esc(nameOf(k))).join(", ")}` : ""} · 독자에게: ${esc(revealText(s.reveal))}</span></span><button class="btn btn-small btn-ghost" type="button" data-sec-open="${s.owner.id}|${s.id}">고치기</button></div>`;
+  const placed = all.filter((s) => s.reveal);
+  const open = all.filter((s) => !s.reveal);
+  openSheet(`<h2 class="sheet-title">비밀과 앎</h2>
+    <p class="meta" style="margin:0 0 8px">모든 항목의 비밀입니다. 항목 화면의 '비밀 더하기'로 넣고, 장면 카드의 '알게 되는 것'으로 인물이 언제 알게 되는지 적습니다. 작품의 '앎' 탭에서 인물별로 봅니다.</p>
+    ${leaks.length ? `<section class="check-group"><h3 class="sev-warn">새어 나갔을 수 있는 곳 <span class="n">${leaks.length}</span></h3>${leaks.map((l) => `<div class="check-item"><span class="txt">「${esc(l.m.title)}」에 '${esc(l.key)}' — ${esc(cut(l.s.text, 50))} (드러낼 곳: ${esc(revealText(l.s.reveal))})</span><button type="button" class="ref" data-ms-open="${l.m.id}">장면</button></div>`).join("")}</section>` : ""}
+    <section class="check-group"><h3>드러낼 곳이 정해진 비밀 <span class="n">${placed.length}</span></h3>${placed.map(row).join("") || `<p class="meta">없습니다.</p>`}</section>
+    <section class="check-group"><h3>드러낼 곳을 정하지 않은 비밀 <span class="n">${open.length}</span></h3>${open.map(row).join("") || `<p class="meta">없습니다.</p>`}</section>
+    ${worldWorks().length ? `<p class="meta">작품별 앎: ${worldWorks().map((wk) => `<button type="button" class="link-btn" data-know-work="${wk.id}">${esc(wk.title)}</button>`).join(" · ")}</p>` : ""}`, (root) => {
+    root.onclick = (ev) => {
+      const r = ev.target.closest("[data-ref]");
+      if (r) { openEntry(r.dataset.ref); return; }
+      const mo = ev.target.closest("[data-ms-open]");
+      if (mo) { openManuscript(mo.dataset.msOpen); return; }
+      const so = ev.target.closest("[data-sec-open]");
+      if (so) { const [eid, sid] = so.dataset.secOpen.split("|"); const e = findEntry(eid); openSecretEditor(e, (e.secrets || []).find((x) => x.id === sid)); return; }
+      const kw = ev.target.closest("[data-know-work]");
+      if (kw) { closeSheet(); state.workId = kw.dataset.knowWork; state.workTab = "know"; state.msView = "works"; state.codexTab = "ms"; renderCodex(); }
+    };
+  });
+}
+function knowStatusHTML(m) {
+  const k = sceneKnowledge(m);
+  if (!k || !(k.hidden.length || k.revealHere.length || k.povKnows.length || k.povNot.length || k.learns.length)) return "";
+  const li = (arr) => arr.map((s) => `<div class="check-item"><span class="txt">${esc(cut(s.text, 80))}</span></div>`).join("");
+  return `<section class="check-group"><h3>비밀과 앎</h3>
+    ${k.revealHere.length ? `<p class="small"><b>이 장면에서 독자에게 드러낼 비밀</b></p>${li(k.revealHere)}` : ""}
+    ${k.hidden.length ? `<p class="small"><b>아직 드러내지 않을 비밀</b> <span class="meta">암시까지만</span></p>${li(k.hidden)}` : ""}
+    ${k.pov ? `<p class="small"><b>${esc(k.pov.name)}이(가) 아는 비밀</b> ${k.povKnows.length ? "" : '<span class="meta">없음</span>'}</p>${li(k.povKnows)}` : ""}
+    ${k.irony.length ? `<p class="small"><b>독자는 아는데 ${esc(k.pov.name)}은(는) 모르는 것</b></p>${li(k.irony)}` : ""}
+    ${k.mystery.length ? `<p class="small"><b>등장인물은 알고 독자는 모르는 것</b></p>${li(k.mystery)}` : ""}
+    ${k.learns.length ? `<p class="small"><b>이 장면에서 알게 되는 것</b></p>${k.learns.map((l) => `<div class="check-item"><span class="txt">${esc(nameOf(l.who))} ← ${esc(l.what)}</span></div>`).join("")}` : ""}
+  </section>`;
+}
+function learnRowHTML(l = {}) {
+  return `<div class="kv-row learn-row"><select class="lw" aria-label="누가"><option value="">누가</option>${entryOptions((x) => isCharacterType(x.type), l.who || "")}</select><input class="lt" placeholder="알게 되는 것" value="${esc(l.what || "")}" aria-label="알게 되는 것"><select class="ls" aria-label="관련 비밀"><option value="">관련 비밀 없음</option>${allSecrets().map((s) => `<option value="${s.id}"${s.id === l.secret ? " selected" : ""}>${esc(cut(s.text, 22))}</option>`).join("")}</select><button type="button" class="icon-btn" data-del-learn aria-label="삭제">×</button></div>`;
+}
+function secretsForWorkText(work) {
+  const K = knowledgeOf(work);
+  if (!K.secrets.length && !K.events.length) return "";
+  const at = (i) => { const m = K.order[i]; return m ? `${m.id} 「${m.title}」` : ""; };
+  const lines = ["비밀과 앎:"];
+  for (const s of K.secrets) { const r = K.readerAt(s.id); lines.push(`- ${secretLine(s)} · 독자가 처음 알게 되는 장면 ${Number.isFinite(r) ? at(r) : "없음"}`); }
+  if (K.events.length) lines.push("장면에서 알게 되는 것:", ...K.events.map((ev) => `- ${at(ev.i)}: ${nameOf(ev.who)} ← ${ev.what}${ev.secret ? ` (${ev.secret})` : ""}`));
+  return lines.join("\n");
 }
 async function planAction(work, act, btn) {
   if (!work) return;
@@ -11055,6 +11448,7 @@ function entryBaseHTML(e) {
     ${e.body ? `<p class="section-label">본문</p><div class="md">${md(e.body)}</div>` : ""}
     ${senses.length ? `<p class="section-label">감각</p><dl class="fields sense-fields">${senses.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : ""}
     ${e.perspectives?.length ? `<p class="section-label">관점별 서술</p><div class="persp-list">${e.perspectives.map((x) => { const by = findEntry(x.by); return `<blockquote class="persp"><span class="persp-by">${by ? `<button type="button" class="ref" data-ref="${by.id}">${by.id}</button> ${esc(by.name)}` : esc(x.by)}의 관점</span><p>${esc(x.text)}</p></blockquote>`; }).join("")}</div>` : ""}
+    ${secretsHTML(e)}
     ${relationsHTML(e)}
     ${!e.deleted && state.maps.some((m) => m.pins.some((p) => p.ref === e.id)) ? `<p class="when-line"><span class="lbl">지도</span><span>${esc(state.maps.filter((m) => m.pins.some((p) => p.ref === e.id)).map((m) => `${m.name} ${pinDir(m.pins.find((p) => p.ref === e.id).x, m.pins.find((p) => p.ref === e.id).y)}`).join(", "))}</span><button class="btn btn-ghost btn-small" type="button" data-act="map">지도에서 보기</button></p>` : ""}
     ${e.tags?.length ? `<p class="section-label">태그</p><div>${e.tags.map((t) => `<span class="tag">#${esc(t)}</span>`).join("")}</div>` : ""}
@@ -11095,6 +11489,8 @@ function openEntry(ref) {
     root.onclick = async (ev) => {
       const refBtn = ev.target.closest("[data-ref]");
       if (refBtn) { openEntry(refBtn.dataset.ref); return; }
+      const secBtn = ev.target.closest("[data-sec]");
+      if (secBtn) { await handleSecretAct(e, secBtn.dataset.sec); return; }
       const etab = ev.target.closest("[data-etab]");
       if (etab) { state.entryTab = etab.dataset.etab; openEntry(e.id); return; }
       const msOpen = ev.target.closest("[data-ms-open]");
@@ -15399,6 +15795,8 @@ function exportMarkdown() {
     parts.push("", "## 이름 규칙");
     for (const r of rules) parts.push("", `### ${r.name}`, r.applies?.length ? `*적용: ${r.applies.join(", ")}*` : "", "", r.rules || "", r.examples?.length ? `\n예: ${r.examples.join(", ")}` : "");
   }
+  const secs = allSecrets();
+  if (secs.length) { parts.push("", "## 비밀"); for (const s of secs) parts.push(`- **${s.owner.name}**: ${s.text} — ${SECRET_LEVEL_TEXT[s.level] || s.level}${s.knowers?.length ? `, 아는 이 ${s.knowers.map(nameOf).join(", ")}` : ""}, 독자에게 ${revealText(s.reveal)}`); }
   const planned = worldWorks(w).filter((wk) => planOf(wk).paragraph || planOf(wk).synopsis || (wk.chapters || []).some((c) => c.summary) || workOrder(wk).some(hasCard));
   if (planned.length) {
     parts.push("", "## 이야기 계획");
@@ -15534,6 +15932,7 @@ function bindGlobal() {
     else if (act === "types") openTypesSheet();
     else if (act === "checks") openChecksSheet();
     else if (act === "coverage") openCoverageMap();
+    else if (act === "secrets") openSecretsOverview();
     else if (act === "compare") openCompare();
     else if (act === "comp-table") openCompositionTable();
     else if (act === "economy") openEconomySheet();

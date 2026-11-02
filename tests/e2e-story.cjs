@@ -112,7 +112,7 @@ const quickReqs = [];
   const r1 = requests[0];
   const tn = r1.body.tools.map((t) => t.name);
   check("v13 지침: 이야기 계획·카드 범위", r1.body.system[0].text.includes("## 이야기 계획") && r1.body.system[0].text.includes("카드의 결과에서 끝낸다") && r1.body.system[0].text.includes("계획 밖 아이디어"));
-  check("v13 도구 40개: get_plan·set_plan·set_scene_card, 끝은 respond", tn.length === 40 && ["get_plan", "set_plan", "set_scene_card"].every((n) => tn.includes(n)) && tn.at(-1) === "respond", tn.length);
+  check("새 대화(v14) 도구 41개: get_plan·set_plan·set_scene_card, 끝은 respond", tn.length === 41 && ["get_plan", "set_plan", "set_scene_card"].every((n) => tn.includes(n)) && tn.at(-1) === "respond", tn.length);
   check("v13 앞 버전 도구는 v12와 같음", JSON.stringify(r1.body.tools.filter((t) => V12.tools.some((x) => x.name === t.name))) === JSON.stringify(V12.tools));
   const tr = trOf(1);
   const res = (id) => tr.find((b) => b.tool_use_id === id);

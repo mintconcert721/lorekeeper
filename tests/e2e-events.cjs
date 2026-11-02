@@ -118,7 +118,7 @@ const quickReqs = [];
   await send("사건과 물건을 정리해 줘", 2);
   const r1 = requests.at(-2);
   const tn = r1.body.tools.map((t) => t.name);
-  check("v11 도구 포함(지금 판은 40개)", tn.length === 40 && ["set_event", "set_cause", "set_observance", "set_foreshadow", "set_recipe", "set_economy", "set_tech"].every((n) => tn.includes(n)) && tn.at(-1) === "respond" && r1.body.tools.find((t) => t.name === "set_calendar").input_schema.properties.months && r1.body.tools.find((t) => t.name === "set_artifact").input_schema.properties.owners.items.properties.at && r1.body.tools.find((t) => t.name === "update_entry").input_schema.properties.magic_item, tn.length);
+  check("v11 도구 포함(지금 판은 41개)", tn.length === 41 && ["set_event", "set_cause", "set_observance", "set_foreshadow", "set_recipe", "set_economy", "set_tech"].every((n) => tn.includes(n)) && tn.at(-1) === "respond" && r1.body.tools.find((t) => t.name === "set_calendar").input_schema.properties.months && r1.body.tools.find((t) => t.name === "set_artifact").input_schema.properties.owners.items.properties.at && r1.body.tools.find((t) => t.name === "update_entry").input_schema.properties.magic_item, tn.length);
   check("v11 지침", r1.body.system[0].text.includes("## 사건") && r1.body.system[0].text.includes("## 사물과 경제"));
   const first = r1.body.messages[0].content.map((b) => b.text || "").join("");
   check("첫 메시지: 달(기본값)", first.includes("달: 1월(30일)") && first.includes("(기본값)"));
