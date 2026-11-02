@@ -533,6 +533,32 @@ main { min-height: 0; min-width: 0; position: relative; }
 .tl { position: relative; display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
 .tl-row { display: grid; grid-template-columns: 52px 18px minmax(0, 1fr); gap: 0 8px; align-items: start; }
 .tl-year { text-align: right; padding-top: 10px; font: 600 13px var(--font-mono); font-variant-numeric: tabular-nums; color: var(--tc, var(--muted)); overflow-wrap: normal; }
+.tl-yr { border: 0; background: none; padding: 0; color: inherit; font: inherit; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
+/* 연도 단면 · 파급 · 빈 곳 지도 */
+.slice-nav { display: flex; align-items: center; gap: 6px; }
+.slice-nav input { width: 90px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font: 600 16px var(--font-mono); text-align: center; }
+.slice-changes ul li { padding: 3px 0; font-size: 13.5px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.slice-story { margin-top: 12px; }
+.slice-story .md { line-height: 1.7; font-size: 14.5px; }
+.impact-note { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 6px 0; padding: 8px 10px; border-radius: 10px; background: color-mix(in srgb, var(--t-event) 18%, var(--surface)); font-size: 13.5px; }
+.impact-note span { flex: 1 1 200px; }
+.impact-diff { display: flex; flex-direction: column; gap: 2px; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; overflow-wrap: anywhere; }
+.impact-diff .was { color: var(--muted); text-decoration: line-through; }
+.impact-diff .now { color: var(--ink); }
+.impact-item .txt { flex: 1 1 200px; overflow-wrap: anywhere; }
+.cov-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cov-tile { padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.cov-head { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
+.cov-pct { font: 600 13px var(--font-mono); }
+.cov-bar { display: block; height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+.cov-bar i { display: block; height: 100%; background: var(--t-species); }
+.cov-mid .cov-bar i { background: var(--t-event); }
+.cov-low .cov-bar i { background: var(--danger); }
+.cov-tile details summary { font-size: 12.5px; color: var(--muted); cursor: pointer; }
+.cov-sigs li { font-size: 12.5px; padding: 2px 0; overflow-wrap: anywhere; }
+.cov-sigs li.ok { color: var(--ink); }
+.cov-sigs li.none { color: var(--muted); }
+@media (max-width: 380px) { .cov-grid { grid-template-columns: 1fr; } }
 .tl-axis { position: relative; align-self: stretch; display: flex; justify-content: center; }
 .tl-axis::before { content: ""; position: absolute; top: -10px; bottom: -10px; left: 50%; width: 2px; margin-left: -1px; background: var(--line); }
 .tl-dot { position: relative; margin-top: 14px; width: 12px; height: 12px; border-radius: 50%; background: var(--tc, var(--muted)); box-shadow: 0 0 0 3px var(--bg); }
@@ -6073,7 +6099,7 @@ function renderCodexResults() {
       ${typeKeys().map((k) => `<button class="type-chip" type="button" data-type="${k}" aria-pressed="${state.codexType === k}">${esc(typeInfo(k).label)}<span class="n">${counts[k] || 0}</span></button>`).join("")}
     </div>
     <div class="type-chips status-chips" role="toolbar" aria-label="상태">${STATUS_KEYS.map((k) => `<button class="type-chip" type="button" data-status="${k}" aria-pressed="${state.codexStatus.has(k)}">${STATUS[k]}<span class="n">${stCounts[k]}</span></button>`).join("")}</div>
-    <div class="row"><button class="btn btn-ghost btn-small" type="button" data-act="types">분류·템플릿 관리</button><button class="btn btn-ghost btn-small" type="button" data-act="checks">설정 점검</button><button class="btn btn-ghost btn-small" type="button" data-act="compare">비교</button><button class="btn btn-ghost btn-small" type="button" data-act="comp-table">구성표</button><button class="btn btn-ghost btn-small" type="button" data-act="economy">화폐·물가</button><button class="btn btn-ghost btn-small" type="button" data-act="tech">기술 수준</button><button class="btn btn-ghost btn-small" type="button" data-act="presence">등장 비중</button><button class="btn btn-ghost btn-small" type="button" data-act="place-tree">장소 계층</button><button class="btn btn-ghost btn-small" type="button" data-act="travel">길과 이동</button></div>
+    <div class="row"><button class="btn btn-ghost btn-small" type="button" data-act="types">분류·템플릿 관리</button><button class="btn btn-ghost btn-small" type="button" data-act="checks">설정 점검</button><button class="btn btn-ghost btn-small" type="button" data-act="coverage">빈 곳 지도</button><button class="btn btn-ghost btn-small" type="button" data-act="compare">비교</button><button class="btn btn-ghost btn-small" type="button" data-act="comp-table">구성표</button><button class="btn btn-ghost btn-small" type="button" data-act="economy">화폐·물가</button><button class="btn btn-ghost btn-small" type="button" data-act="tech">기술 수준</button><button class="btn btn-ghost btn-small" type="button" data-act="presence">등장 비중</button><button class="btn btn-ghost btn-small" type="button" data-act="place-tree">장소 계층</button><button class="btn btn-ghost btn-small" type="button" data-act="travel">길과 이동</button></div>
     ${groups.length ? groups.map((g) => `<h3 class="group-title">${esc(typeInfo(g.k).label)} · ${g.items.length}</h3><div class="entry-list">${g.items.map(entryCard).join("")}</div>`).join("")
       : `<div class="empty-state"><h3>${q || state.codexType !== "all" ? "조건에 맞는 항목이 없습니다" : "설정집이 비어 있습니다"}</h3><p>대화 탭에서 Claude와 이야기하면 항목이 여기에 쌓입니다.</p></div>`}
     ${trashCount ? `<div class="row" style="margin-top:20px"><button class="btn btn-small" type="button" data-act="trash">휴지통 ${trashCount}</button></div>` : ""}`;
@@ -7471,6 +7497,377 @@ function auditHubHTML() {
     ${works.length ? `<p class="meta" style="margin:8px 0 4px">작품 구조·연재 점검은 작품의 '계획' 탭에 있습니다: ${works.map((wk) => `<button type="button" class="link-btn" data-hub-work="${wk.id}">${esc(wk.title)}</button>`).join(" · ")}</p>` : ""}
     ${reps.length ? `<div class="hub-reports">${reps.map((r) => `<button type="button" class="hub-rep" data-hub-rep="${r.id}"><span>${r.kind === "entries" ? "전수점검" : "스토리 점검"} · ${new Date(r.at).toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}</span><span class="meta">${r.status === "running" ? (audit.running === r.id ? "진행 중" : "멈춤") : r.status === "stopped" ? "멈춤" : `열린 문제 ${r.issues.filter((x) => x.state === "open").length} / 전체 ${r.issues.length}`}</span></button>`).join("")}</div><p class="meta" style="margin:6px 0 0">보고서는 이 기기에만 남습니다(최근 ${AUDIT_KEEP}개).</p>` : ""}
   </section>`;
+}
+/* ============================================================
+   세계관 짜임새 1차: 연도 단면 · 파급 효과 · 영역별 빈 곳 지도 (모두 앱이 계산, 비용 없음)
+   ============================================================ */
+/* ---- 연도 단면: 한 해의 세계를 한 장으로 ---- */
+const existsIn = (e, y) => !e.when || (e.when.start <= y && (e.when.end == null || y <= e.when.end));
+const coversYear = (e, y) => !!e.when && e.when.start <= y && (e.when.end ?? e.when.start) >= y;
+const RULE_RE = /통치|지배|다스|영토|영지|수도|본거지|점령|관할|소유/;
+function yearSliceData(y) {
+  const list = liveEntries();
+  const chars = list.filter((e) => isCharacterType(e.type) && e.when);
+  const facs = list.filter((e) => isFactionType(e.type) && existsIn(e, y));
+  const facIds = new Set(facs.map((f) => f.id));
+  const people = chars.filter((e) => existsIn(e, y)).map((e) => ({
+    e,
+    age: ageInfo(e, y),
+    orgs: (e.relations || []).filter((r) => facIds.has(r.to) && relActive(r, y)).map((r) => ({ f: findEntry(r.to), label: r.label })),
+  })).sort((a, b) => (b.age?.age ?? 0) - (a.age?.age ?? 0));
+  const events = list.filter((e) => isEventType(e.type) && e.when);
+  const ongoing = events.filter((e) => coversYear(e, y));
+  const facRels = [];
+  for (const a of facs) for (const r of a.relations || []) if (facIds.has(r.to) && relActive(r, y)) facRels.push({ a, b: findEntry(r.to), r });
+  const rule = [];
+  for (const p of list.filter((e) => isPlaceType(e.type))) {
+    const by = [];
+    for (const r of p.relations || []) if (facIds.has(r.to) && relActive(r, y) && RULE_RE.test(r.label)) by.push({ f: findEntry(r.to), label: r.label });
+    for (const f of facs) for (const r of f.relations || []) if (r.to === p.id && relActive(r, y) && RULE_RE.test(r.label)) by.push({ f, label: r.label });
+    if (by.length) rule.push({ p, by });
+  }
+  const holds = list.filter((x) => x.artifact?.owners?.length).map((x) => ({ x, who: findEntry(artifactHolder(x, y)) })).filter((h) => h.who && !h.who.deleted);
+  const obs = worldObservances().filter((o) => o.since == null || o.since <= y);
+  const due = worldForeshadows().filter((f) => f.due === y);
+  const tech = worldTech().rows.filter((r) => (r.from == null || r.from <= y) && (r.to == null || y < r.to));
+  const changes = eventChanges({ id: "__year", when: { start: y, end: y } });
+  const started = events.filter((e) => e.when.start === y);
+  const ended = events.filter((e) => e.when.end != null && e.when.end === y && e.when.start !== y);
+  const newObs = worldObservances().filter((o) => o.since === y);
+  return { y, era: worldCalendar().eras.length ? eraOf(y) : null, people, facs, facRels, rule, ongoing, started, ended, holds, obs, newObs, due, tech, changes };
+}
+function yearSliceText(y) {
+  const d = yearSliceData(y);
+  const c = d.changes;
+  const lines = [`# ${fmtYear(y)}${d.era ? ` (${d.era.name})` : ""}의 세계`];
+  const chg = [
+    ...c.births.map((x) => `태어남: ${x.name}`), ...c.deaths.map((x) => `죽음: ${x.name}`),
+    ...d.started.map((x) => `시작된 사건: ${x.name}`), ...d.ended.map((x) => `끝난 사건: ${x.name}`),
+    ...c.rels.map(({ a, r, k }) => `관계 ${k}: ${a.name} → ${r.label} → ${nameOf(r.to)}`),
+    ...c.owners.map(({ it, o }) => `주인 바뀜: ${it.name} → ${nameOf(o.who)}`),
+    ...c.vacated.map(({ x, f, r }) => `빈 직위: ${f.name}의 ${r.name}(${x.name})`),
+    ...d.newObs.map((o) => `처음 지킨 기념일: ${o.name}`), ...d.due.map((f) => `이 해의 예언: ${cut(f.text, 60)}`),
+  ];
+  if (chg.length) lines.push("이 해에 바뀐 것:", ...chg.map((x) => `- ${x}`));
+  if (d.people.length) lines.push(`살아 있는 인물(${d.people.length}): ${d.people.slice(0, 40).map((p) => `${p.e.name} ${p.age ? `${p.age.age}세` : ""}${p.orgs.length ? `(${p.orgs.map((o) => o.f.name).join("·")})` : ""}`).join(", ")}`);
+  if (d.ongoing.length) lines.push(`진행 중인 사건: ${d.ongoing.map((e) => `${e.name}(${rangeText(e.when)})`).join(", ")}`);
+  if (d.facRels.length) lines.push(`세력 관계: ${d.facRels.map((x) => `${x.a.name}→${x.r.label}→${x.b.name}`).join(", ")}`);
+  if (d.rule.length) lines.push(`다스리는 곳: ${d.rule.map((x) => `${x.p.name}(${x.by.map((b) => `${b.f.name} ${b.label}`).join(", ")})`).join(", ")}`);
+  if (d.holds.length) lines.push(`유물을 가진 이: ${d.holds.map((h) => `${h.x.name}→${h.who.name}`).join(", ")}`);
+  if (d.tech.length) lines.push(`기술 수준: ${d.tech.map((r) => `${techWhere(r)} ${Object.entries(r.values || {}).map(([k, v]) => `${k} ${v}`).join(", ")}`).join(" / ")}`);
+  if (d.obs.length) lines.push(`지키는 기념일: ${d.obs.map((o) => o.name).join(", ")}`);
+  return lines.join("\n");
+}
+function defaultSliceYear() {
+  const cal = worldCalendar();
+  if (state.sliceYear != null) return state.sliceYear;
+  if (cal.now != null) return cal.now;
+  const ys = liveEntries().filter((e) => e.when).map((e) => e.when.start);
+  return ys.length ? Math.max(...ys) : 1;
+}
+function openYearSlice(year = defaultSliceYear()) {
+  if (!currentWorld()) return;
+  const y = Math.trunc(Number(year));
+  if (!Number.isFinite(y)) return;
+  state.sliceYear = y;
+  const d = yearSliceData(y);
+  const c = d.changes;
+  const ref = (e) => `<button type="button" class="ref" data-ref="${e.id}">${esc(e.name)}</button>`;
+  const sec = (title, n, body) => (n ? `<section class="check-group"><h3>${title} <span class="n">${n}</span></h3>${body}</section>` : "");
+  const chg = [
+    ...c.births.map((x) => `<li><span class="pill">태어남</span> ${ref(x)}</li>`),
+    ...c.deaths.map((x) => `<li><span class="pill pill-danger">죽음</span> ${ref(x)}</li>`),
+    ...d.started.map((x) => `<li><span class="pill">사건 시작</span> ${ref(x)}</li>`),
+    ...d.ended.map((x) => `<li><span class="pill">사건 끝</span> ${ref(x)}</li>`),
+    ...c.rels.map(({ a, r, k }) => `<li><span class="pill">관계 ${k}</span> ${ref(a)} → ${esc(r.label)} → ${liveRef(r.to) ? ref(findEntry(r.to)) : esc(nameOf(r.to))}</li>`),
+    ...c.owners.map(({ it, o }) => `<li><span class="pill">주인 바뀜</span> ${ref(it)} → ${findEntry(o.who) ? ref(findEntry(o.who)) : esc(o.who)}</li>`),
+    ...c.vacated.map(({ x, f, r }) => `<li><span class="pill">빈 직위</span> ${ref(f)}의 ${esc(r.name)} (${esc(x.name)})</li>`),
+    ...c.regions.map(({ m, r, k }) => `<li><span class="pill">영역 ${k}</span> ${esc(nameOf(r.ref))} <span class="meta">${esc(m.name)}</span></li>`),
+    ...d.newObs.map((o) => `<li><span class="pill">처음 지킨 날</span> ${esc(o.name)}</li>`),
+    ...d.due.map((f) => `<li><span class="pill pill-danger">예언의 해</span> ${esc(cut(f.text, 80))}</li>`),
+  ];
+  const cal = worldCalendar();
+  openSheet(`<h2 class="sheet-title">연도 단면</h2>
+    <div class="slice-nav"><button class="icon-btn" type="button" data-sl="prev" aria-label="앞 해">‹</button><input id="sl-year" inputmode="decimal" value="${y}" aria-label="해"><span class="meta">${esc(cal.suffix)}</span><button class="icon-btn" type="button" data-sl="next" aria-label="다음 해">›</button>${cal.now != null && cal.now !== y ? `<button class="btn btn-small btn-ghost" type="button" data-sl="now">지금(${esc(fmtYearNum(cal.now))})</button>` : ""}</div>
+    <p class="meta" style="margin:4px 0 8px">${esc(fmtYear(y))}${d.era ? ` · ${esc(d.era.name)}` : ""} · 살아 있는 인물 ${d.people.length} · 진행 중인 사건 ${d.ongoing.length} · 세력 ${d.facs.length}</p>
+    ${chg.length ? `<section class="check-group slice-changes"><h3>이 해에 바뀐 것 <span class="n">${chg.length}</span></h3><ul class="list-plain">${chg.join("")}</ul></section>` : `<p class="meta">이 해에 기록된 변화는 없습니다.</p>`}
+    ${sec("진행 중인 사건", d.ongoing.length, d.ongoing.map((e) => `<div class="check-item">${ref(e)}<span class="txt meta">${esc(rangeText(e.when))}</span></div>`).join(""))}
+    ${sec("살아 있는 인물", d.people.length, d.people.slice(0, 60).map((p) => `<div class="check-item">${ref(p.e)}<span class="txt">${p.age ? esc(p.age.text) : ""}${p.orgs.length ? ` · ${p.orgs.map((o) => `${esc(o.f.name)}(${esc(o.label)})`).join(", ")}` : ""}</span></div>`).join("") + (d.people.length > 60 ? `<p class="meta">외 ${d.people.length - 60}명</p>` : ""))}
+    ${sec("세력과 그해의 관계", d.facRels.length, d.facRels.map((x) => `<div class="check-item">${ref(x.a)}<span class="txt">→ ${esc(x.r.label)} →</span>${ref(x.b)}${relYears(x.r) ? `<span class="meta">${esc(relYears(x.r))}</span>` : ""}</div>`).join(""))}
+    ${sec("다스리는 곳", d.rule.length, d.rule.map((x) => `<div class="check-item">${ref(x.p)}<span class="txt">${x.by.map((b) => `${esc(b.f.name)} · ${esc(b.label)}`).join(", ")}</span></div>`).join(""))}
+    ${sec("유물을 가진 이", d.holds.length, d.holds.map((h) => `<div class="check-item">${ref(h.x)}<span class="txt">→</span>${ref(h.who)}</div>`).join(""))}
+    ${sec("기술 수준", d.tech.length, d.tech.map((r) => `<div class="check-item"><span class="txt">${esc(techWhere(r))}${esc(techSpan(r))}: ${esc(Object.entries(r.values || {}).map(([k, v]) => `${k} ${v}`).join(", "))}</span></div>`).join(""))}
+    ${sec("지키는 기념일", d.obs.length, `<p class="small">${d.obs.map((o) => esc(`${o.name}(${dayText(o)})`)).join(", ")}</p>`)}
+    <div class="slice-story" id="sl-story"></div>
+    <div class="sheet-actions"><button class="btn" type="button" data-sl="story">Claude로 그해 이야기</button></div>`, (root) => {
+    const go = (v) => openYearSlice(v);
+    root.onclick = async (ev) => {
+      const r = ev.target.closest("[data-ref]");
+      if (r) { openEntry(r.dataset.ref); return; }
+      const a = ev.target.closest("[data-sl]")?.dataset.sl;
+      if (a === "prev") go(y - 1);
+      else if (a === "next") go(y + 1);
+      else if (a === "now") go(cal.now);
+      else if (a === "story") {
+        const b = ev.target.closest("[data-sl]");
+        b.disabled = true;
+        b.textContent = "쓰는 중…";
+        try {
+          const text = await quickAsk("너는 세계관의 연대기 작가다. 주어진 한 해의 세계 상태만 근거로, 그해 세계의 모습을 3~5단락의 연대기 문체로 쓴다. 주어진 사실에 없는 사건을 지어내지 않고, 확실하지 않은 것은 '전해지기로' 같은 말로 흐린다. 한국어로 쓴다.", `${worldOverviewText(currentWorld())}\n\n${yearSliceText(y)}`, 6000);
+          if (text == null) return;
+          const box = $("#sl-story", root);
+          box.innerHTML = `<h3>${esc(fmtYear(y))}의 연대기</h3><div class="md">${esc(text).replace(/\n/g, "<br>")}</div><div class="row"><button class="btn btn-small" type="button" data-sl="save">원고함에 저장</button></div>`;
+          box.dataset.text = text;
+          box.scrollIntoView({ block: "start", behavior: "smooth" });
+        } catch (err) { toast(apiMessage(err)); }
+        finally { if (b.isConnected) { b.disabled = false; b.textContent = "Claude로 그해 이야기"; } }
+      } else if (a === "save") {
+        const text = $("#sl-story", root).dataset.text;
+        saveManuscript({ title: `${fmtYear(y)}의 연대기`, kind: "문서", body: text }, "user");
+        await persist.world();
+        toast("원고함에 저장했습니다");
+      }
+    };
+    // 시트를 다시 그리면 옛 입력 칸에서 change가 한 번 더 올 수 있어, 이미 그 해면 넘긴다
+    $("#sl-year", root).onchange = (ev) => { const v = parseYear(ev.target.value); if (v != null && v !== state.sliceYear && ev.target.isConnected) go(v); };
+  });
+}
+
+/* ---- 파급 효과: 항목을 고친 뒤 영향받을 수 있는 곳 ---- */
+const IMPACT_LABEL = { name: "이름", aliases: "별칭", summary: "요약", status: "상태", type: "분류", when: "시점", relations: "관계", body: "본문", tags: "태그", parent: "상위 장소", speciesRef: "종족", species: "종족 정보", life: "수명", place: "장소 정보", climate: "기후", magic: "마법 체계", event: "사건 정보", item: "사물 정보", artifact: "유물 이력", magicItem: "마법 물건", recipe: "만드는 법", inner: "내면", voice: "말투", looks: "외모", arc: "성장 곡선", abilities: "능력", spells: "주문", rulings: "판례", ranks: "직위", demographics: "주민 구성", lang: "언어", causes: "원인", senses: "감각", perspectives: "관점", rumors: "소문", deleted: "휴지통" };
+const IMPACT_SKIP = new Set(["id", "createdAt", "updatedAt", "updatedBy", "history", "gallery", "lookPrompt", "address"]);
+function impactVal(k, v) {
+  if (v == null || v === "") return "(없음)";
+  if (k === "when") return rangeText(v);
+  if (k === "relations") return v.map((r) => `${r.label}→${nameOf(r.to)}${relYears(r) ? `(${relYears(r)})` : ""}`).join(", ") || "(없음)";
+  if (k === "status") return STATUS[v] || v;
+  if (k === "type") return typeInfo(v).label;
+  if (k === "parent" || k === "speciesRef") return nameOf(v);
+  if (Array.isArray(v)) return cut(v.map((x) => (typeof x === "object" ? Object.values(x).filter((y) => typeof y !== "object").join(" ") : String(x))).join(", "), 160) || "(없음)";
+  if (typeof v === "object") return cut(Object.entries(v).map(([a, b]) => `${a}: ${typeof b === "object" ? JSON.stringify(b) : b}`).join(" · "), 160);
+  return cut(String(v), 160);
+}
+function entryDiff(before, after) {
+  const out = [];
+  if (!before) return out;
+  for (const k of new Set([...Object.keys(before), ...Object.keys(after)])) {
+    if (IMPACT_SKIP.has(k)) continue;
+    if (k === "fields") {
+      const a = before.fields || {};
+      const b = after.fields || {};
+      for (const f of new Set([...Object.keys(a), ...Object.keys(b)])) if ((a[f] || "") !== (b[f] || "")) out.push({ key: "fields", label: `속성 · ${f}`, before: cut(a[f] || "(없음)", 160), after: cut(b[f] || "(없음)", 160) });
+      continue;
+    }
+    if (JSON.stringify(before[k] ?? null) !== JSON.stringify(after[k] ?? null)) out.push({ key: k, label: IMPACT_LABEL[k] || k, before: impactVal(k, before[k]), after: impactVal(k, after[k]) });
+  }
+  return out;
+}
+const entryText = (x) => `${x.summary || ""}\n${x.body || ""}\n${Object.values(x.fields || {}).join("\n")}`;
+function impactOf(e, before) {
+  const diff = entryDiff(before, e);
+  const keys = new Set(diff.map((d) => d.key));
+  const items = new Map();
+  const add = (kind, id, reason, warn = false) => {
+    const k = `${kind}:${id}`;
+    const cur = items.get(k);
+    if (cur) { if (!cur.reasons.includes(reason)) cur.reasons.push(reason); cur.warn = cur.warn || warn; }
+    else items.set(k, { kind, id, reasons: [reason], warn });
+  };
+  const nameList = (x) => [x?.name, ...(x?.aliases || [])].filter((n) => n && String(n).length >= 2);
+  const now = nameList(e);
+  const old = keys.has("name") || keys.has("aliases") ? nameList(before).filter((n) => !now.includes(n)) : [];
+  const timeChanged = keys.has("when");
+  // 관계
+  for (const r of e.relations || []) { const t = findEntry(r.to); if (t && !t.deleted) add("entry", t.id, `관계: ${e.name} → ${r.label}`); }
+  for (const { from, label } of incoming(e.id)) add("entry", from.id, `관계: ${label} → ${e.name}`);
+  for (const r of before?.relations || []) if (!(e.relations || []).some((x) => x.to === r.to && x.label === r.label)) { const t = findEntry(r.to); if (t && !t.deleted) add("entry", t.id, `빠진 관계: ${r.label}(상대 쪽 기록을 확인)`, true); }
+  // 이름
+  for (const x of liveEntries()) {
+    if (x.id === e.id) continue;
+    const txt = entryText(x);
+    const hit = old.find((n) => txt.includes(n));
+    if (hit) add("entry", x.id, `옛 이름 '${hit}'이(가) 남아 있음`, true);
+    else if (now.some((n) => txt.includes(n))) add("entry", x.id, "본문에 이름이 나옴");
+  }
+  // 시점이 바뀌면 이어진 항목의 연표를 다시 본다
+  if (timeChanged && e.when) {
+    const s = e.when.start;
+    const t = e.when.end;
+    for (const id of new Set([...(e.relations || []).map((r) => r.to), ...incoming(e.id).map((x) => x.from.id)])) {
+      const x = findEntry(id);
+      if (!x?.when || x.deleted) continue;
+      if (isCharacterType(e.type) && !isCharacterType(x.type)) {
+        const xe = x.when.end ?? x.when.start;
+        if (xe < s) add("entry", x.id, `${e.name}이(가) 태어나기(${fmtYear(s)}) 전에 끝남`, true);
+        if (t != null && x.when.start > t) add("entry", x.id, `${e.name}이(가) 죽은(${fmtYear(t)}) 뒤에 일어남`, true);
+      } else if (isCharacterType(x.type) && !isCharacterType(e.type)) {
+        const ee = t ?? s;
+        if (ee < x.when.start) add("entry", x.id, `${x.name}이(가) 태어나기 전에 끝남`, true);
+        if (x.when.end != null && s > x.when.end) add("entry", x.id, `${x.name}이(가) 죽은 뒤에 일어남`, true);
+      }
+    }
+    for (const x of liveEntries()) {
+      if (x.artifact?.owners?.some((o) => o.who === e.id) && artifactWarnings(x).some((w) => w.includes(e.name))) add("entry", x.id, "소유 이력이 생몰년과 어긋남", true);
+      if ((x.causes || []).some((c) => c.ref === e.id) && x.when && x.when.start < s) add("entry", x.id, `결과가 원인(${e.name})보다 앞섬`, true);
+    }
+    for (const c of e.causes || []) { const x = findEntry(c.ref); if (x?.when && x.when.start > s) add("entry", x.id, `원인이 결과(${e.name})보다 뒤`, true); }
+    for (const o of worldObservances()) if (o.ref === e.id && o.since != null && o.since < s) add("obs", o.id, `기념일 '${o.name}'이(가) 계기 사건보다 먼저 시작`, true);
+  }
+  // 소유·종족·하위 장소
+  for (const x of liveEntries()) {
+    if (x.artifact && (x.artifact.holder === e.id || x.artifact.maker === e.id || x.artifact.owners?.some((o) => o.who === e.id))) add("entry", x.id, "소유·제작 이력에 나옴");
+    if (x.speciesRef === e.id) add("entry", x.id, "이 종족");
+    if (x.parent === e.id) add("entry", x.id, "하위 장소");
+  }
+  // 장면
+  for (const m of state.manuscripts) {
+    const inCard = m.card && [m.card.pov, m.card.place, ...(m.card.cast || [])].includes(e.id);
+    const inRefs = (m.refs || []).includes(e.id);
+    const oldHit = old.find((n) => String(m.body || "").includes(n));
+    if (oldHit) add("ms", m.id, `본문에 옛 이름 '${oldHit}'`, true);
+    if (!inCard && !inRefs) continue;
+    add("ms", m.id, inCard ? "장면 카드에 나옴" : "장면에 나옴");
+    if (timeChanged && hasCard(m)) for (const w of sceneStatusData(m).warnings.filter((w) => w.includes(e.name))) add("ms", m.id, w, true);
+  }
+  // 복선·기념일
+  for (const f of worldForeshadows()) if (f.plant === e.id || f.payoff === e.id || now.some((n) => String(f.text).includes(n)) || old.some((n) => String(f.text).includes(n))) add("fs", f.id, `복선: ${cut(f.text, 50)}`, old.some((n) => String(f.text).includes(n)));
+  for (const o of worldObservances()) if (o.ref === e.id) add("obs", o.id, `기념일: ${o.name}`);
+  const list = [...items.values()].filter((x) => x.kind !== "entry" || x.id !== e.id);
+  list.sort((a, b) => Number(b.warn) - Number(a.warn));
+  return { diff, items: list };
+}
+function recentImpact(e, minutes = 15) {
+  const h = e.history?.at(-1);
+  if (!h || Date.now() - h.at > minutes * 60000) return null;
+  const r = impactOf(e, h.data);
+  return r.diff.length && r.items.length ? r : null;
+}
+function impactItemHTML(x) {
+  const label = x.kind === "entry" ? `<button type="button" class="ref" data-ref="${x.id}">${esc(nameOf(x.id))}</button>`
+    : x.kind === "ms" ? `<button type="button" class="ref" data-ms-open="${x.id}">${esc(state.manuscripts.find((m) => m.id === x.id)?.title || x.id)}</button>`
+    : x.kind === "fs" ? `<span class="pill">복선</span>` : `<span class="pill">기념일</span>`;
+  return `<div class="check-item impact-item">${label}<span class="txt${x.warn ? " sev-warn" : ""}">${x.reasons.map(esc).join(" · ")}</span></div>`;
+}
+function openImpactSheet(e, idx = null) {
+  const hist = e.history || [];
+  if (!hist.length) { toast("고친 이력이 없습니다"); return; }
+  const i = idx == null ? hist.length - 1 : idx;
+  const before = hist[i].data;
+  const { diff, items } = impactOf(e, before);
+  const warn = items.filter((x) => x.warn);
+  const rest = items.filter((x) => !x.warn);
+  openSheet(`<h2 class="sheet-title">파급 보기 · ${esc(e.name)}</h2>
+    <label class="form">비교할 때<select id="im-ver">${hist.map((h, k) => ({ h, k })).reverse().slice(0, 15).map(({ h, k }) => `<option value="${k}"${k === i ? " selected" : ""}>${fmtDate(h.at)}에 ${h.by === "user" ? "직접" : "Claude가"} 고치기 전${h.reason ? ` · ${esc(cut(h.reason, 30))}` : ""}</option>`).join("")}</select></label>
+    <section class="check-group"><h3>바뀐 것 <span class="n">${diff.length}</span></h3>${diff.length ? diff.map((d) => `<div class="impact-diff"><b>${esc(d.label)}</b><span class="was">${esc(d.before)}</span><span class="now">${esc(d.after)}</span></div>`).join("") : `<p class="meta">이 때와 지금 사이에 바뀐 것이 없습니다.</p>`}</section>
+    ${warn.length ? `<section class="check-group"><h3 class="sev-warn">확인이 필요한 곳 <span class="n">${warn.length}</span></h3>${warn.map(impactItemHTML).join("")}</section>` : ""}
+    <section class="check-group"><h3>이어진 곳 <span class="n">${rest.length}</span></h3>${rest.slice(0, 60).map(impactItemHTML).join("") || `<p class="meta">없습니다.</p>`}${rest.length > 60 ? `<p class="meta">외 ${rest.length - 60}개</p>` : ""}</section>
+    <div id="im-ai"></div>
+    <div class="sheet-actions">${diff.length && items.length ? `<button class="btn btn-primary" type="button" data-act="im-ai">Claude로 판정</button>` : ""}</div>`, (root) => {
+    $("#im-ver", root).onchange = (ev) => openImpactSheet(e, Number(ev.target.value));
+    root.onclick = async (ev) => {
+      const r = ev.target.closest("[data-ref]");
+      if (r) { openEntry(r.dataset.ref); return; }
+      const mo = ev.target.closest("[data-ms-open]");
+      if (mo) { openManuscript(mo.dataset.msOpen); return; }
+      const fx = ev.target.closest("[data-im-fix]");
+      if (fx) {
+        const it = JSON.parse(fx.dataset.imFix);
+        closeSheet();
+        startInNewThread(`${e.name}(${e.id})을(를) 고친 뒤 파급 점검에서 나온 문제야.\n바뀐 것: ${diff.map((d) => `${d.label}: ${d.before} → ${d.after}`).join(" / ")}\n문제: ${it.ref ? `${it.ref} ` : ""}${it.problem}${it.suggestion ? `\n제안: ${it.suggestion}` : ""}\n관련 항목을 읽고 고칠 방법을 2~3가지 제안해 줘. 고치는 건 내가 고른 다음에 해. `);
+        return;
+      }
+      if (ev.target.closest('[data-act="im-ai"]')) {
+        const b = ev.target.closest('[data-act="im-ai"]');
+        b.disabled = true;
+        b.textContent = "판정하는 중…";
+        const ents = items.filter((x) => x.kind === "entry").slice(0, 15).map((x) => cut(entryToText(findEntry(x.id)), 700));
+        const scenes = items.filter((x) => x.kind === "ms").slice(0, 8).map((x) => { const m = state.manuscripts.find((y) => y.id === x.id); return m ? `### ${m.id} 「${m.title}」\n${hasCard(m) ? `카드: ${cardText(m, false).replace(/\n/g, " / ")}\n` : ""}${cut(m.body || "", 600)}` : ""; });
+        try {
+          const out = await quickAsk("너는 세계관 설정집의 교정 편집자다. 한 항목이 고쳐졌다. 고친 내용 때문에 실제로 어긋나게 된 다른 항목과 장면만 찾고, 각각 고칠 방향을 제안한다. 이어져 있을 뿐 문제가 없는 곳은 빼고, 추측으로 문제를 만들지 않는다. 한국어로 쓴다.",
+            `고친 항목(지금):\n${entryToText(e)}\n\n바뀐 것:\n${diff.map((d) => `- ${d.label}: ${d.before} → ${d.after}`).join("\n")}\n\n이어진 항목:\n${ents.join("\n\n") || "(없음)"}\n\n이어진 장면:\n${scenes.join("\n\n") || "(없음)"}`, 12000,
+            { strong: true, effort: "medium", schema: { type: "object", properties: { summary: S_STR, issues: { type: "array", items: { type: "object", properties: { ref: S_STR, problem: S_STR, suggestion: S_STR }, required: ["ref", "problem", "suggestion"], additionalProperties: false } } }, required: ["summary", "issues"], additionalProperties: false } });
+          if (out == null) return;
+          const res = JSON.parse(out);
+          $("#im-ai", root).innerHTML = `<section class="check-group"><h3>Claude 판정 <span class="n">${res.issues.length}</span></h3><p>${esc(res.summary)}</p>${res.issues.map((it) => `<div class="check-item check-issue"><span class="txt">${it.ref ? `<b>${esc(findEntry(it.ref)?.name || state.manuscripts.find((m) => m.id === it.ref)?.title || it.ref)}</b> · ` : ""}${esc(it.problem)}${it.suggestion ? `<br><span class="meta">→ ${esc(it.suggestion)}</span>` : ""}</span><button class="btn btn-small btn-ghost" type="button" data-im-fix="${esc(JSON.stringify(it))}">Claude와 고치기</button></div>`).join("") || `<p class="meta">어긋난 곳을 찾지 못했습니다.</p>`}</section>`;
+        } catch (err) { toast(apiMessage(err)); }
+        finally { if (b.isConnected) { b.disabled = false; b.textContent = "Claude로 판정"; } }
+      }
+    };
+  });
+}
+
+/* ---- 영역별 빈 곳 지도 ---- */
+function coverageDomains() {
+  const list = liveEntries();
+  const w = currentWorld();
+  const of = (pred) => list.filter((e) => pred(e.type));
+  const places = of(isPlaceType);
+  const species = of(isSpeciesType);
+  const chars = of(isCharacterType);
+  const facs = of(isFactionType);
+  const events = of(isEventType);
+  const magic = of(isMagicType);
+  const qa = worldQA();
+  const allQ = [...qa.custom, ...QUESTIONS];
+  const qs = (cats) => { const l = allQ.filter((x) => cats.includes(x.cat)); return { n: l.filter((x) => qa.done[x.id]).length, of: l.length, open: l.filter((x) => !qa.done[x.id] && !qa.skipped[x.id]) }; };
+  const ratio = (a, b) => (b ? a / b : 0);
+  const S = (label, value, note) => ({ label, value: Math.max(0, Math.min(1, value)), note });
+  const cnt = (label, n, target) => S(label, n / target, `${n}`);
+  const rat = (label, a, b) => S(label, ratio(a, b), b ? `${a}/${b}` : "없음");
+  const q = (cats) => { const r = qs(cats); return { sig: S(`질문 카드(${cats.join("·")})`, ratio(r.n, r.of), `${r.n}/${r.of}`), open: r.open, cats }; };
+  const facRel = facs.reduce((a, f) => a + (f.relations || []).filter((r) => facs.some((x) => x.id === r.to)).length, 0);
+  const timedRel = list.reduce((a, x) => a + (x.relations || []).filter((r) => r.since != null || r.until != null).length, 0);
+  const eco = worldEconomy(w);
+  const D = [
+    { key: "geo", name: "지리·자연", sig: [cnt("장소 항목", places.length, 5), rat("기후를 정한 장소", places.filter((p) => hasKeys(p.climate)).length, places.length), rat("상위 장소로 묶인 장소", places.filter((p) => p.parent).length, places.length), cnt("이어진 길", worldRoutes(w).length, 3), cnt("지도", state.maps.length, 1)], q: q(["자연"]) },
+    { key: "people", name: "민족·종족", sig: [cnt("종족 항목", species.length, 2), rat("생태·사회·문화를 정한 종족", species.filter((s) => hasKeys(s.species)).length, species.length), rat("수명 단계를 정한 종족", species.filter((s) => s.life).length, species.length), cnt("주민 구성을 정한 장소", places.filter((p) => p.demographics?.length).length, 2)], q: q(["관계"]) },
+    { key: "chars", name: "인물", sig: [cnt("인물 항목", chars.length, 6), rat("관계가 있는 인물", chars.filter((c) => (c.relations || []).length || incoming(c.id).length).length, chars.length), rat("내면을 정한 인물", chars.filter((c) => hasKeys(c.inner)).length, chars.length), rat("말투를 정한 인물", chars.filter((c) => hasKeys(c.voice)).length, chars.length), rat("생몰년이 있는 인물", chars.filter((c) => c.when).length, chars.length)], q: null },
+    { key: "politics", name: "정치·세력", sig: [cnt("세력 항목", facs.length, 3), cnt("세력끼리의 관계", facRel, 3), cnt("기간이 있는 관계", timedRel, 2), rat("직위 체계를 정한 세력", facs.filter((f) => f.ranks?.length).length, facs.length), rat("다스리는 자를 정한 장소", places.filter((p) => p.place?.ruler).length, places.length)], q: q(["법과 질서"]) },
+    { key: "economy", name: "경제", sig: [cnt("화폐", eco.currencies.length, 1), cnt("물가표", eco.prices.length, 6), rat("특산물·교역을 정한 장소", places.filter((p) => p.place?.goods || p.place?.trade).length, places.length)], q: q(["경제"]) },
+    { key: "tech", name: "기술·지식", sig: [cnt("기술 수준표", worldTech(w).rows.length, 2)], q: q(["기술", "지식"]) },
+    { key: "magic", name: "마법·초자연", sig: [cnt("마법 체계 항목", magic.length, 1), rat("체계 카드를 채운 마법", magic.filter((m) => hasKeys(m.magic)).length, magic.length), cnt("주문", magic.reduce((a, m) => a + (m.spells?.length || 0), 0), 3), cnt("규칙 판례", magic.reduce((a, m) => a + (m.rulings?.length || 0), 0), 2)], q: null },
+    { key: "faith", name: "믿음·의례", sig: [cnt("신앙 관련 항목", list.filter((e) => /신앙|종교|교단|교회|사원|신전|신격|^신$|신·/.test(typeInfo(e.type).label + " " + e.name)).length, 2), cnt("기념일·축제", worldObservances(w).length, 3)], q: q(["믿음", "의례", "죽음", "금기"]) },
+    { key: "daily", name: "일상·문화", sig: [rat("감각을 정한 장소", places.filter((p) => hasKeys(p.senses)).length, places.length)], q: q(["생활", "음식", "예술과 놀이"]) },
+    { key: "lang", name: "언어·이름", sig: [cnt("이름 규칙", worldNaming(w).length, 2), cnt("언어 스케치", species.filter((s) => s.lang).length, 1)], q: q(["언어"]) },
+    { key: "history", name: "역사·사건", sig: [cnt("사건 항목", events.length, 5), rat("연표에 있는 사건", events.filter((e) => e.when).length, events.length), cnt("시대 구분", worldCalendar().eras.length, 2), cnt("사건 인과", events.reduce((a, e) => a + (e.causes?.length || 0), 0), 2)], q: q(["역사"]) },
+  ];
+  for (const d of D) {
+    const sigs = d.q ? [...d.sig, d.q.sig] : d.sig;
+    d.all = sigs;
+    d.score = Math.round((sigs.reduce((a, s) => a + s.value, 0) / sigs.length) * 100);
+  }
+  return D;
+}
+function openCoverageMap() {
+  if (!currentWorld()) return;
+  const D = coverageDomains();
+  const avg = Math.round(D.reduce((a, d) => a + d.score, 0) / D.length);
+  const tone = (s) => (s >= 70 ? "ok" : s >= 35 ? "mid" : "low");
+  const tiles = D.slice().sort((a, b) => a.score - b.score).map((d) => `<section class="cov-tile cov-${tone(d.score)}"><div class="cov-head"><b>${esc(d.name)}</b><span class="cov-pct">${d.score}%</span></div><span class="cov-bar"><i style="width:${d.score}%"></i></span>
+    <details><summary>있는 것과 빈 것</summary><ul class="list-plain cov-sigs">${d.all.map((s) => `<li class="${s.value >= 1 ? "ok" : s.value > 0 ? "part" : "none"}">${s.value >= 1 ? "●" : s.value > 0 ? "◐" : "○"} ${esc(s.label)} <span class="meta">${esc(s.note)}</span></li>`).join("")}</ul>
+      ${d.q?.open.length ? `<p class="meta" style="margin:6px 0 2px">아직 정하지 않은 질문</p><ul class="list-plain">${d.q.open.slice(0, 3).map((x) => `<li class="small">${esc(x.q)} <button class="btn btn-small btn-ghost" type="button" data-cov-q="${x.id}">대화로 답하기</button></li>`).join("")}</ul>` : ""}</details>
+    <div class="row"><button class="btn btn-small" type="button" data-cov-ask="${d.key}">이 영역 질문 받기</button></div></section>`).join("");
+  openSheet(`<h2 class="sheet-title">빈 곳 지도</h2>
+    <p class="meta" style="margin:0 0 10px">영역마다 설정이 얼마나 찼는지 어림합니다(평균 ${avg}%). 항목 수, 채운 칸, 세계 단위 설정, 답한 질문 카드로 계산하며 비용은 들지 않습니다. 낮은 영역부터 보여 줍니다.</p>
+    <div class="cov-grid">${tiles}</div>`, (root) => {
+    root.onclick = (ev) => {
+      const qb = ev.target.closest("[data-cov-q]");
+      if (qb) {
+        const x = [...worldQA().custom, ...QUESTIONS].find((y) => y.id === qb.dataset.covQ);
+        closeSheet();
+        switchView("chat");
+        fillInput(`질문 카드: ${x.q}\n이 세계에서는 어떨지 같이 정해 보자. 정해지면 알맞은 항목에 저장해 줘. `);
+        return;
+      }
+      const ab = ev.target.closest("[data-cov-ask]");
+      if (ab) {
+        const d = D.find((y) => y.key === ab.dataset.covAsk);
+        const empty = d.all.filter((s) => s.value < 1).map((s) => s.label);
+        closeSheet();
+        startInNewThread(`이 세계의 '${d.name}' 영역이 비어 있어(채움 ${d.score}%${empty.length ? `, 빈 곳: ${empty.join(", ")}` : ""}). 지금 설정집을 보고 이 영역에서 먼저 정해야 할 질문 5개를 골라 하나씩 물어봐 줘. 내가 답하면 알맞은 항목에 저장해 줘. `);
+      }
+    };
+  });
 }
 async function planAction(work, act, btn) {
   if (!work) return;
@@ -10686,10 +11083,11 @@ function openEntry(ref) {
     ${charTabsHTML(e)}
     ${etabs && state.entryTab !== "base" ? charSectionHTML(e, state.entryTab) : entryBaseHTML(e)}
     <p class="meta">${fmtDate(e.updatedAt)} 수정 · ${e.updatedBy === "user" ? "직접 수정" : "Claude"} · 이력 ${e.history?.length || 0}개</p>
+    ${(() => { const im = !e.deleted && recentImpact(e); return im ? `<div class="impact-note"><span>방금 고친 ${esc(im.diff.slice(0, 3).map((d) => d.label).join("·"))}이(가) 영향을 줄 수 있는 곳 ${im.items.length}개${im.items.some((x) => x.warn) ? ` · 확인 필요 ${im.items.filter((x) => x.warn).length}` : ""}</span><button class="btn btn-small" type="button" data-act="impact">파급 보기</button></div>` : ""; })()}
     <div class="sheet-actions">
       ${e.deleted
         ? `<button class="btn btn-primary" type="button" data-act="restore">되살리기</button><button class="btn" type="button" data-act="history">이력</button><button class="btn btn-danger" type="button" data-act="purge">완전히 지우기</button>`
-        : `<button class="btn btn-primary" type="button" data-act="develop">대화로 발전시키기</button>${canInterview ? `<button class="btn" type="button" data-act="interview">인터뷰</button><button class="btn" type="button" data-act="consistency">일관성 검사</button>` : ""}${statusOf(e) !== "discarded" && liveEntries().filter((x) => cmpGroupOf(x.type) === cmpGroupOf(e.type)).length >= 2 ? `<button class="btn" type="button" data-act="compare-one">비교</button>` : ""}<button class="btn" type="button" data-act="edit">편집</button><button class="btn" type="button" data-act="persp">관점 더하기</button>${img ? `<button class="btn" type="button" data-act="img-ask">그림으로 묘사 받기</button>` : ""}<button class="btn" type="button" data-act="graph">관계도</button><button class="btn" type="button" data-act="history">이력</button><button class="btn btn-danger" type="button" data-act="trash-entry">삭제</button>`}
+        : `<button class="btn btn-primary" type="button" data-act="develop">대화로 발전시키기</button>${canInterview ? `<button class="btn" type="button" data-act="interview">인터뷰</button><button class="btn" type="button" data-act="consistency">일관성 검사</button>` : ""}${statusOf(e) !== "discarded" && liveEntries().filter((x) => cmpGroupOf(x.type) === cmpGroupOf(e.type)).length >= 2 ? `<button class="btn" type="button" data-act="compare-one">비교</button>` : ""}<button class="btn" type="button" data-act="edit">편집</button><button class="btn" type="button" data-act="persp">관점 더하기</button>${img ? `<button class="btn" type="button" data-act="img-ask">그림으로 묘사 받기</button>` : ""}<button class="btn" type="button" data-act="graph">관계도</button><button class="btn" type="button" data-act="history">이력</button>${e.history?.length ? `<button class="btn" type="button" data-act="impact">파급 보기</button>` : ""}<button class="btn btn-danger" type="button" data-act="trash-entry">삭제</button>`}
     </div>`, (root) => {
     hydrateBlobs(root);
     const gf = $("#galFile", root);
@@ -10749,6 +11147,7 @@ function openEntry(ref) {
         input.focus();
       } else if (act === "edit") openEditor(e);
       else if (act === "history") openHistory(e);
+      else if (act === "impact") openImpactSheet(e);
       else if (act === "trash-entry") {
         if (!(await confirmBox(`'${e.name}'을(를) 휴지통으로 옮길까요?`, "삭제", true))) return;
         trashEntry(e, "user");
@@ -13590,7 +13989,7 @@ function renderTimeline() {
     <div class="tl-head">
       <div><span class="eyebrow">달력</span>
         <p class="tl-cal">${esc(fmtYear(cal.now ?? 1, cal))} 형식${cal.now !== null ? ` · 지금 ${esc(fmtYear(cal.now, cal))}` : ""}${cal.eras.length ? ` · 시대 ${cal.eras.length}개` : ""}</p></div>
-      <button class="btn btn-small" type="button" data-tl="calendar">달력·시대</button>
+      <div class="row"><button class="btn btn-small" type="button" data-tl="slice">연도 단면</button><button class="btn btn-small" type="button" data-tl="calendar">달력·시대</button></div>
     </div>
     <div class="codex-tools">
       <input id="tlSearch" type="search" placeholder="연표에서 찾기" value="${esc(state.tlQuery)}" aria-label="연표에서 찾기">
@@ -13641,7 +14040,7 @@ function renderTimelineResults() {
     if (e.when.end != null) extra = isCharacterType(e.type) ? `향년 ${fmtYearNum(e.when.end - e.when.start)}` : spanText(e.when, cal);
     else if (isCharacterType(e.type) && cal.now !== null && cal.now >= start) extra = `지금 ${fmtYearNum(cal.now - start)}살`;
     html += `<div class="tl-row${state.tlHighlight === e.id ? " hl" : ""}${statusOf(e) === "draft" ? " draft" : ""}" id="tl-${e.id}" style="--tc:${typeColor(e.type)}">
-      <div class="tl-year">${esc(fmtYearNum(start))}</div>
+      <div class="tl-year"><button type="button" class="tl-yr" data-slice="${start}" aria-label="${esc(fmtYear(start, cal))} 단면 보기">${esc(fmtYearNum(start))}</button></div>
       <div class="tl-axis"><span class="tl-dot${e.when.end != null ? " span" : ""}"></span></div>
       <button class="tl-card" type="button" data-ref="${e.id}">
         <span class="tl-meta"><span class="catno">${e.id}</span> ${esc(t.label)}${statusOf(e) === "draft" ? ' <span class="st-badge st-draft">초안</span>' : ""}</span>
@@ -13916,8 +14315,11 @@ function bindTimeline() {
       if (ent) openEditor(ent, null, { focusTime: true });
       return;
     }
+    const sl = e.target.closest("[data-slice]");
+    if (sl) { openYearSlice(Number(sl.dataset.slice)); return; }
     const act = e.target.closest("[data-tl]")?.dataset.tl;
-    if (act === "calendar") openCalendarSheet();
+    if (act === "slice") openYearSlice();
+    else if (act === "calendar") openCalendarSheet();
     else if (act === "new") {
       if (state.busy) { toast("Claude가 작업 중입니다"); return; }
       openEditor(null, eventTypeKey(), { focusTime: true });
@@ -15131,6 +15533,7 @@ function bindGlobal() {
     else if (act === "trash") openTrash();
     else if (act === "types") openTypesSheet();
     else if (act === "checks") openChecksSheet();
+    else if (act === "coverage") openCoverageMap();
     else if (act === "compare") openCompare();
     else if (act === "comp-table") openCompositionTable();
     else if (act === "economy") openEconomySheet();
