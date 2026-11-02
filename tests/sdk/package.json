@@ -1,0 +1,9 @@
+{
+  "name": "lorekeeper-test-sdk",
+  "private": true,
+  "description": "테스트용: 앱이 CDN에서 받는 것과 같은 버전의 Anthropic SDK를 브라우저용으로 묶는다",
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.135.0",
+    "esbuild": "0.24.2"
+  }
+}
