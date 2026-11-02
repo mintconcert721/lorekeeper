@@ -2007,7 +2007,7 @@ const idb = (() => {
    4. 상태
    ============================================================ */
 const settings = Object.assign(
-  { apiKey: "", model: "claude-opus-5-5", effort: "medium", showThinking: true, theme: "system" },
+  { apiKey: "", model: "claude-opus-5-5", effort: "medium", showThinking: true, theme: "system", quickHaiku: true },
   LS.get("lk.settings", {}),
 );
 const saveSettings = () => LS.set("lk.settings", settings);
@@ -2751,15 +2751,23 @@ function saveManuscript(d, by) {
 // 대화와 별개로 Claude에게 한 번 묻는다(이름 만들기, 맞춤 질문 등). 대화 기록에는 남지 않는다.
 // 짧은 단발 요청(이름 짓기, 질문 카드). 생각은 끌 수 없어서(Opus 5.5) 깊이를 low로 두고,
 // 생각에 쓰는 토큰도 max_tokens에 들어가므로 넉넉히 잡는다.
+// 짧은 단발 요청을 보낼 모델: 설정에서 켜 두면 Haiku 5.5(규칙 판정처럼 결과를 판례로 남기는 요청은 대화 모델)
+const QUICK_MODEL = "claude-haiku-5-5";
+const quickModelFor = (opts = {}) => opts.model || (settings.quickHaiku && !opts.strong ? QUICK_MODEL : settings.model);
 async function quickAsk(system, user, maxTokens = 8000, opts = {}) {
   if (!settings.apiKey) { toast("설정에서 API 키를 먼저 넣으세요"); switchView("settings"); return null; }
   const client = new Anthropic({ apiKey: settings.apiKey, dangerouslyAllowBrowser: true });
-  const m = PRICES[settings.model];
-  const params = { model: settings.model, max_tokens: maxTokens, system, messages: [{ role: "user", content: user }], output_config: { effort: opts.effort || "low", ...(opts.schema ? { format: { type: "json_schema", schema: opts.schema } } : {}) } };
+  const model = quickModelFor(opts);
+  const m = PRICES[model];
+  const params = { model, max_tokens: maxTokens, system, messages: [{ role: "user", content: user }], output_config: { effort: opts.effort || "low", ...(opts.schema ? { format: { type: "json_schema", schema: opts.schema } } : {}) } };
   if (m?.fallback) { params.betas = ["server-side-fallback-2026-07-01"]; params.fallbacks = "default"; }
   const msg = await client.beta.messages.create(params);
   addCost(calcCost(msg.usage, msg.model));
-  if (msg.stop_reason === "refusal") throw new Error("안전 정책에 따라 답할 수 없습니다");
+  if (msg.stop_reason === "refusal") {
+    // Haiku는 서버 쪽 대체 모델이 없어서, 거절되면 대화 모델로 한 번 더 묻는다
+    if (model !== settings.model && !opts.model) return quickAsk(system, user, maxTokens, { ...opts, model: settings.model });
+    throw new Error("안전 정책에 따라 답할 수 없습니다");
+  }
   const text = msg.content.filter((b) => b.type === "text").map((b) => b.text).join("\n");
   if (msg.stop_reason === "max_tokens" && !text.trim()) throw new Error("답이 길어져 끊겼습니다. 다시 시도해 주세요");
   return text;
@@ -5106,7 +5114,7 @@ async function askRuling(e, root, btn) {
       "너는 이 세계 마법 체계의 판정관이다. 체계 카드, 주문서, 판례를 근거로 상황이 가능한지 판정한다. 판례와 어긋나지 않게 하고, 근거가 없는 부분은 지어내지 말고 '정해지지 않음'이라고 밝힌다. reason에는 근거(카드의 어느 칸, 어느 판례)를, cost에는 치러야 할 대가를, conditions에는 가능해지는 조건을, consequence에는 이야기에 남는 결과를 짧게 쓴다. 모두 한국어로.",
       `${magicContext(e)}${who.length ? `\n\n관련 항목:\n${who.map(entryToText).join("\n\n")}` : ""}\n\n# 판정할 상황\n${situation}`,
       8000,
-      { schema: RULING_SCHEMA, effort: "medium" },
+      { schema: RULING_SCHEMA, effort: "medium", strong: true },
     );
     if (text === null) { out.innerHTML = ""; return; }
     const r = JSON.parse(text);
@@ -9321,6 +9329,8 @@ async function renderSettings() {
       <h2>모델</h2>
       <div class="radio-list">${MODEL_CHOICES.map((m) => { const p = PRICES[m.id]; return `<label class="radio"><input type="radio" name="model" value="${m.id}"${settings.model === m.id ? " checked" : ""}><span class="t">${p.label}</span><span class="s">입력 $${p.in} · 출력 $${p.out} / 100만 토큰 — ${m.note}</span></label>`; }).join("")}</div>
       <p>Opus와 Sonnet은 안전 정책 오판으로 거절되면 서버가 권장 모델로 자동 재시도합니다.</p>
+      <label class="switch">짧은 요청은 Haiku 5.5로 <input type="checkbox" id="quickHaiku"${settings.quickHaiku ? " checked" : ""}></label>
+      <p>대화와 따로 한 번씩 보내는 요청(이름 만들기, 맞춤 질문, 그림 프롬프트, 그날의 날씨, 장소 생성기, 허점 찾기)을 Haiku 5.5로 보냅니다. Haiku 5.5는 입력 $${PRICES[QUICK_MODEL].in} · 출력 $${PRICES[QUICK_MODEL].out} / 100만 토큰입니다. 판례로 남는 규칙 판정과 대화는 위에서 고른 모델을 씁니다. Haiku가 거절하면 위 모델로 한 번 더 묻습니다.</p>
     </section>
 
     <section class="card">
@@ -9387,6 +9397,7 @@ async function renderSettings() {
     else if (t.name === "theme") { settings.theme = t.value; saveSettings(); applyTheme(); }
     else if (t.name === "effort") { settings.effort = t.value; saveSettings(); }
     else if (t.id === "showThinking") { settings.showThinking = t.checked; saveSettings(); }
+    else if (t.id === "quickHaiku") { settings.quickHaiku = t.checked; saveSettings(); toast(t.checked ? "짧은 요청은 Haiku 5.5로 보냅니다" : "짧은 요청도 대화 모델로 보냅니다"); }
     else if (t.id === "syncAuto") { syncCfg.auto = t.checked; saveSyncCfg(); if (t.checked) scheduleSync(1000); }
     else if (t.id === "importFile" && t.files?.[0]) importBackup(t.files[0]);
   };
