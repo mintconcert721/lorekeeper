@@ -902,6 +902,89 @@ main { min-height: 0; min-width: 0; position: relative; }
 .hy-불가 { background: color-mix(in srgb, var(--danger) 16%, var(--surface)); }
 .hy-모름, .hy-none { background: var(--surface); }
 .hy-none button { color: var(--muted) !important; }
+/* 사건 */
+.role { display: inline-block; min-width: 34px; text-align: center; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 999px; background: var(--surface-2); }
+.role-주동 { background: color-mix(in srgb, var(--accent) 20%, var(--surface)); }
+.role-배후 { background: color-mix(in srgb, var(--t-faction) 22%, var(--surface)); }
+.role-피해 { background: var(--danger-soft); color: var(--danger); }
+.role-목격 { background: color-mix(in srgb, var(--t-place) 20%, var(--surface)); }
+.part-list li, .change-list li { padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.part-list li:last-child, .change-list li:last-child { border-bottom: 0; }
+.part-row .pn { grid-column: 1 / -1; }
+.step-row { display: flex; flex-direction: column; gap: 6px; }
+.step-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto auto; gap: 4px; }
+.step-top .icon-btn { width: 34px; min-height: 36px; }
+.cause-list li { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.cause-list li > div { flex: 1; min-width: 0; }
+.cause-list .meta { margin: 2px 0 0; }
+.plain-btn { border: 0; background: none; padding: 0; color: var(--ink); font: inherit; text-align: left; }
+.tl-gap { align-items: center; }
+.tl-gap .btn { grid-column: 3; justify-self: start; margin: 2px 0 4px; }
+.causal-scroll { overflow: auto; max-height: 66vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overscroll-behavior: contain; }
+.causal-canvas { position: relative; }
+.causal-svg { position: absolute; inset: 0; pointer-events: none; }
+.c-edge { fill: none; stroke: var(--muted); stroke-width: 1.6; }
+.c-edge.bad { stroke: var(--danger); stroke-dasharray: 5 4; stroke-width: 2; }
+.c-edge.dim { opacity: .18; }
+.c-head { fill: var(--muted); }
+.c-head.bad { fill: var(--danger); }
+.c-year { position: absolute; top: 6px; font: 600 11px var(--font-mono); color: var(--muted); text-align: center; }
+.c-node { position: absolute; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 4px 8px; border: 1px solid var(--line); border-left: 4px solid var(--tc); border-radius: 10px; background: var(--bg); color: var(--ink); text-align: left; overflow: hidden; }
+.c-node.sel { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.c-node.dim { opacity: .35; }
+.c-name { font-weight: 700; font-size: 13px; line-height: 1.25; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.c-when { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.c-card { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.cal-strip { display: flex; height: 44px; margin: 10px 0 6px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--surface); }
+.cal-mon { position: relative; min-width: 0; border-right: 1px solid var(--line); }
+.cal-mon:last-child { border-right: 0; }
+.cal-mon small { position: absolute; left: 2px; right: 2px; top: 3px; font-size: 9.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: clip; text-align: center; }
+.cal-dot { position: absolute; bottom: 7px; width: 12px; height: 12px; margin-left: -6px; padding: 0; border: 2px solid var(--surface); border-radius: 50%; background: var(--accent); }
+.cal-dot.static { position: static; display: inline-block; margin: 0 4px 0 0; vertical-align: -1px; border: 0; width: 10px; height: 10px; }
+.k-기념일 { --kc: var(--accent); }
+.k-축제 { --kc: var(--t-species); }
+.k-금기일 { --kc: var(--danger); }
+.cal-dot.k-기념일, .cal-dot.k-축제, .cal-dot.k-금기일 { background: var(--kc); }
+.pill.k-기념일, .pill.k-축제, .pill.k-금기일 { background: color-mix(in srgb, var(--kc) 18%, var(--surface)); color: var(--ink); }
+.cal-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--muted); }
+.cal-month h3 { margin: 16px 0 6px; font: 700 15px var(--font-body); }
+.cal-item { display: flex; gap: 10px; width: 100%; padding: 8px 0; border: 0; border-bottom: 1px solid var(--line); background: none; color: var(--ink); text-align: left; font: inherit; }
+.cal-day { flex: none; width: 42px; font: 700 14px var(--font-mono); color: var(--accent); }
+.cal-body { flex: 1; min-width: 0; font-size: 14px; }
+.cal-desc { display: block; margin-top: 2px; }
+.month-row { grid-template-columns: minmax(0, 3fr) minmax(0, 1fr) auto; }
+.fs-card .fs-text { margin: 6px 0; font-size: 15px; }
+.fs-card.fs-회수, .fs-card.fs-버림 { opacity: .72; }
+.sense-head .sp { flex: 1; }
+.gap-list { display: flex; flex-direction: column; gap: 6px; margin: 10px 0; }
+.gap-pick { align-items: flex-start; padding: 8px; border: 1px solid var(--line); border-radius: 10px; }
+.gap-pick span { font-size: 14px; line-height: 1.45; }
+/* 사물 */
+.pill.rarity { background: color-mix(in srgb, var(--t-item, var(--accent)) 20%, var(--surface)); font-size: 12px; }
+dd.blank.warn { color: var(--danger); }
+.mat-row { grid-template-columns: minmax(0, 3fr) minmax(0, 1fr) auto; }
+.hold-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin: 6px 0; font-size: 14px; }
+.hold-line .lbl { font-size: 11px; letter-spacing: .08em; color: var(--muted); }
+.hold-items { display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.hold { display: inline-flex; align-items: center; gap: 4px; }
+.hold .link-btn { font-size: 12px; margin-left: 2px; }
+.cur-row .cw { grid-column: 1 / -1; }
+.price-row { display: flex; flex-direction: column; gap: 4px; padding-bottom: 6px; border-bottom: 1px dashed var(--line); margin-bottom: 6px; }
+.price-top { display: grid; grid-template-columns: minmax(0, 1fr) 64px 72px auto; gap: 4px; }
+.price-top .icon-btn { width: 34px; min-height: 36px; }
+.price-sub { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4px; }
+.eco-conv { margin-top: 14px; }
+.conv-row { display: grid; grid-template-columns: 70px minmax(0, 1fr) auto minmax(0, 1fr); gap: 6px; align-items: center; }
+.conv-out { margin: 8px 0 0; font: 700 15px var(--font-body); }
+.tech-table td.cmp-cell { min-width: 96px; }
+.journey polyline { fill: none; stroke: var(--accent); stroke-width: 3; stroke-dasharray: 8 6; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+.j-pt { transform: translate(calc(-20px * var(--ik)), calc(-22px * var(--ik))); }
+.j-pt circle { r: calc(11px * var(--ik)); fill: var(--surface); stroke: var(--accent); stroke-width: 2.5; vector-effect: non-scaling-stroke; }
+.j-pt.cur circle { fill: var(--accent); }
+.j-pt text { font: 700 calc(12px * var(--ik)) var(--font-mono); fill: var(--accent); text-anchor: middle; dominant-baseline: central; }
+.j-pt.cur text { fill: var(--bg); }
+.journey-list { margin: 6px 0 8px; padding-left: 20px; font-size: 13px; max-height: 120px; overflow-y: auto; }
+.journey-list li.cur { font-weight: 700; color: var(--accent); }
 /* 등장 비중 */
 .presence { display: flex; flex-direction: column; gap: 4px; }
 .pres-row { display: grid; grid-template-columns: 76px minmax(0, 1fr) 32px; grid-template-rows: auto auto; gap: 2px 8px; align-items: center; width: 100%; text-align: left; border: 0; border-bottom: 1px solid var(--line); background: none; padding: 6px 0; color: var(--ink); }
@@ -2004,6 +2087,193 @@ const TOOLS_V10 = [
   },
   toolV9("respond"),
 ];
+// v11: 사건(사건 카드·참여자·세부 경과·인과·기념일·복선)과 사물(사물 카드·마법 물건·제작·화폐·기술 수준).
+const EVENT_KEYS = [["cause", "원인"], ["course", "경과 요약"], ["outcome", "결과"], ["legacy", "남긴 것"]];
+const EVENT_IDS = EVENT_KEYS.map(([k]) => k);
+const EVENT_ROLES = ["주동", "배후", "피해", "목격", "기타"];
+const ITEM_KEYS = [["looks", "외형"], ["material", "재질"], ["size", "크기·무게"], ["use", "쓰임"], ["value", "가치·값"], ["rarity", "희귀도"], ["make", "만드는 법"], ["state", "지금 상태"]];
+const ITEM_IDS = ITEM_KEYS.map(([k]) => k);
+const RARITY_KINDS = ["흔함", "드묾", "희귀", "전설", "유일"];
+const OBSERVANCE_KINDS = ["기념일", "축제", "금기일"];
+const FORESHADOW_KINDS = ["복선", "예언"];
+const FORESHADOW_STATUS = ["깔림", "회수", "버림"];
+const DEFAULT_TECH_AREAS = ["조명", "교통", "통신", "의료", "무기", "인쇄", "농업", "건축"];
+const EVENT_PARAM = { type: "object", description: "사건 카드. 넣은 칸만 덮어쓰고 빈 문자열이면 지운다.", properties: Object.fromEntries(EVENT_KEYS.map(([k, l]) => [k, { type: "string", description: l }])) };
+const ITEM_PARAM = { type: "object", description: "사물 카드. 넣은 칸만 덮어쓰고 빈 문자열이면 지운다.", properties: Object.fromEntries(ITEM_KEYS.map(([k, l]) => [k, { type: "string", description: k === "rarity" ? `${l}. 예: ${RARITY_KINDS.join(", ")}` : l }])) };
+const MAGIC_ITEM_PARAM = {
+  type: "object",
+  description: "마법 물건. 넣은 칸만 덮어쓰고 빈 문자열이면 지운다.",
+  properties: {
+    system_id: { type: "string", description: "이 물건이 쓰는 마법 체계 항목 id" },
+    spells: { ...STR_ARR, description: "이 물건으로 쓸 수 있는 주문 이름(그 체계의 주문서에 있는 것). 주면 통째로 바꾼다" },
+    cost: { type: "string", description: "쓸 때 치르는 대가" },
+    charges: { type: "string", description: "사용 횟수·충전 방식. 예: 하루 세 번, 보름달에 다시 찬다" },
+  },
+};
+const SYSTEM_V11 = SYSTEM_V10 + `
+
+## 사건
+- 사건 항목에는 event(원인·경과 요약·결과·남긴 것)를 채우고, 참여자와 역할(주동·배후·피해·목격·기타), 세부 경과 단계는 set_event로 기록한다.
+- 한 사건이 다른 사건의 원인이면 set_cause로 잇는다. 결과는 원인보다 앞선 해에 일어나지 않는다.
+- 사건이 남긴 기념일·축제·금기일은 set_observance로 세계 달력의 날짜에 둔다. 달 이름과 날 수는 set_calendar의 months로 정한다.
+- 복선과 예언은 set_foreshadow로 기록하고, 이야기에서 회수되면 status를 회수로 바꾼다. 아직 회수되지 않은 복선을 기억해 두고 알맞은 때에 제안한다.
+
+## 사물과 경제
+- 사물 항목에는 item(외형·재질·크기·쓰임·가치·희귀도·만드는 법·지금 상태)을 채운다. 마법이 깃든 물건은 magic_item으로 마법 체계·주문·대가·사용 횟수를 잇는다.
+- 물건을 만드는 재료, 만드는 이와 곳, 재료가 나는 곳은 set_recipe로 기록한다.
+- 유물의 소유 이력에는 소유자마다 그때 있던 곳(at)을 넣을 수 있다. 같은 해에 두 사람이 한 물건을 가지지 않게 한다.
+- 화폐와 물가는 set_economy로 정하고, 장면에서 값을 말할 때 그 물가표를 따른다.
+- 지역·시기별 기술 수준은 set_tech로 정하고, 그 시대·지역에 없을 물건이나 기술을 쓰지 않는다.`;
+const toolV10 = (name) => TOOLS_V10.find((t) => t.name === name);
+const TOOLS_V11 = [
+  toolV10("search_entries"),
+  toolV10("get_entries"),
+  {
+    name: "create_entry",
+    description: toolV10("create_entry").description + " 사건은 event(사건 카드)를, 사물은 item(사물 카드)과 magic_item(마법 물건)을 함께 넣을 수 있다.",
+    input_schema: { type: "object", properties: { ...toolV10("create_entry").input_schema.properties, event: EVENT_PARAM, item: ITEM_PARAM, magic_item: MAGIC_ITEM_PARAM }, required: toolV10("create_entry").input_schema.required },
+    eager_input_streaming: true,
+  },
+  {
+    name: "update_entry",
+    description: toolV10("update_entry").description + " event, item, magic_item도 넣은 칸만 덮어쓴다.",
+    input_schema: { type: "object", properties: { ...toolV10("update_entry").input_schema.properties, event: EVENT_PARAM, item: ITEM_PARAM, magic_item: MAGIC_ITEM_PARAM }, required: ["id"] },
+    eager_input_streaming: true,
+  },
+  ...TOOLS_V10.filter((t) => !["search_entries", "get_entries", "create_entry", "update_entry", "set_calendar", "set_artifact", "respond"].includes(t.name)),
+  {
+    name: "set_calendar",
+    description: "이 세계의 달력 표기, 현재 연도, 시대 구분, 달을 정한다. 바꿀 값만 넣는다. eras나 months를 넣으면 그 목록 전체를 바꾼다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        prefix: { type: "string", description: "연도 앞 표기. 예: '등대력 '(뒤에 띄어쓰기 포함 가능)" },
+        suffix: { type: "string", description: "연도 뒤 표기. 예: '년'" },
+        now: { type: "number", description: "이야기 속 '지금'의 연도" },
+        eras: { type: "array", description: "시대 구분 전체 목록", items: { type: "object", properties: { name: { type: "string" }, start: { type: "number" }, end: { type: "number" } }, required: ["name", "start"] } },
+        months: { type: "array", description: "한 해의 달 전체 목록(순서대로). 정하지 않으면 12달 × 30일로 본다", items: { type: "object", properties: { name: { type: "string" }, days: { type: "number", description: "이 달의 날 수" } }, required: ["name", "days"] } },
+      },
+    },
+    eager_input_streaming: true,
+  },
+  {
+    name: "set_artifact",
+    description: toolV10("set_artifact").description + " 소유자마다 at에 그때 그 물건이 있던 장소 id를 넣을 수 있다.",
+    input_schema: {
+      ...toolV10("set_artifact").input_schema,
+      properties: {
+        ...toolV10("set_artifact").input_schema.properties,
+        owners: { type: "array", description: "소유자 이력(시간순)", items: { type: "object", properties: { who: { type: "string", description: "항목 id나 이름" }, from: { type: "number" }, to: { type: "number" }, how: { type: "string", description: "어떻게 손에 넣었나" }, at: { type: "string", description: "그때 있던 곳(장소 id)" } }, required: ["who"] } },
+      },
+    },
+    eager_input_streaming: true,
+  },
+  {
+    name: "set_event",
+    description: "사건의 참여자와 세부 경과를 기록한다. participants나 steps를 주면 그 목록을 통째로 바꾸고, 빈 배열이면 지운다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        id: { type: "string", description: "사건 항목 id" },
+        participants: { type: "array", items: { type: "object", properties: { id: { type: "string", description: "인물·세력 등 항목 id" }, role: { type: "string", enum: EVENT_ROLES }, note: { type: "string", description: "그 사건에서 한 일" } }, required: ["id", "role"] } },
+        steps: { type: "array", description: "시간순 세부 경과", items: { type: "object", properties: { at: { type: "string", description: "시점 표기. 예: 1일째 새벽" }, text: { type: "string" }, place_id: { type: "string", description: "장소 id" } }, required: ["text"] } },
+      },
+      required: ["id"],
+    },
+    eager_input_streaming: true,
+  },
+  {
+    name: "set_cause",
+    description: "한 사건(cause_id)이 다른 사건(effect_id)의 원인이라고 잇는다. 같은 쌍이 있으면 note만 바꾼다. remove가 true면 지운다.",
+    input_schema: { type: "object", properties: { cause_id: { type: "string" }, effect_id: { type: "string" }, note: { type: "string", description: "어떻게 이어지나" }, remove: { type: "boolean" } }, required: ["cause_id", "effect_id"] },
+    eager_input_streaming: true,
+  },
+  {
+    name: "set_observance",
+    description: "세계 달력의 기념일·축제·금기일을 만들거나 고친다. 같은 name이면 넣은 칸만 덮어쓴다. remove가 true면 지운다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        name: { type: "string" },
+        kind: { type: "string", enum: OBSERVANCE_KINDS },
+        month: { type: "string", description: "달 이름이나 번호(1부터)" },
+        day: { type: "number", description: "그 달의 며칠" },
+        days: { type: "number", description: "며칠 동안 이어지나(기본 1)" },
+        since: { type: "number", description: "처음 지킨 해" },
+        event_id: { type: "string", description: "계기가 된 사건 id" },
+        desc: { type: "string", description: "그날 사람들이 하는 일·금하는 일" },
+        remove: { type: "boolean" },
+      },
+      required: ["name"],
+    },
+    eager_input_streaming: true,
+  },
+  {
+    name: "set_foreshadow",
+    description: "복선이나 예언을 기록한다. 같은 text가 있으면 넣은 칸만 덮어쓴다. remove가 true면 지운다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        text: { type: "string", description: "복선·예언의 내용" },
+        kind: { type: "string", enum: FORESHADOW_KINDS },
+        planted_in: { type: "string", description: "깔린 곳: 항목 id나 원고 id" },
+        paid_off_in: { type: "string", description: "회수된 곳: 항목 id나 원고 id(빈 문자열이면 뺀다)" },
+        due: { type: "number", description: "예언이 이루어질 해" },
+        status: { type: "string", enum: FORESHADOW_STATUS },
+        note: { type: "string", description: "회수할 계획이나 메모" },
+        remove: { type: "boolean" },
+      },
+      required: ["text"],
+    },
+    eager_input_streaming: true,
+  },
+  {
+    name: "set_recipe",
+    description: "사물을 만드는 법(재료, 만드는 이, 만드는 곳, 걸리는 시간)과 이 사물이 재료로서 나는 곳을 기록한다. 준 칸만 바꾸고, 빈 배열이나 빈 문자열이면 그 칸을 지운다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        id: { type: "string", description: "사물 항목 id" },
+        materials: { type: "array", description: "재료 전체 목록", items: { type: "object", properties: { ref: { type: "string", description: "재료 사물 id, 항목이 없으면 이름" }, qty: { type: "string", description: "양. 예: 세 근" } }, required: ["ref"] } },
+        makers: { ...STR_ARR, description: "만들 수 있는 인물·세력 id" },
+        place_id: { type: "string", description: "만드는 곳(장소 id)" },
+        time: { type: "string", description: "걸리는 시간" },
+        note: { type: "string" },
+        sources: { ...STR_ARR, description: "이 사물이 재료로서 나는 장소 id" },
+      },
+      required: ["id"],
+    },
+    eager_input_streaming: true,
+  },
+  {
+    name: "set_economy",
+    description: "화폐와 물가표를 정한다. currencies는 같은 name, prices는 같은 item과 where_id면 고치고 아니면 더한다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        base: { type: "string", description: "기준 화폐 이름. 다른 화폐의 값은 이 화폐 몇 개인지로 적는다" },
+        currencies: { type: "array", items: { type: "object", properties: { name: { type: "string" }, rate: { type: "number", description: "기준 화폐 몇 개 값" }, where: { ...STR_ARR, description: "이 화폐를 쓰는 나라·세력·장소 id" } }, required: ["name", "rate"] } },
+        prices: { type: "array", items: { type: "object", properties: { item: { type: "string", description: "물건이나 서비스. 예: 빵 한 덩이" }, price: { type: "number" }, currency: { type: "string", description: "화폐 이름(비우면 기준 화폐)" }, where_id: { type: "string", description: "이 값이 통하는 장소·세력 id(비우면 어디서나)" }, note: { type: "string" } }, required: ["item", "price"] } },
+        remove_currencies: { ...STR_ARR, description: "지울 화폐 이름" },
+        remove_prices: { ...STR_ARR, description: "지울 물가 항목(item) 이름" },
+      },
+    },
+    eager_input_streaming: true,
+  },
+  {
+    name: "set_tech",
+    description: "지역·시기별 기술 수준을 정한다. areas를 주면 분야 목록을 통째로 바꾼다. rows는 같은 where_id와 from이면 values를 덮어쓰고, remove가 true면 그 줄을 지운다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        areas: { ...STR_ARR, description: `기술 분야 목록. 기본: ${DEFAULT_TECH_AREAS.join(", ")}` },
+        rows: { type: "array", items: { type: "object", properties: { where_id: { type: "string", description: "장소·세력 id(비우면 세계 전역)" }, from: { type: "number", description: "이 수준이 시작된 해" }, to: { type: "number", description: "끝난 해" }, values: { type: "object", additionalProperties: { type: "string" }, description: '분야별 수준. 예: {"조명": "고래기름 등잔", "통신": "전서구"}' }, remove: { type: "boolean" } } } },
+      },
+    },
+    eager_input_streaming: true,
+  },
+  toolV10("respond"),
+];
 const PROMPT_SETS = {
   1: { system: SYSTEM_V1, tools: TOOLS_V1 },
   2: { system: SYSTEM_V2, tools: TOOLS_V2 },
@@ -2015,8 +2285,9 @@ const PROMPT_SETS = {
   8: { system: SYSTEM_V8, tools: TOOLS_V8 },
   9: { system: SYSTEM_V9, tools: TOOLS_V9 },
   10: { system: SYSTEM_V10, tools: TOOLS_V10 },
+  11: { system: SYSTEM_V11, tools: TOOLS_V11 },
 };
-const PROMPT_CURRENT = 10;
+const PROMPT_CURRENT = 11;
 // 버전 정보가 없는 예전 대화는 만든 시각으로 버전을 추정한다(각 버전의 배포 완료 시각, UTC).
 const PROMPT_RELEASES = [
   { v: 2, at: Date.parse("2026-11-01T15:35:14Z") },
@@ -2088,6 +2359,13 @@ const TOOL_STATUS = {
   set_hybrid: "혼혈 규칙을 정하는 중…",
   set_demographics: "구성 비율을 정리하는 중…",
   set_ranks: "직위를 정리하는 중…",
+  set_event: "사건의 경과를 정리하는 중…",
+  set_cause: "인과를 잇는 중…",
+  set_observance: "기념일을 정하는 중…",
+  set_foreshadow: "복선을 적는 중…",
+  set_recipe: "만드는 법을 적는 중…",
+  set_economy: "물가를 정리하는 중…",
+  set_tech: "기술 수준을 정리하는 중…",
 };
 
 /* ============================================================
@@ -2191,7 +2469,11 @@ const state = {
   addrIds: null,        // 호칭표에 보일 인물(null이면 자동)
   mxView: LS.get("lk.mxview", "rel"), // 관계표 보기: rel(관계) | hybrid(혼혈)
   mxYear: null,
-  tlMode: LS.get("lk.tlmode", "list"), // 연표 탭의 보기: list | life
+  tlMode: LS.get("lk.tlmode", "list"), // 연표 탭의 보기: list | life | causal | cal
+  causalSel: null,
+  causalAll: false,
+  mapJourney: null,
+  fsFilter: "all",
   lifeYear: null,
   lifeZoom: 1,
   lifeAll: false,    // 다음에 만들 대화의 모드(인물 인터뷰 등)
@@ -2580,6 +2862,7 @@ function artifactWarnings(e, a = e.artifact) {
     if (o.from != null && who.when.end != null && o.from > who.when.end) out.push(`${who.name}은(는) ${fmtYear(who.when.end)}에 죽었는데 ${fmtYear(o.from)}부터 가졌다고 되어 있습니다`);
     if (o.to != null && who.when.end != null && o.to > who.when.end + 0.5 && !/죽|사후|유언|무덤/.test(o.how || "")) out.push(`${who.name}이(가) 죽은 뒤(${fmtYear(who.when.end)})에도 ${fmtYear(o.to)}까지 가진 것으로 되어 있습니다`);
   }
+  out.push(...ownerOverlaps(a));
   if (a?.made != null) for (const o of a.owners || []) if (o.from != null && o.from < a.made) out.push(`만들어지기(${fmtYear(a.made)}) 전에 ${refName(o.who)}이(가) 가졌다고 되어 있습니다`);
   return out;
 }
@@ -2670,12 +2953,229 @@ function normalizeArtifact(cur, p) {
   for (const k of ["maker", "location", "holder", "seal", "seal_note"]) if (p[k] !== undefined) { const t = String(p[k] ?? "").trim(); if (t) next[k] = t; else delete next[k]; }
   if (p.made !== undefined) { const y = p.made === null || p.made === "" ? null : parseYear(p.made); if (y === null) delete next.made; else next.made = y; }
   if (p.owners !== undefined) {
-    const owners = (p.owners || []).map((o) => ({ who: String(o.who || "").trim(), from: o.from === undefined || o.from === null || o.from === "" ? null : parseYear(o.from), to: o.to === undefined || o.to === null || o.to === "" ? null : parseYear(o.to), how: String(o.how || "").trim() })).filter((o) => o.who);
+    const owners = (p.owners || []).map((o) => {
+      const at = String(o.at || "").trim();
+      return { who: String(o.who || "").trim(), from: o.from === undefined || o.from === null || o.from === "" ? null : parseYear(o.from), to: o.to === undefined || o.to === null || o.to === "" ? null : parseYear(o.to), how: String(o.how || "").trim(), ...(at ? { at: findEntry(at)?.id || at } : {}) };
+    }).filter((o) => o.who);
     if (owners.length) next.owners = owners; else delete next.owners;
   }
   return next;
 }
 const refName = (ref) => { const x = ref && findEntry(ref); return x ? `${x.name}(${x.id})` : ref || ""; };
+/* ---- 사건 · 사물 (v11) ---- */
+const liveRef = (id) => { const x = id && findEntry(id); return x && !x.deleted && statusOf(x) !== "discarded" ? x : null; };
+function normalizeParticipants(list) {
+  const out = [];
+  for (const p of list || []) {
+    const x = findEntry(p.id ?? p.ref);
+    if (!x || x.deleted) throw new Error(`참여자 '${p.id ?? p.ref}'가 없습니다.`);
+    const item = { ref: x.id, role: EVENT_ROLES.includes(p.role) ? p.role : "기타", ...(String(p.note || "").trim() ? { note: String(p.note).trim() } : {}) };
+    const i = out.findIndex((y) => y.ref === x.id);
+    if (i >= 0) out[i] = item; else out.push(item);
+  }
+  return out;
+}
+function normalizeSteps(list) {
+  return (list || []).map((st) => {
+    const text = String(st.text || "").trim();
+    if (!text) return null;
+    const pid = st.place_id ?? st.place;
+    let place;
+    if (pid) { const x = findEntry(pid); if (!x || x.deleted) throw new Error(`장소 '${pid}'가 없습니다.`); place = x.id; }
+    return { id: st.id || uid().slice(-6), ...(String(st.at || "").trim() ? { at: String(st.at).trim() } : {}), text, ...(place ? { place } : {}) };
+  }).filter(Boolean);
+}
+const causesOf = (e) => (e?.causes || []).filter((c) => liveRef(c.ref));
+const effectsOf = (e) => liveEntries().filter((x) => (x.causes || []).some((c) => c.ref === e.id));
+function causeChain(id, dir) {
+  // dir "up": 원인 쪽, "down": 결과 쪽으로 이어진 모든 사건 id
+  const seen = new Set();
+  const stack = [id];
+  while (stack.length) {
+    const cur = stack.pop();
+    const next = dir === "up" ? causesOf(findEntry(cur)).map((c) => c.ref) : effectsOf(findEntry(cur) || { id: cur }).map((x) => x.id);
+    for (const n of next) if (!seen.has(n) && n !== id) { seen.add(n); stack.push(n); }
+  }
+  return seen;
+}
+const causeBackwards = (cause, effect) => cause?.when && effect?.when && effect.when.start < cause.when.start;
+function normalizeMagicItem(cur, p) {
+  const next = { ...(cur || {}) };
+  if (p.system_id !== undefined) {
+    const id = String(p.system_id || "").trim();
+    if (id) {
+      const x = findEntry(id);
+      if (!x || x.deleted || !isMagicEntry(x)) throw new Error(`'${id}'는 마법 체계 항목이 아닙니다.`);
+      next.system = x.id;
+    } else delete next.system;
+  }
+  if (p.spells !== undefined) { const l = (p.spells || []).map((x) => String(x).trim()).filter(Boolean); if (l.length) next.spells = [...new Set(l)]; else delete next.spells; }
+  for (const k of ["cost", "charges"]) if (p[k] !== undefined) { const t = String(p[k] ?? "").trim(); if (t) next[k] = t; else delete next[k]; }
+  return hasKeys(next) ? next : null;
+}
+function artifactHolder(e, year = worldCalendar().now) {
+  const a = e.artifact || {};
+  if (a.holder) return a.holder;
+  const owners = (a.owners || []).filter((o) => findEntry(o.who));
+  const cur = year != null ? owners.filter((o) => (o.from == null || o.from <= year) && (o.to == null || year < o.to)).at(-1) : owners.filter((o) => o.to == null).at(-1);
+  return cur?.who || null;
+}
+const holdingsOf = (id) => liveEntries().filter((x) => x.id !== id && x.artifact && findEntry(artifactHolder(x))?.id === id);
+function ownerOverlaps(a) {
+  const out = [];
+  const list = (a?.owners || []).filter((o) => o.from != null);
+  for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) {
+    const x = list[i];
+    const y = list[j];
+    if (x.who === y.who) continue;
+    const lo = Math.max(x.from, y.from);
+    const hi = Math.min(x.to ?? Infinity, y.to ?? Infinity);
+    if (lo < hi) out.push(`${refName(x.who)}와(과) ${refName(y.who)}이(가) ${fmtYearNum(lo)}${Number.isFinite(hi) ? `~${fmtYearNum(hi)}` : "부터"}에 함께 가졌다고 되어 있습니다`);
+  }
+  return out;
+}
+const usedIn = (e) => liveEntries().filter((x) => (x.recipe?.materials || []).some((m) => m.ref === e.id));
+function placeWithin(id, ancestorId) {
+  let cur = findEntry(id);
+  const seen = new Set();
+  while (cur && !seen.has(cur.id)) { if (cur.id === ancestorId) return true; seen.add(cur.id); cur = cur.parent ? findEntry(cur.parent) : null; }
+  return false;
+}
+function normalizeRecipe(cur, p) {
+  const next = { ...(cur || {}) };
+  if (p.materials !== undefined) {
+    const mats = (p.materials || []).map((m) => {
+      const raw = String(m.ref ?? m.name ?? "").trim();
+      if (!raw) return null;
+      const x = findEntry(raw);
+      return { ...(x && !x.deleted ? { ref: x.id } : { name: raw }), ...(String(m.qty || "").trim() ? { qty: String(m.qty).trim() } : {}) };
+    }).filter(Boolean);
+    if (mats.length) next.materials = mats; else delete next.materials;
+  }
+  if (p.makers !== undefined) {
+    const ids = (p.makers || []).map((m) => { const x = findEntry(m); if (!x || x.deleted) throw new Error(`만드는 이 '${m}'가 없습니다.`); return x.id; });
+    if (ids.length) next.makers = [...new Set(ids)]; else delete next.makers;
+  }
+  if (p.place_id !== undefined) {
+    const id = String(p.place_id || "").trim();
+    if (id) { const x = findEntry(id); if (!x || x.deleted) throw new Error(`장소 '${id}'가 없습니다.`); next.place = x.id; } else delete next.place;
+  }
+  for (const k of ["time", "note"]) if (p[k] !== undefined) { const t = String(p[k] ?? "").trim(); if (t) next[k] = t; else delete next[k]; }
+  return hasKeys(next) ? next : null;
+}
+function normalizeSources(list) {
+  return [...new Set((list || []).map((id) => { const x = findEntry(id); if (!x || x.deleted) throw new Error(`장소 '${id}'가 없습니다.`); return x.id; }))];
+}
+// 달력의 달 · 기념일
+const DEFAULT_MONTHS = Array.from({ length: 12 }, (_, i) => ({ name: `${i + 1}월`, days: 30 }));
+const worldMonths = (w = currentWorld()) => (Array.isArray(w?.calendar?.months) && w.calendar.months.length ? w.calendar.months : DEFAULT_MONTHS);
+const hasOwnMonths = (w = currentWorld()) => Array.isArray(w?.calendar?.months) && w.calendar.months.length > 0;
+function normalizeMonths(list) {
+  return (list || []).map((m) => ({ name: String(m.name || "").trim(), days: Math.round(Number(m.days)) })).filter((m) => m.name).map((m) => {
+    if (!(m.days >= 1 && m.days <= 400)) throw new Error(`'${m.name}'의 날 수는 1에서 400 사이여야 합니다.`);
+    return m;
+  });
+}
+function monthNumber(ref, months = worldMonths()) {
+  const t = String(ref ?? "").trim();
+  if (!t) return null;
+  if (/^\d+$/.test(t)) { const n = Number(t); return n >= 1 && n <= months.length ? n : null; }
+  const i = months.findIndex((m) => m.name === t);
+  return i >= 0 ? i + 1 : null;
+}
+const worldObservances = (w = currentWorld()) => (Array.isArray(w?.observances) ? w.observances : []);
+function dayText(o, months = worldMonths()) {
+  const m = months[o.month - 1];
+  return `${m ? m.name : `${o.month}번째 달`} ${o.day}일${o.days > 1 ? `부터 ${o.days}일 동안` : ""}`;
+}
+// 복선 · 예언
+const worldForeshadows = (w = currentWorld()) => (Array.isArray(w?.foreshadows) ? w.foreshadows : []);
+function resolveStoryRef(ref) {
+  const t = String(ref ?? "").trim();
+  if (!t) return "";
+  const x = findEntry(t);
+  if (x && !x.deleted) return x.id;
+  const m = state.manuscripts.find((y) => y.id === t || y.title === t);
+  if (m) return m.id;
+  throw new Error(`'${t}' 항목이나 원고가 없습니다.`);
+}
+function storyRefName(ref) {
+  if (!ref) return "";
+  const x = findEntry(ref);
+  if (x) return `${x.name}(${x.id})`;
+  const m = state.manuscripts.find((y) => y.id === ref);
+  return m ? `원고 '${m.title}'(${m.id})` : ref;
+}
+// 화폐 · 물가 · 기술 수준
+function worldEconomy(w = currentWorld()) {
+  const x = w?.economy || {};
+  return { base: x.base || "", currencies: Array.isArray(x.currencies) ? x.currencies : [], prices: Array.isArray(x.prices) ? x.prices : [] };
+}
+function currencyRate(name, eco = worldEconomy()) {
+  if (!name || name === eco.base) return 1;
+  const c = eco.currencies.find((x) => x.name === name);
+  return c && c.rate > 0 ? c.rate : null;
+}
+const fmtNum = (n) => (Number.isFinite(n) ? String(Math.round(n * 100) / 100) : "?");
+function priceText(pr, eco = worldEconomy()) {
+  const cur = pr.currency || eco.base || "";
+  const rate = currencyRate(pr.currency, eco);
+  return `${fmtNum(pr.price)}${cur ? ` ${cur}` : ""}${pr.currency && pr.currency !== eco.base && rate && eco.base ? ` (${fmtNum(pr.price * rate)} ${eco.base})` : ""}`;
+}
+function economyText(w = currentWorld(), max = 12) {
+  const eco = worldEconomy(w);
+  if (!eco.base && !eco.currencies.length && !eco.prices.length) return "";
+  const lines = [`화폐: 기준 ${eco.base || "(정하지 않음)"}${eco.currencies.length ? `. ${eco.currencies.map((c) => `${c.name} = ${fmtNum(c.rate)} ${eco.base || "기준"}${c.where?.length ? `(${c.where.map(nameOf).join("·")})` : ""}`).join(", ")}` : ""}`];
+  if (eco.prices.length) lines.push(`물가: ${eco.prices.slice(0, max).map((pr) => `${pr.item} ${priceText(pr, eco)}${pr.where ? `(${nameOf(pr.where)})` : ""}`).join(", ")}${eco.prices.length > max ? ` 외 ${eco.prices.length - max}개` : ""}`);
+  return lines.join("\n");
+}
+function worldTech(w = currentWorld()) {
+  const t = w?.tech || {};
+  return { areas: Array.isArray(t.areas) && t.areas.length ? t.areas : DEFAULT_TECH_AREAS, rows: Array.isArray(t.rows) ? t.rows : [] };
+}
+const techWhere = (r) => (r.where ? nameOf(r.where) : "전역");
+const techSpan = (r) => (r.from != null || r.to != null ? ` ${r.from != null ? fmtYearNum(r.from) : ""}~${r.to != null ? fmtYearNum(r.to) : ""}` : "");
+function techText(w = currentWorld(), max = 6) {
+  const t = worldTech(w);
+  if (!t.rows.length) return "";
+  return `기술 수준:\n${t.rows.slice(0, max).map((r) => `- ${techWhere(r)}${techSpan(r)}: ${t.areas.filter((a) => r.values?.[a]).map((a) => `${a} ${r.values[a]}`).join(", ")}`).join("\n")}${t.rows.length > max ? `\n(외 ${t.rows.length - max}줄)` : ""}`;
+}
+// 사건 기간에 바뀐 것(저장하지 않고 그때그때 모은다)
+function eventChanges(e) {
+  if (!e?.when) return null;
+  const s = e.when.start;
+  const t = e.when.end ?? e.when.start;
+  const inR = (y) => y != null && y >= s && y <= t;
+  const live = liveEntries();
+  const rels = [];
+  for (const a of live) for (const r of a.relations || []) {
+    if (!liveRef(r.to)) continue;
+    if (inR(r.since)) rels.push({ a, r, k: "시작" });
+    if (inR(r.until)) rels.push({ a, r, k: "끝" });
+  }
+  const deaths = live.filter((x) => isCharacterType(x.type) && inR(x.when?.end));
+  const births = live.filter((x) => isCharacterType(x.type) && inR(x.when?.start));
+  const vacated = deaths.flatMap((x) => ranksHeldBy(x.id).map(({ f, r }) => ({ x, f, r })));
+  const owners = [];
+  for (const it of live) for (const o of it.artifact?.owners || []) if (inR(o.from)) owners.push({ it, o });
+  const regions = state.maps.flatMap((m) => (m.regions || []).filter((r) => findEntry(r.ref) && (inR(r.from) || inR(r.to))).map((r) => ({ m, r, k: inR(r.from) ? "생김" : "사라짐" })));
+  const effects = effectsOf(e);
+  const obs = worldObservances().filter((o) => o.ref === e.id);
+  return { rels, deaths, births, vacated, owners, regions, effects, obs };
+}
+function eventChangesLines(e, max = 12) {
+  const c = eventChanges(e);
+  if (!c) return [];
+  const out = [
+    ...c.rels.map(({ a, r, k }) => `관계 ${k}: ${a.name} → ${r.label} → ${nameOf(r.to)}`),
+    ...c.deaths.map((x) => `죽음: ${x.name}(${x.id})`),
+    ...c.vacated.map(({ x, f, r }) => `빈 직위: ${f.name}의 ${r.name}(${x.name})`),
+    ...c.owners.map(({ it, o }) => `주인 바뀜: ${it.name} → ${refName(o.who)}`),
+    ...c.regions.map(({ m, r, k }) => `영역 ${k}: ${nameOf(r.ref)} (${m.name})`),
+    ...c.effects.map((x) => `이어진 사건: ${x.name}(${x.id})`),
+  ];
+  return out.length > max ? [...out.slice(0, max), `외 ${out.length - max}개`] : out;
+}
 function createEntry(d, by) {
   const name = String(d.name || "").trim();
   if (!name) throw new Error("이름이 비어 있습니다.");
@@ -2705,6 +3205,11 @@ function createEntry(d, by) {
     ...(hasKeys(d.climate) ? { climate: mergeClimate({}, d.climate) } : {}),
     ...(hasKeys(d.magic) ? { magic: mergeStrMap({}, d.magic, MAGIC_IDS) } : {}),
     ...(d.rumors?.length ? { rumors: d.rumors } : {}),
+    ...(hasKeys(d.event) ? { event: mergeStrMap({}, d.event, EVENT_IDS) } : {}),
+    ...(hasKeys(d.item) ? { item: mergeStrMap({}, d.item, ITEM_IDS) } : {}),
+    ...(hasKeys(d.magic_item) && normalizeMagicItem({}, d.magic_item) ? { magicItem: normalizeMagicItem({}, d.magic_item) } : {}),
+    ...(hasKeys(d.recipe) ? { recipe: d.recipe } : {}),
+    ...(hasKeys(d.artifact) ? { artifact: d.artifact } : {}),
     ...(normalizeWhen(d.when) ? { when: normalizeWhen(d.when) } : {}),
     createdAt: now, updatedAt: now, updatedBy: by, history: [],
   };
@@ -2719,6 +3224,9 @@ function updateEntry(e, p, by, reason) {
   // 잘못된 값은 아무것도 바꾸기 전에 거른다
   const nextSpecies = p.species_id !== undefined && p.species_id ? resolveSpecies(p.species_id) : "";
   const nextParent = p.parent !== undefined ? resolveParent(e, p.parent) : undefined;
+  const nextMagicItem = p.magic_item !== undefined ? normalizeMagicItem(e.magicItem, p.magic_item) : undefined;
+  const nextEvent = p.event ? mergeStrMap(e.event, p.event, EVENT_IDS) : undefined;
+  const nextItem = p.item ? mergeStrMap(e.item, p.item, ITEM_IDS) : undefined;
   pushHistory(e, by, reason);
   e.name = nextName;
   e.type = nextType;
@@ -2771,6 +3279,13 @@ function updateEntry(e, p, by, reason) {
   if (p.species_id !== undefined) { if (nextSpecies) e.speciesRef = nextSpecies; else delete e.speciesRef; }
   if (p.species_note !== undefined) { const t = String(p.species_note || "").trim(); if (t) e.speciesNote = t; else delete e.speciesNote; }
   for (const k of ["lang", "hybrids", "demographics", "ranks"]) if (p[k] !== undefined) setOrDrop(k, p[k]);
+  // 사건 · 사물
+  if (nextEvent) setOrDrop("event", nextEvent);
+  if (p.eventAll !== undefined) setOrDrop("event", mergeStrMap({}, p.eventAll, EVENT_IDS));
+  if (nextItem) setOrDrop("item", nextItem);
+  if (p.itemAll !== undefined) setOrDrop("item", mergeStrMap({}, p.itemAll, ITEM_IDS));
+  if (p.magic_item !== undefined) setOrDrop("magicItem", nextMagicItem);
+  for (const k of ["participants", "steps", "causes", "recipe", "sources", "magicItem"]) if (p[k] !== undefined) setOrDrop(k, p[k]);
   e.updatedAt = Date.now();
   e.updatedBy = by;
   logChange(by, "update", e, reason);
@@ -2827,7 +3342,7 @@ function restoreVersion(e, h) {
   e.status = statusOf(data);
   if (data.senses) e.senses = data.senses; else delete e.senses;
   if (data.perspectives) e.perspectives = data.perspectives; else delete e.perspectives;
-  for (const k of ["inner", "voice", "looks", "arc", "abilities", "address", "gallery", "lookPrompt", "parent", "place", "climate", "magic", "magicOn", "rumors", "spells", "rulings", "holes", "artifact", "species", "life", "speciesRef", "speciesNote", "lang", "hybrids", "demographics", "ranks"]) { if (data[k]) e[k] = data[k]; else delete e[k]; }
+  for (const k of ["inner", "voice", "looks", "arc", "abilities", "address", "gallery", "lookPrompt", "parent", "place", "climate", "magic", "magicOn", "rumors", "spells", "rulings", "holes", "artifact", "species", "life", "speciesRef", "speciesNote", "lang", "hybrids", "demographics", "ranks", "event", "participants", "steps", "causes", "item", "magicItem", "recipe", "sources"]) { if (data[k]) e[k] = data[k]; else delete e[k]; }
   e.updatedAt = Date.now(); e.updatedBy = "user";
   logChange("user", "update", e, "이전 버전으로 되돌림");
 }
@@ -2877,7 +3392,7 @@ function entryToText(e) {
   if (senses.length) lines.push("감각:", ...senses.map(([k, v]) => `- ${k}: ${v}`));
   if (e.perspectives?.length) lines.push("관점별 서술:", ...e.perspectives.map((x) => `- ${perspectiveName(x.by)}: ${x.text}`));
   if (state.images[e.id]?.data) lines.push("그림: 있음");
-  lines.push(...characterText(e), ...placeMagicText(e), ...speciesFactionText(e));
+  lines.push(...characterText(e), ...placeMagicText(e), ...speciesFactionText(e), ...eventItemText(e));
   lines.push(`최종 수정: ${fmtDate(e.updatedAt)} (${e.updatedBy === "user" ? "사용자 직접" : "Claude"})`);
   return lines.join("\n");
 }
@@ -2903,6 +3418,43 @@ function characterText(e) {
   if (addr.length || addrIn.length) out.push("호칭:",
     ...addr.map(([to, a]) => `- ${e.name} → ${nameOf(to)}(${to}): "${a.call || "?"}"${a.speech ? `, ${a.speech}` : ""}${a.note ? ` (${a.note})` : ""}`),
     ...addrIn.map(([x, a]) => `- ${x.name}(${x.id}) → ${e.name}: "${a.call || "?"}"${a.speech ? `, ${a.speech}` : ""}${a.note ? ` (${a.note})` : ""}`));
+  return out;
+}
+function eventItemText(e) {
+  const out = [];
+  const ev = EVENT_KEYS.filter(([k]) => e.event?.[k]);
+  if (ev.length) out.push("사건 카드:", ...ev.map(([k, l]) => `- ${l}: ${e.event[k]}`));
+  if (e.participants?.length) out.push("참여자:", ...e.participants.map((p) => `- ${refName(p.ref)} [${p.role}]${p.note ? `: ${p.note}` : ""}`));
+  if (e.steps?.length) out.push("세부 경과:", ...e.steps.map((st) => `- ${st.at ? `${st.at}: ` : ""}${st.text}${st.place ? ` (${nameOf(st.place)})` : ""}`));
+  const causes = causesOf(e);
+  const effects = effectsOf(e);
+  if (causes.length || effects.length) out.push("인과:", ...causes.map((c) => `- 원인: ${refName(c.ref)}${c.note ? ` — ${c.note}` : ""}`), ...effects.map((x) => { const c = x.causes.find((y) => y.ref === e.id); return `- 결과: ${refName(x.id)}${c?.note ? ` — ${c.note}` : ""}`; }));
+  const obs = worldObservances().filter((o) => o.ref === e.id);
+  if (obs.length) out.push(`남긴 날: ${obs.map((o) => `${o.name}(${o.kind}, ${dayText(o)})`).join(", ")}`);
+  const fs = worldForeshadows().filter((f) => f.plant === e.id || f.payoff === e.id);
+  if (fs.length) out.push("복선:", ...fs.map((f) => `- [${f.kind}·${f.status}] ${f.text}${f.plant === e.id ? " (여기서 깔림)" : ""}${f.payoff === e.id ? " (여기서 회수)" : ""}`));
+  if (isEventType(e.type)) { const ch = eventChangesLines(e); if (ch.length) out.push("이 사건 기간에 바뀐 것:", ...ch.map((x) => `- ${x}`)); }
+  const it = ITEM_KEYS.filter(([k]) => e.item?.[k]);
+  if (it.length) out.push("사물 카드:", ...it.map(([k, l]) => `- ${l}: ${e.item[k]}`));
+  const mi = e.magicItem;
+  if (mi) out.push(`마법 물건: ${mi.system ? `체계 ${refName(mi.system)}` : "체계 미정"}${mi.spells?.length ? `, 주문 ${mi.spells.join(", ")}` : ""}${mi.cost ? `, 대가 ${mi.cost}` : ", 대가 미정"}${mi.charges ? `, 사용 ${mi.charges}` : ""}`);
+  const r = e.recipe;
+  if (r) {
+    out.push("만드는 법:");
+    if (r.materials?.length) out.push(`- 재료: ${r.materials.map((m) => `${m.ref ? refName(m.ref) : m.name}${m.qty ? ` ${m.qty}` : ""}`).join(", ")}`);
+    if (r.makers?.length) out.push(`- 만드는 이: ${r.makers.map(refName).join(", ")}`);
+    if (r.place) out.push(`- 만드는 곳: ${refName(r.place)}`);
+    if (r.time) out.push(`- 걸리는 시간: ${r.time}`);
+    if (r.note) out.push(`- 메모: ${r.note}`);
+  }
+  if (e.sources?.length) out.push(`나는 곳: ${e.sources.map(refName).join(", ")}`);
+  const uses = usedIn(e);
+  if (uses.length) out.push(`이것을 재료로 쓰는 것: ${uses.map((x) => refName(x.id)).join(", ")}`);
+  if (isCharacterType(e.type)) { const h = holdingsOf(e.id); if (h.length) out.push(`가진 것: ${h.map((x) => refName(x.id)).join(", ")}`); }
+  if (isPlaceType(e.type)) {
+    const mats = liveEntries().filter((x) => (x.sources || []).some((pid) => pid === e.id || placeWithin(pid, e.id)));
+    if (mats.length) out.push(`여기서 나는 재료: ${mats.map((x) => refName(x.id)).join(", ")}`);
+  }
   return out;
 }
 function speciesFactionText(e) {
@@ -2958,7 +3510,7 @@ function placeMagicText(e) {
   if (hasKeys(a)) {
     out.push("유물 이력:");
     if (a.maker || a.made != null) out.push(`- 만든 이: ${refName(a.maker) || "(모름)"}${a.made != null ? `, ${fmtYear(a.made)}` : ""}`);
-    for (const o of a.owners || []) out.push(`- 소유: ${refName(o.who)} ${o.from != null ? fmtYearNum(o.from) : "?"}~${o.to != null ? fmtYearNum(o.to) : ""}${o.how ? ` (${o.how})` : ""}`);
+    for (const o of a.owners || []) out.push(`- 소유: ${refName(o.who)} ${o.from != null ? fmtYearNum(o.from) : "?"}~${o.to != null ? fmtYearNum(o.to) : ""}${o.how ? ` (${o.how})` : ""}${o.at ? `, ${refName(o.at)}에 있었음` : ""}`);
     if (a.location || a.holder) out.push(`- 지금: ${a.location ? refName(a.location) : "(위치 모름)"}${a.holder ? `, ${refName(a.holder)}이(가) 가짐` : ""}`);
     if (a.seal) out.push(`- 봉인: ${a.seal}${a.seal_note ? ` (${a.seal_note})` : ""}`);
   }
@@ -3150,7 +3702,8 @@ const TOOL_IMPL = {
   set_calendar(input) {
     const w = currentWorld();
     const cal = worldCalendar(w);
-    const next = { prefix: cal.prefix, suffix: cal.suffix, now: cal.now, eras: cal.eras };
+    const next = { ...(w.calendar || {}), prefix: cal.prefix, suffix: cal.suffix, now: cal.now, eras: cal.eras };
+    if (input.months !== undefined) { const m = normalizeMonths(input.months); if (m.length) next.months = m; else delete next.months; }
     if (input.prefix !== undefined) next.prefix = input.prefix;
     if (input.suffix !== undefined) next.suffix = input.suffix;
     if (input.now !== undefined) next.now = parseYear(input.now);
@@ -3164,7 +3717,8 @@ const TOOL_IMPL = {
     w.calendar = next;
     w.updatedAt = Date.now();
     logChange("claude", "calendar", null, "달력·시대 수정");
-    return { content: "달력을 고쳤다.\n" + calendarText(), action: { kind: "world", text: "달력·시대" }, changed: true };
+    const off = input.months !== undefined ? worldObservances(w).filter((o) => o.month > worldMonths(w).length || o.day > worldMonths(w)[o.month - 1].days) : [];
+    return { content: "달력을 고쳤다.\n" + calendarText() + (input.months !== undefined ? `\n달: ${worldMonths(w).map((m) => `${m.name}(${m.days}일)`).join(", ")}` : "") + (off.length ? `\n달력에 없는 날짜가 된 기념일: ${off.map((o) => o.name).join(", ")}` : ""), action: { kind: "world", text: "달력·시대" }, changed: true };
   },
   set_language({ id, sounds, grammar, words, phrases, replace }) {
     const e = findEntry(id);
@@ -3211,6 +3765,163 @@ const TOOL_IMPL = {
     }).filter((r) => r.name);
     updateEntry(e, { ranks: list }, "claude", "직위");
     return { content: `직위 저장: ${e.name} · ${list.map((r) => `${r.name}(${r.holders.length}${r.count ? `/${r.count}` : ""})`).join(" > ") || "지움"}`, action: { kind: "update", text: `${e.name} · 직위`, ref: e.id }, changed: true };
+  },
+  set_event({ id, participants, steps }) {
+    const e = findEntry(id);
+    if (!e || e.deleted) throw new Error(`${id} 항목이 없습니다.`);
+    const patch = {};
+    if (participants !== undefined) patch.participants = normalizeParticipants(participants);
+    if (steps !== undefined) patch.steps = normalizeSteps(steps);
+    if (!hasKeys(patch)) throw new Error("participants나 steps 중 하나는 넣어야 합니다.");
+    updateEntry(e, patch, "claude", "사건 참여자·경과");
+    const dead = (patch.participants || []).map((p) => findEntry(p.ref)).filter((x) => x?.when && e.when && (e.when.start > (x.when.end ?? Infinity) || (e.when.end ?? e.when.start) < x.when.start));
+    return { content: `사건 저장: ${e.name}${patch.participants ? ` · 참여자 ${patch.participants.length}` : ""}${patch.steps ? ` · 경과 ${patch.steps.length}단계` : ""}${dead.length ? `\n확인할 점: ${dead.map((x) => `${x.name}(${rangeText(x.when)})은(는) 이 사건(${rangeText(e.when)}) 때 살아 있지 않았다`).join(" / ")}` : ""}`, action: { kind: "update", text: `${e.name} · 참여자·경과`, ref: e.id }, changed: true };
+  },
+  set_cause({ cause_id, effect_id, note, remove }) {
+    const c = findEntry(cause_id);
+    const f = findEntry(effect_id);
+    if (!c || c.deleted) throw new Error(`${cause_id} 항목이 없습니다.`);
+    if (!f || f.deleted) throw new Error(`${effect_id} 항목이 없습니다.`);
+    if (c.id === f.id) throw new Error("자기 자신의 원인이 될 수 없습니다.");
+    const list = (f.causes || []).map((x) => ({ ...x }));
+    const i = list.findIndex((x) => x.ref === c.id);
+    if (remove) {
+      if (i < 0) throw new Error("그 인과가 없습니다.");
+      list.splice(i, 1);
+    } else {
+      if (causeChain(c.id, "up").has(f.id)) throw new Error(`${f.name}은(는) 이미 ${c.name}의 원인 쪽에 있어 순환이 됩니다.`);
+      const cur = i >= 0 ? list[i] : { ref: c.id };
+      if (note !== undefined) { if (String(note).trim()) cur.note = String(note).trim(); else delete cur.note; }
+      if (i >= 0) list[i] = cur; else list.push(cur);
+    }
+    updateEntry(f, { causes: list }, "claude", remove ? `원인 삭제: ${c.name}` : `원인: ${c.name}`);
+    return { content: `인과 ${remove ? "삭제" : "저장"}: ${c.name}(${c.id}) → ${f.name}(${f.id})${!remove && causeBackwards(c, f) ? `\n확인할 점: 결과(${rangeText(f.when)})가 원인(${rangeText(c.when)})보다 앞선다` : ""}`, action: { kind: "relation", text: `${c.name} → ${f.name}`, ref: f.id }, changed: true };
+  },
+  set_observance({ name, kind, month, day, days, since, event_id, desc, remove }) {
+    const w = currentWorld();
+    const key = String(name || "").trim();
+    if (!key) throw new Error("name이 필요합니다.");
+    const list = worldObservances(w).map((o) => ({ ...o }));
+    const i = list.findIndex((o) => o.name === key);
+    if (remove) {
+      if (i < 0) throw new Error(`'${key}'가 없습니다.`);
+      list.splice(i, 1);
+    } else {
+      const months = worldMonths(w);
+      const cur = i >= 0 ? list[i] : { id: uid().slice(-6), name: key, kind: "기념일" };
+      if (kind !== undefined) cur.kind = OBSERVANCE_KINDS.includes(kind) ? kind : "기념일";
+      if (month !== undefined) { const n = monthNumber(month, months); if (n == null) throw new Error(`달 '${month}'가 없습니다. 달: ${months.map((m) => m.name).join(", ")}`); cur.month = n; }
+      if (day !== undefined) cur.day = Math.round(Number(day));
+      if (days !== undefined) { const n = Math.round(Number(days)); if (n > 1) cur.days = n; else delete cur.days; }
+      if (since !== undefined) { const y = since === null || since === "" ? null : parseYear(since); if (y == null) delete cur.since; else cur.since = y; }
+      if (event_id !== undefined) { const id = String(event_id || "").trim(); if (id) { const x = findEntry(id); if (!x || x.deleted) throw new Error(`${id} 항목이 없습니다.`); cur.ref = x.id; } else delete cur.ref; }
+      if (desc !== undefined) { const t = String(desc || "").trim(); if (t) cur.desc = t; else delete cur.desc; }
+      if (!cur.month || !cur.day) throw new Error("처음 만들 때는 month와 day가 필요합니다.");
+      const m = months[cur.month - 1];
+      if (!(cur.day >= 1 && cur.day <= m.days)) throw new Error(`${m.name}은(는) ${m.days}일까지 있습니다.`);
+      if (i >= 0) list[i] = cur; else list.push(cur);
+    }
+    w.observances = list;
+    w.updatedAt = Date.now();
+    logChange("claude", "calendar", null, remove ? `기념일 삭제: ${key}` : `기념일: ${key}`);
+    const o = list.find((x) => x.name === key);
+    return { content: remove ? `기념일 삭제: ${key}` : `${o.kind} 저장: ${key} · ${dayText(o)}${o.ref ? ` · 계기 ${refName(o.ref)}` : ""}`, action: { kind: "world", text: `${remove ? "기념일 삭제" : o.kind} · ${key}` }, changed: true };
+  },
+  set_foreshadow({ text, kind, planted_in, paid_off_in, due, status, note, remove }) {
+    const w = currentWorld();
+    const key = String(text || "").trim();
+    if (!key) throw new Error("text가 필요합니다.");
+    const list = worldForeshadows(w).map((f) => ({ ...f }));
+    const i = list.findIndex((f) => f.text === key);
+    if (remove) {
+      if (i < 0) throw new Error("그 복선이 없습니다.");
+      list.splice(i, 1);
+    } else {
+      const cur = i >= 0 ? list[i] : { id: uid().slice(-6), text: key, kind: "복선", status: "깔림", createdAt: Date.now() };
+      if (kind !== undefined) cur.kind = FORESHADOW_KINDS.includes(kind) ? kind : "복선";
+      if (planted_in !== undefined) { const r = resolveStoryRef(planted_in); if (r) cur.plant = r; else delete cur.plant; }
+      if (paid_off_in !== undefined) { const r = resolveStoryRef(paid_off_in); if (r) cur.payoff = r; else delete cur.payoff; }
+      if (due !== undefined) { const y = due === null || due === "" ? null : parseYear(due); if (y == null) delete cur.due; else cur.due = y; }
+      if (status !== undefined) cur.status = FORESHADOW_STATUS.includes(status) ? status : "깔림";
+      else if (paid_off_in && cur.status === "깔림") cur.status = "회수";
+      if (note !== undefined) { const t = String(note || "").trim(); if (t) cur.note = t; else delete cur.note; }
+      if (i >= 0) list[i] = cur; else list.push(cur);
+    }
+    w.foreshadows = list;
+    w.updatedAt = Date.now();
+    logChange("claude", "world", null, remove ? "복선 삭제" : "복선");
+    const f = list.find((x) => x.text === key);
+    const open = list.filter((x) => x.status === "깔림").length;
+    return { content: `${remove ? "복선 삭제" : `${f.kind} 저장(${f.status})`}: ${cut(key, 50)} · 회수되지 않은 복선 ${open}개`, action: { kind: "world", text: `${remove ? "복선 삭제" : f.kind} · ${cut(key, 20)}` }, changed: true };
+  },
+  set_recipe(input) {
+    const e = findEntry(input.id);
+    if (!e || e.deleted) throw new Error(`${input.id} 항목이 없습니다.`);
+    const patch = {};
+    if (["materials", "makers", "place_id", "time", "note"].some((k) => input[k] !== undefined)) patch.recipe = normalizeRecipe(e.recipe, input);
+    if (input.sources !== undefined) patch.sources = normalizeSources(input.sources);
+    if (!hasKeys(patch)) throw new Error("바꿀 칸이 없습니다.");
+    updateEntry(e, patch, "claude", "만드는 법");
+    const r = e.recipe || {};
+    return { content: `만드는 법 저장: ${e.name}${r.materials?.length ? ` · 재료 ${r.materials.map((m) => (m.ref ? nameOf(m.ref) : m.name)).join(", ")}` : ""}${e.sources?.length ? ` · 나는 곳 ${e.sources.map(nameOf).join(", ")}` : ""}`, action: { kind: "update", text: `${e.name} · 만드는 법`, ref: e.id }, changed: true };
+  },
+  set_economy({ base, currencies, prices, remove_currencies, remove_prices }) {
+    const w = currentWorld();
+    const eco = worldEconomy(w);
+    const next = { base: eco.base, currencies: eco.currencies.map((c) => ({ ...c })), prices: eco.prices.map((x) => ({ ...x })) };
+    if (base !== undefined) next.base = String(base || "").trim();
+    for (const c of currencies || []) {
+      const name = String(c.name || "").trim();
+      if (!name) continue;
+      if (!(Number(c.rate) > 0)) throw new Error(`'${name}'의 rate는 0보다 커야 합니다.`);
+      const where = (c.where || []).map((id) => { const x = findEntry(id); if (!x || x.deleted) throw new Error(`'${id}' 항목이 없습니다.`); return x.id; });
+      const item = { name, rate: Number(c.rate), ...(where.length ? { where } : {}) };
+      const i = next.currencies.findIndex((x) => x.name === name);
+      if (i >= 0) next.currencies[i] = item; else next.currencies.push(item);
+    }
+    for (const pr of prices || []) {
+      const item = String(pr.item || "").trim();
+      if (!item) continue;
+      if (!Number.isFinite(Number(pr.price))) throw new Error(`'${item}'의 price는 숫자여야 합니다.`);
+      let where = "";
+      if (pr.where_id) { const x = findEntry(pr.where_id); if (!x || x.deleted) throw new Error(`'${pr.where_id}' 항목이 없습니다.`); where = x.id; }
+      const cur = String(pr.currency || "").trim();
+      if (cur && cur !== next.base && !next.currencies.some((c) => c.name === cur)) throw new Error(`화폐 '${cur}'가 없습니다. currencies에 먼저 넣으세요.`);
+      const v = { item, price: Number(pr.price), ...(cur && cur !== next.base ? { currency: cur } : {}), ...(where ? { where } : {}), ...(String(pr.note || "").trim() ? { note: String(pr.note).trim() } : {}) };
+      const i = next.prices.findIndex((x) => x.item === item && (x.where || "") === where);
+      if (i >= 0) next.prices[i] = v; else next.prices.push(v);
+    }
+    for (const n of remove_currencies || []) next.currencies = next.currencies.filter((c) => c.name !== n);
+    for (const n of remove_prices || []) next.prices = next.prices.filter((x) => x.item !== n);
+    w.economy = next;
+    w.updatedAt = Date.now();
+    logChange("claude", "world", null, "화폐·물가");
+    return { content: economyText(w, 40) || "화폐·물가를 비웠다.", action: { kind: "world", text: "화폐·물가" }, changed: true };
+  },
+  set_tech({ areas, rows }) {
+    const w = currentWorld();
+    const t = worldTech(w);
+    const next = { areas: t.areas.slice(), rows: t.rows.map((r) => ({ ...r, values: { ...(r.values || {}) } })) };
+    if (areas !== undefined) { const a = [...new Set((areas || []).map((x) => String(x).trim()).filter(Boolean))]; if (!a.length) throw new Error("분야가 하나 이상 있어야 합니다."); next.areas = a; }
+    for (const r of rows || []) {
+      let where = "";
+      if (r.where_id) { const x = findEntry(r.where_id); if (!x || x.deleted) throw new Error(`'${r.where_id}' 항목이 없습니다.`); where = x.id; }
+      const from = r.from === undefined || r.from === null || r.from === "" ? null : parseYear(r.from);
+      const to = r.to === undefined || r.to === null || r.to === "" ? null : parseYear(r.to);
+      if (from != null && to != null && to < from) throw new Error("to는 from보다 앞설 수 없습니다.");
+      const i = next.rows.findIndex((x) => (x.where || "") === where && (x.from ?? null) === from);
+      if (r.remove) { if (i >= 0) next.rows.splice(i, 1); continue; }
+      const cur = i >= 0 ? next.rows[i] : { id: uid().slice(-6), ...(where ? { where } : {}), ...(from != null ? { from } : {}), values: {} };
+      if (to != null) cur.to = to; else if (r.to !== undefined) delete cur.to;
+      for (const [k, v] of Object.entries(r.values || {})) { const tv = String(v ?? "").trim(); if (tv) cur.values[k] = tv; else delete cur.values[k]; }
+      if (i >= 0) next.rows[i] = cur; else next.rows.push(cur);
+    }
+    const unknown = [...new Set(next.rows.flatMap((r) => Object.keys(r.values || {})).filter((k) => !next.areas.includes(k)))];
+    next.areas.push(...unknown);
+    w.tech = next;
+    w.updatedAt = Date.now();
+    logChange("claude", "world", null, "기술 수준");
+    return { content: (techText(w, 40) || "기술 수준 표가 비었다.") + (unknown.length ? `\n분야를 더했다: ${unknown.join(", ")}` : ""), action: { kind: "world", text: "기술 수준" }, changed: true };
   },
   set_rumor({ id, text, truth, note, remove }) {
     const e = findEntry(id);
@@ -3546,6 +4257,17 @@ function contextNoteFor(thread) {
       lines.push(rules.length ? `이름 규칙:\n${rules.map((r) => `- ${r.name}${r.applies?.length ? ` (적용: ${r.applies.join(", ")})` : ""}: ${cut(r.rules, 160)}${r.examples?.length ? ` · 예: ${r.examples.slice(0, 6).join(", ")}` : ""}`).join("\n")}` : "이름 규칙: 없음", `원고함: ${state.manuscripts.length}편${state.manuscripts.length ? " (get_manuscripts로 읽는다)" : ""}`, "");
       const pinned = state.maps.filter((m) => m.pins.length);
       if (pinned.length) lines.push(`지도(핀의 대략적인 위치):\n${pinned.map((m) => `- ${m.name}: ${mapPinsText(m)}`).join("\n")}`, "");
+      if (v >= 11) {
+        lines.push(`달: ${worldMonths(w).map((m) => `${m.name}(${m.days}일)`).join(", ")}${hasOwnMonths(w) ? "" : " (기본값)"}`);
+        const obs = worldObservances(w);
+        if (obs.length) lines.push(`기념일·축제: ${obs.slice(0, 20).map((o) => `${o.name}[${o.kind}] ${dayText(o)}`).join(", ")}${obs.length > 20 ? ` 외 ${obs.length - 20}개` : ""}`);
+        const open = worldForeshadows(w).filter((f) => f.status === "깔림");
+        if (open.length) lines.push(`회수되지 않은 복선·예언 ${open.length}개:\n${open.slice(0, 15).map((f) => `- [${f.kind}] ${cut(f.text, 80)}${f.due != null ? ` (때: ${fmtYear(f.due)})` : ""}`).join("\n")}`);
+        const eco = economyText(w);
+        if (eco) lines.push(eco);
+        const tech = techText(w);
+        if (tech) lines.push(tech);
+      }
       if (v >= 10) {
         const bs = baseSpecies(w);
         lines.push(`나이 기준: ${bs ? `${bs.name}(${bs.id})` : "인간(성년 18세, 노년 60세, 수명 80년)"}. 다른 종족의 나이는 각자의 수명 단계로 판단한다.`);
@@ -4492,7 +5214,7 @@ function renderCodexResults() {
       ${typeKeys().map((k) => `<button class="type-chip" type="button" data-type="${k}" aria-pressed="${state.codexType === k}">${esc(typeInfo(k).label)}<span class="n">${counts[k] || 0}</span></button>`).join("")}
     </div>
     <div class="type-chips status-chips" role="toolbar" aria-label="상태">${STATUS_KEYS.map((k) => `<button class="type-chip" type="button" data-status="${k}" aria-pressed="${state.codexStatus.has(k)}">${STATUS[k]}<span class="n">${stCounts[k]}</span></button>`).join("")}</div>
-    <div class="row"><button class="btn btn-ghost btn-small" type="button" data-act="types">분류·템플릿 관리</button><button class="btn btn-ghost btn-small" type="button" data-act="checks">설정 점검</button><button class="btn btn-ghost btn-small" type="button" data-act="compare">비교</button><button class="btn btn-ghost btn-small" type="button" data-act="comp-table">구성표</button><button class="btn btn-ghost btn-small" type="button" data-act="presence">등장 비중</button><button class="btn btn-ghost btn-small" type="button" data-act="place-tree">장소 계층</button><button class="btn btn-ghost btn-small" type="button" data-act="travel">길과 이동</button></div>
+    <div class="row"><button class="btn btn-ghost btn-small" type="button" data-act="types">분류·템플릿 관리</button><button class="btn btn-ghost btn-small" type="button" data-act="checks">설정 점검</button><button class="btn btn-ghost btn-small" type="button" data-act="compare">비교</button><button class="btn btn-ghost btn-small" type="button" data-act="comp-table">구성표</button><button class="btn btn-ghost btn-small" type="button" data-act="economy">화폐·물가</button><button class="btn btn-ghost btn-small" type="button" data-act="tech">기술 수준</button><button class="btn btn-ghost btn-small" type="button" data-act="presence">등장 비중</button><button class="btn btn-ghost btn-small" type="button" data-act="place-tree">장소 계층</button><button class="btn btn-ghost btn-small" type="button" data-act="travel">길과 이동</button></div>
     ${groups.length ? groups.map((g) => `<h3 class="group-title">${esc(typeInfo(g.k).label)} · ${g.items.length}</h3><div class="entry-list">${g.items.map(entryCard).join("")}</div>`).join("")
       : `<div class="empty-state"><h3>${q || state.codexType !== "all" ? "조건에 맞는 항목이 없습니다" : "설정집이 비어 있습니다"}</h3><p>대화 탭에서 Claude와 이야기하면 항목이 여기에 쌓입니다.</p></div>`}
     ${trashCount ? `<div class="row" style="margin-top:20px"><button class="btn btn-small" type="button" data-act="trash">휴지통 ${trashCount}</button></div>` : ""}`;
@@ -4608,6 +5330,24 @@ function computeChecks() {
       }
     }
   }
+  // 사건 · 사물
+  for (const f of list) for (const c of causesOf(f)) { const x = byId.get(c.ref); if (causeBackwards(x, f)) add("결과가 원인보다 앞섬", "warn", `${x.name}(${rangeText(x.when)}) → ${f.name}(${rangeText(f.when)})`, [x.id, f.id]); }
+  for (const e of list) if (e.when) for (const p of e.participants || []) {
+    const x = byId.get(p.ref);
+    if (!x?.when || !isCharacterType(x.type)) continue;
+    if (e.when.start > (x.when.end ?? Infinity)) add("참여자가 그때 없음", "warn", `${e.name}(${rangeText(e.when)})의 ${p.role} ${x.name}은(는) ${fmtYear(x.when.end)}에 죽었습니다`, [e.id, x.id]);
+    else if ((e.when.end ?? e.when.start) < x.when.start) add("참여자가 그때 없음", "warn", `${e.name}(${rangeText(e.when)})의 ${p.role} ${x.name}은(는) ${fmtYear(x.when.start)}에 태어났습니다`, [e.id, x.id]);
+  }
+  for (const e of list) if (e.magicItem && !e.magicItem.cost) add("대가 없는 마법 물건", "info", e.name, [e.id]);
+  const nowY = worldCalendar().now;
+  for (const f of worldForeshadows()) {
+    if (f.status !== "깔림") continue;
+    const refs = [f.plant].filter((r) => r && byId.get(r));
+    if (f.kind === "예언" && f.due != null && nowY != null && f.due < nowY) add("때가 지난 예언", "warn", `${cut(f.text, 60)} (때: ${fmtYear(f.due)})`, refs);
+    else add("회수되지 않은 복선", "info", `[${f.kind}] ${cut(f.text, 60)}`, refs);
+  }
+  const months = worldMonths();
+  for (const o of worldObservances()) if (!months[o.month - 1] || o.day > months[o.month - 1].days) add("달력에 없는 날짜", "warn", `${o.name}: ${o.month}번째 달 ${o.day}일`, o.ref ? [o.ref] : []);
   const drafts = list.filter((e) => statusOf(e) === "draft");
   if (drafts.length) add("확정을 기다리는 초안", "info", `${drafts.length}개: ${drafts.slice(0, 8).map((e) => e.name).join(", ")}${drafts.length > 8 ? " …" : ""}`, drafts.map((e) => e.id));
   return issues;
@@ -4648,7 +5388,7 @@ function openChecksSheet() {
 }
 
 /* ---- 설정집 구역: 원고함 · 감각 사전 · 질문 카드 · 이름 규칙 ---- */
-const CODEX_TABS = [["entries", "항목"], ["ms", "원고함"], ["senses", "감각 사전"], ["questions", "질문 카드"], ["naming", "이름 규칙"]];
+const CODEX_TABS = [["entries", "항목"], ["ms", "원고함"], ["senses", "감각 사전"], ["questions", "질문 카드"], ["naming", "이름 규칙"], ["foreshadow", "복선"]];
 function codexTabsHTML() {
   return `<div class="seg-tabs" role="tablist">${CODEX_TABS.map(([k, l]) => `<button type="button" role="tab" data-ctab="${k}" aria-selected="${state.codexTab === k}">${l}</button>`).join("")}</div>`;
 }
@@ -4669,6 +5409,11 @@ function renderCodexTab(root) {
     $("#senseSearch", root).oninput = () => renderCodexTabResults();
   } else if (t === "questions") {
     root.innerHTML = `${head}<div id="ctabResults"></div>`;
+  } else if (t === "foreshadow") {
+    root.innerHTML = `${head}
+      <p class="meta" style="margin:12px 0 0">원고·사건에 깔아 둔 복선과 예언을 모아 둡니다. 회수되지 않은 것은 설정 점검과 새 대화의 Claude가 기억합니다.</p>
+      <div class="row" style="margin-top:10px"><button class="btn btn-primary" type="button" data-act="fs-new">새 복선</button><button class="btn" type="button" data-act="fs-ask">Claude와 찾기</button></div>
+      <div id="ctabResults"></div>`;
   } else {
     root.innerHTML = `${head}
       <p class="meta" style="margin:12px 0 0">나라·종족·가문마다 이름 짓는 규칙을 정해 두면, 그 규칙에 맞는 이름을 만들 수 있습니다. Claude도 이름을 지을 때 따릅니다.</p>
@@ -4705,6 +5450,8 @@ function renderCodexTabResults() {
       ${empty.length ? `<div class="tl-missing"><strong>감각이 비어 있는 장소 ${empty.length}곳</strong><p class="meta" style="margin:4px 0 8px">${esc(empty.slice(0, 12).map((e) => e.name).join(", "))}</p><button class="btn btn-small" type="button" data-act="senses-ask">Claude에게 채워 달라기</button></div>` : ""}`;
   } else if (t === "questions") {
     renderQuestions(box);
+  } else if (t === "foreshadow") {
+    renderForeshadows(box);
   } else {
     const rules = worldNaming();
     box.innerHTML = rules.length ? `<div class="entry-list" style="margin-top:12px">${rules.map((r) => `<section class="sense-card">
@@ -4985,6 +5732,21 @@ function openCreativeTools() {
         <div id="pgOut"></div>
       </div>
     </details>
+    <details class="ct"><summary>사물 생성기</summary>
+      <p class="meta">세계관, 기술 수준, 물가, 이름 규칙에 맞는 사물을 바로 만들어 봅니다. 마음에 들면 초안으로 저장합니다(짧은 요청 한 번).</p>
+      <div class="form">
+        <div class="time-row"><label>종류<select id="ig-kind">${ITEM_GEN_KINDS.map((k) => `<option>${k}</option>`).join("")}</select></label><label>희귀도<select id="ig-rarity">${RARITY_KINDS.map((k) => `<option${k === "드묾" ? " selected" : ""}>${k}</option>`).join("")}</select></label></div>
+        <label>문화·출처 <small>선택</small><select id="ig-origin"><option value="">정하지 않음</option>${entryOptions((x) => isSpeciesType(x.type) || isFactionType(x.type) || isPlaceType(x.type))}</select></label>
+        <label>분위기 <small>선택</small><input id="ig-mood" placeholder="예: 저주받았다는 소문이 도는"></label>
+        <div class="row"><button class="btn btn-primary btn-small" type="button" data-ct="itemgen">만들기</button></div>
+        <div id="igOut"></div>
+      </div>
+    </details>
+    <details class="ct"><summary>역사 공백 채우기</summary>
+      <p class="meta">연표의 빈 구간에 있었을 사건을 앞뒤 사건에 맞춰 제안받고, 고른 것만 초안으로 저장합니다(짧은 요청 한 번). 연표의 '… N년 뒤' 표시에서도 열 수 있습니다.</p>
+      <div class="form"><div class="time-row"><label>부터<input id="gp-from" inputmode="decimal" value="${largestGap()?.[0] ?? ""}"></label><label>까지<input id="gp-to" inputmode="decimal" value="${largestGap()?.[1] ?? ""}"></label></div>
+        <div class="row"><button class="btn btn-primary btn-small" type="button" data-ct="gapfill">구간 열기</button></div></div>
+    </details>
     <details class="ct"><summary>관점별 서술</summary>
       <p class="meta">같은 사건을 세력이나 인물마다 어떻게 다르게 기억하는지 정합니다.</p>
       <div class="form">
@@ -5000,6 +5762,9 @@ function openCreativeTools() {
       const k = b.dataset.ct;
       if (k === "placegen") { generatePlace(root, b, v("pg-kind"), v("pg-parent"), v("pg-mood")); return; }
       if (k === "placegen-save") { savGeneratedPlace(v("pg-parent")); return; }
+      if (k === "itemgen") { generateItem(root, b, v("ig-kind"), v("ig-rarity"), v("ig-origin"), v("ig-mood")); return; }
+      if (k === "itemgen-save") { saveGeneratedItem(); return; }
+      if (k === "gapfill") { const a = parseYear(v("gp-from")); const z = parseYear(v("gp-to")); if (a === null || z === null) { toast("연도를 숫자로 넣어 주세요"); return; } openGapFiller(a, z); return; }
       if (k === "interview") { const id = v("ct-who"); closeSheet(); startInterview(id); return; }
       let text = "";
       if (k === "doc") {
@@ -5049,6 +5814,14 @@ function bindCodexTabs() {
       const el = e.target.closest(`[data-${attr.replace(/[A-Z]/g, (c) => "-" + c.toLowerCase())}]`);
       if (el) { await markQuestion(el.dataset[attr], kindName); return; }
     }
+    const fsf = e.target.closest("[data-fsfilter]");
+    if (fsf) { state.fsFilter = fsf.dataset.fsfilter; renderCodexTabResults(); return; }
+    const fse = e.target.closest("[data-fs-edit]");
+    if (fse) { openForeshadowEditor(worldForeshadows().find((f) => f.id === fse.dataset.fsEdit)); return; }
+    const fss = e.target.closest("[data-fs-st]");
+    if (fss) { const [id, st] = fss.dataset.fsSt.split("|"); await setForeshadowStatus(id, st); return; }
+    const fsc = e.target.closest("[data-fs-chat]");
+    if (fsc) { const f = worldForeshadows().find((x) => x.id === fsc.dataset.fsChat); startInNewThread(`회수되지 않은 ${f.kind}: "${f.text}"${f.plant ? ` (깔린 곳: ${storyRefName(f.plant)})` : ""}. 이것을 어떻게 회수하면 좋을지 이야기의 흐름과 설정에 맞게 2~3가지 제안해 줘. 회수 장면이 정해지면 set_foreshadow로 회수된 곳과 상태를 기록해 줘. `); return; }
     const ng = e.target.closest("[data-naming-gen]");
     if (ng) { openNameGenerator(worldNaming().find((r) => r.id === ng.dataset.namingGen)); return; }
     const ne = e.target.closest("[data-naming-edit]");
@@ -5056,6 +5829,8 @@ function bindCodexTabs() {
     const act = e.target.closest("[data-act]")?.dataset.act;
     if (act === "ms-new") openMsEditor(null);
     else if (act === "naming-new") openNamingEditor(null);
+    else if (act === "fs-new") openForeshadowEditor(null);
+    else if (act === "fs-ask") startInNewThread("원고함과 설정에서 복선과 예언을 찾아 줘. 깔렸지만 아직 회수되지 않은 것, 회수된 것을 나눠서 알려 주고, 내가 받아들이면 set_foreshadow로 기록해 줘. ");
     else if (act === "naming-ask") { startInNewThread("이 세계의 나라·종족마다 이름 규칙을 만들어 줘. 음절 구조, 자주 쓰는 소리와 어미, 성(姓)과 지명 규칙, 예시 이름까지 정해서 set_naming_rule로 저장해 줘. "); }
     else if (act === "senses-ask") { startInNewThread("감각이 비어 있는 장소들의 소리·냄새·빛·촉감·맛을 그 장소답게 정해서 senses에 채워 줘. 확정 설정과 어긋나지 않게. "); }
     else if (act === "q-custom") askCustomQuestions(e.target.closest("[data-act]"));
@@ -5075,16 +5850,18 @@ function relationsHTML(e) {
 const CHAR_TABS = [["base", "기본"], ["inner", "내면"], ["arc", "성장"], ["voice", "말투"], ["looks", "외모"], ["ability", "능력"]];
 const PLACE_TABS = [["base", "기본"], ["people", "사람들"], ["economy", "경제"], ["rumor", "소문"], ["climate", "기후"], ["happened", "일어난 일"]];
 const MAGIC_TABS = [["base", "기본"], ["system", "체계"], ["spells", "주문서"], ["ruling", "판정"], ["holes", "허점"]];
-const ITEM_TABS = [["base", "기본"], ["history", "이력"]];
+const ITEM_TABS = [["base", "기본"], ["card", "카드"], ["history", "이력"], ["craft", "제작"]];
 const PLACE_GROUPS = { people: ["population", "residents", "language", "ruler"], economy: ["goods", "trade", "prices", "work", "danger"] };
 const SPECIES_TABS = [["base", "기본"], ["bio", "생물"], ["society", "사회"], ["culture", "문화"], ["lang", "언어"], ["dist", "분포"]];
 const FACTION_TABS = [["base", "기본"], ["ranks", "직위"], ["comp", "구성"]];
+const EVENT_TABS = [["base", "기본"], ["story", "전말"], ["steps", "경과"], ["changes", "바뀐 것"], ["causal", "인과"]];
 function entryTabsFor(e) {
   if (!e || e.deleted) return null;
   if (isCharacterType(e.type)) return CHAR_TABS;
   if (isSpeciesType(e.type)) return SPECIES_TABS;
   if (isPlaceType(e.type)) return PLACE_TABS;
   if (isFactionType(e.type)) return FACTION_TABS;
+  if (isEventType(e.type)) return EVENT_TABS;
   if (isItemType(e.type)) return ITEM_TABS;
   if (isMagicEntry(e)) return MAGIC_TABS;
   return null;
@@ -5108,24 +5885,36 @@ function charTabsHTML(e) {
     ruling: e.rulings?.length || "",
     holes: (e.holes || []).filter((h) => h.status === "open").length || "",
     history: hasKeys(e.artifact) ? "✓" : "",
+    card: e.item || e.magicItem ? `${ITEM_KEYS.filter(([k]) => e.item?.[k]).length}/8` : "",
+    craft: e.recipe || e.sources?.length || usedIn(e).length ? "✓" : "",
     bio: (lifeOf(e) ? 1 : 0) + SPECIES_KEYS.filter(([k, , g]) => g === "bio" && e.species?.[k]).length || "",
     society: SPECIES_KEYS.filter(([k, , g]) => g === "society" && e.species?.[k]).length || "",
     culture: SPECIES_KEYS.filter(([k, , g]) => g === "culture" && e.species?.[k]).length || "",
     lang: e.lang?.words?.length || (e.lang ? "✓" : ""),
     ranks: e.ranks?.length || "",
     comp: e.demographics?.length ? "✓" : "",
+    story: (e.event || e.participants?.length) ? `${EVENT_KEYS.filter(([k]) => e.event?.[k]).length}/4` : "",
+    steps: e.steps?.length || "",
+    changes: e.when && isEventType(e.type) ? eventChangesLines(e, 99).length || "" : "",
+    causal: causesOf(e).length + effectsOf(e).length || "",
   };
   return `<div class="seg-tabs entry-tabs" role="tablist">${tabs.map(([k, l]) => `<button type="button" role="tab" data-etab="${k}" aria-selected="${state.entryTab === k}">${l}${n[k] ? `<small>${n[k]}</small>` : ""}</button>`).join("")}</div>`;
 }
 const askRow = (edit, ask, editLabel = "편집", askLabel = "Claude와 채우기") => `<div class="row sec-actions"><button class="btn btn-small" type="button" data-act="${edit}">${editLabel}</button><button class="btn btn-small btn-primary" type="button" data-act="${ask}">${askLabel}</button></div>`;
 function charSectionHTML(e, tab) {
+  if (tab === "story") return eventStoryHTML(e);
+  if (tab === "card") return itemCardHTML(e);
+  if (tab === "craft") return craftHTML(e);
+  if (tab === "steps") return eventStepsHTML(e);
+  if (tab === "changes") return eventChangesHTML(e);
+  if (tab === "causal") return eventCausalHTML(e);
   if (tab === "bio" || tab === "society" || tab === "culture") return speciesGroupHTML(e, tab);
   if (tab === "lang") return langHTML(e);
   if (tab === "dist") return distHTML(e);
   if (tab === "ranks") return ranksHTML(e);
   if (tab === "comp") return compHTML(e);
   if (tab === "people") return demoBarHTML(e) + placeGroupHTML(e, tab);
-  if (tab === "economy") return placeGroupHTML(e, tab);
+  if (tab === "economy") return placeGroupHTML(e, tab) + placeMaterialsHTML(e);
   if (tab === "rumor") return rumorsHTML(e);
   if (tab === "climate") return climateHTML(e);
   if (tab === "happened") return happenedHTML(e);
@@ -5492,6 +6281,527 @@ function openRanksEditor(e) {
   });
 }
 
+/* ---- 사건 탭: 전말 · 경과 · 바뀐 것 · 인과 ---- */
+const EVENT_ASK = {
+  story: (e) => `${e.name}(${e.id}) 사건의 전말을 정해 줘. 원인, 경과, 결과, 남긴 것을 세계 규칙과 연표에 맞게 제안하고, 참여자와 역할(주동·배후·피해·목격)도 함께. 내가 고르면 update_entry의 event와 set_event로 저장해 줘. `,
+  steps: (e) => `${e.name}(${e.id}) 사건의 세부 경과를 단계별로 정리해 줘. 시점 표기(예: 1일째 새벽), 일어난 일, 장소를 시간순으로 제안하고, 내가 고르면 set_event의 steps로 저장해 줘. `,
+  changes: (e) => `${e.name}(${e.id}) 사건이 세계에 남긴 변화를 따져 줘. 관계가 시작되거나 끝난 것, 죽거나 자리를 잃은 인물, 주인이 바뀐 물건, 국경, 기념일 중 아직 기록되지 않은 것을 제안하고, 내가 고르면 알맞은 도구로 저장해 줘. `,
+  causal: (e) => `${e.name}(${e.id}) 사건의 원인과 결과를 따져 줘. 설정집에 있는 사건 중 원인이 된 것과 이 사건 때문에 일어난 것을 찾고, 빠진 고리가 있으면 새 사건(초안)으로 제안해 줘. 내가 고르면 set_cause로 이어 줘. `,
+  whatif: (e) => `만약 ${e.name}(${e.id})이(가) 일어나지 않았다면 이 세계는 어떻게 달라졌을까? 이 사건의 결과로 이어진 사건과 인물, 세력 관계를 따라가며 달라졌을 역사 2~3가지를 써 줘. 실제 설정은 바꾸지 마. `,
+};
+const refBtn = (id) => { const x = findEntry(id); return x ? `<button type="button" class="ref" data-ref="${x.id}">${x.id}</button> ${esc(x.name)}` : esc(id || ""); };
+function eventStoryHTML(e) {
+  const v = e.event || {};
+  const parts = (e.participants || []).filter((p) => findEntry(p.ref));
+  const inParts = new Set(parts.map((p) => p.ref));
+  const cand = [...new Set([...(e.relations || []).map((r) => r.to), ...incoming(e.id).map((x) => x.from.id)])].map(liveRef).filter((x) => x && !inParts.has(x.id) && (isCharacterType(x.type) || isFactionType(x.type) || isSpeciesType(x.type)));
+  return `<p class="section-label">사건 카드</p>
+    <dl class="fields">${EVENT_KEYS.map(([k, l]) => `<div><dt>${l}</dt>${v[k] ? `<dd>${esc(v[k])}</dd>` : `<dd class="blank">미정</dd>`}</div>`).join("")}</dl>
+    ${askRow("event-edit", "event-ask-story")}
+    <p class="section-label">참여자 <small class="meta">${parts.length}</small></p>
+    ${parts.length ? `<ul class="list-plain part-list">${parts.map((p) => `<li><span class="role role-${esc(p.role)}">${esc(p.role)}</span> ${refBtn(p.ref)}${p.note ? `<span class="meta"> · ${esc(p.note)}</span>` : ""}</li>`).join("")}</ul>`
+      : `<p class="meta">누가 일으키고, 누가 뒤에 있었고, 누가 다치고, 누가 보았는지 적어 둡니다. 참여자가 그때 살아 있었는지는 설정 점검이 확인합니다.</p>`}
+    ${cand.length ? `<p class="meta" style="margin:8px 0 4px">관계로만 이어진 항목</p><div class="demo-legend">${cand.map((x) => `<button type="button" class="ref-chip" data-act="part-add" data-id="${x.id}">${esc(x.name)} +</button>`).join("")}</div>` : ""}
+    <div class="row sec-actions"><button class="btn btn-small" type="button" data-act="part-edit">참여자 편집</button></div>`;
+}
+function eventStepsHTML(e) {
+  const list = e.steps || [];
+  return `<p class="section-label">세부 경과</p>
+    ${list.length ? `<ol class="arc-steps step-list">${list.map((st) => `<li><div class="arc-head"><b>${esc(st.at || "·")}</b>${st.place ? `<span class="meta">${refBtn(st.place)}</span>` : ""}</div><p>${esc(st.text)}</p></li>`).join("")}</ol>`
+      : `<p class="meta">사건 안에서 일어난 일을 단계로 나눠 적습니다(예: 1일째 새벽 · 매복, 3일째 · 성문 함락). 연표에는 사건 하나로만 보입니다.</p>`}
+    ${askRow("steps-edit", "event-ask-steps")}`;
+}
+function eventChangesHTML(e) {
+  const c = eventChanges(e);
+  if (!c) return `<p class="meta">사건에 시점(연도)이 있어야 그 기간에 바뀐 것을 모을 수 있습니다.</p><div class="row sec-actions"><button class="btn btn-small" type="button" data-act="edit">시점 넣기</button></div>`;
+  const groups = [
+    ["관계", c.rels.map(({ a, r, k }) => `<li><span class="pill">${k}</span> ${esc(a.name)} → ${esc(r.label)} → ${refBtn(r.to)} <span class="meta">${esc(relYears(r))}</span></li>`)],
+    ["태어남·죽음", [...c.births.map((x) => `<li><span class="pill">태어남</span> ${refBtn(x.id)}</li>`), ...c.deaths.map((x) => `<li><span class="pill pill-danger">죽음</span> ${refBtn(x.id)}</li>`)]],
+    ["빈 직위", c.vacated.map(({ x, f, r }) => `<li>${refBtn(f.id)}의 ${esc(r.name)} <span class="meta">${esc(x.name)}이(가) 죽음</span></li>`)],
+    ["주인이 바뀐 물건", c.owners.map(({ it, o }) => `<li>${refBtn(it.id)} → ${esc(nameOrText(o.who))} <span class="meta">${esc(fmtYear(o.from))}</span></li>`)],
+    ["지도 영역", c.regions.map(({ m, r, k }) => `<li><span class="pill">${k}</span> ${refBtn(r.ref)} <span class="meta">${esc(m.name)}</span></li>`)],
+    ["이어진 사건", c.effects.map((x) => `<li>${refBtn(x.id)}${x.when ? ` <span class="meta">${esc(rangeText(x.when))}</span>` : ""}</li>`)],
+    ["남긴 날", c.obs.map((o) => `<li><span class="pill">${esc(o.kind)}</span> ${esc(o.name)} <span class="meta">${esc(dayText(o))}</span></li>`)],
+  ].filter(([, l]) => l.length);
+  return `<p class="meta" style="margin:0 0 8px">${esc(rangeText(e.when))} 사이에 기록된 변화입니다. 관계 기간, 생몰년, 직위, 유물 이력, 지도 영역, 인과, 기념일에서 찾아 모읍니다.</p>
+    ${groups.length ? groups.map(([t, l]) => `<p class="section-label">${t} <small class="meta">${l.length}</small></p><ul class="list-plain change-list">${l.join("")}</ul>`).join("") : `<p class="meta">이 기간에 기록된 변화가 없습니다.</p>`}
+    <div class="row sec-actions"><button class="btn btn-small btn-primary" type="button" data-act="event-ask-changes">Claude와 빠진 변화 찾기</button></div>`;
+}
+function eventCausalHTML(e) {
+  const causes = causesOf(e);
+  const effects = effectsOf(e);
+  const row = (x, note, dir) => `<li><div>${refBtn(x.id)}${x.when ? ` <span class="meta">${esc(rangeText(x.when))}</span>` : ""}${(dir === "cause" ? causeBackwards(x, e) : causeBackwards(e, x)) ? ` <span class="pill pill-danger">순서 확인</span>` : ""}${note ? `<p class="meta">${esc(note)}</p>` : ""}</div><button type="button" class="icon-btn" data-act="cause-del" data-dir="${dir}" data-id="${x.id}" aria-label="${esc(x.name)} 잇기 끊기">×</button></li>`;
+  const fs = worldForeshadows().filter((f) => f.plant === e.id || f.payoff === e.id);
+  const obs = worldObservances().filter((o) => o.ref === e.id);
+  return `<p class="section-label">원인 <small class="meta">${causes.length}</small></p>
+    ${causes.length ? `<ul class="list-plain cause-list">${causes.map((c) => row(findEntry(c.ref), c.note, "cause")).join("")}</ul>` : `<p class="meta">이 사건을 일으킨 사건을 이어 두세요.</p>`}
+    <p class="section-label">결과 <small class="meta">${effects.length}</small></p>
+    ${effects.length ? `<ul class="list-plain cause-list">${effects.map((x) => row(x, x.causes.find((c) => c.ref === e.id)?.note, "effect")).join("")}</ul>` : `<p class="meta">이 사건 때문에 일어난 사건을 이어 두세요.</p>`}
+    <div class="row sec-actions"><button class="btn btn-small" type="button" data-act="cause-add" data-dir="cause">원인 잇기</button><button class="btn btn-small" type="button" data-act="cause-add" data-dir="effect">결과 잇기</button><button class="btn btn-small" type="button" data-act="causal-view">흐름도</button></div>
+    <div class="row sec-actions"><button class="btn btn-small btn-primary" type="button" data-act="event-ask-causal">Claude와 인과 찾기</button><button class="btn btn-small" type="button" data-act="event-ask-whatif">없었다면?</button></div>
+    <p class="section-label">남긴 날 <small class="meta">${obs.length}</small></p>
+    ${obs.length ? `<ul class="list-plain change-list">${obs.map((o) => `<li><button type="button" class="plain-btn" data-act="obs-edit" data-obs="${o.id}"><span class="pill k-${esc(o.kind)}">${esc(o.kind)}</span> <b>${esc(o.name)}</b> <span class="meta">${esc(dayText(o))}</span></button></li>`).join("")}</ul>` : `<p class="meta">이 사건이 남긴 기념일·축제·금기일을 세계 달력에 올립니다.</p>`}
+    <div class="row sec-actions"><button class="btn btn-small" type="button" data-act="obs-add">기념일 더하기</button></div>
+    <p class="section-label">복선 <small class="meta">${fs.length}</small></p>
+    ${fs.length ? `<ul class="list-plain change-list">${fs.map((f) => `<li><button type="button" class="plain-btn" data-act="fs-edit" data-fs="${f.id}"><span class="pill">${esc(f.kind)}·${esc(f.status)}</span> ${esc(cut(f.text, 60))} <span class="meta">${f.plant === e.id ? "여기서 깔림" : "여기서 회수"}</span></button></li>`).join("")}</ul>` : ""}
+    <div class="row sec-actions"><button class="btn btn-small" type="button" data-act="fs-add-here">복선 더하기</button></div>`;
+}
+function openEventCardEditor(e) {
+  openSheet(`<h2 class="sheet-title">${esc(e.name)} · 사건 카드</h2>
+    <form class="form" id="eventForm">${EVENT_KEYS.map(([k, l]) => `<label>${l}<textarea data-k="${k}" rows="2">${esc(e.event?.[k] || "")}</textarea></label>`).join("")}
+      <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    root.onclick = (ev) => { if (ev.target.closest('[data-act="cancel"]')) openEntry(e.id); };
+    root.onsubmit = (ev) => {
+      ev.preventDefault();
+      const eventAll = {};
+      for (const t of $$("textarea[data-k]", root)) eventAll[t.dataset.k] = t.value;
+      state.entryTab = "story";
+      saveCharEdit(e, { eventAll }, "사건 카드 편집");
+    };
+  });
+}
+function partRow(p = {}, selfId = "") {
+  const opts = liveEntries().filter((x) => x.id !== selfId).sort((a, b) => (Number(isCharacterType(b.type)) - Number(isCharacterType(a.type))) || a.id.localeCompare(b.id)).map((x) => `<option value="${x.id}"${x.id === p.ref ? " selected" : ""}>${x.id} ${esc(x.name)}</option>`).join("");
+  return `<div class="kv-row part-row"><select class="pr" aria-label="참여자"><option value="">고르기</option>${opts}</select><select class="pl" aria-label="역할">${EVENT_ROLES.map((r) => `<option${r === (p.role || "주동") ? " selected" : ""}>${r}</option>`).join("")}</select><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button><input class="pn" placeholder="한 일 (선택)" value="${esc(p.note || "")}" aria-label="한 일"></div>`;
+}
+function openParticipantsEditor(e, addId = null) {
+  const list = [...(e.participants || []), ...(addId ? [{ ref: addId, role: "기타" }] : [])];
+  openSheet(`<h2 class="sheet-title">${esc(e.name)} · 참여자</h2>
+    <form class="form" id="partForm"><div id="partRows">${(list.length ? list : [{}]).map((p) => partRow(p, e.id)).join("")}</div>
+      <button type="button" class="btn btn-ghost btn-small" data-act="part-row-add">참여자 추가</button>
+      <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    root.onclick = (ev) => {
+      if (ev.target.closest('[data-act="cancel"]')) openEntry(e.id);
+      else if (ev.target.closest('[data-act="part-row-add"]')) $("#partRows", root).insertAdjacentHTML("beforeend", partRow({}, e.id));
+      else if (ev.target.closest("[data-del-row]")) ev.target.closest(".part-row").remove();
+    };
+    root.onsubmit = (ev) => {
+      ev.preventDefault();
+      let participants;
+      try { participants = normalizeParticipants($$(".part-row", root).map((r) => ({ id: $(".pr", r).value, role: $(".pl", r).value, note: $(".pn", r).value })).filter((x) => x.id)); } catch (err) { toast(err.message); return; }
+      state.entryTab = "story";
+      saveCharEdit(e, { participants }, "참여자 편집");
+    };
+  });
+}
+function stepRow(st = {}) {
+  return `<div class="arc-row step-row"><div class="arc-row-top step-top"><input class="sa" placeholder="시점 (예: 1일째 새벽)" value="${esc(st.at || "")}" aria-label="시점"><select class="sp" aria-label="장소"><option value="">장소 없음</option>${entryOptions((x) => isPlaceType(x.type), st.place)}</select><button type="button" class="icon-btn" data-arc-up aria-label="위로">↑</button><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button></div>
+    <textarea class="st" rows="2" placeholder="일어난 일" aria-label="일어난 일">${esc(st.text || "")}</textarea></div>`;
+}
+function openStepsEditor(e) {
+  openSheet(`<h2 class="sheet-title">${esc(e.name)} · 세부 경과</h2>
+    <form class="form" id="stepsForm"><div id="stepRows">${(e.steps?.length ? e.steps : [{}, {}]).map(stepRow).join("")}</div>
+      <button type="button" class="btn btn-ghost btn-small" data-act="step-add">단계 추가</button>
+      <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    root.onclick = (ev) => {
+      if (ev.target.closest('[data-act="cancel"]')) openEntry(e.id);
+      else if (ev.target.closest('[data-act="step-add"]')) $("#stepRows", root).insertAdjacentHTML("beforeend", stepRow());
+      else if (ev.target.closest("[data-del-row]")) ev.target.closest(".step-row").remove();
+      else if (ev.target.closest("[data-arc-up]")) { const r = ev.target.closest(".step-row"); if (r.previousElementSibling) r.parentNode.insertBefore(r, r.previousElementSibling); }
+    };
+    root.onsubmit = (ev) => {
+      ev.preventDefault();
+      const steps = normalizeSteps($$(".step-row", root).map((r) => ({ at: $(".sa", r).value, text: $(".st", r).value, place_id: $(".sp", r).value })));
+      state.entryTab = "steps";
+      saveCharEdit(e, { steps }, "세부 경과 편집");
+    };
+  });
+}
+async function saveOther(x, patch, reason) {
+  if (state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 고쳐 주세요"); return false; }
+  try { updateEntry(x, patch, "user", reason); } catch (err) { toast(err.message); return false; }
+  await persist.world();
+  renderCodex();
+  return true;
+}
+function openCauseEditor(e, dir) {
+  const linked = new Set([...causesOf(e).map((c) => c.ref), ...effectsOf(e).map((x) => x.id)]);
+  const opts = entryOptions((x) => x.id !== e.id && !linked.has(x.id) && isEventType(x.type));
+  if (!opts) { toast("이을 수 있는 다른 사건이 없습니다"); return; }
+  openSheet(`<h2 class="sheet-title">${esc(e.name)} · ${dir === "cause" ? "원인 잇기" : "결과 잇기"}</h2>
+    <form class="form" id="causeForm">
+      <label>${dir === "cause" ? "이 사건을 일으킨 사건" : "이 사건 때문에 일어난 사건"}<select id="cz-other">${opts}</select></label>
+      <label>어떻게 이어지나 <small>선택</small><input id="cz-note" placeholder="예: 등대가 꺼지자 항로가 끊겨 전쟁이 났다"></label>
+      <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">잇기</button></div></form>`, (root) => {
+    root.onclick = (ev) => { if (ev.target.closest('[data-act="cancel"]')) openEntry(e.id); };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      const other = findEntry($("#cz-other", root).value);
+      const [cause, effect] = dir === "cause" ? [other, e] : [e, other];
+      if (causeChain(cause.id, "up").has(effect.id)) { toast(`${effect.name}은(는) 이미 ${cause.name}의 원인 쪽에 있어 순환이 됩니다`); return; }
+      const note = $("#cz-note", root).value.trim();
+      const list = [...(effect.causes || []).filter((c) => c.ref !== cause.id), { ref: cause.id, ...(note ? { note } : {}) }];
+      if (!(await saveOther(effect, { causes: list }, `원인: ${cause.name}`))) return;
+      state.entryTab = "causal";
+      openEntry(e.id);
+      toast(causeBackwards(cause, effect) ? "이었습니다. 결과가 원인보다 앞서니 연도를 확인해 주세요" : "이었습니다");
+    };
+  });
+}
+function openCausalView(id) {
+  state.tlMode = "causal";
+  LS.set("lk.tlmode", "causal");
+  state.causalSel = id || null;
+  closeSheet();
+  switchView("timeline");
+}
+
+/* ---- 연표 › 인과 흐름도 ---- */
+function renderCausal(root, tabs) {
+  const live = liveEntries();
+  const linked = new Set();
+  for (const f of live) for (const c of causesOf(f)) { linked.add(f.id); linked.add(c.ref); }
+  const nodes = live.filter((x) => linked.has(x.id) || (state.causalAll && isEventType(x.type)));
+  const tools = `<div class="life-tools"><button class="type-chip" type="button" data-causal="all" aria-pressed="${!!state.causalAll}">이어지지 않은 사건도</button><span class="sp"></span><button class="btn btn-small btn-primary" type="button" data-causal="ask">Claude와 인과 찾기</button></div>`;
+  if (!nodes.length) {
+    root.innerHTML = `${tabs}${tools}<div class="empty-state"><h3>이어진 사건이 없습니다</h3><p>사건 화면의 '인과' 탭에서 원인과 결과를 이으면, 시간 순서대로 흐름도를 그립니다. 결과가 원인보다 앞서면 빨간 선으로 보여 줍니다.</p></div>`;
+    return;
+  }
+  const years = [...new Set(nodes.filter((x) => x.when).map((x) => x.when.start))].sort((a, b) => a - b);
+  const colOf = (x) => (x.when ? years.indexOf(x.when.start) : years.length);
+  const cols = [];
+  for (const x of nodes) (cols[colOf(x)] ||= []).push(x);
+  const W = 132;
+  const H = 54;
+  const GX = 40;
+  const GY = 12;
+  const TOP = 28;
+  const PAD = 10;
+  const pos = new Map();
+  cols.forEach((list, ci) => {
+    if (!list) return;
+    const score = (x) => { const ys = causesOf(x).map((c) => pos.get(c.ref)?.y).filter((y) => y != null); return ys.length ? ys.reduce((a, b) => a + b, 0) / ys.length : Infinity; };
+    list.sort((a, b) => (score(a) - score(b)) || a.id.localeCompare(b.id));
+    list.forEach((x, ri) => pos.set(x.id, { x: PAD + ci * (W + GX), y: TOP + ri * (H + GY) }));
+  });
+  const ncol = cols.length;
+  const maxRows = Math.max(...cols.map((l) => (l ? l.length : 0)));
+  const width = PAD * 2 + ncol * W + (ncol - 1) * GX;
+  const baseH = TOP + maxRows * (H + GY);
+  let height = baseH + PAD;
+  const sel = state.causalSel && pos.has(state.causalSel) ? state.causalSel : null;
+  const up = sel ? causeChain(sel, "up") : new Set();
+  const down = sel ? causeChain(sel, "down") : new Set();
+  const inChain = (id) => !sel || id === sel || up.has(id) || down.has(id);
+  let bad = 0;
+  const edges = [];
+  for (const f of nodes) for (const c of causesOf(f)) {
+    const a = pos.get(c.ref);
+    const b = pos.get(f.id);
+    if (!a || !b) continue;
+    const isBad = causeBackwards(findEntry(c.ref), f);
+    if (isBad) bad++;
+    const cls = `c-edge${isBad ? " bad" : ""}${inChain(c.ref) && inChain(f.id) ? "" : " dim"}`;
+    if (b.x <= a.x) {
+      // 결과가 왼쪽(앞선 해)에 있으면 상자 아래로 돌아가게 그린다
+      const x1 = a.x + W / 2;
+      const y1 = a.y + H;
+      const x2 = b.x + W / 2;
+      const y2 = b.y + H;
+      const low = baseH + 14;
+      height = Math.max(height, low + 16);
+      edges.push(`<path class="${cls}" d="M${x1},${y1} C${x1},${low} ${x2},${low} ${x2},${y2}" marker-end="url(#c-arrow${isBad ? "-bad" : ""})"/>`);
+      continue;
+    }
+    const x1 = a.x + W;
+    const y1 = a.y + H / 2;
+    const x2 = b.x;
+    const y2 = b.y + H / 2;
+    const dx = Math.max(24, Math.abs(x2 - x1) / 2);
+    edges.push(`<path class="${cls}" d="M${x1},${y1} C${x1 + dx},${y1} ${x2 - dx},${y2} ${x2},${y2}" marker-end="url(#c-arrow${isBad ? "-bad" : ""})"/>`);
+  }
+  const labels = cols.map((l, ci) => (l ? `<span class="c-year" style="left:${PAD + ci * (W + GX)}px;width:${W}px">${ci < years.length ? esc(fmtYear(years[ci])) : "시점 없음"}</span>` : "")).join("");
+  const nodeHTML = nodes.map((x) => { const p = pos.get(x.id); return `<button class="c-node${sel === x.id ? " sel" : ""}${inChain(x.id) ? "" : " dim"}" type="button" data-cnode="${x.id}" style="left:${p.x}px;top:${p.y}px;width:${W}px;height:${H}px;--tc:${typeColor(x.type)}"><span class="c-name">${esc(x.name)}</span><span class="c-when">${x.when ? esc(rangeText(x.when)) : "시점 없음"}</span></button>`; }).join("");
+  const se = sel && findEntry(sel);
+  const prevScroll = $(".causal-scroll", root)?.scrollLeft;
+  root.innerHTML = `${tabs}${tools}
+    ${bad ? `<p class="note">결과가 원인보다 앞선 연결이 ${bad}개 있습니다(빨간 선).</p>` : ""}
+    <p class="meta" style="margin:8px 0">왼쪽에서 오른쪽으로 시간이 흐릅니다. 사건을 누르면 이어진 원인과 결과만 밝게 보이고, 한 번 더 누르면 사건 화면을 엽니다.</p>
+    <div class="causal-scroll"><div class="causal-canvas" style="width:${width}px;height:${height}px">
+      <svg class="causal-svg" width="${width}" height="${height}" aria-hidden="true"><defs>
+        <marker id="c-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="c-head"/></marker>
+        <marker id="c-arrow-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="c-head bad"/></marker>
+      </defs>${edges.join("")}</svg>
+      ${labels}${nodeHTML}
+    </div></div>
+    ${se ? `<div class="c-card"><b>${esc(se.name)}</b> <span class="meta">원인 쪽 ${up.size} · 결과 쪽 ${down.size}</span>
+      <div class="row" style="margin-top:8px"><button class="btn btn-small" type="button" data-ref="${se.id}">열기</button><button class="btn btn-small" type="button" data-causal="whatif">없었다면?</button><button class="btn btn-small btn-ghost" type="button" data-causal="clear">선택 해제</button></div></div>` : ""}`;
+  const sc = $(".causal-scroll", root);
+  if (prevScroll != null) sc.scrollLeft = prevScroll;
+  else if (sel) sc.scrollLeft = pos.get(sel).x - sc.clientWidth / 2 + W / 2;
+}
+
+/* ---- 연표 › 달력 (달 · 기념일 · 축제 · 금기일) ---- */
+function renderCalendarView(root, tabs) {
+  const months = worldMonths();
+  const obs = worldObservances();
+  const total = months.reduce((a, m) => a + m.days, 0);
+  const strip = `<div class="cal-strip" role="img" aria-label="한 해 ${total}일">${months.map((m, i) => `<span class="cal-mon" style="flex:${m.days} 1 0"><small>${esc(m.name)}</small>${obs.filter((o) => o.month === i + 1).map((o) => `<button type="button" class="cal-dot k-${esc(o.kind)}" style="left:${Math.min(96, ((o.day - 0.5) / m.days) * 100)}%" data-obs="${o.id}" aria-label="${esc(o.name)}"></button>`).join("")}</span>`).join("")}</div>`;
+  const off = obs.filter((o) => !months[o.month - 1] || o.day > months[o.month - 1].days);
+  const byMonth = months.map((m, i) => ({ m, list: obs.filter((o) => o.month === i + 1).sort((a, b) => a.day - b.day) })).filter((x) => x.list.length);
+  root.innerHTML = `${tabs}
+    <div class="tl-head"><div><span class="eyebrow">달</span><p class="tl-cal">${months.length}달 · 한 해 ${total}일${hasOwnMonths() ? "" : " (기본값)"}</p></div><button class="btn btn-small" type="button" data-calv="months">달 편집</button></div>
+    ${strip}
+    <div class="cal-legend">${OBSERVANCE_KINDS.map((k) => `<span><span class="cal-dot static k-${k}"></span>${k}</span>`).join("")}</div>
+    <div class="row sec-actions"><button class="btn btn-small btn-primary" type="button" data-calv="add">기념일 더하기</button><button class="btn btn-small" type="button" data-calv="ask">Claude와 정하기</button></div>
+    ${off.length ? `<p class="note">달력에 없는 날짜: ${esc(off.map((o) => o.name).join(", "))}. 달을 고쳤다면 날짜를 다시 정해 주세요.</p>` : ""}
+    ${byMonth.length ? byMonth.map(({ m, list }) => `<section class="cal-month"><h3>${esc(m.name)} <small class="meta">${m.days}일</small></h3><ul class="list-plain">${list.map((o) => `<li><button type="button" class="cal-item" data-obs="${o.id}"><span class="cal-day">${o.day}일</span><span class="cal-body"><span class="pill k-${esc(o.kind)}">${esc(o.kind)}</span> <b>${esc(o.name)}</b>${o.days > 1 ? ` <span class="meta">${o.days}일 동안</span>` : ""}${o.since != null ? ` <span class="meta">${esc(fmtYear(o.since))}부터</span>` : ""}${o.ref && findEntry(o.ref) ? ` <span class="meta">· ${esc(nameOf(o.ref))}</span>` : ""}${o.desc ? `<span class="meta cal-desc">${esc(o.desc)}</span>` : ""}</span></button></li>`).join("")}</ul></section>`).join("")
+      : off.length ? "" : `<div class="empty-state"><h3>아직 기념일이 없습니다</h3><p>사건이 남긴 기념일, 축제, 금기일을 세계 달력에 올려 두면 장면의 날짜를 정할 때 함께 볼 수 있습니다. 사건 화면의 '인과' 탭에서도 더할 수 있습니다.</p></div>`}`;
+}
+function openObservanceEditor(o, preset = {}, back = null) {
+  const w = currentWorld();
+  const months = worldMonths(w);
+  const cur = o || { kind: "기념일", month: 1, day: 1, ...preset };
+  const goBack = () => { if (back) back(); else closeSheet(); };
+  openSheet(`<h2 class="sheet-title">${o ? "기념일 고치기" : "기념일 더하기"}</h2>
+    <form class="form" id="obsForm">
+      <label>이름<input id="ob-name" value="${esc(cur.name || "")}" placeholder="예: 첫 불의 날"></label>
+      <fieldset><legend>종류</legend><div class="seg">${OBSERVANCE_KINDS.map((k) => `<label><input type="radio" name="ob-k" value="${k}"${cur.kind === k ? " checked" : ""}><span>${k}</span></label>`).join("")}</div></fieldset>
+      <div class="time-row"><label>달<select id="ob-month">${months.map((m, i) => `<option value="${i + 1}"${cur.month === i + 1 ? " selected" : ""}>${esc(m.name)}</option>`).join("")}</select></label><label>날<input id="ob-day" inputmode="numeric" value="${cur.day ?? ""}"></label><label>며칠 동안<input id="ob-days" inputmode="numeric" value="${cur.days ?? 1}"></label></div>
+      <div class="time-row"><label>처음 지킨 해 <small>선택</small><input id="ob-since" inputmode="decimal" value="${cur.since ?? ""}"></label><label>계기가 된 사건<select id="ob-ref"><option value="">없음</option>${entryOptions((x) => isEventType(x.type), cur.ref)}</select></label></div>
+      <label>그날 하는 일·금하는 일 <small>선택</small><textarea id="ob-desc" rows="2">${esc(cur.desc || "")}</textarea></label>
+      <div class="sheet-actions">${o ? `<button class="btn btn-danger" type="button" data-act="ob-del">지우기</button>` : ""}<button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    const done = async (list, note) => {
+      w.observances = list;
+      w.updatedAt = Date.now();
+      logChange("user", "calendar", null, note);
+      await Promise.all([persist.worlds(), persist.log()]);
+      toast("저장했습니다");
+      goBack();
+      if (state.view === "timeline") renderTimeline();
+    };
+    root.onclick = (ev) => {
+      if (ev.target.closest('[data-act="cancel"]')) goBack();
+      else if (ev.target.closest('[data-act="ob-del"]')) done(worldObservances(w).filter((x) => x.id !== o.id), `기념일 삭제: ${o.name}`);
+    };
+    root.onsubmit = (ev) => {
+      ev.preventDefault();
+      const name = $("#ob-name", root).value.trim();
+      if (!name) { toast("이름을 넣어 주세요"); return; }
+      if (worldObservances(w).some((x) => x.name === name && x.id !== o?.id)) { toast("같은 이름의 기념일이 있습니다"); return; }
+      const month = Number($("#ob-month", root).value);
+      const day = Math.round(Number($("#ob-day", root).value));
+      const m = months[month - 1];
+      if (!(day >= 1 && day <= m.days)) { toast(`${m.name}은(는) 1일부터 ${m.days}일까지 있습니다`); return; }
+      const days = Math.max(1, Math.round(Number($("#ob-days", root).value) || 1));
+      const sv = $("#ob-since", root).value.trim();
+      const since = sv ? parseYear(sv) : null;
+      if (sv && since === null) { toast("처음 지킨 해는 숫자로 넣어 주세요"); return; }
+      const ref = $("#ob-ref", root).value;
+      const desc = $("#ob-desc", root).value.trim();
+      const next = { id: o?.id || uid().slice(-6), name, kind: root.querySelector('input[name="ob-k"]:checked')?.value || "기념일", month, day, ...(days > 1 ? { days } : {}), ...(since != null ? { since } : {}), ...(ref ? { ref } : {}), ...(desc ? { desc } : {}) };
+      const list = worldObservances(w).filter((x) => x.id !== next.id);
+      list.push(next);
+      done(list, `기념일: ${name}`);
+    };
+  });
+}
+function openMonthsEditor(back = null) {
+  const w = currentWorld();
+  const row = (m = {}) => `<div class="kv-row month-row"><input class="mn" placeholder="달 이름" value="${esc(m.name || "")}" aria-label="달 이름"><input class="mdays" inputmode="numeric" placeholder="날 수" value="${m.days ?? ""}" aria-label="날 수"><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button></div>`;
+  const goBack = () => { if (back) back(); else closeSheet(); };
+  openSheet(`<h2 class="sheet-title">달 편집</h2>
+    <p class="meta" style="margin:0 0 8px">한 해의 달을 순서대로 적습니다.${hasOwnMonths(w) ? "" : " 지금은 기본값(12달 × 30일)입니다."}</p>
+    <form class="form" id="monthForm"><div id="monthRows">${worldMonths(w).map(row).join("")}</div>
+      <button type="button" class="btn btn-ghost btn-small" data-act="m-add">달 추가</button>
+      <div class="sheet-actions">${hasOwnMonths(w) ? `<button class="btn" type="button" data-act="m-reset">기본값으로</button>` : ""}<button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    const save = async (months) => {
+      const cal = { ...(w.calendar || {}) };
+      if (months) cal.months = months; else delete cal.months;
+      w.calendar = cal;
+      w.updatedAt = Date.now();
+      logChange("user", "calendar", null, "달 수정");
+      await Promise.all([persist.worlds(), persist.log()]);
+      const ms = worldMonths(w);
+      const off = worldObservances(w).filter((o) => !ms[o.month - 1] || o.day > ms[o.month - 1].days);
+      toast(off.length ? `저장했습니다. 달력에 없는 날짜가 된 기념일: ${off.map((o) => o.name).join(", ")}` : "저장했습니다");
+      goBack();
+      if (state.view === "timeline") renderTimeline();
+    };
+    root.onclick = (ev) => {
+      if (ev.target.closest('[data-act="cancel"]')) goBack();
+      else if (ev.target.closest('[data-act="m-add"]')) $("#monthRows", root).insertAdjacentHTML("beforeend", row());
+      else if (ev.target.closest('[data-act="m-reset"]')) save(null);
+      else if (ev.target.closest("[data-del-row]")) ev.target.closest(".month-row").remove();
+    };
+    root.onsubmit = (ev) => {
+      ev.preventDefault();
+      let months;
+      try { months = normalizeMonths($$(".month-row", root).map((r) => ({ name: $(".mn", r).value, days: $(".mdays", r).value }))); } catch (err) { toast(err.message); return; }
+      if (!months.length) { toast("달이 하나 이상 있어야 합니다"); return; }
+      save(months);
+    };
+  });
+}
+
+/* ---- 복선 · 예언 ---- */
+function storyOptions(selected = "") {
+  return `<optgroup label="항목">${entryOptions(() => true, selected)}</optgroup>${state.manuscripts.length ? `<optgroup label="원고">${state.manuscripts.map((m) => `<option value="${m.id}"${m.id === selected ? " selected" : ""}>${esc(m.title)}</option>`).join("")}</optgroup>` : ""}`;
+}
+function storyRefHTML(ref) {
+  if (!ref) return "";
+  const x = findEntry(ref);
+  if (x) return refBtn(x.id);
+  const m = state.manuscripts.find((y) => y.id === ref);
+  return m ? `<button type="button" class="link-btn" data-ms="${m.id}">원고 '${esc(m.title)}'</button>` : esc(ref);
+}
+function openForeshadowEditor(f, preset = {}, back = null) {
+  const w = currentWorld();
+  const cur = f || { kind: "복선", status: "깔림", ...preset };
+  const goBack = () => { if (back) back(); else closeSheet(); };
+  openSheet(`<h2 class="sheet-title">${f ? "복선 고치기" : "복선 더하기"}</h2>
+    <form class="form" id="fsForm">
+      <fieldset><legend>종류</legend><div class="seg">${FORESHADOW_KINDS.map((k) => `<label><input type="radio" name="fs-k" value="${k}"${cur.kind === k ? " checked" : ""}><span>${k}</span></label>`).join("")}</div></fieldset>
+      <label>내용<textarea id="fs-text" rows="2" placeholder="예: 서리의 등명부에 지워진 이름 하나">${esc(cur.text || "")}</textarea></label>
+      <div class="time-row"><label>깔린 곳<select id="fs-plant"><option value="">정하지 않음</option>${storyOptions(cur.plant)}</select></label><label>회수된 곳<select id="fs-payoff"><option value="">아직</option>${storyOptions(cur.payoff)}</select></label></div>
+      <label>이루어질 해 <small>예언일 때, 선택</small><input id="fs-due" inputmode="decimal" value="${cur.due ?? ""}"></label>
+      <fieldset><legend>상태</legend><div class="seg">${FORESHADOW_STATUS.map((k) => `<label><input type="radio" name="fs-s" value="${k}"${cur.status === k ? " checked" : ""}><span>${k}</span></label>`).join("")}</div></fieldset>
+      <label>메모 <small>회수할 계획 등</small><textarea id="fs-note" rows="2">${esc(cur.note || "")}</textarea></label>
+      <div class="sheet-actions">${f ? `<button class="btn btn-danger" type="button" data-act="fs-del">지우기</button>` : ""}<button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    const done = async (list, note) => {
+      w.foreshadows = list;
+      w.updatedAt = Date.now();
+      logChange("user", "world", null, note);
+      await Promise.all([persist.worlds(), persist.log()]);
+      toast("저장했습니다");
+      goBack();
+      if (state.view === "codex") renderCodex();
+    };
+    root.onclick = (ev) => {
+      if (ev.target.closest('[data-act="cancel"]')) goBack();
+      else if (ev.target.closest('[data-act="fs-del"]')) done(worldForeshadows(w).filter((x) => x.id !== f.id), "복선 삭제");
+    };
+    root.onsubmit = (ev) => {
+      ev.preventDefault();
+      const text = $("#fs-text", root).value.trim();
+      if (!text) { toast("내용을 넣어 주세요"); return; }
+      if (worldForeshadows(w).some((x) => x.text === text && x.id !== f?.id)) { toast("같은 내용의 복선이 있습니다"); return; }
+      const dv = $("#fs-due", root).value.trim();
+      const due = dv ? parseYear(dv) : null;
+      if (dv && due === null) { toast("이루어질 해는 숫자로 넣어 주세요"); return; }
+      const plant = $("#fs-plant", root).value;
+      const payoff = $("#fs-payoff", root).value;
+      let status = root.querySelector('input[name="fs-s"]:checked')?.value || "깔림";
+      if (payoff && status === "깔림" && !f?.payoff) status = "회수";
+      const note = $("#fs-note", root).value.trim();
+      const next = { ...(f || {}), id: f?.id || uid().slice(-6), createdAt: f?.createdAt || Date.now(), kind: root.querySelector('input[name="fs-k"]:checked')?.value || "복선", text, status };
+      for (const [k, v] of [["plant", plant], ["payoff", payoff], ["note", note]]) { if (v) next[k] = v; else delete next[k]; }
+      if (due != null) next.due = due; else delete next.due;
+      const list = worldForeshadows(w).filter((x) => x.id !== next.id);
+      list.push(next);
+      done(list, `복선: ${cut(text, 20)}`);
+    };
+  });
+}
+function renderForeshadows(box) {
+  const all = worldForeshadows();
+  const order = { 깔림: 0, 회수: 1, 버림: 2 };
+  const list = all.filter((f) => state.fsFilter === "all" || f.status === state.fsFilter).sort((a, b) => order[a.status] - order[b.status] || (b.createdAt || 0) - (a.createdAt || 0));
+  const now = worldCalendar().now;
+  const counts = Object.fromEntries(FORESHADOW_STATUS.map((k) => [k, all.filter((f) => f.status === k).length]));
+  box.innerHTML = `<div class="type-chips" role="toolbar" aria-label="복선 상태"><button class="type-chip" type="button" data-fsfilter="all" aria-pressed="${state.fsFilter === "all"}">전체<span class="n">${all.length}</span></button>${FORESHADOW_STATUS.map((k) => `<button class="type-chip" type="button" data-fsfilter="${k}" aria-pressed="${state.fsFilter === k}">${k}<span class="n">${counts[k]}</span></button>`).join("")}</div>
+    ${list.length ? `<div class="entry-list" style="margin-top:12px">${list.map((f) => `<section class="sense-card fs-card fs-${esc(f.status)}">
+      <div class="sense-head"><span class="pill">${esc(f.kind)}</span><span class="pill fs-st">${esc(f.status)}</span>${f.due != null ? `<span class="pill${f.status === "깔림" && now != null && f.due < now ? " pill-danger" : ""}">${esc(fmtYear(f.due))}</span>` : ""}<span class="sp"></span><button type="button" class="btn btn-ghost btn-small" data-fs-edit="${f.id}">편집</button></div>
+      <p class="fs-text">${esc(f.text)}</p>
+      <p class="meta" style="margin:0">깔린 곳: ${f.plant ? storyRefHTML(f.plant) : "정하지 않음"} · 회수: ${f.payoff ? storyRefHTML(f.payoff) : "아직"}</p>
+      ${f.note ? `<p class="meta" style="margin:4px 0 0">${esc(f.note)}</p>` : ""}
+      <div class="row" style="margin-top:8px">${f.status === "깔림" ? `<button class="btn btn-small" type="button" data-fs-st="${f.id}|회수">회수됨</button><button class="btn btn-small btn-primary" type="button" data-fs-chat="${f.id}">회수 방법 정하기</button>` : `<button class="btn btn-small btn-ghost" type="button" data-fs-st="${f.id}|깔림">깔림으로 되돌리기</button>`}</div>
+    </section>`).join("")}</div>`
+      : `<div class="empty-state"><h3>${all.length ? "조건에 맞는 복선이 없습니다" : "아직 복선이 없습니다"}</h3><p>원고나 사건에 깔아 둔 복선과 예언을 적어 두면, 회수되지 않은 것을 설정 점검과 Claude가 기억합니다.</p></div>`}`;
+}
+async function setForeshadowStatus(id, status) {
+  const w = currentWorld();
+  const list = worldForeshadows(w).map((f) => (f.id === id ? { ...f, status } : f));
+  w.foreshadows = list;
+  w.updatedAt = Date.now();
+  logChange("user", "world", null, `복선 ${status}`);
+  await Promise.all([persist.worlds(), persist.log()]);
+  renderCodexTabResults();
+  toast(status === "회수" ? "회수로 표시했습니다. 회수된 곳은 편집에서 고를 수 있습니다" : "깔림으로 되돌렸습니다");
+}
+
+/* ---- 역사 공백 채우기 ---- */
+function largestGap() {
+  const starts = [...new Set(timelineEntries().map((e) => e.when.start))].sort((a, b) => a - b);
+  let best = null;
+  for (let i = 1; i < starts.length; i++) if (!best || starts[i] - starts[i - 1] > best[1] - best[0]) best = [starts[i - 1], starts[i]];
+  return best;
+}
+const GAP_SCHEMA = {
+  type: "object", additionalProperties: false, required: ["events"],
+  properties: { events: { type: "array", items: { type: "object", additionalProperties: false, required: ["name", "summary", "start", "end", "cause", "outcome", "causes", "effects"], properties: {
+    name: { type: "string" }, summary: { type: "string" }, start: { type: "number" }, end: { type: "number" },
+    cause: { type: "string" }, outcome: { type: "string" }, causes: { type: "array", items: { type: "string" } }, effects: { type: "array", items: { type: "string" } },
+  } } } },
+};
+let gapCandidates = [];
+function openGapFiller(from, to) {
+  if (!currentWorld()) return;
+  if (!(to > from)) { toast("시작보다 뒤의 해를 넣어 주세요"); return; }
+  gapCandidates = [];
+  openSheet(`<h2 class="sheet-title">역사 공백 채우기</h2>
+    <p class="meta" style="margin:0 0 8px">${esc(fmtYear(from))}와 ${esc(fmtYear(to))} 사이에 있었을 사건을 앞뒤 사건과 세계 규칙에 맞춰 제안받습니다(짧은 요청 한 번). 고른 것만 초안으로 저장합니다.</p>
+    <div class="form"><div class="time-row"><label>몇 개<select id="gp-n">${[3, 4, 5].map((n) => `<option${n === 4 ? " selected" : ""}>${n}</option>`).join("")}</select></label><label>바라는 방향 <small>선택</small><input id="gp-memo" placeholder="예: 교단이 힘을 키운 과정"></label></div>
+      <div class="row"><button class="btn btn-primary btn-small" type="button" data-gp="make">후보 만들기</button></div></div>
+    <div id="gpOut"></div>`, (root) => {
+    root.onclick = async (ev) => {
+      const b = ev.target.closest("[data-gp]");
+      if (!b) return;
+      if (b.dataset.gp === "make") makeGapCandidates(root, b, from, to);
+      else if (b.dataset.gp === "save") saveGapCandidates(root);
+    };
+  });
+}
+async function makeGapCandidates(root, btn, from, to) {
+  const out = $("#gpOut", root);
+  btn.disabled = true;
+  out.innerHTML = `<p class="status-line">사건을 짓는 중…</p>`;
+  try {
+    const w = currentWorld();
+    const evs = timelineEntries().filter((e) => isEventType(e.type));
+    const before = evs.filter((e) => e.when.start <= from).slice(-8);
+    const after = evs.filter((e) => e.when.start >= to).slice(0, 8);
+    const inside = evs.filter((e) => e.when.start > from && e.when.start < to);
+    const alive = liveEntries().filter((e) => isCharacterType(e.type) && e.when && e.when.start <= to && (e.when.end == null || e.when.end >= from)).slice(0, 15);
+    const factions = liveEntries().filter((e) => isFactionType(e.type)).slice(0, 15);
+    const line = (e) => `- ${e.id} ${e.name} (${rangeText(e.when)}): ${cut(e.summary || "", 80)}`;
+    const n = Number($("#gp-n", root).value) || 4;
+    const memo = $("#gp-memo", root).value.trim();
+    const text = await quickAsk(
+      "너는 판타지 세계관의 역사가다. 연표의 빈 구간에 있었을 법한 사건을 지어 앞뒤 사건을 자연스럽게 잇는다. 세계의 전제·규칙과 이미 있는 사건, 인물의 생몰년, 세력을 지키고, 이름 규칙에 맞게 이름을 짓는다. 이미 있는 사건과 이름이 겹치지 않게 한다. start와 end는 이 세계 달력의 연도이고, 한 해 안에 끝난 일이면 end를 start와 같게 쓴다. causes에는 이 사건의 원인이 된 기존 사건 id만, effects에는 이 사건 때문에 일어난 기존 사건 id만 넣는다(없으면 빈 배열).",
+      `${worldOverviewText(w)}\n${calendarText()}\n\n빈 구간: ${fmtYear(from)} ~ ${fmtYear(to)}\n${memo ? `바라는 방향: ${memo}\n` : ""}\n앞의 사건:\n${before.map(line).join("\n") || "(없음)"}\n\n뒤의 사건:\n${after.map(line).join("\n") || "(없음)"}\n${inside.length ? `\n이미 구간 안에 있는 사건:\n${inside.map(line).join("\n")}\n` : ""}\n그때 살아 있던 인물: ${alive.map((e) => `${e.name}(${rangeText(e.when)})`).join(", ") || "(없음)"}\n세력: ${factions.map((e) => e.name).join(", ") || "(없음)"}\n${worldNaming().length ? `이름 규칙: ${worldNaming().map((r) => `${r.name}: ${cut(r.rules, 80)}`).join(" / ")}\n` : ""}\n이 구간에 들어갈 사건 ${n}개를 시간순으로 지어 줘.`,
+      8000,
+      { schema: GAP_SCHEMA, effort: "medium" },
+    );
+    if (text === null) { out.innerHTML = ""; return; }
+    const g = JSON.parse(text);
+    gapCandidates = (g.events || []).filter((x) => x.name && Number.isFinite(x.start)).map((x) => ({ ...x, end: Number.isFinite(x.end) && x.end > x.start ? x.end : null, causes: (x.causes || []).filter((id) => liveRef(id)), effects: (x.effects || []).filter((id) => liveRef(id)) }));
+    out.innerHTML = gapCandidates.length ? `<div class="gap-list">${gapCandidates.map((x, i) => `<label class="pick gap-pick"><input type="checkbox" value="${i}" checked><span><b>${esc(x.name)}</b> <small class="meta">${esc(rangeText({ start: x.start, end: x.end }))}</small><br>${esc(x.summary)}${x.cause ? `<br><small class="meta">원인: ${esc(x.cause)}</small>` : ""}${x.outcome ? `<br><small class="meta">결과: ${esc(x.outcome)}</small>` : ""}${x.causes.length || x.effects.length ? `<br><small class="meta">${x.causes.length ? `← ${esc(x.causes.map(nameOf).join(", "))}` : ""}${x.effects.length ? ` → ${esc(x.effects.map(nameOf).join(", "))}` : ""}</small>` : ""}</span></label>`).join("")}</div>
+      <div class="row"><button class="btn btn-primary btn-small" type="button" data-gp="save">고른 것 초안으로 저장</button><button class="btn btn-small" type="button" data-gp="make">다시 만들기</button></div>` : `<p class="note">후보를 받지 못했습니다. 다시 시도해 주세요.</p>`;
+  } catch (err) { out.innerHTML = `<p class="note note-error">${esc(err instanceof SyntaxError ? "결과를 읽지 못했습니다. 다시 시도해 주세요" : describeError(err))}</p>`; }
+  finally { btn.disabled = false; }
+}
+async function saveGapCandidates(root) {
+  if (state.busy) { toast("Claude가 작업 중입니다"); return; }
+  const picks = $$(".gap-pick input:checked", root).map((i) => gapCandidates[Number(i.value)]).filter(Boolean);
+  if (!picks.length) { toast("저장할 사건을 골라 주세요"); return; }
+  const made = [];
+  const skipped = [];
+  for (const x of picks) {
+    try {
+      const e = createEntry({ type: eventTypeKey(), name: x.name, summary: x.summary, status: "초안", when: { start: x.start, end: x.end, label: "" }, event: { cause: x.cause, outcome: x.outcome } }, "user");
+      if (x.causes.length) e.causes = x.causes.map((ref) => ({ ref }));
+      for (const id of x.effects) { const f = findEntry(id); if (f && !causeChain(e.id, "up").has(f.id)) updateEntry(f, { causes: [...(f.causes || []).filter((c) => c.ref !== e.id), { ref: e.id }] }, "user", `원인: ${e.name}`); }
+      made.push(e);
+    } catch (err) { skipped.push(`${x.name}: ${err.message}`); }
+  }
+  await persist.world();
+  renderCodex();
+  if (state.view === "timeline") renderTimeline();
+  closeSheet();
+  toast(`초안 ${made.length}개를 저장했습니다${skipped.length ? ` (건너뜀: ${skipped.join(" / ")})` : ""}`);
+}
+
 /* ---- 장소 탭: 사람들 · 경제 · 소문 · 기후 · 일어난 일 ---- */
 const PLACE_ASK = {
   people: (e) => `${e.name}(${e.id})에 사는 사람들을 정해 줘. 인구, 주민(어떤 사람들이 사는지), 쓰는 언어, 다스리는 자를 세계관에 맞게 제안하고, 내가 고르면 update_entry의 place로 저장해 줘. `,
@@ -5734,6 +7044,10 @@ function holesHTML(e) {
     ${closed.length ? `<details class="tl-missing"><summary>닫은 질문 ${closed.length}</summary><div class="q-cards">${closed.map(card).join("")}</div></details>` : ""}`;
 }
 function magicContext(e) {
+  const items = liveEntries().filter((x) => x.magicItem?.system === e.id);
+  return magicContextBase(e) + (items.length ? `\n\n이 체계를 쓰는 마법 물건:\n${items.map((x) => `- ${x.name}(${x.id})${x.magicItem.spells?.length ? `: 주문 ${x.magicItem.spells.join(", ")}` : ""} · 대가: ${x.magicItem.cost || "(미정)"}${x.magicItem.charges ? ` · 사용: ${x.magicItem.charges}` : ""}${artifactHolder(x) ? ` · 가진 이: ${nameOrText(artifactHolder(x))}` : ""}`).join("\n")}` : "");
+}
+function magicContextBase(e) {
   const w = currentWorld();
   const abil = liveEntries().flatMap((x) => (x.abilities || []).map((a) => `- ${x.name}: ${a.name}${a.cost ? ` (대가: ${a.cost})` : ""}${a.limit ? ` (한계: ${a.limit})` : ""}`)).slice(0, 40);
   return `${worldOverviewText(w)}\n\n# 마법 체계: ${e.name}\n${e.summary || ""}\n${MAGIC_KEYS.map(([k, l]) => `${l}: ${e.magic?.[k] || "(미정)"}`).join("\n")}${e.body ? `\n본문:\n${cut(e.body, 1500)}` : ""}${e.spells?.length ? `\n주문서:\n${e.spells.map((x) => `- ${x.name}${x.tier ? ` [${x.tier}]` : ""}: ${x.effect || ""} · 대가: ${x.cost || "(미정)"}`).join("\n")}` : ""}${e.rulings?.length ? `\n판례:\n${e.rulings.map((r, i) => `${i + 1}. ${r.situation} → ${r.verdict}${r.reason ? ` (${r.reason})` : ""}`).join("\n")}` : ""}${abil.length ? `\n인물들의 능력:\n${abil.join("\n")}` : ""}`;
@@ -5840,15 +7154,16 @@ function artifactHTML(e) {
       ${a.seal ? `<p><span class="seal seal-${esc(a.seal)}">${esc(a.seal)}</span>${a.seal_note ? ` <span class="meta">${esc(a.seal_note)}</span>` : ""}</p>` : ""}
       <ol class="arc-steps">
         ${a.maker || a.made != null ? `<li><div class="arc-head"><b>만들어짐</b>${a.made != null ? `<span class="meta">${esc(fmtYear(a.made))}</span>` : ""}</div>${a.maker ? `<p>${refHTML(a.maker)}</p>` : ""}</li>` : ""}
-        ${(a.owners || []).map((o) => `<li><div class="arc-head"><b>${refHTML(o.who)}</b><span class="meta">${o.from != null ? esc(fmtYearNum(o.from)) : "?"} ~ ${o.to != null ? esc(fmtYearNum(o.to)) : ""}</span></div>${o.how ? `<p class="meta">${esc(o.how)}</p>` : ""}</li>`).join("")}
+        ${(a.owners || []).map((o) => `<li><div class="arc-head"><b>${refHTML(o.who)}</b><span class="meta">${o.from != null ? esc(fmtYearNum(o.from)) : "?"} ~ ${o.to != null ? esc(fmtYearNum(o.to)) : ""}</span></div>${o.how ? `<p class="meta">${esc(o.how)}</p>` : ""}${o.at ? `<p class="meta">있던 곳: ${refHTML(o.at)}</p>` : ""}</li>`).join("")}
         ${a.location || a.holder ? `<li><div class="arc-head"><b>지금</b></div><p>${a.location ? refHTML(a.location) : "위치 모름"}${a.holder ? ` · ${refHTML(a.holder)}이(가) 가짐` : ""}</p>${pinned ? `<button class="btn btn-ghost btn-small" type="button" data-act="art-map">지도에서 보기</button>` : ""}</li>` : ""}
       </ol>`
       : `<p class="meta">만든 이, 만든 해, 소유자가 바뀐 이력, 지금 있는 곳, 봉인 상태를 기록합니다. 소유자 이력은 인물의 생몰년과 맞는지 점검합니다.</p>`}
-    ${askRow("art-edit", "magic-ask-artifact")}`;
+    ${askRow("art-edit", "magic-ask-artifact")}
+    ${(a.owners?.length || a.location || a.holder) && state.maps.length ? `<div class="row sec-actions"><button class="btn btn-small" type="button" data-act="journey">여정 지도</button></div>` : ""}`;
 }
 function ownerRow(o = {}) {
   return `<div class="arc-row owner-row"><div class="arc-row-top owner-top"><input class="o-who" list="artNames" placeholder="누가 (이름)" value="${esc(o.who ? nameOrText(o.who) : "")}" aria-label="소유자"><input class="o-from" inputmode="decimal" placeholder="부터" value="${o.from ?? ""}" aria-label="부터"><input class="o-to" inputmode="decimal" placeholder="까지" value="${o.to ?? ""}" aria-label="까지"><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button></div>
-    <input class="o-how" placeholder="어떻게 손에 넣었나" value="${esc(o.how || "")}" aria-label="어떻게"></div>`;
+    <input class="o-how" placeholder="어떻게 손에 넣었나" value="${esc(o.how || "")}" aria-label="어떻게"><input class="o-at" list="artPlaces" placeholder="그때 있던 곳 (선택)" value="${esc(o.at ? nameOrText(o.at) : "")}" aria-label="있던 곳"></div>`;
 }
 const nameOrText = (ref) => findEntry(ref)?.name || ref;
 function openArtifactEditor(e) {
@@ -5857,6 +7172,7 @@ function openArtifactEditor(e) {
   openSheet(`<h2 class="sheet-title">${esc(e.name)} · 유물 이력</h2>
     <form class="form" id="artForm">
       <datalist id="artNames">${liveEntries().map((x) => `<option value="${esc(x.name)}">`).join("")}</datalist>
+      <datalist id="artPlaces">${liveEntries().filter((x) => isPlaceType(x.type)).map((x) => `<option value="${esc(x.name)}">`).join("")}</datalist>
       <div class="time-row"><label>만든 이<input id="ar-maker" list="artNames" value="${esc(a.maker ? nameOrText(a.maker) : "")}"></label><label>만든 해<input id="ar-made" inputmode="decimal" value="${a.made ?? ""}"></label></div>
       <fieldset><legend>소유자 이력 <small>시간순</small></legend><div id="ownerRows">${(a.owners || []).map(ownerRow).join("")}</div><button type="button" class="btn btn-ghost btn-small" data-act="owner-add">소유자 추가</button></fieldset>
       <div class="time-row"><label>지금 있는 곳<input id="ar-loc" list="artNames" value="${esc(a.location ? nameOrText(a.location) : "")}"></label><label>지금 가진 이<input id="ar-holder" list="artNames" value="${esc(a.holder ? nameOrText(a.holder) : "")}"></label></div>
@@ -5870,7 +7186,7 @@ function openArtifactEditor(e) {
     root.onsubmit = (ev) => {
       ev.preventDefault();
       const yr = (t) => (String(t).trim() ? parseYear(t) : null);
-      const owners = $$(".owner-row", root).map((r) => ({ who: toRef($(".o-who", r).value), from: yr($(".o-from", r).value), to: yr($(".o-to", r).value), how: $(".o-how", r).value })).filter((o) => o.who);
+      const owners = $$(".owner-row", root).map((r) => ({ who: toRef($(".o-who", r).value), from: yr($(".o-from", r).value), to: yr($(".o-to", r).value), how: $(".o-how", r).value, at: toRef($(".o-at", r)?.value || "") })).filter((o) => o.who);
       const sealSel = $("#ar-seal", root).value;
       const note = $("#ar-seal-note", root).value.trim();
       const artifact = normalizeArtifact({}, { maker: toRef($("#ar-maker", root).value), made: $("#ar-made", root).value, owners, location: toRef($("#ar-loc", root).value), holder: toRef($("#ar-holder", root).value), seal: sealSel === "__etc" ? note : sealSel, seal_note: sealSel === "__etc" ? "" : note });
@@ -5878,6 +7194,451 @@ function openArtifactEditor(e) {
       saveCharEdit(e, { artifact }, "유물 이력 편집");
     };
   });
+}
+
+/* ---- 사물 탭: 카드 · 마법 물건 · 제작 ---- */
+const ITEM_ASK = {
+  card: (e) => `${e.name}(${e.id})의 사물 카드를 채워 줘. 외형, 재질, 크기·무게, 쓰임, 가치·값, 희귀도, 만드는 법, 지금 상태를 세계관과 기술 수준·물가에 맞게 제안하고, 내가 고르면 update_entry의 item으로 저장해 줘. `,
+  magic: (e) => `${e.name}(${e.id})을(를) 마법 물건으로 정해 줘. 어떤 마법 체계를 쓰는지, 어떤 주문을 쓸 수 있는지, 쓸 때 치르는 대가와 사용 횟수·충전 방식을 체계의 규칙과 판례에 맞게 제안하고, 내가 고르면 update_entry의 magic_item으로 저장해 줘. `,
+  craft: (e) => `${e.name}(${e.id})을(를) 만드는 법을 정해 줘. 재료와 양, 만들 수 있는 인물·세력, 만드는 곳, 걸리는 시간, 재료가 나는 곳을 장소의 특산물과 맞게 제안하고, 내가 고르면 set_recipe로 저장해 줘. 재료 사물이 없으면 초안으로 만들어도 좋아. `,
+};
+function itemCardHTML(e) {
+  const v = e.item || {};
+  const mi = e.magicItem;
+  const sys = mi?.system && findEntry(mi.system);
+  const hasMagic = liveEntries().some((x) => isMagicEntry(x));
+  return `<p class="section-label">사물 카드</p>
+    <dl class="fields">${ITEM_KEYS.map(([k, l]) => `<div><dt>${l}</dt>${v[k] ? `<dd>${k === "rarity" ? `<span class="pill rarity">${esc(v[k])}</span>` : esc(v[k])}</dd>` : `<dd class="blank">미정</dd>`}</div>`).join("")}</dl>
+    ${askRow("item-edit", "item-ask-card")}
+    ${mi || hasMagic ? `<p class="section-label">마법 물건</p>
+      ${mi ? `<dl class="fields"><div><dt>마법 체계</dt><dd>${sys ? refBtn(sys.id) : "미정"}</dd></div>
+        <div><dt>주문</dt>${mi.spells?.length ? `<dd>${mi.spells.map((n) => { const sp = (sys?.spells || []).find((x) => x.name === n); return `${esc(n)}${sp?.tier ? ` <span class="meta">${esc(sp.tier)}</span>` : ""}${sys && !sp ? ` <span class="pill pill-danger">주문서에 없음</span>` : ""}`; }).join(", ")}</dd>` : `<dd class="blank">미정</dd>`}</div>
+        <div><dt>쓰는 대가</dt>${mi.cost ? `<dd>${esc(mi.cost)}</dd>` : `<dd class="blank warn">대가 미정</dd>`}</div>
+        <div><dt>사용 횟수</dt>${mi.charges ? `<dd>${esc(mi.charges)}</dd>` : `<dd class="blank">미정</dd>`}</div></dl>`
+        : `<p class="meta">마법이 깃든 물건이면 마법 체계와 주문, 쓰는 대가, 사용 횟수를 이어 두세요. 규칙 판정 때 근거로 함께 읽습니다.</p>`}
+      <div class="row sec-actions"><button class="btn btn-small" type="button" data-act="mi-edit">${mi ? "편집" : "마법 물건으로"}</button><button class="btn btn-small btn-primary" type="button" data-act="item-ask-magic">Claude와 채우기</button>${sys ? `<button class="btn btn-small" type="button" data-act="mi-ruling">이 체계로 판정</button>` : ""}</div>` : ""}`;
+}
+function openItemCardEditor(e) {
+  openSheet(`<h2 class="sheet-title">${esc(e.name)} · 사물 카드</h2>
+    <form class="form" id="itemForm"><datalist id="rarityList">${RARITY_KINDS.map((k) => `<option value="${k}">`).join("")}</datalist>
+      ${ITEM_KEYS.map(([k, l]) => (k === "rarity" ? `<label>${l}<input data-k="${k}" list="rarityList" value="${esc(e.item?.[k] || "")}" placeholder="${RARITY_KINDS.join(" · ")}"></label>` : `<label>${l}<textarea data-k="${k}" rows="2">${esc(e.item?.[k] || "")}</textarea></label>`)).join("")}
+      <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    root.onclick = (ev) => { if (ev.target.closest('[data-act="cancel"]')) openEntry(e.id); };
+    root.onsubmit = (ev) => {
+      ev.preventDefault();
+      const itemAll = {};
+      for (const t of $$("[data-k]", root)) itemAll[t.dataset.k] = t.value;
+      state.entryTab = "card";
+      saveCharEdit(e, { itemAll }, "사물 카드 편집");
+    };
+  });
+}
+function openMagicItemEditor(e) {
+  const mi = e.magicItem || {};
+  const systems = liveEntries().filter((x) => isMagicEntry(x));
+  if (!systems.length) { toast("마법 체계 항목이 먼저 있어야 합니다"); return; }
+  const spellBoxes = (sysId, picked) => { const sys = findEntry(sysId); return sys?.spells?.length ? sys.spells.map((sp) => `<label class="pick"><input type="checkbox" value="${esc(sp.name)}"${picked.includes(sp.name) ? " checked" : ""}><span>${esc(sp.name)}${sp.tier ? ` <small class="meta">${esc(sp.tier)}</small>` : ""}</span></label>`).join("") : `<p class="meta">이 체계의 주문서가 비어 있습니다.</p>`; };
+  openSheet(`<h2 class="sheet-title">${esc(e.name)} · 마법 물건</h2>
+    <form class="form" id="miForm">
+      <label>마법 체계<select id="mi-sys">${systems.map((x) => `<option value="${x.id}"${x.id === (mi.system || systems[0].id) ? " selected" : ""}>${esc(x.name)}</option>`).join("")}</select></label>
+      <fieldset><legend>쓸 수 있는 주문</legend><div class="pick-list" id="mi-spells">${spellBoxes(mi.system || systems[0].id, mi.spells || [])}</div></fieldset>
+      <label>쓰는 대가<textarea id="mi-cost" rows="2" placeholder="예: 쓸 때마다 가장 오래된 기억 하나">${esc(mi.cost || "")}</textarea></label>
+      <label>사용 횟수·충전<input id="mi-charges" value="${esc(mi.charges || "")}" placeholder="예: 하루 세 번, 보름달에 다시 찬다"></label>
+      <div class="sheet-actions">${e.magicItem ? `<button class="btn btn-danger" type="button" data-act="mi-off">마법 물건 아님</button>` : ""}<button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    $("#mi-sys", root).onchange = (ev) => { $("#mi-spells", root).innerHTML = spellBoxes(ev.target.value, []); };
+    root.onclick = (ev) => {
+      if (ev.target.closest('[data-act="cancel"]')) openEntry(e.id);
+      else if (ev.target.closest('[data-act="mi-off"]')) { state.entryTab = "card"; saveCharEdit(e, { magicItem: null }, "마법 물건 해제"); }
+    };
+    root.onsubmit = (ev) => {
+      ev.preventDefault();
+      let magicItem;
+      try { magicItem = normalizeMagicItem({}, { system_id: $("#mi-sys", root).value, spells: $$("#mi-spells input:checked", root).map((i) => i.value), cost: $("#mi-cost", root).value, charges: $("#mi-charges", root).value }); } catch (err) { toast(err.message); return; }
+      state.entryTab = "card";
+      saveCharEdit(e, { magicItem }, "마법 물건 편집");
+    };
+  });
+}
+function craftHTML(e) {
+  const r = e.recipe || {};
+  const uses = usedIn(e);
+  const src = (e.sources || []).map(liveRef).filter(Boolean);
+  const chip = (x, extra = "") => `<button type="button" class="life-chip" data-ref="${x.id}" style="--tc:${typeColor(x.type)}"><b>${esc(x.name)}</b>${extra}</button>`;
+  const mats = (r.materials || []).map((m) => { const x = m.ref && liveRef(m.ref); const q = m.qty ? ` ${esc(m.qty)}` : ""; return x ? chip(x, q) : `<span class="life-chip">${esc(m.name || m.ref)}${q}</span>`; });
+  return `<p class="section-label">만드는 법</p>
+    ${hasKeys(r) ? `${mats.length ? `<p class="meta" style="margin:0 0 4px">재료</p><div class="life-chips">${mats.join("")}</div>` : ""}
+      <dl class="fields" style="margin-top:8px">${r.makers?.length ? `<div><dt>만드는 이</dt><dd>${r.makers.map((id) => refBtn(id)).join(", ")}</dd></div>` : ""}${r.place ? `<div><dt>만드는 곳</dt><dd>${refBtn(r.place)}</dd></div>` : ""}${r.time ? `<div><dt>걸리는 시간</dt><dd>${esc(r.time)}</dd></div>` : ""}${r.note ? `<div><dt>메모</dt><dd>${esc(r.note)}</dd></div>` : ""}</dl>`
+      : `<p class="meta">재료와 양, 만들 수 있는 인물·세력, 만드는 곳, 걸리는 시간을 적습니다. 재료가 사물 항목이면 그 재료가 나는 곳까지 이어집니다.</p>`}
+    ${askRow("craft-edit", "item-ask-craft")}
+    <p class="section-label">이것이 나는 곳 <small class="meta">재료일 때</small></p>
+    ${src.length ? `<div class="life-chips">${src.map((x) => chip(x)).join("")}</div>` : `<p class="meta">이 사물이 다른 물건의 재료라면 나는 곳(장소)을 정해 두세요. 장소의 '경제' 탭에 모입니다.</p>`}
+    <div class="row sec-actions"><button class="btn btn-small" type="button" data-act="src-edit">나는 곳 편집</button></div>
+    ${uses.length ? `<p class="section-label">이것을 재료로 쓰는 것 <small class="meta">${uses.length}</small></p><div class="life-chips">${uses.map((x) => chip(x)).join("")}</div>` : ""}`;
+}
+function matRow(m = {}) {
+  return `<div class="kv-row mat-row"><input class="mr" list="matNames" placeholder="재료 (사물 이름이나 글)" value="${esc(m.ref ? nameOrText(m.ref) : m.name || "")}" aria-label="재료"><input class="mq" placeholder="양" value="${esc(m.qty || "")}" aria-label="양"><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button></div>`;
+}
+function openCraftEditor(e) {
+  const r = e.recipe || {};
+  openSheet(`<h2 class="sheet-title">${esc(e.name)} · 만드는 법</h2>
+    <form class="form" id="craftForm"><datalist id="matNames">${liveEntries().filter((x) => isItemType(x.type) && x.id !== e.id).map((x) => `<option value="${esc(x.name)}">`).join("")}</datalist>
+      <datalist id="makerNames">${liveEntries().filter((x) => isCharacterType(x.type) || isFactionType(x.type)).map((x) => `<option value="${esc(x.name)}">`).join("")}</datalist>
+      <fieldset><legend>재료</legend><div id="matRows">${(r.materials?.length ? r.materials : [{}]).map(matRow).join("")}</div><button type="button" class="btn btn-ghost btn-small" data-act="mat-add">재료 추가</button></fieldset>
+      <label>만드는 이 <small>쉼표로</small><input id="cr-makers" list="makerNames" value="${esc((r.makers || []).map(nameOrText).join(", "))}"></label>
+      <div class="time-row"><label>만드는 곳<select id="cr-place"><option value="">정하지 않음</option>${entryOptions((x) => isPlaceType(x.type), r.place)}</select></label><label>걸리는 시간<input id="cr-time" value="${esc(r.time || "")}" placeholder="예: 보름"></label></div>
+      <label>메모<textarea id="cr-note" rows="2">${esc(r.note || "")}</textarea></label>
+      <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    root.onclick = (ev) => {
+      if (ev.target.closest('[data-act="cancel"]')) openEntry(e.id);
+      else if (ev.target.closest('[data-act="mat-add"]')) $("#matRows", root).insertAdjacentHTML("beforeend", matRow());
+      else if (ev.target.closest("[data-del-row]")) ev.target.closest(".mat-row").remove();
+    };
+    root.onsubmit = (ev) => {
+      ev.preventDefault();
+      let recipe;
+      try {
+        recipe = normalizeRecipe({}, {
+          materials: $$(".mat-row", root).map((x) => ({ ref: $(".mr", x).value, qty: $(".mq", x).value })),
+          makers: splitList($("#cr-makers", root).value),
+          place_id: $("#cr-place", root).value, time: $("#cr-time", root).value, note: $("#cr-note", root).value,
+        });
+      } catch (err) { toast(err.message); return; }
+      if (recipe?.materials?.some((m) => m.ref === e.id)) { toast("자기 자신을 재료로 쓸 수 없습니다"); return; }
+      state.entryTab = "craft";
+      saveCharEdit(e, { recipe }, "만드는 법 편집");
+    };
+  });
+}
+function openSourcesEditor(e) {
+  const places = liveEntries().filter((x) => isPlaceType(x.type));
+  if (!places.length) { toast("장소 항목이 먼저 있어야 합니다"); return; }
+  const cur = new Set(e.sources || []);
+  openSheet(`<h2 class="sheet-title">${esc(e.name)} · 나는 곳</h2>
+    <div class="pick-list">${places.map((x) => `<label class="pick"><input type="checkbox" value="${x.id}"${cur.has(x.id) ? " checked" : ""}><span>${esc(x.name)} <small class="meta">${x.id}</small></span></label>`).join("")}</div>
+    <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="button" data-act="src-save">저장</button></div>`, (root) => {
+    root.onclick = (ev) => {
+      if (ev.target.closest('[data-act="cancel"]')) openEntry(e.id);
+      else if (ev.target.closest('[data-act="src-save"]')) { state.entryTab = "craft"; saveCharEdit(e, { sources: $$("input:checked", root).map((i) => i.value) }, "나는 곳 편집"); }
+    };
+  });
+}
+function placeMaterialsHTML(e) {
+  const live = liveEntries();
+  const here = (pid) => pid === e.id || placeWithin(pid, e.id);
+  const mats = live.filter((x) => (x.sources || []).some(here));
+  const blocked = live.filter((x) => (x.recipe?.materials || []).some((m) => { const mat = m.ref && liveRef(m.ref); const src = (mat?.sources || []).filter((pid) => liveRef(pid)); return src.length && src.every(here); }));
+  if (!mats.length && !blocked.length) return "";
+  const chip = (x) => `<button type="button" class="life-chip" data-ref="${x.id}" style="--tc:${typeColor(x.type)}"><b>${esc(x.name)}</b></button>`;
+  return `${mats.length ? `<p class="section-label">여기서 나는 재료 <small class="meta">${mats.length}</small></p><div class="life-chips">${mats.map(chip).join("")}</div>` : ""}
+    ${blocked.length ? `<p class="section-label">이곳이 막히면 만들 수 없는 것 <small class="meta">${blocked.length}</small></p><p class="meta" style="margin:0 0 4px">재료가 이곳(과 하위 장소)에서만 납니다.</p><div class="life-chips">${blocked.map(chip).join("")}</div>` : ""}`;
+}
+
+/* ---- 인물의 소지품 ---- */
+function characterHoldingsHTML(e) {
+  if (!isCharacterType(e.type) || e.deleted) return "";
+  const list = holdingsOf(e.id);
+  const items = liveEntries().filter((x) => isItemType(x.type));
+  if (!list.length && !items.length) return "";
+  return `<div class="hold-line"><span class="lbl">가진 것</span><span class="hold-items">${list.length ? list.map((x) => `<span class="hold"><button type="button" class="ref" data-ref="${x.id}">${x.id}</button> ${esc(x.name)}<button type="button" class="link-btn" data-act="hold-pass" data-id="${x.id}">넘기기</button></span>`).join("") : `<span class="meta">없음</span>`}</span>${items.length ? `<button type="button" class="btn btn-small btn-ghost" data-act="hold-add">물건 주기</button>` : ""}</div>`;
+}
+function transferArtifact(item, toId, year, how) {
+  const a = item.artifact || {};
+  const owners = (a.owners || []).map((o) => ({ ...o }));
+  // 넘긴 해에 갖고 있던 앞 주인의 기록을 그해로 끝낸다
+  if (year != null) for (const o of owners) if (o.who !== toId && (o.from == null || o.from <= year) && (o.to == null || o.to > year)) o.to = year;
+  const last = owners.at(-1);
+  if (!(last && last.who === toId && last.to == null)) owners.push({ who: toId, from: year, ...(how ? { how } : {}) });
+  return normalizeArtifact({ ...a, owners: undefined }, { owners, holder: toId });
+}
+function openHoldingEditor(e, itemId = null) {
+  const now = worldCalendar().now;
+  const chars = liveEntries().filter((x) => isCharacterType(x.type) && x.id !== e.id);
+  const items = liveEntries().filter((x) => isItemType(x.type) && findEntry(artifactHolder(x))?.id !== e.id);
+  if (itemId && !chars.length) { toast("넘길 다른 인물이 없습니다"); return; }
+  if (!itemId && !items.length) { toast("줄 수 있는 물건이 없습니다"); return; }
+  const it = itemId && findEntry(itemId);
+  openSheet(`<h2 class="sheet-title">${it ? `${esc(it.name)} 넘기기` : `${esc(e.name)}에게 물건 주기`}</h2>
+    <form class="form" id="holdForm">
+      ${it ? `<label>받는 인물<select id="hd-to">${chars.map((x) => `<option value="${x.id}">${esc(x.name)}</option>`).join("")}</select></label>` : `<label>물건<select id="hd-item">${items.map((x) => `<option value="${x.id}">${esc(x.name)}${artifactHolder(x) ? ` (지금 ${esc(nameOrText(artifactHolder(x)))})` : ""}</option>`).join("")}</select></label>`}
+      <div class="time-row"><label>넘긴 해 <small>선택</small><input id="hd-year" inputmode="decimal" value="${now ?? ""}"></label><label>어떻게 <small>선택</small><input id="hd-how" placeholder="예: 유언으로 물려받음"></label></div>
+      <p class="meta" style="margin:0">유물 이력에 소유 기록이 더해지고, 앞 주인의 기록은 그해로 끝납니다.</p>
+      <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">${it ? "넘기기" : "주기"}</button></div></form>`, (root) => {
+    root.onclick = (ev) => { if (ev.target.closest('[data-act="cancel"]')) openEntry(e.id); };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      const yv = $("#hd-year", root).value.trim();
+      const year = yv ? parseYear(yv) : null;
+      if (yv && year === null) { toast("넘긴 해는 숫자로 넣어 주세요"); return; }
+      const item = it || findEntry($("#hd-item", root).value);
+      const toId = it ? $("#hd-to", root).value : e.id;
+      const artifact = transferArtifact(item, toId, year, $("#hd-how", root).value.trim());
+      if (!(await saveOther(item, { artifact }, `넘김: ${nameOf(toId)}`))) return;
+      openEntry(e.id);
+      const warn = artifactWarnings(item);
+      toast(warn.length ? `넘겼습니다. 확인할 점: ${warn[0]}` : "넘겼습니다");
+    };
+  });
+}
+
+/* ---- 유물 여정 지도 ---- */
+function journeyPoints(e, m) {
+  const a = e.artifact || {};
+  const pin = (ref) => { const x = ref && findEntry(ref); return x ? m.pins.find((p) => p.ref === x.id) : null; };
+  const pts = [];
+  const push = (p, label, from, to) => {
+    if (!p) return;
+    const last = pts.at(-1);
+    if (last && last.x === p.x && last.y === p.y) { last.labels.push(label); last.to = to; return; }
+    pts.push({ x: p.x, y: p.y, labels: [label], from, to });
+  };
+  for (const o of a.owners || []) push(pin(o.at) || pin(o.who), `${nameOrText(o.who)} ${o.from != null ? fmtYearNum(o.from) : "?"}~${o.to != null ? fmtYearNum(o.to) : ""}${o.at ? ` · ${nameOrText(o.at)}` : ""}`, o.from, o.to);
+  if (a.location || a.holder) push(pin(a.location) || pin(a.holder), `지금 · ${a.location ? nameOrText(a.location) : nameOrText(a.holder)}`, null, null);
+  return pts;
+}
+function showJourney(e) {
+  const best = state.maps.map((m) => ({ m, n: journeyPoints(e, m).length })).sort((a, b) => b.n - a.n)[0];
+  if (!best || !best.n) { toast("여정을 그릴 수 없습니다. 소유 기록의 '있던 곳'이나 소유자가 지도에 꽂혀 있어야 합니다"); return; }
+  state.mapJourney = e.id;
+  state.mapId = best.m.id;
+  state.mapSel = null;
+  state.mapRegionSel = null;
+  state.mapMode = null;
+  state.gmode = "map";
+  LS.set("lk.gmode", "map");
+  closeSheet();
+  switchView("graph");
+}
+const journeyActive = (p, yr) => yr != null && (p.from == null || p.from <= yr) && (p.to == null || yr < p.to);
+
+/* ---- 화폐 · 물가 ---- */
+function openEconomySheet() {
+  const w = currentWorld();
+  if (!w) return;
+  const eco = worldEconomy(w);
+  const curRow = (c = {}) => `<div class="kv-row cur-row"><input class="cn" placeholder="화폐 이름" value="${esc(c.name || "")}" aria-label="화폐 이름"><input class="cr" inputmode="decimal" placeholder="기준 몇 개" value="${c.rate ?? ""}" aria-label="기준 화폐 몇 개"><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button><input class="cw" list="ecoNames" placeholder="쓰는 곳 (쉼표로, 선택)" value="${esc((c.where || []).map(nameOrText).join(", "))}" aria-label="쓰는 곳"></div>`;
+  const priceRow = (pr = {}) => `<div class="arc-row price-row"><div class="arc-row-top price-top"><input class="pi" placeholder="물건 (예: 빵 한 덩이)" value="${esc(pr.item || "")}" aria-label="물건"><input class="pp" inputmode="decimal" placeholder="값" value="${pr.price ?? ""}" aria-label="값"><input class="pc" list="ecoCur" placeholder="화폐" value="${esc(pr.currency || "")}" aria-label="화폐"><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button></div>
+    <div class="price-sub"><select class="pw" aria-label="어디서"><option value="">어디서나</option>${entryOptions((x) => isPlaceType(x.type) || isFactionType(x.type), pr.where)}</select><input class="pn" placeholder="메모" value="${esc(pr.note || "")}" aria-label="메모"></div></div>`;
+  const curNames = [eco.base, ...eco.currencies.map((c) => c.name)].filter(Boolean);
+  openSheet(`<h2 class="sheet-title">화폐·물가</h2>
+    <p class="meta" style="margin:0 0 8px">기준 화폐를 정하고, 다른 화폐는 기준 화폐 몇 개 값인지 적습니다. 새 대화의 Claude가 물가표를 보고 값을 일관되게 씁니다.</p>
+    <form class="form" id="ecoForm">
+      <datalist id="ecoNames">${liveEntries().filter((x) => isPlaceType(x.type) || isFactionType(x.type)).map((x) => `<option value="${esc(x.name)}">`).join("")}</datalist>
+      <datalist id="ecoCur">${curNames.map((n) => `<option value="${esc(n)}">`).join("")}</datalist>
+      <label>기준 화폐<input id="eco-base" value="${esc(eco.base)}" placeholder="예: 은화"></label>
+      <fieldset><legend>다른 화폐 <small>기준 화폐 몇 개 값인가</small></legend><div id="curRows">${eco.currencies.map(curRow).join("")}</div><button type="button" class="btn btn-ghost btn-small" data-act="cur-add">화폐 추가</button></fieldset>
+      <fieldset><legend>물가표 <small>화폐를 비우면 기준 화폐</small></legend><div id="priceRows">${(eco.prices.length ? eco.prices : [{}]).map(priceRow).join("")}</div><button type="button" class="btn btn-ghost btn-small" data-act="price-add">물가 추가</button></fieldset>
+      <div class="sheet-actions"><button class="btn" type="button" data-act="eco-ask">Claude와 정하기</button><button class="btn btn-primary" type="submit">저장</button></div>
+    </form>
+    ${curNames.length > 1 ? `<section class="card eco-conv"><h2>환산</h2><div class="conv-row"><input id="cv-amt" inputmode="decimal" value="1" aria-label="양"><select id="cv-from" aria-label="화폐">${curNames.map((n) => `<option>${esc(n)}</option>`).join("")}</select><span>→</span><select id="cv-to" aria-label="바꿀 화폐">${curNames.map((n, i) => `<option${i === 0 ? " selected" : ""}>${esc(n)}</option>`).join("")}</select></div><p id="cv-out" class="conv-out"></p></section>` : ""}`, (root) => {
+    const conv = () => {
+      const out = $("#cv-out", root);
+      if (!out) return;
+      const amt = Number($("#cv-amt", root).value);
+      const a = currencyRate($("#cv-from", root).value, eco);
+      const b = currencyRate($("#cv-to", root).value, eco);
+      out.textContent = Number.isFinite(amt) && a && b ? `${fmtNum(amt)} ${$("#cv-from", root).value} = ${fmtNum((amt * a) / b)} ${$("#cv-to", root).value}` : "";
+    };
+    root.oninput = (ev) => { if (ev.target.closest(".eco-conv")) conv(); };
+    root.onchange = (ev) => { if (ev.target.closest(".eco-conv")) conv(); };
+    conv();
+    root.onclick = (ev) => {
+      if (ev.target.closest('[data-act="cur-add"]')) $("#curRows", root).insertAdjacentHTML("beforeend", curRow());
+      else if (ev.target.closest('[data-act="price-add"]')) $("#priceRows", root).insertAdjacentHTML("beforeend", priceRow());
+      else if (ev.target.closest("[data-del-row]")) ev.target.closest(".cur-row, .price-row").remove();
+      else if (ev.target.closest('[data-act="eco-ask"]')) { closeSheet(); startInNewThread("이 세계의 화폐와 물가를 정해 줘. 나라·세력마다 쓰는 화폐와 기준 화폐로 본 값, 그리고 빵 한 덩이, 맥주 한 잔, 하룻밤 숙박, 칼 한 자루, 말 한 필, 일꾼의 하루 품삯 같은 기준 물가를 세계의 기술 수준과 경제에 맞게 제안하고, 내가 고르면 set_economy로 저장해 줘. "); }
+    };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      const base = $("#eco-base", root).value.trim();
+      const currencies = [];
+      for (const r of $$(".cur-row", root)) {
+        const name = $(".cn", r).value.trim();
+        if (!name) continue;
+        const rate = Number($(".cr", r).value);
+        if (!(rate > 0)) { toast(`'${name}'의 값은 0보다 큰 숫자로 넣어 주세요`); return; }
+        const unknown = [];
+        const where = splitList($(".cw", r).value).map((n) => { const x = findEntry(n); if (!x) unknown.push(n); return x?.id; }).filter(Boolean);
+        if (unknown.length) { toast(`설정집에 없는 곳: ${unknown.join(", ")}`); return; }
+        if (name === base || currencies.some((c) => c.name === name)) { toast(`화폐 '${name}'가 겹칩니다`); return; }
+        currencies.push({ name, rate, ...(where.length ? { where } : {}) });
+      }
+      const prices = [];
+      for (const r of $$(".price-row", root)) {
+        const item = $(".pi", r).value.trim();
+        if (!item) continue;
+        const pv = $(".pp", r).value.trim();
+        const price = Number(pv);
+        if (!pv || !Number.isFinite(price)) { toast(`'${item}'의 값을 숫자로 넣어 주세요`); return; }
+        const currency = $(".pc", r).value.trim();
+        if (currency && currency !== base && !currencies.some((c) => c.name === currency)) { toast(`화폐 '${currency}'가 없습니다`); return; }
+        const where = $(".pw", r).value;
+        const note = $(".pn", r).value.trim();
+        prices.push({ item, price, ...(currency && currency !== base ? { currency } : {}), ...(where ? { where } : {}), ...(note ? { note } : {}) });
+      }
+      w.economy = { base, currencies, prices };
+      w.updatedAt = Date.now();
+      logChange("user", "world", null, "화폐·물가");
+      await Promise.all([persist.worlds(), persist.log()]);
+      toast("저장했습니다");
+      openEconomySheet();
+    };
+  });
+}
+
+/* ---- 기술 수준 ---- */
+const TECH_CHECK_SCHEMA = { type: "object", additionalProperties: false, required: ["problems"], properties: { problems: { type: "array", items: { type: "object", additionalProperties: false, required: ["ref", "what", "why", "fix"], properties: { ref: { type: "string" }, what: { type: "string" }, why: { type: "string" }, fix: { type: "string" } } } } } };
+let techProblems = [];
+function openTechSheet() {
+  const w = currentWorld();
+  if (!w) return;
+  const t = worldTech(w);
+  const rows = t.rows.slice().sort((a, b) => (a.where ? 1 : 0) - (b.where ? 1 : 0) || (a.from ?? -Infinity) - (b.from ?? -Infinity));
+  openSheet(`<h2 class="sheet-title">기술 수준</h2>
+    <p class="meta" style="margin:0 0 8px">지역·시기마다 기술이 어디까지 왔는지 적습니다. 새 대화의 Claude가 그 시대·지역에 없을 물건을 쓰지 않습니다. 열 머리를 누르면 고칩니다.</p>
+    <form class="form" id="techAreas"><label>분야 <small>쉼표로</small><input id="tech-areas" value="${esc(t.areas.join(", "))}"></label><div class="row"><button class="btn btn-small" type="submit">분야 저장</button></div></form>
+    ${rows.length ? `<div class="mx-wrap cmp-wrap"><table class="mx cmp tech-table"><thead><tr><th class="mx-corner" scope="col"></th>${rows.map((r) => `<th scope="col" class="cmp-head" style="--tc:${r.where ? typeColor(findEntry(r.where)?.type) : "var(--accent)"}"><button type="button" data-techrow="${r.id}">${esc(techWhere(r))}${esc(techSpan(r))}</button></th>`).join("")}</tr></thead>
+      <tbody>${t.areas.map((a) => `<tr><th class="mx-row" scope="row">${esc(a)}</th>${rows.map((r) => `<td class="cmp-cell${r.values?.[a] ? "" : " blank"}">${r.values?.[a] ? esc(r.values[a]) : "—"}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`
+      : `<p class="meta">아직 적은 지역이 없습니다. '줄 추가'로 세계 전역이나 나라·세력마다 수준을 적어 보세요.</p>`}
+    <div class="row sec-actions"><button class="btn btn-small" type="button" data-act="tech-add">줄 추가</button><button class="btn btn-small btn-primary" type="button" data-act="tech-ask">Claude와 채우기</button>${rows.length ? `<button class="btn btn-small" type="button" data-act="tech-check">시대착오 찾기</button>` : ""}</div>
+    <div id="techOut"></div>`, (root) => {
+    root.onclick = (ev) => {
+      const tr = ev.target.closest("[data-techrow]");
+      if (tr) { openTechRowEditor(t.rows.find((r) => r.id === tr.dataset.techrow)); return; }
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "tech-add") openTechRowEditor(null);
+      else if (act === "tech-ask") { closeSheet(); startInNewThread(`이 세계의 기술 수준을 정해 줘. 분야(${t.areas.join(", ")})마다 세계 전역과 나라·세력별로 어디까지 왔는지, 시대에 따라 달라졌다면 그 시기도 함께 제안하고, 내가 고르면 set_tech로 저장해 줘. `); }
+      else if (act === "tech-check") checkAnachronisms(root, ev.target.closest("[data-act]"));
+      else if (act === "tp-chat") { const p = techProblems[Number(ev.target.closest("[data-i]").dataset.i)]; closeSheet(); startInNewThread(`시대착오로 보이는 곳이 있어: ${storyRefName(p.ref) || p.ref} — ${p.what}. 이유: ${p.why}. 기술 수준표에 맞게 고칠 방법을 제안하고, 내가 고르면 고쳐 줘. 기술 수준표 쪽을 바꾸는 편이 낫다면 그것도 말해 줘. `); }
+      else if (act === "tp-open") { const p = techProblems[Number(ev.target.closest("[data-i]").dataset.i)]; if (findEntry(p.ref)) openEntry(p.ref); else if (state.manuscripts.some((m) => m.id === p.ref)) { closeSheet(); openManuscript(p.ref); } }
+    };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      const areas = [...new Set(splitList($("#tech-areas", root).value))];
+      if (!areas.length) { toast("분야가 하나 이상 있어야 합니다"); return; }
+      w.tech = { ...worldTech(w), areas };
+      w.updatedAt = Date.now();
+      logChange("user", "world", null, "기술 분야");
+      await Promise.all([persist.worlds(), persist.log()]);
+      toast("저장했습니다");
+      openTechSheet();
+    };
+  });
+}
+function openTechRowEditor(r) {
+  const w = currentWorld();
+  const t = worldTech(w);
+  const cur = r || { values: {} };
+  openSheet(`<h2 class="sheet-title">${r ? "기술 수준 고치기" : "기술 수준 줄 추가"}</h2>
+    <form class="form" id="techRowForm">
+      <label>어디<select id="tr-where"><option value="">세계 전역</option>${entryOptions((x) => isPlaceType(x.type) || isFactionType(x.type), cur.where)}</select></label>
+      <div class="time-row"><label>부터 <small>선택</small><input id="tr-from" inputmode="decimal" value="${cur.from ?? ""}"></label><label>까지 <small>선택</small><input id="tr-to" inputmode="decimal" value="${cur.to ?? ""}"></label></div>
+      ${t.areas.map((a) => `<label>${esc(a)}<input data-area="${esc(a)}" value="${esc(cur.values?.[a] || "")}"></label>`).join("")}
+      <div class="sheet-actions">${r ? `<button class="btn btn-danger" type="button" data-act="tr-del">지우기</button>` : ""}<button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    const save = async (rows, note) => {
+      w.tech = { ...worldTech(w), rows };
+      w.updatedAt = Date.now();
+      logChange("user", "world", null, note);
+      await Promise.all([persist.worlds(), persist.log()]);
+      toast("저장했습니다");
+      openTechSheet();
+    };
+    root.onclick = (ev) => {
+      if (ev.target.closest('[data-act="cancel"]')) openTechSheet();
+      else if (ev.target.closest('[data-act="tr-del"]')) save(t.rows.filter((x) => x.id !== r.id), "기술 수준 줄 삭제");
+    };
+    root.onsubmit = (ev) => {
+      ev.preventDefault();
+      const yr = (id) => { const v = $(id, root).value.trim(); return v ? parseYear(v) : null; };
+      const from = yr("#tr-from");
+      const to = yr("#tr-to");
+      if (($("#tr-from", root).value.trim() && from === null) || ($("#tr-to", root).value.trim() && to === null)) { toast("연도는 숫자로 넣어 주세요"); return; }
+      if (from != null && to != null && to < from) { toast("끝이 시작보다 앞설 수 없습니다"); return; }
+      const where = $("#tr-where", root).value;
+      if (t.rows.some((x) => x.id !== cur.id && (x.where || "") === where && (x.from ?? null) === from)) { toast("같은 곳·같은 시작 해의 줄이 있습니다"); return; }
+      const values = { ...(cur.values || {}) };
+      for (const inp of $$("[data-area]", root)) { const v = inp.value.trim(); if (v) values[inp.dataset.area] = v; else delete values[inp.dataset.area]; }
+      const next = { id: cur.id || uid().slice(-6), ...(where ? { where } : {}), ...(from != null ? { from } : {}), ...(to != null ? { to } : {}), values };
+      save([...t.rows.filter((x) => x.id !== next.id), next], "기술 수준");
+    };
+  });
+}
+async function checkAnachronisms(root, btn) {
+  const out = $("#techOut", root);
+  btn.disabled = true;
+  out.innerHTML = `<p class="status-line">시대착오를 찾는 중…</p>`;
+  try {
+    const w = currentWorld();
+    const items = liveEntries().filter((x) => isItemType(x.type)).slice(0, 60).map((x) => `- ${x.id} ${x.name}: ${cut(x.summary || "", 80)}${x.item ? ` · ${ITEM_KEYS.filter(([k]) => x.item[k]).map(([k, l]) => `${l} ${cut(x.item[k], 40)}`).join(", ")}` : ""}${x.artifact?.made != null ? ` · ${fmtYear(x.artifact.made)}에 만듦` : ""}`);
+    const others = liveEntries().filter((x) => !isItemType(x.type) && !isCharacterType(x.type)).slice(0, 40).map((x) => `- ${x.id} ${x.name}${x.when ? ` (${rangeText(x.when)})` : ""}: ${cut(x.summary || "", 80)}`);
+    const ms = state.manuscripts.slice().sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 6).map((m) => `## ${m.id} ${m.title}\n${cut(m.body, 900)}`);
+    const text = await quickAsk(
+      "너는 판타지 세계관의 고증 담당이다. 기술 수준표와 맞지 않는 물건·기술·표현(그 시대나 그 지역에 아직 없을 것)을 사물, 항목, 원고에서 찾는다. 확실한 것만 고르고, 표에 없는 분야는 판단하지 않는다. ref에는 문제가 있는 항목 id나 원고 id를 쓴다. 문제가 없으면 빈 배열을 돌려준다.",
+      `${worldOverviewText(w)}\n${calendarText()}\n\n${techText(w, 40)}\n\n사물:\n${items.join("\n") || "(없음)"}\n\n다른 항목:\n${others.join("\n") || "(없음)"}\n\n최근 원고:\n${ms.join("\n\n") || "(없음)"}`,
+      8000,
+      { schema: TECH_CHECK_SCHEMA, effort: "medium" },
+    );
+    if (text === null) { out.innerHTML = ""; return; }
+    techProblems = JSON.parse(text).problems || [];
+    out.innerHTML = techProblems.length ? `<p class="section-label">시대착오로 보이는 곳 <small class="meta">${techProblems.length}</small></p>${techProblems.map((p, i) => `<section class="hole" data-i="${i}"><p><b>${esc(p.what)}</b> <span class="meta">${esc(storyRefName(p.ref) || p.ref)}</span></p><p class="meta">${esc(p.why)}</p>${p.fix ? `<p class="meta">고칠 방법: ${esc(p.fix)}</p>` : ""}<div class="row"><button class="btn btn-small" type="button" data-act="tp-open">보기</button><button class="btn btn-small btn-primary" type="button" data-act="tp-chat">대화로 고치기</button></div></section>`).join("")}`
+      : `<p class="note">기술 수준표와 어긋나는 곳을 찾지 못했습니다.</p>`;
+  } catch (err) { out.innerHTML = `<p class="note note-error">${esc(err instanceof SyntaxError ? "결과를 읽지 못했습니다. 다시 시도해 주세요" : describeError(err))}</p>`; }
+  finally { btn.disabled = false; }
+}
+
+/* ---- 사물 생성기 ---- */
+const ITEM_GEN_KINDS = ["무기", "도구", "문서", "장신구", "성물", "일상용품", "기타"];
+const ITEM_GEN_SCHEMA = {
+  type: "object", additionalProperties: false,
+  required: ["name", "summary", "item", "history", "hook"],
+  properties: {
+    name: { type: "string" }, summary: { type: "string" },
+    item: { type: "object", additionalProperties: false, required: ITEM_IDS, properties: Object.fromEntries(ITEM_IDS.map((k) => [k, { type: "string" }])) },
+    history: { type: "string" }, hook: { type: "string" },
+  },
+};
+let generatedItem = null;
+async function generateItem(root, btn, kind, rarity, originId, mood) {
+  const out = $("#igOut", root);
+  btn.disabled = true;
+  out.innerHTML = `<p class="status-line">사물을 짓는 중…</p>`;
+  try {
+    const w = currentWorld();
+    const origin = originId ? findEntry(originId) : null;
+    const rules = worldNaming();
+    const text = await quickAsk(
+      "너는 판타지 세계관의 물건을 설계한다. 세계관의 전제·분위기·규칙, 기술 수준, 물가, 이름 규칙을 지키고 이미 있는 사물과 이름이 겹치지 않게 한다. 희귀도에 맞는 가치와 내력을 주고, hook에는 이 물건으로 시작할 수 있는 이야기 한 줄을 쓴다. item.rarity에는 주어진 희귀도를 그대로 쓴다.",
+      `${worldOverviewText(w)}\n${rules.length ? `이름 규칙:\n${rules.map((r) => `- ${r.name}: ${r.rules}`).join("\n")}\n` : ""}${techText(w) ? `\n${techText(w)}\n` : ""}${economyText(w) ? `\n${economyText(w)}\n` : ""}${origin ? `\n출처·문화: ${origin.name} — ${origin.summary || ""}\n` : ""}\n이미 있는 사물: ${liveEntries().filter((x) => isItemType(x.type)).map((x) => x.name).join(", ") || "(없음)"}\n\n종류: ${kind}\n희귀도: ${rarity}${mood ? `\n분위기: ${mood}` : ""}\n이 조건에 맞는 사물 하나를 만들어 줘.`,
+      8000,
+      { schema: ITEM_GEN_SCHEMA, effort: "medium" },
+    );
+    if (text === null) { out.innerHTML = ""; return; }
+    generatedItem = JSON.parse(text);
+    const g = generatedItem;
+    out.innerHTML = `<section class="gen-place">
+      <h3>${esc(g.name)}</h3><p>${esc(g.summary)}</p>
+      <dl class="fields">${ITEM_KEYS.filter(([k]) => g.item[k]).map(([k, l]) => `<div><dt>${l}</dt><dd>${esc(g.item[k])}</dd></div>`).join("")}</dl>
+      ${g.history ? `<p class="meta" style="margin:6px 0 2px">내력</p><p>${esc(g.history)}</p>` : ""}
+      <p class="meta" style="margin:6px 0 2px">이야기 고리</p><p>${esc(g.hook)}</p>
+      <div class="row"><button class="btn btn-primary btn-small" type="button" data-ct="itemgen-save">새 항목으로 저장</button><button class="btn btn-small" type="button" data-ct="itemgen">다시 만들기</button></div></section>`;
+  } catch (err) { out.innerHTML = `<p class="note note-error">${esc(err instanceof SyntaxError ? "결과를 읽지 못했습니다. 다시 시도해 주세요" : describeError(err))}</p>`; }
+  finally { btn.disabled = false; }
+}
+async function saveGeneratedItem() {
+  const g = generatedItem;
+  if (!g) return;
+  if (state.busy) { toast("Claude가 작업 중입니다"); return; }
+  const t = worldTypes().find((x) => x.key === "item") || worldTypes().find((x) => isItemType(x.key));
+  if (!t) { toast("사물 분류가 없습니다. 분류·템플릿 관리에서 만들어 주세요"); return; }
+  try {
+    const e = createEntry({ type: t.key, name: g.name, summary: g.summary, status: "초안", item: g.item, body: [g.history ? `## 내력\n${g.history}` : "", g.hook ? `## 이야기 고리\n${g.hook}` : ""].filter(Boolean).join("\n\n") }, "user");
+    generatedItem = null;
+    await persist.world();
+    renderCodex();
+    state.entryTab = "card";
+    openEntry.last = e.id;
+    openEntry(e.id);
+    toast("초안으로 저장했습니다");
+  } catch (err) { toast(err.message); }
 }
 
 /* ---- 장소 생성기 ---- */
@@ -6102,6 +7863,34 @@ async function handleCharAct(act, e, ev, root) {
   if (act.startsWith("species-edit-")) { openSpeciesEditor(e, act.slice(13)); return true; }
   if (act === "life-edit") { openLifeEditor(e); return true; }
   if (act === "ranks-edit") { openRanksEditor(e); return true; }
+  if (act.startsWith("item-ask-")) { closeSheet(); startInNewThread(ITEM_ASK[act.slice(9)](e)); return true; }
+  if (act === "item-edit") { openItemCardEditor(e); return true; }
+  if (act === "mi-edit") { openMagicItemEditor(e); return true; }
+  if (act === "mi-ruling") { const sys = findEntry(e.magicItem?.system); if (sys) { state.entryTab = "ruling"; openEntry.last = sys.id; openEntry(sys.id); } return true; }
+  if (act === "craft-edit") { openCraftEditor(e); return true; }
+  if (act === "src-edit") { openSourcesEditor(e); return true; }
+  if (act === "hold-add") { openHoldingEditor(e); return true; }
+  if (act === "hold-pass") { openHoldingEditor(e, ev.target.closest("[data-id]").dataset.id); return true; }
+  if (act === "journey") { showJourney(e); return true; }
+  if (act.startsWith("event-ask-")) { closeSheet(); startInNewThread(EVENT_ASK[act.slice(10)](e)); return true; }
+  if (act === "event-edit") { openEventCardEditor(e); return true; }
+  if (act === "part-edit") { openParticipantsEditor(e); return true; }
+  if (act === "part-add") { openParticipantsEditor(e, ev.target.closest("[data-id]").dataset.id); return true; }
+  if (act === "steps-edit") { openStepsEditor(e); return true; }
+  if (act === "cause-add") { openCauseEditor(e, ev.target.closest("[data-dir]").dataset.dir); return true; }
+  if (act === "cause-del") {
+    const b = ev.target.closest("[data-dir]");
+    const other = findEntry(b.dataset.id);
+    const effect = b.dataset.dir === "cause" ? e : other;
+    const causeId = b.dataset.dir === "cause" ? other.id : e.id;
+    if (await saveOther(effect, { causes: (effect.causes || []).filter((c) => c.ref !== causeId) }, `원인 삭제: ${nameOf(causeId)}`)) { state.entryTab = "causal"; openEntry(e.id); toast("잇기를 끊었습니다"); }
+    return true;
+  }
+  if (act === "causal-view") { openCausalView(e.id); return true; }
+  if (act === "obs-add") { openObservanceEditor(null, { ref: e.id, since: e.when?.start }, () => { state.entryTab = "causal"; openEntry(e.id); }); return true; }
+  if (act === "obs-edit") { openObservanceEditor(worldObservances().find((o) => o.id === ev.target.closest("[data-obs]").dataset.obs), {}, () => { state.entryTab = "causal"; openEntry(e.id); }); return true; }
+  if (act === "fs-add-here") { openForeshadowEditor(null, { plant: e.id }, () => { state.entryTab = "causal"; openEntry(e.id); }); return true; }
+  if (act === "fs-edit") { openForeshadowEditor(worldForeshadows().find((f) => f.id === ev.target.closest("[data-fs]").dataset.fs), {}, () => { state.entryTab = "causal"; openEntry(e.id); }); return true; }
   if (act === "ranks-ask") { closeSheet(); startInNewThread(`${e.name}(${e.id})의 직위 체계를 정해 줘. 위에서 아래까지 직위 이름, 권한과 하는 일, 정원을 세력의 성격에 맞게 제안하고, 이미 있는 인물 중 어울리는 사람을 자리에 앉혀 줘. 내가 고르면 set_ranks로 저장해 줘. `); return true; }
   if (act === "age-base" || act === "age-base-off") {
     const w = currentWorld();
@@ -6314,6 +8103,7 @@ function entryBaseHTML(e) {
   return `
     ${placeBaseHTML(e)}
     ${characterSpeciesHTML(e)}
+    ${characterHoldingsHTML(e)}
     ${templateStatusHTML(e)}
     ${fields.length ? `<dl class="fields">${fields.map(([k, v]) => `<div><dt>${esc(k)}</dt>${isBlankValue(v) ? `<dd class="blank">미정</dd>` : `<dd>${esc(v)}</dd>`}</div>`).join("")}</dl>` : ""}
     ${e.body ? `<p class="section-label">본문</p><div class="md">${md(e.body)}</div>` : ""}
@@ -6364,7 +8154,7 @@ function openEntry(ref) {
       if (msOpen) { openManuscript(msOpen.dataset.msOpen); return; }
       const act = ev.target.closest("[data-act]")?.dataset.act;
       if (!act) return;
-      if (!["develop", "history", "graph", "tpl-ask", "timeline", "img-zoom", "map", "gal-view", "copy-prompt", "inner-ask", "arc-ask", "voice-ask", "looks-ask", "ab-ask", "ab-rule", "addr-table", "compare-one", "consistency", "happened-kids", "travel", "place-tree", "weather", "spell-tier", "ruling-ask", "ruling-chat", "holes-find", "hole-chat", "art-map", "comp-table", "species-matrix", "hybrid-matrix"].includes(act) && state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 고쳐 주세요"); return; }
+      if (!["develop", "history", "graph", "tpl-ask", "timeline", "img-zoom", "map", "gal-view", "copy-prompt", "inner-ask", "arc-ask", "voice-ask", "looks-ask", "ab-ask", "ab-rule", "addr-table", "compare-one", "consistency", "happened-kids", "travel", "place-tree", "weather", "spell-tier", "ruling-ask", "ruling-chat", "holes-find", "hole-chat", "art-map", "comp-table", "species-matrix", "hybrid-matrix", "event-ask-story", "event-ask-steps", "event-ask-changes", "event-ask-causal", "event-ask-whatif", "causal-view", "item-ask-card", "item-ask-magic", "item-ask-craft", "mi-ruling", "journey"].includes(act) && state.busy) { toast("Claude가 작업 중입니다. 끝난 뒤에 고쳐 주세요"); return; }
       if (await handleCharAct(act, e, ev, root)) return;
       if (act === "timeline") { closeSheet(); showInTimeline(e.id); return; }
       if (act === "map") { closeSheet(); showOnMap(e.id); return; }
@@ -6713,7 +8503,7 @@ async function openWorld(id) {
   state.manuscripts = (await idb.get("ms:" + id)) || [];
   state.images = (await idb.get("imgs:" + id)) || {};
   state.maps = (await idb.get("maps:" + id)) || [];
-  state.mapId = null; state.mapSel = null; state.mapRegionSel = null; state.mapYear = null; state.mapMode = null; state.treeRoot = null; state.lifeYear = null; state.addrIds = null; state.mxYear = null;
+  state.mapId = null; state.mapSel = null; state.mapRegionSel = null; state.mapYear = null; state.mapMode = null; state.treeRoot = null; state.lifeYear = null; state.addrIds = null; state.mxYear = null; state.causalSel = null; state.mapJourney = null;
   state.codexType = "all";
   state.codexQuery = "";
   state.tlHidden.clear();
@@ -7890,7 +9680,7 @@ function bindAddress() {
 
 /* ---- 비교표 (인물 · 종족 · 세력 · 장소 · 마법 · 그 밖의 분류) ---- */
 const cmpGroupOf = (typeKey) => (isCharacterType(typeKey) ? "@char" : typeKey);
-const cmpKind = (e) => (isCharacterType(e.type) ? "char" : isSpeciesType(e.type) ? "species" : isFactionType(e.type) ? "faction" : isPlaceType(e.type) ? "place" : isMagicEntry(e) ? "magic" : "other");
+const cmpKind = (e) => (isCharacterType(e.type) ? "char" : isSpeciesType(e.type) ? "species" : isFactionType(e.type) ? "faction" : isPlaceType(e.type) ? "place" : isEventType(e.type) ? "event" : isItemType(e.type) ? "item" : isMagicEntry(e) ? "magic" : "other");
 function openCompare(preIds = [], group = null) {
   const live = liveEntries();
   const groups = new Map();
@@ -7951,6 +9741,19 @@ function compareRows(list) {
       add("장소", "종족 구성", demo);
       add("기후", "기후", (e) => e.climate?.climate);
       add("기후", "날씨", (e) => e.climate?.weather);
+    } else if (kind === "event") {
+      for (const [k, l] of EVENT_KEYS) add("전말", l, (e) => e.event?.[k]);
+      add("전말", "참여자", (e) => (e.participants || []).filter((p) => findEntry(p.ref)).map((p) => `${nameOf(p.ref)}[${p.role}]`).join(", "));
+      add("전말", "경과", (e) => (e.steps?.length ? `${e.steps.length}단계` : ""));
+      add("인과", "원인", (e) => causesOf(e).map((c) => nameOf(c.ref)).join(", "));
+      add("인과", "결과", (e) => effectsOf(e).map((x) => x.name).join(", "));
+    } else if (kind === "item") {
+      for (const [k, l] of ITEM_KEYS) add("카드", l, (e) => e.item?.[k]);
+      add("마법", "마법 체계", (e) => (e.magicItem?.system ? nameOf(e.magicItem.system) : ""));
+      add("마법", "쓰는 대가", (e) => e.magicItem?.cost);
+      add("이력", "만든 해", (e) => (e.artifact?.made != null ? fmtYear(e.artifact.made) : ""));
+      add("이력", "지금 가진 이", (e) => (artifactHolder(e) ? nameOrText(artifactHolder(e)) : ""));
+      add("제작", "재료", (e) => (e.recipe?.materials || []).map((m) => (m.ref ? nameOf(m.ref) : m.name)).join(", "));
     } else if (kind === "magic") {
       for (const [k, l] of MAGIC_KEYS) add("체계", l, (e) => e.magic?.[k]);
       add("체계", "주문", (e) => (e.spells?.length ? `${e.spells.length}개` : ""));
@@ -8210,6 +10013,8 @@ async function renderMap() {
   }
   const timed = (m.regions || []).filter((r) => r.from != null || r.to != null);
   const yrs = timed.flatMap((r) => [r.from, r.to]).filter((x) => x != null);
+  const jItem = state.mapJourney && findEntry(state.mapJourney);
+  if (jItem) { const jy = journeyPoints(jItem, m).flatMap((p) => [p.from, p.to]).filter((x) => x != null); if (jy.length) { timed.push(...jy); yrs.push(...jy); } }
   const cal = worldCalendar();
   if (cal.now != null) yrs.push(cal.now);
   tools.innerHTML = `${state.maps.length > 1 ? `<select id="mapSelect" aria-label="지도 고르기">${state.maps.map((x) => `<option value="${x.id}"${x.id === m.id ? " selected" : ""}>${esc(x.name)}</option>`).join("")}</select>` : `<span class="map-name">${esc(m.name)}</span>`}
@@ -8272,6 +10077,12 @@ function renderMapOverlay(m) {
     if (!a || !b) continue;
     out += `<g class="route"><line x1="${a.x * m.w}" y1="${a.y * m.h}" x2="${b.x * m.w}" y2="${b.y * m.h}"/>${Number.isFinite(r.dist) ? `<text x="${((a.x + b.x) / 2) * m.w}" y="${((a.y + b.y) / 2) * m.h}">${esc(String(r.dist))}${esc(t.unit)}</text>` : ""}</g>`;
   }
+  const jItem = state.mapJourney && findEntry(state.mapJourney);
+  const jPts = jItem ? journeyPoints(jItem, m) : [];
+  if (jPts.length) {
+    const cur = jPts.findIndex((p) => journeyActive(p, state.mapYear));
+    out += `<g class="journey">${jPts.length > 1 ? `<polyline points="${jPts.map((p) => `${(p.x * m.w).toFixed(1)},${(p.y * m.h).toFixed(1)}`).join(" ")}"/>` : ""}${jPts.map((p, i) => `<g class="j-pt${i === cur ? " cur" : ""}"><circle cx="${(p.x * m.w).toFixed(1)}" cy="${(p.y * m.h).toFixed(1)}"/><text x="${(p.x * m.w).toFixed(1)}" y="${(p.y * m.h).toFixed(1)}">${i + 1}</text></g>`).join("")}</g>`;
+  }
   const d = state.mapMode?.type === "region" ? state.mapMode : null;
   if (d?.points.length) out += `<g class="region-draft"><polyline points="${d.points.map(P).join(" ")}${d.points.length > 2 ? ` ${P(d.points[0])}` : ""}"/>${d.points.map((p) => `<circle cx="${p[0] * m.w}" cy="${p[1] * m.h}" r="5"/>`).join("")}</g>`;
   svg.innerHTML = out;
@@ -8320,6 +10131,7 @@ function renderMapChrome(m) {
   else if (state.mapMode?.type === "move") { hint.hidden = false; hint.innerHTML = `<span><b>${esc(nameOf(state.mapMode.ref))}</b>의 새 자리를 누르세요</span><button class="btn btn-small" type="button" data-map="cancel">취소</button>`; }
   else if (!m.pins.length) { hint.hidden = false; hint.innerHTML = `<span>'핀 추가'를 누르고 지도에서 자리를 골라 장소를 꽂아 보세요.</span>`; }
   else hint.hidden = true;
+  const jItem = !state.mapMode && state.mapJourney && findEntry(state.mapJourney);
   const e = !state.mapMode && state.mapSel && m.pins.some((p) => p.ref === state.mapSel) ? findEntry(state.mapSel) : null;
   const rs = !state.mapMode && !e && state.mapRegionSel ? (m.regions || []).find((r) => r.id === state.mapRegionSel) : null;
   if (rs) {
@@ -8328,6 +10140,14 @@ function renderMapChrome(m) {
     card.innerHTML = `<div class="entry-head"><span class="rg-dot" style="background:var(--t-${rs.color})"></span><span>영역</span>${rs.from != null || rs.to != null ? `<span class="pill">${rs.from != null ? esc(fmtYear(rs.from)) : ""} ~ ${rs.to != null ? esc(fmtYear(rs.to)) : ""}</span>` : ""}</div>
       <strong class="gc-name">${esc(owner?.name || "(없는 항목)")}</strong>
       <div class="row"><button class="btn btn-small btn-primary" type="button" data-map="region-open">자세히</button><button class="btn btn-small" type="button" data-map="region-edit">기간·색</button><button class="btn btn-small" type="button" data-map="region-redraw">다시 그리기</button><button class="btn btn-small" type="button" data-map="region-del">지우기</button></div>`;
+  } else if (!e && jItem) {
+    const pts = journeyPoints(jItem, m);
+    const cur = pts.findIndex((p) => journeyActive(p, state.mapYear));
+    card.hidden = false;
+    card.innerHTML = `<div class="entry-head"><span>여정</span>${state.mapYear != null ? `<span class="pill">${esc(fmtYear(state.mapYear))}</span>` : ""}</div>
+      <strong class="gc-name">${esc(jItem.name)}</strong>
+      ${pts.length ? `<ol class="journey-list">${pts.map((p, i) => `<li${i === cur ? ' class="cur"' : ""}>${esc(p.labels.join(" / "))}</li>`).join("")}</ol>` : `<p class="gc-sum">이 지도에는 여정의 지점이 없습니다.</p>`}
+      <div class="row"><button class="btn btn-small btn-primary" type="button" data-map="journey-open">자세히</button><button class="btn btn-small" type="button" data-map="journey-off">여정 닫기</button></div>`;
   } else if (e) {
     card.hidden = false;
     card.innerHTML = `<div class="entry-head" style="--tc:${typeColor(e.type)}"><span class="catno">${e.id}</span><span>${esc(typeInfo(e.type).label)}</span>${statusBadge(e)}</div>
@@ -8529,6 +10349,8 @@ function bindMap() {
     }
     else if (a === "travel") openTravelSheet(state.mapSel || "");
     else if (a === "year-all") { state.mapYear = null; renderMap(); }
+    else if (a === "journey-off") { state.mapJourney = null; renderMap(); }
+    else if (a === "journey-open" && state.mapJourney) { state.entryTab = "history"; openEntry.last = state.mapJourney; openEntry(state.mapJourney); }
     else if (a === "cancel") { state.mapMode = null; renderMap(); }
     else if (a === "manage") openMapManage(m);
     else if (a === "chat") mapChat(m);
@@ -9146,8 +10968,12 @@ function renderTimeline() {
     return;
   }
   if (document.activeElement?.id === "tlSearch" && $("#tlResults")) { renderTimelineResults(); return; }
-  const modeTabs = `<div class="seg-tabs" id="tlModes" role="tablist"><button type="button" role="tab" data-tlmode="list" aria-selected="${state.tlMode !== "life"}">연표</button><button type="button" role="tab" data-tlmode="life" aria-selected="${state.tlMode === "life"}">생애 겹쳐 보기</button></div>`;
-  if (state.tlMode === "life") { renderLifespans(root, modeTabs); return; }
+  const TL_MODES = [["list", "연표"], ["life", "생애"], ["causal", "인과"], ["cal", "달력"]];
+  const curMode = TL_MODES.some(([k]) => k === state.tlMode) ? state.tlMode : "list";
+  const modeTabs = `<div class="seg-tabs" id="tlModes" role="tablist">${TL_MODES.map(([k, l]) => `<button type="button" role="tab" data-tlmode="${k}" aria-selected="${curMode === k}">${l}</button>`).join("")}</div>`;
+  if (curMode === "life") { renderLifespans(root, modeTabs); return; }
+  if (curMode === "causal") { renderCausal(root, modeTabs); return; }
+  if (curMode === "cal") { renderCalendarView(root, modeTabs); return; }
   const cal = worldCalendar();
   root.innerHTML = `${modeTabs}
     <div class="tl-head">
@@ -9196,7 +11022,7 @@ function renderTimelineResults() {
         : `<div class="tl-era"><strong>시대 구분 밖</strong><span></span></div>`;
       eraName = name;
     } else if (prev !== null && start - prev >= gapLimit) {
-      html += `<div class="tl-gap"><span>… ${esc(fmtYearNum(start - prev))}${esc(cal.suffix)} 뒤</span></div>`;
+      html += `<div class="tl-gap"><span>… ${esc(fmtYearNum(start - prev))}${esc(cal.suffix)} 뒤</span><button class="btn btn-ghost btn-small" type="button" data-gap="${prev}|${start}">공백 채우기</button></div>`;
     }
     prev = start;
     const t = typeInfo(e.type);
@@ -9306,7 +11132,7 @@ function openCalendarSheet() {
         eras.push({ name, start, ...(end !== null ? { end } : {}) });
       }
       eras.sort((a, b) => a.start - b.start);
-      w.calendar = { prefix, suffix, now, eras };
+      w.calendar = { ...(w.calendar || {}), prefix, suffix, now, eras };
       w.updatedAt = Date.now();
       logChange("user", "calendar", null, "달력·시대 수정");
       await Promise.all([persist.worlds(), persist.log()]);
@@ -9424,6 +11250,27 @@ function bindTimeline() {
   $("#view-timeline").addEventListener("click", (e) => {
     const mode = e.target.closest("[data-tlmode]");
     if (mode) { state.tlMode = mode.dataset.tlmode; LS.set("lk.tlmode", state.tlMode); state.lifeRecenter = true; renderTimeline(); return; }
+    const gap = e.target.closest("[data-gap]");
+    if (gap) { const [a, b] = gap.dataset.gap.split("|").map(Number); openGapFiller(a, b); return; }
+    const cnode = e.target.closest("[data-cnode]");
+    if (cnode) { const id = cnode.dataset.cnode; if (state.causalSel === id) openEntry(id); else { state.causalSel = id; renderTimeline(); } return; }
+    const cact = e.target.closest("[data-causal]")?.dataset.causal;
+    if (cact) {
+      if (cact === "all") { state.causalAll = !state.causalAll; renderTimeline(); }
+      else if (cact === "clear") { state.causalSel = null; renderTimeline(); }
+      else if (cact === "ask") startInNewThread("설정집의 사건들 사이의 인과를 찾아 줘. 어떤 사건이 어떤 사건의 원인이 되었는지, 빠진 고리가 있는지 따져서 제안하고, 내가 받아들이면 set_cause로 이어 줘. 연도 순서가 맞지 않는 곳도 알려 줘. ");
+      else if (cact === "whatif" && state.causalSel) startInNewThread(EVENT_ASK.whatif(findEntry(state.causalSel)));
+      return;
+    }
+    const obsBtn = e.target.closest("[data-obs]");
+    if (obsBtn) { openObservanceEditor(worldObservances().find((o) => o.id === obsBtn.dataset.obs), {}, null); return; }
+    const calv = e.target.closest("[data-calv]")?.dataset.calv;
+    if (calv) {
+      if (calv === "months") openMonthsEditor(null);
+      else if (calv === "add") openObservanceEditor(null, {}, null);
+      else if (calv === "ask") startInNewThread("이 세계의 달력에 기념일·축제·금기일을 정해 줘. 지난 사건, 종교, 계절, 생업에서 생겨난 날을 제안하고, 달 이름과 날 수도 아직 정하지 않았다면 함께 제안해 줘. 내가 고르면 set_calendar의 months와 set_observance로 저장해 줘. ");
+      return;
+    }
     const lifeAct = e.target.closest("[data-life]")?.dataset.life;
     if (lifeAct) {
       const cal = worldCalendar();
@@ -10169,7 +12016,7 @@ async function renderSettings() {
       <div class="radio-list">${MODEL_CHOICES.map((m) => { const p = PRICES[m.id]; return `<label class="radio"><input type="radio" name="model" value="${m.id}"${settings.model === m.id ? " checked" : ""}><span class="t">${p.label}</span><span class="s">입력 $${p.in} · 출력 $${p.out} / 100만 토큰 — ${m.note}</span></label>`; }).join("")}</div>
       <p>Opus와 Sonnet은 안전 정책 오판으로 거절되면 서버가 권장 모델로 자동 재시도합니다.</p>
       <label class="switch">짧은 요청은 Haiku 5.5로 <input type="checkbox" id="quickHaiku"${settings.quickHaiku ? " checked" : ""}></label>
-      <p>대화와 따로 한 번씩 보내는 요청(이름 만들기, 맞춤 질문, 그림 프롬프트, 그날의 날씨, 장소 생성기, 허점 찾기, 낱말 만들기)을 Haiku 5.5로 보냅니다. Haiku 5.5는 입력 $${PRICES[QUICK_MODEL].in} · 출력 $${PRICES[QUICK_MODEL].out} / 100만 토큰입니다. 판례로 남는 규칙 판정과 대화는 위에서 고른 모델을 씁니다. Haiku가 거절하면 위 모델로 한 번 더 묻습니다.</p>
+      <p>대화와 따로 한 번씩 보내는 요청(이름 만들기, 맞춤 질문, 그림 프롬프트, 그날의 날씨, 장소 생성기, 허점 찾기, 낱말 만들기, 역사 공백 채우기, 사물 생성기, 시대착오 찾기)을 Haiku 5.5로 보냅니다. Haiku 5.5는 입력 $${PRICES[QUICK_MODEL].in} · 출력 $${PRICES[QUICK_MODEL].out} / 100만 토큰입니다. 판례로 남는 규칙 판정과 대화는 위에서 고른 모델을 씁니다. Haiku가 거절하면 위 모델로 한 번 더 묻습니다.</p>
     </section>
 
     <section class="card">
@@ -10670,6 +12517,8 @@ function bindGlobal() {
     else if (act === "checks") openChecksSheet();
     else if (act === "compare") openCompare();
     else if (act === "comp-table") openCompositionTable();
+    else if (act === "economy") openEconomySheet();
+    else if (act === "tech") openTechSheet();
     else if (act === "presence") openPresenceSheet();
     else if (act === "place-tree") openPlaceTree();
     else if (act === "travel") openTravelSheet();
