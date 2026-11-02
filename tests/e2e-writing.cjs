@@ -99,7 +99,7 @@ const quickReqs = [];
   await send("작품을 시작하자", 2);
   const r1 = requests.at(-2);
   const tn = r1.body.tools.map((t) => t.name);
-  check("새 대화 도구 41개(v14: v12 37개 + 계획 3개 + 비밀 1개)", tn.length === 41 && tn.includes("set_work") && tn.includes("set_scene_card") && tn.at(-1) === "respond" && r1.body.tools.find((t) => t.name === "save_manuscript").input_schema.properties.work_id && r1.body.tools.find((t) => t.name === "get_manuscripts").input_schema.properties.work_id, tn.length);
+  check("새 대화 도구 47개(v15)", tn.length === 47 && tn.includes("set_work") && tn.includes("set_scene_card") && tn.at(-1) === "respond" && r1.body.tools.find((t) => t.name === "save_manuscript").input_schema.properties.work_id && r1.body.tools.find((t) => t.name === "get_manuscripts").input_schema.properties.work_id, tn.length);
   check("v12 지침", r1.body.system[0].text.includes("## 작품과 원고"));
   const tr = requests.at(-1).body.messages.at(-1).content.filter((b) => b.type === "tool_result");
   const res = (id) => tr.find((b) => b.tool_use_id === id);

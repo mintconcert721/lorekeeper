@@ -112,8 +112,9 @@ const quickReqs = [];
   const r1 = requests[0];
   const tn = r1.body.tools.map((t) => t.name);
   check("v13 지침: 이야기 계획·카드 범위", r1.body.system[0].text.includes("## 이야기 계획") && r1.body.system[0].text.includes("카드의 결과에서 끝낸다") && r1.body.system[0].text.includes("계획 밖 아이디어"));
-  check("새 대화(v14) 도구 41개: get_plan·set_plan·set_scene_card, 끝은 respond", tn.length === 41 && ["get_plan", "set_plan", "set_scene_card"].every((n) => tn.includes(n)) && tn.at(-1) === "respond", tn.length);
-  check("v13 앞 버전 도구는 v12와 같음", JSON.stringify(r1.body.tools.filter((t) => V12.tools.some((x) => x.name === t.name))) === JSON.stringify(V12.tools));
+  check("새 대화(v15) 도구 47개: get_plan·set_plan·set_scene_card, 끝은 respond", tn.length === 47 && ["get_plan", "set_plan", "set_scene_card"].every((n) => tn.includes(n)) && tn.at(-1) === "respond", tn.length);
+  // v15에서 set_observance에 faith_id가 붙었으므로 그 하나를 빼고 v12 도구와 같아야 한다
+  check("v12에서 이어진 도구는 그대로(set_observance만 확장)", JSON.stringify(r1.body.tools.filter((t) => t.name !== "set_observance" && V12.tools.some((x) => x.name === t.name))) === JSON.stringify(V12.tools.filter((t) => t.name !== "set_observance")) && !!r1.body.tools.find((t) => t.name === "set_observance").input_schema.properties.faith_id);
   const tr = trOf(1);
   const res = (id) => tr.find((b) => b.tool_use_id === id);
   const txt = (id) => JSON.stringify(res(id).content);

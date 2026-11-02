@@ -88,7 +88,7 @@ const quickReqs = [];
   // ---- 1. 설정집 구역 탭 + 원고 직접 쓰기 ----
   await tab("codex");
   const tabs = await page.$$eval("#codex [data-ctab]", (els) => els.map((e) => e.textContent));
-  check("설정집 구역 탭 6개", tabs.join(",") === "항목,원고함,감각 사전,질문 카드,이름 규칙,복선", tabs.join(","));
+  check("설정집 구역 탭 7개(용어집 포함)", tabs.join(",") === "항목,원고함,감각 사전,질문 카드,이름 규칙,복선,용어집", tabs.join(","));
   await ctab("ms");
   check("원고함 비어 있음 안내", (await page.textContent("#ctabResults")).includes("원고함이 비어 있습니다"));
   await page.click('[data-act="ms-new"]');

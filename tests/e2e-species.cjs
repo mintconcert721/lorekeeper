@@ -296,7 +296,7 @@ const quickReqs = [];
   // ---- 6. 세력: 직위 · 구성 ----
   await openE("F-002");
   const ftabs = await page.$$eval("#sheetBody [data-etab]", (els) => els.map((x) => x.textContent));
-  check("세력 탭 3개", ftabs.join("|") === "기본|직위3|구성", ftabs.join("|"));
+  check("세력 탭(교단은 신앙·법까지)", ftabs.join("|") === "기본|직위3|구성|신앙0/8|법", ftabs.join("|"));
   await page.click('#sheetBody [data-etab="ranks"]');
   st = await page.textContent("#sheetBody .rank-ladder");
   check("직위 사다리: 순서·인물·정원 초과", (await page.$$("#sheetBody .rank-ladder li")).length === 3 && st.indexOf("대사제") < st.indexOf("사제", st.indexOf("대사제") + 3) && st.includes("노을") && st.includes("2/1 · 정원 초과"), st);

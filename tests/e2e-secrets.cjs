@@ -98,7 +98,7 @@ const quickReqs = [];
   const r1 = requests[0];
   const tn = r1.body.tools.map((t) => t.name);
   check("v14 지침: 비밀과 앎", r1.body.system[0].text.includes("## 비밀과 앎") && r1.body.system[0].text.includes("암시까지만") && r1.body.system[0].text.includes("## 이야기 계획"));
-  check("v14 도구 41개: set_secret·learns", tn.length === 41 && tn.includes("set_secret") && tn.at(-1) === "respond" && !!r1.body.tools.find((t) => t.name === "set_scene_card").input_schema.properties.learns);
+  check("새 대화(v15) 도구 47개: set_secret·learns", tn.length === 47 && tn.includes("set_secret") && tn.at(-1) === "respond" && !!r1.body.tools.find((t) => t.name === "set_scene_card").input_schema.properties.learns);
   const tr = trOf(1);
   const res = (id) => tr.find((b) => b.tool_use_id === id);
   check("거부: 없는 범위·인물·드러낼 곳", res("s2").is_error && JSON.stringify(res("s2").content).includes("level") && res("s3").is_error && JSON.stringify(res("s3").content).includes("C-999") && res("s4").is_error && JSON.stringify(res("s4").content).includes("없는장"));

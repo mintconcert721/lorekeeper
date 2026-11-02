@@ -1124,6 +1124,22 @@ body.writing { overflow: hidden; }
 .know-sec { padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; overflow-wrap: anywhere; }
 .know-sec p { margin: 4px 0; }
 .know-gaps li { padding: 1px 0; }
+/* 신앙 · 법 · 용어집 · 하늘 */
+.heresy-row { display: grid; grid-template-columns: 1fr auto; gap: 4px; margin-bottom: 6px; }
+.heresy-row .hb { grid-column: 1 / 2; }
+.heresy-row select, .heresy-row input { min-width: 0; }
+.fs-row, .moon-row, .star-row { display: grid; grid-template-columns: 1.4fr 1fr auto; gap: 4px; margin-bottom: 6px; }
+.moon-row { grid-template-columns: 1.2fr 1fr 1fr auto; }
+.star-row { grid-template-columns: 1fr 1fr 1.2fr auto; }
+.skyev-row { display: grid; grid-template-columns: 1.3fr 1fr 0.9fr auto; gap: 4px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px dashed var(--line); }
+.fs-row > *, .moon-row > *, .star-row > *, .skyev-row > * { min-width: 0; }
+.gl-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.gl-item { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font: inherit; text-align: left; }
+.gl-item b { font-size: 15px; }
+.gl-mean { flex-basis: 100%; font-size: 13.5px; overflow-wrap: anywhere; }
+.gl-ex { flex-basis: 100%; font-style: italic; }
+.gl-tip { white-space: nowrap; }
+.gl-in { overflow-wrap: anywhere; }
 .pill.sev-high { background: var(--danger-soft); color: var(--danger); }
 .pill.sev-mid { background: color-mix(in srgb, var(--t-event) 22%, var(--surface)); }
 .check-issue { align-items: flex-start; justify-content: space-between; }
@@ -2639,6 +2655,114 @@ const TOOLS_V14 = [
   },
   toolV13("respond"),
 ];
+// v15: 신앙(교단·신격·신자 분포), 법과 제도, 용어집, 천문(달·요일·별자리·천문 사건).
+const FAITH_KEYS = [["origin", "기원"], ["doctrine", "교리"], ["rites", "의례"], ["clergy", "성직과 조직"], ["texts", "경전"], ["taboos", "금기"], ["afterlife", "사후관"], ["practice", "일상의 신앙"]];
+const DEITY_KEYS = [["domains", "다스리는 것"], ["symbols", "상징"], ["depiction", "모습"], ["myths", "신화"], ["worship", "섬기는 법"]];
+const LAW_KINDS = ["금지", "의무", "권리", "절차", "형벌"];
+const HERESY_STATUS = ["용인", "박해", "분리", "소멸"];
+const SKY_KINDS = ["일식", "월식", "혜성", "별비", "행성 정렬", "기타"];
+const SYSTEM_V15 = SYSTEM_V14 + `
+
+## 신앙과 법
+- 종교·교단은 그 세력 항목에 set_faith로 기원·교리·의례·성직과 조직·경전·금기·사후관·일상의 신앙, 모시는 신(신격 항목), 성지(장소), 이단과 분파를 기록한다. 신격 항목은 set_deity로 다스리는 것·상징·모습·신화·섬기는 법을 적는다.
+- 장소의 신자 분포는 set_faith_share로, 기념일이 어느 신앙의 날인지는 set_observance의 faith_id로 잇는다.
+- 나라·세력의 법은 set_law로 기록한다(종류, 내용, 처벌, 집행 기관, 적용 지역, 시행·폐지 연도). 장면을 쓸 때 get_plan(scene_id)의 '이곳의 법'과 '신앙'에 맞게 인물의 행동과 그 결과를 쓴다.
+
+## 용어와 하늘
+- 세계 고유 낱말은 set_term으로 용어집에 뜻과 함께 기록하고, 글에서는 그 뜻대로 일관되게 쓴다. 새 낱말을 지어 쓰면 용어집에 넣을지 제안한다.
+- 달(이름·주기)·요일·별자리·천문 사건은 set_sky로 정한다. 장면의 날짜가 정해져 있으면 get_plan(scene_id)의 '그날의 하늘'(달의 모양, 요일, 천문 사건)에 맞게 묘사한다.`;
+const toolV14 = (name) => TOOLS_V14.find((t) => t.name === name);
+const TOOLS_V15 = [
+  ...TOOLS_V14.filter((t) => !["set_observance", "respond"].includes(t.name)),
+  {
+    ...toolV14("set_observance"),
+    input_schema: { ...toolV14("set_observance").input_schema, properties: { ...toolV14("set_observance").input_schema.properties, faith_id: { type: "string", description: "이 날을 지키는 신앙(교단 세력 항목 id). 빈 문자열이면 뺀다" } } },
+  },
+  {
+    name: "set_faith",
+    description: "교단·종교 세력의 신앙을 기록한다. 준 칸만 바꾸고 빈 문자열이면 지운다. deities(모시는 신격 항목 id)·holy_places(성지 장소 id)·heresies(이단과 분파)는 주면 통째로 바뀐다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        id: { type: "string", description: "교단·종교 세력 항목 id" },
+        ...Object.fromEntries(FAITH_KEYS.map(([k, l]) => [k, { type: "string", description: l }])),
+        deities: { type: "array", items: { type: "string" } },
+        holy_places: { type: "array", items: { type: "string" } },
+        heresies: { type: "array", items: { type: "object", properties: { name: { type: "string" }, belief: { type: "string", description: "주류와 다른 믿음" }, status: { type: "string", enum: HERESY_STATUS } }, required: ["name"] } },
+      },
+      required: ["id"],
+    },
+    eager_input_streaming: true,
+  },
+  {
+    name: "set_deity",
+    description: "신격 항목의 신격 정보를 기록한다. 준 칸만 바꾸고 빈 문자열이면 지운다. 신들 사이의 관계(부모, 배우자, 적대 등)는 set_relation으로 잇는다.",
+    input_schema: { type: "object", properties: { id: { type: "string", description: "신격 항목 id" }, ...Object.fromEntries(DEITY_KEYS.map(([k, l]) => [k, { type: "string", description: l }])) }, required: ["id"] },
+    eager_input_streaming: true,
+  },
+  {
+    name: "set_faith_share",
+    description: "장소의 신자 분포(신앙별 비율 %)를 통째로 정한다. 빈 배열이면 지운다. 합이 100을 넘으면 안 된다.",
+    input_schema: { type: "object", properties: { place_id: { type: "string" }, shares: { type: "array", items: { type: "object", properties: { faith_id: { type: "string", description: "교단·종교 세력 항목 id" }, pct: { type: "number" } }, required: ["faith_id", "pct"] } } }, required: ["place_id", "shares"] },
+    eager_input_streaming: true,
+  },
+  {
+    name: "set_law",
+    description: "나라·세력의 법을 만들거나 고친다. law_id가 있으면 그 법에서 준 칸만 바꾸고, 없으면 같은 name의 법을 고치거나 새로 만든다. place_ids를 비우면 그 세력이 다스리는 곳 전체에 적용된다. remove가 true면 지운다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        faction_id: { type: "string", description: "법을 정한 나라·세력 항목 id" },
+        law_id: { type: "string" },
+        name: { type: "string", description: "법의 이름. 예: 야간 등화 금지령" },
+        kind: { type: "string", enum: LAW_KINDS },
+        text: { type: "string", description: "법의 내용" },
+        penalty: { type: "string", description: "어기면 받는 처벌" },
+        enforcer_id: { type: "string", description: "집행하는 기관·인물 항목 id(빈 문자열이면 뺀다)" },
+        place_ids: { type: "array", items: { type: "string" }, description: "적용 지역 장소 id. 주면 통째로 바뀐다" },
+        since: { type: "number", description: "시행한 해" },
+        until: { type: "number", description: "폐지한 해" },
+        remove: { type: "boolean" },
+      },
+      required: ["faction_id"],
+    },
+    eager_input_streaming: true,
+  },
+  {
+    name: "set_term",
+    description: "용어집에 세계 고유 낱말을 넣거나 고친다. 같은 term이면 준 칸만 바꾸고 빈 문자열이면 지운다. remove가 true면 지운다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        term: { type: "string" },
+        meaning: { type: "string", description: "뜻" },
+        reading: { type: "string", description: "읽는 법·발음(선택)" },
+        origin_id: { type: "string", description: "어원이 된 언어·종족·장소 항목 id(선택)" },
+        category: { type: "string", description: "분류. 예: 직함, 화폐, 의례, 욕설, 지명" },
+        example: { type: "string", description: "쓰임 예문" },
+        remove: { type: "boolean" },
+      },
+      required: ["term"],
+    },
+    eager_input_streaming: true,
+  },
+  {
+    name: "set_sky",
+    description: "천문을 정한다. 준 목록만 통째로 바뀐다. moons는 달마다 이름과 주기(일), offset(한 해 첫날로부터 첫 보름까지의 날 수). weekdays는 요일 이름 순서. stars는 별자리(잘 보이는 달 번호, 뜻). events는 일식·월식 같은 천문 사건(해·달·날, every년마다 되풀이).",
+    input_schema: {
+      type: "object",
+      properties: {
+        moons: { type: "array", items: { type: "object", properties: { name: { type: "string" }, period: { type: "number", description: "삭망 주기(일)" }, offset: { type: "number", description: "기준 보름이 오는 날(0년 첫날로부터 며칠째)" } }, required: ["name", "period"] } },
+        weekdays: { type: "array", items: { type: "string" } },
+        week_offset: { type: "number", description: "0년 첫날의 요일 번호(0부터)" },
+        stars: { type: "array", items: { type: "object", properties: { name: { type: "string" }, months: { type: "array", items: { type: "string" }, description: "잘 보이는 달(이름이나 번호)" }, meaning: { type: "string" } }, required: ["name"] } },
+        events: { type: "array", items: { type: "object", properties: { name: { type: "string" }, kind: { type: "string", enum: SKY_KINDS }, year: { type: "number" }, month: { type: "string" }, day: { type: "number" }, every: { type: "number", description: "몇 해마다 되풀이(선택)" }, note: { type: "string" } }, required: ["name", "year"] } },
+      },
+    },
+    eager_input_streaming: true,
+  },
+  toolV14("respond"),
+];
 const PROMPT_SETS = {
   1: { system: SYSTEM_V1, tools: TOOLS_V1 },
   2: { system: SYSTEM_V2, tools: TOOLS_V2 },
@@ -2654,8 +2778,9 @@ const PROMPT_SETS = {
   12: { system: SYSTEM_V12, tools: TOOLS_V12 },
   13: { system: SYSTEM_V13, tools: TOOLS_V13 },
   14: { system: SYSTEM_V14, tools: TOOLS_V14 },
+  15: { system: SYSTEM_V15, tools: TOOLS_V15 },
 };
-const PROMPT_CURRENT = 14;
+const PROMPT_CURRENT = 15;
 // 버전 정보가 없는 예전 대화는 만든 시각으로 버전을 추정한다(각 버전의 배포 완료 시각, UTC).
 const PROMPT_RELEASES = [
   { v: 2, at: Date.parse("2026-11-01T15:35:14Z") },
@@ -2739,6 +2864,12 @@ const TOOL_STATUS = {
   set_plan: "이야기 계획을 정리하는 중…",
   set_scene_card: "장면 카드를 쓰는 중…",
   set_secret: "비밀을 적는 중…",
+  set_faith: "신앙을 정리하는 중…",
+  set_deity: "신격을 적는 중…",
+  set_faith_share: "신자 분포를 정하는 중…",
+  set_law: "법을 적는 중…",
+  set_term: "용어집에 적는 중…",
+  set_sky: "하늘을 정하는 중…",
 };
 
 /* ============================================================
@@ -3686,7 +3817,7 @@ function updateEntry(e, p, by, reason) {
   if (p.magicAll !== undefined) setOrDrop("magic", mergeStrMap({}, p.magicAll, MAGIC_IDS));
   if (p.magic) setOrDrop("magic", mergeStrMap(e.magic, p.magic, MAGIC_IDS));
   if (p.magicOn !== undefined) { if (p.magicOn) e.magicOn = true; else delete e.magicOn; }
-  for (const k of ["rumors", "spells", "rulings", "holes", "secrets"]) if (p[k] !== undefined) setOrDrop(k, p[k]);
+  for (const k of ["rumors", "spells", "rulings", "holes", "secrets", "faith", "deity", "faiths", "laws"]) if (p[k] !== undefined) setOrDrop(k, p[k]);
   if (p.artifact !== undefined) setOrDrop("artifact", p.artifact);
   // 종족·세력
   if (p.speciesAll !== undefined) setOrDrop("species", mergeStrMap({}, p.speciesAll, SPECIES_IDS));
@@ -3758,7 +3889,7 @@ function restoreVersion(e, h) {
   e.status = statusOf(data);
   if (data.senses) e.senses = data.senses; else delete e.senses;
   if (data.perspectives) e.perspectives = data.perspectives; else delete e.perspectives;
-  for (const k of ["inner", "voice", "looks", "arc", "abilities", "address", "gallery", "lookPrompt", "parent", "place", "climate", "magic", "magicOn", "rumors", "spells", "rulings", "holes", "artifact", "species", "life", "speciesRef", "speciesNote", "lang", "hybrids", "demographics", "ranks", "event", "participants", "steps", "causes", "item", "magicItem", "recipe", "sources"]) { if (data[k]) e[k] = data[k]; else delete e[k]; }
+  for (const k of ["inner", "voice", "looks", "arc", "abilities", "address", "gallery", "lookPrompt", "parent", "place", "climate", "magic", "magicOn", "rumors", "spells", "rulings", "holes", "artifact", "species", "life", "speciesRef", "speciesNote", "lang", "hybrids", "demographics", "ranks", "event", "participants", "steps", "causes", "item", "magicItem", "recipe", "sources", "secrets", "faith", "deity", "faiths", "laws"]) { if (data[k]) e[k] = data[k]; else delete e[k]; }
   e.updatedAt = Date.now(); e.updatedBy = "user";
   logChange("user", "update", e, "이전 버전으로 되돌림");
 }
@@ -3809,6 +3940,7 @@ function entryToText(e) {
   if (e.perspectives?.length) lines.push("관점별 서술:", ...e.perspectives.map((x) => `- ${perspectiveName(x.by)}: ${x.text}`));
   if (state.images[e.id]?.data) lines.push("그림: 있음");
   if (e.secrets?.length) lines.push("비밀:", ...e.secrets.map((s) => `- ${secretLine({ ...s, owner: e })}`));
+  lines.push(...faithText(e));
   lines.push(...characterText(e), ...placeMagicText(e), ...speciesFactionText(e), ...eventItemText(e));
   lines.push(`최종 수정: ${fmtDate(e.updatedAt)} (${e.updatedBy === "user" ? "사용자 직접" : "Claude"})`);
   return lines.join("\n");
@@ -4216,6 +4348,8 @@ function sceneContextText(m) {
   if (ser && ch) { const cn = workScenes(work, ch.id).reduce((a, x) => a + textStats(x.body).withSpace, 0); lines.push(`연재: 이 회차 ${cn}자 / 목표 ${ser.target}자${workScenes(work, ch.id).at(-1) === m ? " · 이 장면이 회차의 끝" : ""}`); }
   const kt = sceneKnowledgeText(m);
   if (kt) lines.push(kt);
+  const wt = sceneWorldText(m);
+  if (wt) lines.push(wt);
   return lines.join("\n");
 }
 // 장면의 앞뒤를 고려한 짧은 계획 요약(첫 메시지)
@@ -4468,6 +4602,143 @@ function sceneKnowledgeText(m) {
   }
   if (k.learns.length) lines.push(`- 이 장면에서 알게 되는 것: ${k.learns.map((l) => `${nameOf(l.who)} ← ${l.what}`).join(" / ")}`);
   return lines.length > 1 ? lines.join("\n") : "";
+}
+/* ---- 신앙 · 법 · 용어집 · 천문(v15) ----
+   교단 세력 e.faith = { origin, doctrine, …, deities: [id], holy: [id], heresies: [{name, belief, status}] }
+   신격 e.deity = { domains, symbols, depiction, myths, worship }
+   장소 e.faiths = [{ ref: 교단 id, pct }]
+   세력 e.laws = [{ id, name, kind, text, penalty, enforcer, places: [id], since, until }]
+   w.glossary = [{ id, term, reading, meaning, origin, category, example }]
+   w.calendar.moons = [{ name, period, offset }], w.calendar.weekdays = [이름], w.calendar.weekOffset
+   w.sky = { stars: [{ name, months: [n], meaning }], events: [{ id, name, kind, year, month, day, every, note }] } */
+const isFaithEntry = (e) => !!e && isFactionType(e.type) && (hasKeys(e.faith) || /교단|종교|교회|신앙|사원|신전|교파|종파|성당|사제단|신도/.test(`${typeInfo(e.type).label} ${e.name} ${e.summary || ""}`));
+const isDeityType = (key) => /신격|신·|^신$|신들|신화|판테온|정령|신령/.test(typeInfo(key).label);
+const faithsOf = () => liveEntries().filter(isFaithEntry);
+const deitiesOf = () => liveEntries().filter((e) => isDeityType(e.type));
+function normalizeFaithShares(parts) {
+  const out = [];
+  for (const x of parts || []) {
+    const f = findEntry(x.ref ?? x.faith_id);
+    if (!f || f.deleted) throw new Error(`신앙 '${x.ref ?? x.faith_id}' 항목이 없습니다.`);
+    if (!isFactionType(f.type)) throw new Error(`${f.name}은(는) 세력 항목이 아닙니다. 교단·종교 세력 항목을 넣으세요.`);
+    const pct = Math.round(Number(x.pct) * 10) / 10;
+    if (!(pct > 0)) continue;
+    const prev = out.find((y) => y.ref === f.id);
+    if (prev) prev.pct += pct; else out.push({ ref: f.id, pct });
+  }
+  if (out.reduce((a, x) => a + x.pct, 0) > 100.05) throw new Error("신자 분포의 합이 100을 넘습니다.");
+  return out;
+}
+// 법: 어느 곳에 그해 적용되는가
+const placeChain = (p) => { const out = []; let cur = p; const seen = new Set(); while (cur && !seen.has(cur.id)) { out.push(cur.id); seen.add(cur.id); cur = cur.parent ? findEntry(cur.parent) : null; } return out; };
+function rulersOf(placeId, year) {
+  const p = findEntry(placeId);
+  if (!p) return [];
+  const chain = new Set(placeChain(p));
+  const out = new Map();
+  for (const f of liveEntries().filter((x) => isFactionType(x.type) && (year == null || existsIn(x, year)))) {
+    for (const r of f.relations || []) if (chain.has(r.to) && RULE_RE.test(r.label) && relActive(r, year)) out.set(f.id, f);
+  }
+  for (const id of chain) { const x = findEntry(id); for (const r of x?.relations || []) { const f = findEntry(r.to); if (f && isFactionType(f.type) && RULE_RE.test(r.label) && relActive(r, year)) out.set(f.id, f); } }
+  return [...out.values()];
+}
+const lawActive = (l, y) => y == null || ((l.since == null || l.since <= y) && (l.until == null || y < l.until));
+function lawsAt(placeId, year) {
+  const p = findEntry(placeId);
+  if (!p) return [];
+  const chain = new Set(placeChain(p));
+  const rulers = new Set(rulersOf(placeId, year).map((f) => f.id));
+  const out = [];
+  for (const f of liveEntries().filter((x) => x.laws?.length)) {
+    for (const l of f.laws) {
+      if (!lawActive(l, year)) continue;
+      const named = (l.places || []).some((id) => chain.has(id));
+      if (named) out.push({ f, l, why: "이곳에 적용" });
+      else if (!(l.places || []).length && rulers.has(f.id)) out.push({ f, l, why: `${f.name}이(가) 다스림` });
+    }
+  }
+  return out;
+}
+function lawLine(f, l) {
+  return `${l.name}(${l.kind}) — ${l.text}${l.penalty ? ` · 처벌 ${l.penalty}` : ""}${l.enforcer ? ` · 집행 ${nameOf(l.enforcer)}` : ""}${l.places?.length ? ` · 지역 ${l.places.map(nameOf).join(", ")}` : ""}${l.since != null || l.until != null ? ` · ${l.since != null ? fmtYearNum(l.since) : ""}~${l.until != null ? fmtYearNum(l.until) : ""}` : ""} [${f.name}]`;
+}
+// 용어집
+const worldGlossary = (w = currentWorld()) => (Array.isArray(w?.glossary) ? w.glossary : []);
+function glossaryInText(text) {
+  const t = String(text || "");
+  return worldGlossary().filter((g) => g.term && g.term.length >= 1 && t.includes(g.term));
+}
+const termLine = (g) => `${g.term}${g.reading ? `(${g.reading})` : ""}: ${g.meaning || "(뜻 없음)"}${g.category ? ` [${g.category}]` : ""}${g.origin ? ` · 어원 ${nameOf(g.origin)}` : ""}`;
+// 천문
+const worldMoons = (w = currentWorld()) => (Array.isArray(w?.calendar?.moons) ? w.calendar.moons.filter((m) => m.name && m.period > 0) : []);
+const worldWeekdays = (w = currentWorld()) => (Array.isArray(w?.calendar?.weekdays) ? w.calendar.weekdays.filter(Boolean) : []);
+const worldSky = (w = currentWorld()) => ({ stars: Array.isArray(w?.sky?.stars) ? w.sky.stars : [], events: Array.isArray(w?.sky?.events) ? w.sky.events : [] });
+function absDay(year, month, day) {
+  const months = worldMonths();
+  const yd = months.reduce((a, m) => a + m.days, 0) || 365;
+  let d = 0;
+  for (let i = 0; i < (month || 1) - 1; i++) d += months[i]?.days || 0;
+  return Math.floor(year) * yd + d + ((day || 1) - 1);
+}
+const PHASES = ["보름", "기우는 달", "하현", "그믐", "삭(새달)", "초승", "상현", "차오르는 달"];
+function moonPhase(moon, abs) {
+  const f = ((((abs - (moon.offset || 0)) % moon.period) + moon.period) % moon.period) / moon.period; // 0 = 보름
+  return { frac: f, name: PHASES[Math.floor(((f + 1 / 16) % 1) * 8)] };
+}
+function weekdayOf(abs, w = currentWorld()) {
+  const wd = worldWeekdays(w);
+  if (!wd.length) return null;
+  const off = Number(w?.calendar?.weekOffset) || 0;
+  return wd[(((abs + off) % wd.length) + wd.length) % wd.length];
+}
+const skyHits = (e, year) => e.year === year || (e.every > 0 && year >= e.year && (year - e.year) % e.every === 0);
+function skyEventsOn(year, month, day) { return worldSky().events.filter((e) => skyHits(e, year) && (!e.month || e.month === month) && (!e.day || !day || e.day === day)); }
+function skyEventsIn(year) { return worldSky().events.filter((e) => skyHits(e, year)); }
+function skyText(year, month, day) {
+  if (year == null || !month) return "";
+  const abs = absDay(year, month, day || 1);
+  const parts = [];
+  if (day) for (const m of worldMoons()) parts.push(`${m.name} ${moonPhase(m, abs).name}`);
+  const wd = day ? weekdayOf(abs) : null;
+  if (wd) parts.push(`${wd}요일`.replace(/요일요일$/, "요일"));
+  const stars = worldSky().stars.filter((s) => (s.months || []).includes(month));
+  if (stars.length) parts.push(`잘 보이는 별자리 ${stars.map((s) => s.name).join(", ")}`);
+  const ev = skyEventsOn(year, month, day);
+  if (ev.length) parts.push(`천문 사건 ${ev.map((e) => `${e.name}(${e.kind || "기타"})`).join(", ")}`);
+  return parts.join(" · ");
+}
+// 장면이 놓인 곳·때의 법·신앙·하늘(get_plan과 현황판)
+function sceneWorldText(m) {
+  const c = m?.card;
+  if (!c) return "";
+  const y = c.when?.year ?? worldCalendar().now;
+  const lines = [];
+  if (c.place) {
+    const ls = lawsAt(c.place, y);
+    if (ls.length) lines.push(`이곳의 법(${y != null ? fmtYear(y) : "지금"}): ${ls.slice(0, 8).map((x) => lawLine(x.f, x.l)).join(" / ")}`);
+    const fs = findEntry(c.place)?.faiths || [];
+    if (fs.length) lines.push(`이곳의 신앙: ${fs.map((x) => `${nameOf(x.ref)} ${x.pct}%`).join(", ")}`);
+  }
+  const sky = skyText(c.when?.year, c.when?.month, c.when?.day);
+  if (sky) lines.push(`그날의 하늘: ${sky}`);
+  return lines.join("\n");
+}
+function faithText(e) {
+  const out = [];
+  const f = e.faith || {};
+  const keys = FAITH_KEYS.filter(([k]) => f[k]);
+  if (keys.length || f.deities?.length || f.holy?.length || f.heresies?.length) {
+    out.push("신앙:", ...keys.map(([k, l]) => `- ${l}: ${f[k]}`));
+    if (f.deities?.length) out.push(`- 모시는 신: ${f.deities.map(refName).join(", ")}`);
+    if (f.holy?.length) out.push(`- 성지: ${f.holy.map(refName).join(", ")}`);
+    if (f.heresies?.length) out.push(`- 이단·분파: ${f.heresies.map((h) => `${h.name}${h.status ? `(${h.status})` : ""}${h.belief ? `: ${h.belief}` : ""}`).join(" / ")}`);
+  }
+  const d = e.deity || {};
+  const dk = DEITY_KEYS.filter(([k]) => d[k]);
+  if (dk.length) out.push("신격:", ...dk.map(([k, l]) => `- ${l}: ${d[k]}`));
+  if (e.faiths?.length) out.push(`신자 분포: ${e.faiths.map((x) => `${nameOf(x.ref)} ${x.pct}%`).join(", ")}`);
+  if (e.laws?.length) out.push("법:", ...e.laws.map((l) => `- ${l.id} ${lawLine(e, l)}`));
+  return out;
 }
 // 본문 속 설정 인식: 이름·별칭(두 글자 이상)을 긴 것부터 찾고 겹치는 자리는 한 번만 센다
 function entityTerms() {
@@ -4754,7 +5025,7 @@ const TOOL_IMPL = {
     updateEntry(f, { causes: list }, "claude", remove ? `원인 삭제: ${c.name}` : `원인: ${c.name}`);
     return { content: `인과 ${remove ? "삭제" : "저장"}: ${c.name}(${c.id}) → ${f.name}(${f.id})${!remove && causeBackwards(c, f) ? `\n확인할 점: 결과(${rangeText(f.when)})가 원인(${rangeText(c.when)})보다 앞선다` : ""}`, action: { kind: "relation", text: `${c.name} → ${f.name}`, ref: f.id }, changed: true };
   },
-  set_observance({ name, kind, month, day, days, since, event_id, desc, remove }) {
+  set_observance({ name, kind, month, day, days, since, event_id, desc, remove, faith_id }) {
     const w = currentWorld();
     const key = String(name || "").trim();
     if (!key) throw new Error("name이 필요합니다.");
@@ -4773,6 +5044,7 @@ const TOOL_IMPL = {
       if (since !== undefined) { const y = since === null || since === "" ? null : parseYear(since); if (y == null) delete cur.since; else cur.since = y; }
       if (event_id !== undefined) { const id = String(event_id || "").trim(); if (id) { const x = findEntry(id); if (!x || x.deleted) throw new Error(`${id} 항목이 없습니다.`); cur.ref = x.id; } else delete cur.ref; }
       if (desc !== undefined) { const t = String(desc || "").trim(); if (t) cur.desc = t; else delete cur.desc; }
+      if (faith_id !== undefined) { const id = String(faith_id || "").trim(); if (id) { const x = findEntry(id); if (!x || x.deleted) throw new Error(`신앙 ${id} 항목이 없습니다.`); cur.faith = x.id; } else delete cur.faith; }
       if (!cur.month || !cur.day) throw new Error("처음 만들 때는 month와 day가 필요합니다.");
       const m = months[cur.month - 1];
       if (!(cur.day >= 1 && cur.day <= m.days)) throw new Error(`${m.name}은(는) ${m.days}일까지 있습니다.`);
@@ -5015,6 +5287,120 @@ const TOOL_IMPL = {
     if (s.level === "작가만" && s.knowers.length) s.level = "일부 인물";
     updateEntry(e, { secrets: list }, "claude", secret_id ? "비밀 고침" : "비밀");
     return { content: `비밀 ${secret_id ? "고침" : "만듦"}: ${secretLine({ ...s, owner: e })}`, action: { kind: "update", text: `비밀 · ${e.name}`, ref: e.id }, changed: true };
+  },
+  set_faith(input) {
+    const e = findEntry(input.id);
+    if (!e || e.deleted) throw new Error(`${input.id} 항목이 없습니다.`);
+    if (!isFactionType(e.type)) throw new Error(`${e.name}은(는) 세력 항목이 아닙니다. 교단·종교는 세력 분류로 만드세요.`);
+    const ids = (list, label, pred) => (list || []).map((r) => { const x = findEntry(r); if (!x || x.deleted) throw new Error(`${label} '${r}' 항목이 없습니다.`); if (pred && !pred(x)) throw new Error(`${label} '${x.name}'은(는) 알맞은 분류가 아닙니다.`); return x.id; });
+    const deities = input.deities !== undefined ? ids(input.deities, "신") : undefined;
+    const holy = input.holy_places !== undefined ? ids(input.holy_places, "성지", (x) => isPlaceType(x.type)) : undefined;
+    const heresies = input.heresies !== undefined ? (input.heresies || []).map((h) => { const n = String(h.name || "").trim(); if (!n) throw new Error("이단의 name이 필요합니다."); if (h.status && !HERESY_STATUS.includes(h.status)) throw new Error(`status는 ${HERESY_STATUS.join(", ")} 중 하나여야 합니다.`); return { name: n, ...(String(h.belief || "").trim() ? { belief: String(h.belief).trim() } : {}), ...(h.status ? { status: h.status } : {}) }; }) : undefined;
+    const next = mergeStrMap(e.faith, Object.fromEntries(FAITH_KEYS.map(([k]) => [k, input[k]]).filter(([, v]) => v !== undefined)), FAITH_KEYS.map(([k]) => k));
+    if (deities !== undefined) { if (deities.length) next.deities = [...new Set(deities)]; else delete next.deities; }
+    if (holy !== undefined) { if (holy.length) next.holy = [...new Set(holy)]; else delete next.holy; }
+    if (heresies !== undefined) { if (heresies.length) next.heresies = heresies; else delete next.heresies; }
+    updateEntry(e, { faith: next }, "claude", "신앙");
+    return { content: `신앙 저장: ${e.name}\n${faithText(findEntry(e.id)).join("\n")}`, action: { kind: "update", text: `${e.name} · 신앙`, ref: e.id }, changed: true };
+  },
+  set_deity(input) {
+    const e = findEntry(input.id);
+    if (!e || e.deleted) throw new Error(`${input.id} 항목이 없습니다.`);
+    const next = mergeStrMap(e.deity, Object.fromEntries(DEITY_KEYS.map(([k]) => [k, input[k]]).filter(([, v]) => v !== undefined)), DEITY_KEYS.map(([k]) => k));
+    updateEntry(e, { deity: next }, "claude", "신격");
+    return { content: `신격 저장: ${e.name}`, action: { kind: "update", text: `${e.name} · 신격`, ref: e.id }, changed: true };
+  },
+  set_faith_share({ place_id, shares }) {
+    const p = findEntry(place_id);
+    if (!p || p.deleted) throw new Error(`${place_id} 항목이 없습니다.`);
+    const list = normalizeFaithShares((shares || []).map((x) => ({ ref: x.faith_id, pct: x.pct })));
+    updateEntry(p, { faiths: list }, "claude", "신자 분포");
+    return { content: `신자 분포: ${p.name} · ${list.map((x) => `${nameOf(x.ref)} ${x.pct}%`).join(", ") || "지움"}`, action: { kind: "update", text: `${p.name} · 신자 분포`, ref: p.id }, changed: true };
+  },
+  set_law({ faction_id, law_id, name, kind, text, penalty, enforcer_id, place_ids, since, until, remove }) {
+    const f = findEntry(faction_id);
+    if (!f || f.deleted) throw new Error(`${faction_id} 항목이 없습니다.`);
+    if (!isFactionType(f.type)) throw new Error(`${f.name}은(는) 세력 항목이 아닙니다.`);
+    const list = (f.laws || []).map((l) => ({ ...l }));
+    let l = law_id ? list.find((x) => x.id === law_id) : list.find((x) => x.name === String(name || "").trim());
+    if (law_id && !l) throw new Error(`${f.name}에 법 '${law_id}'가 없습니다.`);
+    if (remove) {
+      if (!l) throw new Error("지울 법이 없습니다.");
+      updateEntry(f, { laws: list.filter((x) => x !== l) }, "claude", "법 삭제");
+      return { content: `법 삭제: ${l.name} · ${f.name}`, action: { kind: "update", text: `${f.name} · 법 삭제`, ref: f.id }, changed: true };
+    }
+    if (kind !== undefined && kind !== "" && !LAW_KINDS.includes(kind)) throw new Error(`kind는 ${LAW_KINDS.join(", ")} 중 하나여야 합니다.`);
+    const enf = enforcer_id !== undefined && String(enforcer_id || "").trim() ? findEntry(enforcer_id) : null;
+    if (enforcer_id !== undefined && String(enforcer_id || "").trim() && (!enf || enf.deleted)) throw new Error(`집행 '${enforcer_id}' 항목이 없습니다.`);
+    const places = place_ids !== undefined ? (place_ids || []).map((r) => { const x = findEntry(r); if (!x || x.deleted || !isPlaceType(x.type)) throw new Error(`장소 '${r}'가 없습니다.`); return x.id; }) : undefined;
+    const ys = since !== undefined && since !== null && since !== "" ? parseYear(since) : since === undefined ? undefined : null;
+    const yu = until !== undefined && until !== null && until !== "" ? parseYear(until) : until === undefined ? undefined : null;
+    if (ys != null && yu != null && yu < ys) throw new Error("until은 since보다 앞설 수 없습니다.");
+    if (!l) {
+      if (!String(name || "").trim() || !String(text || "").trim()) throw new Error("새 법에는 name과 text가 필요합니다.");
+      l = { id: `lw-${uid().slice(-6)}`, name: String(name).trim(), kind: kind || "금지", text: "" };
+      list.push(l);
+    }
+    if (name !== undefined && String(name).trim()) l.name = String(name).trim();
+    if (kind) l.kind = kind;
+    for (const [k, v] of [["text", text], ["penalty", penalty]]) if (v !== undefined) { const t = String(v || "").trim(); if (t) l[k] = t; else if (k !== "text") delete l[k]; }
+    if (enforcer_id !== undefined) { if (enf) l.enforcer = enf.id; else delete l.enforcer; }
+    if (places !== undefined) { if (places.length) l.places = [...new Set(places)]; else delete l.places; }
+    if (ys !== undefined) { if (ys == null) delete l.since; else l.since = ys; }
+    if (yu !== undefined) { if (yu == null) delete l.until; else l.until = yu; }
+    updateEntry(f, { laws: list }, "claude", "법");
+    return { content: `법 저장: ${l.id} ${lawLine(f, l)}`, action: { kind: "update", text: `${f.name} · 법 ${l.name}`, ref: f.id }, changed: true };
+  },
+  set_term({ term, meaning, reading, origin_id, category, example, remove }) {
+    const w = currentWorld();
+    const key = String(term || "").trim();
+    if (!key) throw new Error("term이 필요합니다.");
+    const list = worldGlossary(w).map((g) => ({ ...g }));
+    let g = list.find((x) => x.term === key);
+    if (remove) {
+      if (!g) throw new Error(`'${key}'는 용어집에 없습니다.`);
+      w.glossary = list.filter((x) => x !== g);
+    } else {
+      const o = origin_id !== undefined && String(origin_id || "").trim() ? findEntry(origin_id) : null;
+      if (origin_id !== undefined && String(origin_id || "").trim() && (!o || o.deleted)) throw new Error(`어원 '${origin_id}' 항목이 없습니다.`);
+      if (!g) { if (!String(meaning || "").trim()) throw new Error("새 용어에는 meaning이 필요합니다."); g = { id: `gl-${uid().slice(-6)}`, term: key }; list.push(g); }
+      for (const [k, v] of [["meaning", meaning], ["reading", reading], ["category", category], ["example", example]]) if (v !== undefined) { const t = String(v || "").trim(); if (t) g[k] = t; else delete g[k]; }
+      if (origin_id !== undefined) { if (o) g.origin = o.id; else delete g.origin; }
+      w.glossary = list;
+    }
+    w.updatedAt = Date.now();
+    logChange("claude", "glossary", null, `${remove ? "용어 삭제" : "용어"}: ${key}`);
+    return { content: remove ? `용어 삭제: ${key}` : `용어 저장: ${termLine(g)}`, action: { kind: "world", text: `${remove ? "용어 삭제" : "용어"} · ${key}` }, changed: true };
+  },
+  set_sky({ moons, weekdays, week_offset, stars, events }) {
+    const w = currentWorld();
+    const months = worldMonths(w);
+    const ms = moons !== undefined ? (moons || []).map((m) => { const n = String(m.name || "").trim(); const p = Number(m.period); if (!n) throw new Error("달의 name이 필요합니다."); if (!(p >= 1 && p <= 1000)) throw new Error(`${n}의 period는 1에서 1000 사이여야 합니다.`); return { name: n, period: p, offset: Number(m.offset) || 0 }; }) : undefined;
+    const wd = weekdays !== undefined ? (weekdays || []).map((x) => String(x).trim()).filter(Boolean) : undefined;
+    const st = stars !== undefined ? (stars || []).map((s) => { const n = String(s.name || "").trim(); if (!n) throw new Error("별자리의 name이 필요합니다."); const mo = (s.months || []).map((x) => monthNumber(String(x), months)).filter(Boolean); return { name: n, ...(mo.length ? { months: [...new Set(mo)] } : {}), ...(String(s.meaning || "").trim() ? { meaning: String(s.meaning).trim() } : {}) }; }) : undefined;
+    const ev = events !== undefined ? (events || []).map((e) => {
+      const n = String(e.name || "").trim();
+      if (!n) throw new Error("천문 사건의 name이 필요합니다.");
+      const y = parseYear(e.year);
+      if (y == null) throw new Error(`${n}의 year가 필요합니다.`);
+      const mo = e.month !== undefined && String(e.month).trim() ? monthNumber(e.month, months) : null;
+      if (e.month !== undefined && String(e.month).trim() && !mo) throw new Error(`달 '${e.month}'가 없습니다.`);
+      const d = e.day ? Math.round(Number(e.day)) : null;
+      if (d && mo && !(d >= 1 && d <= months[mo - 1].days)) throw new Error(`${months[mo - 1].name}은(는) ${months[mo - 1].days}일까지 있습니다.`);
+      return { id: uid().slice(-6), name: n, kind: SKY_KINDS.includes(e.kind) ? e.kind : "기타", year: y, ...(mo ? { month: mo } : {}), ...(d && mo ? { day: d } : {}), ...(e.every > 0 ? { every: Math.round(e.every) } : {}), ...(String(e.note || "").trim() ? { note: String(e.note).trim() } : {}) };
+    }) : undefined;
+    const cal = { ...(w.calendar || {}) };
+    if (ms !== undefined) { if (ms.length) cal.moons = ms; else delete cal.moons; }
+    if (wd !== undefined) { if (wd.length) cal.weekdays = wd; else delete cal.weekdays; }
+    if (week_offset !== undefined) cal.weekOffset = Math.round(Number(week_offset)) || 0;
+    w.calendar = cal;
+    const sky = { ...worldSky(w) };
+    if (st !== undefined) sky.stars = st;
+    if (ev !== undefined) sky.events = ev;
+    w.sky = sky;
+    w.updatedAt = Date.now();
+    logChange("claude", "calendar", null, "하늘");
+    return { content: `하늘 저장: 달 ${worldMoons(w).map((m) => `${m.name}(${m.period}일)`).join(", ") || "없음"} · 요일 ${worldWeekdays(w).join(", ") || "없음"} · 별자리 ${sky.stars.length} · 천문 사건 ${sky.events.length}`, action: { kind: "world", text: "하늘" }, changed: true };
   },
   set_rumor({ id, text, truth, note, remove }) {
     const e = findEntry(id);
@@ -5367,6 +5753,16 @@ function contextNoteFor(thread) {
           const planned = works.filter((wk) => planOf(wk).paragraph || planOf(wk).synopsis || (wk.chapters || []).some((c) => c.summary) || workOrder(wk).some(hasCard));
           if (planned.length) lines.push(`이야기 계획(장면 본문은 카드 범위 안에서 쓴다. 자세한 것은 get_plan):\n${planned.slice(0, 4).map(planBriefText).join("\n")}`);
         }
+        if (v >= 15) {
+          const gl = worldGlossary(w);
+          if (gl.length) lines.push(`용어집(${gl.length}): ${gl.slice(0, 40).map((g) => `${g.term}=${cut(g.meaning || "", 30)}`).join(", ")}${gl.length > 40 ? ` 외 ${gl.length - 40}개` : ""}`);
+          const moons = worldMoons(w);
+          if (moons.length || worldWeekdays(w).length) lines.push(`하늘: 달 ${moons.map((m) => `${m.name}(${m.period}일)`).join(", ") || "정하지 않음"} · 요일 ${worldWeekdays(w).join(", ") || "정하지 않음"}${worldSky(w).stars.length ? ` · 별자리 ${worldSky(w).stars.map((s) => s.name).join(", ")}` : ""}`);
+          const fs = faithsOf();
+          if (fs.length) lines.push(`신앙: ${fs.map((x) => `${x.name}(${x.id})${x.faith?.deities?.length ? ` 모시는 신 ${x.faith.deities.map(nameOf).join("·")}` : ""}`).join(", ")}`);
+          const lawN = liveEntries().reduce((a, x) => a + (x.laws?.length || 0), 0);
+          if (lawN) lines.push(`법: ${lawN}개(장소·해마다 적용되는 법은 get_plan(scene_id)의 '이곳의 법')`);
+        }
         if (v >= 14) {
           const ss = allSecrets();
           if (ss.length) lines.push(`비밀 ${ss.length}개(장면을 쓸 때 get_plan의 '비밀과 앎'을 본다):\n${ss.slice(0, 15).map((s) => `- ${secretLine(s)}`).join("\n")}${ss.length > 15 ? `\n외 ${ss.length - 15}개` : ""}`);
@@ -5409,7 +5805,7 @@ function contextNoteFor(thread) {
     return lines.join("\n");
   }
   // 분류·템플릿 변경 알림은 그 도구를 가진 대화(버전 4 이상)에만 보낸다.
-  const changes = state.log.filter((c) => c.by === "user" && c.at > (thread.syncedAt || 0) && (c.action !== "types" || v >= 4) && (c.action !== "calendar" || v >= 5) && ((c.action !== "naming" && c.action !== "manuscript") || v >= 7));
+  const changes = state.log.filter((c) => c.by === "user" && c.at > (thread.syncedAt || 0) && (c.action !== "types" || v >= 4) && (c.action !== "calendar" || v >= 5) && ((c.action !== "naming" && c.action !== "manuscript") || v >= 7) && (c.action !== "glossary" || v >= 15));
   if (!changes.length) return null;
   const label = { create: "추가", update: "수정", delete: "삭제", restore: "복구", purge: "완전 삭제", relation: "관계 변경", world: "세계관 개요 수정", types: "분류·템플릿 변경", calendar: "달력·시대 변경", naming: "이름 규칙 변경", manuscript: "원고함 변경" };
   const seen = new Set();
@@ -6330,7 +6726,7 @@ function renderCodexResults() {
       ${typeKeys().map((k) => `<button class="type-chip" type="button" data-type="${k}" aria-pressed="${state.codexType === k}">${esc(typeInfo(k).label)}<span class="n">${counts[k] || 0}</span></button>`).join("")}
     </div>
     <div class="type-chips status-chips" role="toolbar" aria-label="상태">${STATUS_KEYS.map((k) => `<button class="type-chip" type="button" data-status="${k}" aria-pressed="${state.codexStatus.has(k)}">${STATUS[k]}<span class="n">${stCounts[k]}</span></button>`).join("")}</div>
-    <div class="row"><button class="btn btn-ghost btn-small" type="button" data-act="types">분류·템플릿 관리</button><button class="btn btn-ghost btn-small" type="button" data-act="checks">설정 점검</button><button class="btn btn-ghost btn-small" type="button" data-act="coverage">빈 곳 지도</button><button class="btn btn-ghost btn-small" type="button" data-act="secrets">비밀과 앎</button><button class="btn btn-ghost btn-small" type="button" data-act="compare">비교</button><button class="btn btn-ghost btn-small" type="button" data-act="comp-table">구성표</button><button class="btn btn-ghost btn-small" type="button" data-act="economy">화폐·물가</button><button class="btn btn-ghost btn-small" type="button" data-act="tech">기술 수준</button><button class="btn btn-ghost btn-small" type="button" data-act="presence">등장 비중</button><button class="btn btn-ghost btn-small" type="button" data-act="place-tree">장소 계층</button><button class="btn btn-ghost btn-small" type="button" data-act="travel">길과 이동</button></div>
+    <div class="row"><button class="btn btn-ghost btn-small" type="button" data-act="types">분류·템플릿 관리</button><button class="btn btn-ghost btn-small" type="button" data-act="checks">설정 점검</button><button class="btn btn-ghost btn-small" type="button" data-act="coverage">빈 곳 지도</button><button class="btn btn-ghost btn-small" type="button" data-act="secrets">비밀과 앎</button><button class="btn btn-ghost btn-small" type="button" data-act="lawcode">법전</button><button class="btn btn-ghost btn-small" type="button" data-act="compare">비교</button><button class="btn btn-ghost btn-small" type="button" data-act="comp-table">구성표</button><button class="btn btn-ghost btn-small" type="button" data-act="economy">화폐·물가</button><button class="btn btn-ghost btn-small" type="button" data-act="tech">기술 수준</button><button class="btn btn-ghost btn-small" type="button" data-act="presence">등장 비중</button><button class="btn btn-ghost btn-small" type="button" data-act="place-tree">장소 계층</button><button class="btn btn-ghost btn-small" type="button" data-act="travel">길과 이동</button></div>
     ${groups.length ? groups.map((g) => `<h3 class="group-title">${esc(typeInfo(g.k).label)} · ${g.items.length}</h3><div class="entry-list">${g.items.map(entryCard).join("")}</div>`).join("")
       : `<div class="empty-state"><h3>${q || state.codexType !== "all" ? "조건에 맞는 항목이 없습니다" : "설정집이 비어 있습니다"}</h3><p>대화 탭에서 Claude와 이야기하면 항목이 여기에 쌓입니다.</p></div>`}
     ${trashCount ? `<div class="row" style="margin-top:20px"><button class="btn btn-small" type="button" data-act="trash">휴지통 ${trashCount}</button></div>` : ""}`;
@@ -6515,7 +6911,7 @@ function openChecksSheet() {
 }
 
 /* ---- 설정집 구역: 원고함 · 감각 사전 · 질문 카드 · 이름 규칙 ---- */
-const CODEX_TABS = [["entries", "항목"], ["ms", "원고함"], ["senses", "감각 사전"], ["questions", "질문 카드"], ["naming", "이름 규칙"], ["foreshadow", "복선"]];
+const CODEX_TABS = [["entries", "항목"], ["ms", "원고함"], ["senses", "감각 사전"], ["questions", "질문 카드"], ["naming", "이름 규칙"], ["foreshadow", "복선"], ["glossary", "용어집"]];
 function codexTabsHTML() {
   return `<div class="seg-tabs" role="tablist">${CODEX_TABS.map(([k, l]) => `<button type="button" role="tab" data-ctab="${k}" aria-selected="${state.codexTab === k}">${l}</button>`).join("")}</div>`;
 }
@@ -6538,6 +6934,13 @@ function renderCodexTab(root) {
     $("#senseSearch", root).oninput = () => renderCodexTabResults();
   } else if (t === "questions") {
     root.innerHTML = `${head}<div id="ctabResults"></div>`;
+  } else if (t === "glossary") {
+    root.innerHTML = `${head}
+      <p class="meta" style="margin:12px 0 0">이 세계에만 있는 낱말을 뜻과 함께 모읍니다. 원고 화면에 뜻이 나오고, Claude도 그 뜻대로 씁니다.</p>
+      <div class="codex-tools"><input id="glSearch" type="search" placeholder="용어 찾기" aria-label="용어 찾기"><button class="btn btn-primary" type="button" data-act="gl-new">용어 더하기</button></div>
+      <div class="row" style="margin-top:6px"><button class="btn btn-small" type="button" data-act="gl-find">원고에서 새 낱말 찾기</button><button class="btn btn-small" type="button" data-act="gl-ask">Claude와 용어 만들기</button></div>
+      <div id="ctabResults"></div>`;
+    $("#glSearch", root).oninput = () => renderCodexTabResults();
   } else if (t === "foreshadow") {
     root.innerHTML = `${head}
       <p class="meta" style="margin:12px 0 0">원고·사건에 깔아 둔 복선과 예언을 모아 둡니다. 회수되지 않은 것은 설정 점검과 새 대화의 Claude가 기억합니다.</p>
@@ -6555,6 +6958,7 @@ function renderCodexTabResults() {
   const box = $("#ctabResults");
   if (!box) return;
   const t = state.codexTab;
+  if (t === "glossary") { renderGlossary(box); return; }
   if (t === "ms" && msViewNow() !== "all") { renderWorks(box); return; }
   if (t === "ms") {
     const counts = {};
@@ -6681,6 +7085,7 @@ function openManuscript(id) {
     <h2 class="entry-name">${esc(m.title)}</h2>
     ${wk ? `<p class="meta" style="margin:2px 0 0">「${esc(wk.title)}」${ch ? ` › ${esc(ch.title)}` : ""}</p>` : ""}
     <p class="meta" style="margin:2px 0 6px">${fmtCount(st.withSpace)}자 · 공백 제외 ${fmtCount(st.noSpace)}자 · 원고지 약 ${fmtSheets(st.sheets)}매</p>
+    ${glossaryInText(m.body).length ? `<p class="meta gl-in" style="margin:4px 0 6px">용어: ${glossaryInText(m.body).map((g) => `<span class="gl-tip"><b>${esc(g.term)}</b> ${esc(cut(g.meaning || "", 40))}</span>`).join(" · ")}</p>` : ""}
     ${m.refs?.length ? `<p class="meta" style="margin:4px 0 10px">관련: ${m.refs.map((r) => `<button type="button" class="ref" data-ref="${r}">${r}</button> ${esc(nameOf(r))}`).join(" ")}</p>` : ""}
     ${m.ignore?.length ? `<p class="meta" style="margin:0 0 10px">이 원고에서 무시하는 이름: ${m.ignore.map((id) => `${esc(nameOf(id))} <button type="button" class="link-btn" data-act="ent-unignore" data-id="${id}">되돌리기</button>`).join(" · ")}</p>` : ""}
     <div class="md ms-body">${md(m.body)}</div>
@@ -6937,8 +7342,9 @@ function openSceneStatus(m) {
     ${d.observances.length ? `<section class="check-group"><h3>그날의 기념일</h3>${d.observances.map((o) => `<div class="check-item"><span class="txt">${esc(o.name)} (${esc(o.kind)}) · ${esc(dayText(o))}${o.desc ? ` — ${esc(cut(o.desc, 80))}` : ""}</span></div>`).join("")}</section>` : ""}
     ${d.events.length ? `<section class="check-group"><h3>같은 해의 사건</h3>${d.events.map((x) => `<div class="check-item">${ref(x.e)}<span class="txt">${esc(rangeText(x.e.when))}${x.linked ? " · 이 장면의 인물·장소와 이어짐" : ""}</span></div>`).join("")}</section>` : ""}
     ${d.travel ? `<section class="check-group"><h3>앞 장면에서 오는 길</h3><p class="small">「${esc(d.travel.prev.title)}」의 ${esc(d.travel.from?.name || "?")} → ${esc(place.name)}: ${d.travel.fastest ? `가장 빨리 ${fmtDays(d.travel.fastest.days)}(${esc(d.travel.fastest.mode)}, ${Math.round(d.travel.fastest.dist * 10) / 10}${esc(worldTravel().unit)})` : "이어진 길 기록 없음"}${d.travel.gap != null ? ` · 두 장면 사이 ${d.travel.gap}일` : ""}</p></section>` : ""}
+    ${worldStatusHTML(m)}
     ${knowStatusHTML(m)}`, (root) => {
-    root.onclick = (ev) => { const r = ev.target.closest("[data-ref]"); if (r) openEntry(r.dataset.ref); };
+    root.onclick = (ev) => { const lc = ev.target.closest("[data-law-code]"); if (lc) { const [p, y] = lc.dataset.lawCode.split("|"); openLawCode(p, y === "" ? null : Number(y)); return; } const r = ev.target.closest("[data-ref]"); if (r) openEntry(r.dataset.ref); };
   });
 }
 /* ---- 계획 단계 고치기 · Claude로 펼치기 · 구조 점검 ---- */
@@ -7824,6 +8230,8 @@ function openYearSlice(year = defaultSliceYear()) {
     ...c.regions.map(({ m, r, k }) => `<li><span class="pill">영역 ${k}</span> ${esc(nameOf(r.ref))} <span class="meta">${esc(m.name)}</span></li>`),
     ...d.newObs.map((o) => `<li><span class="pill">처음 지킨 날</span> ${esc(o.name)}</li>`),
     ...d.due.map((f) => `<li><span class="pill pill-danger">예언의 해</span> ${esc(cut(f.text, 80))}</li>`),
+    ...skyEventsIn(y).map((x) => `<li><span class="pill">하늘</span> ${esc(x.name)} (${esc(x.kind || "기타")}${x.month ? ` · ${esc(worldMonths()[x.month - 1]?.name || "")}${x.day ? ` ${x.day}일` : ""}` : ""})</li>`),
+    ...liveEntries().flatMap((f) => (f.laws || []).filter((l) => l.since === y || l.until === y).map((l) => `<li><span class="pill">법 ${l.since === y ? "시행" : "폐지"}</span> ${esc(l.name)} <span class="meta">${esc(f.name)}</span></li>`)),
   ];
   const cal = worldCalendar();
   openSheet(`<h2 class="sheet-title">연도 단면</h2>
@@ -8058,16 +8466,16 @@ function coverageDomains() {
   const timedRel = list.reduce((a, x) => a + (x.relations || []).filter((r) => r.since != null || r.until != null).length, 0);
   const eco = worldEconomy(w);
   const D = [
-    { key: "geo", name: "지리·자연", sig: [cnt("장소 항목", places.length, 5), rat("기후를 정한 장소", places.filter((p) => hasKeys(p.climate)).length, places.length), rat("상위 장소로 묶인 장소", places.filter((p) => p.parent).length, places.length), cnt("이어진 길", worldRoutes(w).length, 3), cnt("지도", state.maps.length, 1)], q: q(["자연"]) },
+    { key: "geo", name: "지리·자연", sig: [cnt("달·요일·하늘", worldMoons(w).length + (worldWeekdays(w).length ? 1 : 0) + worldSky(w).stars.length, 3), cnt("장소 항목", places.length, 5), rat("기후를 정한 장소", places.filter((p) => hasKeys(p.climate)).length, places.length), rat("상위 장소로 묶인 장소", places.filter((p) => p.parent).length, places.length), cnt("이어진 길", worldRoutes(w).length, 3), cnt("지도", state.maps.length, 1)], q: q(["자연"]) },
     { key: "people", name: "민족·종족", sig: [cnt("종족 항목", species.length, 2), rat("생태·사회·문화를 정한 종족", species.filter((s) => hasKeys(s.species)).length, species.length), rat("수명 단계를 정한 종족", species.filter((s) => s.life).length, species.length), cnt("주민 구성을 정한 장소", places.filter((p) => p.demographics?.length).length, 2)], q: q(["관계"]) },
     { key: "chars", name: "인물", sig: [cnt("인물 항목", chars.length, 6), rat("관계가 있는 인물", chars.filter((c) => (c.relations || []).length || incoming(c.id).length).length, chars.length), rat("내면을 정한 인물", chars.filter((c) => hasKeys(c.inner)).length, chars.length), rat("말투를 정한 인물", chars.filter((c) => hasKeys(c.voice)).length, chars.length), rat("생몰년이 있는 인물", chars.filter((c) => c.when).length, chars.length)], q: null },
-    { key: "politics", name: "정치·세력", sig: [cnt("세력 항목", facs.length, 3), cnt("세력끼리의 관계", facRel, 3), cnt("기간이 있는 관계", timedRel, 2), rat("직위 체계를 정한 세력", facs.filter((f) => f.ranks?.length).length, facs.length), rat("다스리는 자를 정한 장소", places.filter((p) => p.place?.ruler).length, places.length)], q: q(["법과 질서"]) },
+    { key: "politics", name: "정치·세력", sig: [cnt("법", list.reduce((a, x) => a + (x.laws?.length || 0), 0), 4), cnt("세력 항목", facs.length, 3), cnt("세력끼리의 관계", facRel, 3), cnt("기간이 있는 관계", timedRel, 2), rat("직위 체계를 정한 세력", facs.filter((f) => f.ranks?.length).length, facs.length), rat("다스리는 자를 정한 장소", places.filter((p) => p.place?.ruler).length, places.length)], q: q(["법과 질서"]) },
     { key: "economy", name: "경제", sig: [cnt("화폐", eco.currencies.length, 1), cnt("물가표", eco.prices.length, 6), rat("특산물·교역을 정한 장소", places.filter((p) => p.place?.goods || p.place?.trade).length, places.length)], q: q(["경제"]) },
     { key: "tech", name: "기술·지식", sig: [cnt("기술 수준표", worldTech(w).rows.length, 2)], q: q(["기술", "지식"]) },
     { key: "magic", name: "마법·초자연", sig: [cnt("마법 체계 항목", magic.length, 1), rat("체계 카드를 채운 마법", magic.filter((m) => hasKeys(m.magic)).length, magic.length), cnt("주문", magic.reduce((a, m) => a + (m.spells?.length || 0), 0), 3), cnt("규칙 판례", magic.reduce((a, m) => a + (m.rulings?.length || 0), 0), 2)], q: null },
-    { key: "faith", name: "믿음·의례", sig: [cnt("신앙 관련 항목", list.filter((e) => /신앙|종교|교단|교회|사원|신전|신격|^신$|신·/.test(typeInfo(e.type).label + " " + e.name)).length, 2), cnt("기념일·축제", worldObservances(w).length, 3)], q: q(["믿음", "의례", "죽음", "금기"]) },
+    { key: "faith", name: "믿음·의례", sig: [cnt("교리를 정한 신앙", faithsOf().filter((x) => FAITH_KEYS.some(([k]) => x.faith?.[k])).length, 1), cnt("신격 항목", deitiesOf().length, 2), cnt("신자 분포를 정한 장소", places.filter((p) => p.faiths?.length).length, 2), cnt("신앙 관련 항목", list.filter((e) => /신앙|종교|교단|교회|사원|신전|신격|^신$|신·/.test(typeInfo(e.type).label + " " + e.name)).length, 2), cnt("기념일·축제", worldObservances(w).length, 3)], q: q(["믿음", "의례", "죽음", "금기"]) },
     { key: "daily", name: "일상·문화", sig: [rat("감각을 정한 장소", places.filter((p) => hasKeys(p.senses)).length, places.length)], q: q(["생활", "음식", "예술과 놀이"]) },
-    { key: "lang", name: "언어·이름", sig: [cnt("이름 규칙", worldNaming(w).length, 2), cnt("언어 스케치", species.filter((s) => s.lang).length, 1)], q: q(["언어"]) },
+    { key: "lang", name: "언어·이름", sig: [cnt("용어집", worldGlossary(w).length, 10), cnt("이름 규칙", worldNaming(w).length, 2), cnt("언어 스케치", species.filter((s) => s.lang).length, 1)], q: q(["언어"]) },
     { key: "history", name: "역사·사건", sig: [cnt("사건 항목", events.length, 5), rat("연표에 있는 사건", events.filter((e) => e.when).length, events.length), cnt("시대 구분", worldCalendar().eras.length, 2), cnt("사건 인과", events.reduce((a, e) => a + (e.causes?.length || 0), 0), 2)], q: q(["역사"]) },
   ];
   for (const d of D) {
@@ -8261,6 +8669,294 @@ function secretsForWorkText(work) {
   for (const s of K.secrets) { const r = K.readerAt(s.id); lines.push(`- ${secretLine(s)} · 독자가 처음 알게 되는 장면 ${Number.isFinite(r) ? at(r) : "없음"}`); }
   if (K.events.length) lines.push("장면에서 알게 되는 것:", ...K.events.map((ev) => `- ${at(ev.i)}: ${nameOf(ev.who)} ← ${ev.what}${ev.secret ? ` (${ev.secret})` : ""}`));
   return lines.join("\n");
+}
+/* ---- 신앙 · 신격 · 법 · 용어집 · 하늘: 화면 ---- */
+const kvList = (keys, o) => `<dl class="fields">${keys.map(([k, l]) => `<div><dt>${esc(l)}</dt>${o?.[k] ? `<dd>${esc(o[k])}</dd>` : `<dd class="blank">미정</dd>`}</div>`).join("")}</dl>`;
+const chipRefs = (ids) => (ids || []).filter((id) => findEntry(id)).map((id) => `<button type="button" class="ref-chip" data-ref="${id}">${esc(nameOf(id))}</button>`).join("");
+function faithHTML(e) {
+  const f = e.faith || {};
+  const gods = (f.deities || []).map(findEntry).filter(Boolean);
+  const godRels = [];
+  for (const g of gods) for (const r of g.relations || []) if ((f.deities || []).includes(r.to)) godRels.push(`${g.name} → ${r.label} → ${nameOf(r.to)}`);
+  const shares = liveEntries().filter((p) => (p.faiths || []).some((x) => x.ref === e.id)).map((p) => ({ p, pct: p.faiths.find((x) => x.ref === e.id).pct })).sort((a, b) => b.pct - a.pct);
+  const days = worldObservances().filter((o) => o.faith === e.id);
+  return `${kvList(FAITH_KEYS, f)}
+    <p class="section-label">모시는 신</p>${gods.length ? `<div class="demo-legend">${chipRefs(f.deities)}</div>${godRels.length ? `<ul class="list-plain">${godRels.map((x) => `<li class="small">${esc(x)}</li>`).join("")}</ul>` : ""}` : `<p class="meta">아직 없습니다${deitiesOf().length ? "" : " · 신·신격 분류 항목을 만들면 고를 수 있습니다"}.</p>`}
+    <p class="section-label">성지</p>${f.holy?.length ? `<div class="demo-legend">${chipRefs(f.holy)}</div>` : `<p class="meta">아직 없습니다.</p>`}
+    ${f.heresies?.length ? `<p class="section-label">이단·분파</p><ul class="list-plain">${f.heresies.map((h) => `<li class="small"><b>${esc(h.name)}</b>${h.status ? ` <span class="pill">${esc(h.status)}</span>` : ""}${h.belief ? ` — ${esc(h.belief)}` : ""}</li>`).join("")}</ul>` : ""}
+    <p class="section-label">신자 분포</p>${shares.length ? `<ul class="list-plain">${shares.map((x) => `<li class="small"><button type="button" class="ref" data-ref="${x.p.id}">${esc(x.p.name)}</button> ${x.pct}%</li>`).join("")}</ul>` : `<p class="meta">장소의 '사람들' 탭에서 신자 분포를 정하면 여기 모입니다.</p>`}
+    ${days.length ? `<p class="section-label">이 신앙의 날</p><ul class="list-plain">${days.map((o) => `<li class="small">${esc(o.name)} · ${esc(dayText(o))}</li>`).join("")}</ul>` : ""}
+    ${askRow("faith-edit", "faith-ask")}`;
+}
+function openFaithEditor(e) {
+  const f = e.faith || {};
+  const gods = deitiesOf();
+  const places = liveEntries().filter((x) => isPlaceType(x.type));
+  const hRow = (h = {}) => `<div class="kv-row heresy-row"><input class="hn" placeholder="이름" value="${esc(h.name || "")}"><select class="hs"><option value="">상태</option>${HERESY_STATUS.map((s) => `<option${h.status === s ? " selected" : ""}>${s}</option>`).join("")}</select><input class="hb" placeholder="주류와 다른 믿음" value="${esc(h.belief || "")}"><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button></div>`;
+  openSheet(`<h2 class="sheet-title">${esc(e.name)} · 신앙</h2>
+    <form class="form" id="faithForm">${FAITH_KEYS.map(([k, l]) => `<label>${l}<textarea data-k="${k}" rows="2">${esc(f[k] || "")}</textarea></label>`).join("")}
+      ${gods.length ? `<fieldset><legend>모시는 신</legend><div class="pick-box">${gods.map((g) => `<label class="pick"><input type="checkbox" data-god="${g.id}"${(f.deities || []).includes(g.id) ? " checked" : ""}> ${esc(g.name)}</label>`).join("")}</div></fieldset>` : ""}
+      ${places.length ? `<fieldset><legend>성지</legend><div class="pick-box">${places.map((p) => `<label class="pick"><input type="checkbox" data-holy="${p.id}"${(f.holy || []).includes(p.id) ? " checked" : ""}> ${esc(p.name)}</label>`).join("")}</div></fieldset>` : ""}
+      <fieldset><legend>이단·분파</legend><div id="hRows">${(f.heresies || []).map(hRow).join("")}</div><button type="button" class="btn btn-ghost btn-small" data-act="h-add">더하기</button></fieldset>
+      <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    root.onclick = (ev) => {
+      if (ev.target.closest('[data-act="cancel"]')) openEntry(e.id);
+      else if (ev.target.closest('[data-act="h-add"]')) $("#hRows", root).insertAdjacentHTML("beforeend", hRow());
+      else if (ev.target.closest("[data-del-row]")) ev.target.closest(".kv-row").remove();
+    };
+    root.onsubmit = (ev) => {
+      ev.preventDefault();
+      const next = mergeStrMap(f, Object.fromEntries($$("[data-k]", root).map((x) => [x.dataset.k, x.value])), FAITH_KEYS.map(([k]) => k));
+      const gs = $$("[data-god]", root).filter((x) => x.checked).map((x) => x.dataset.god);
+      const hs = $$("[data-holy]", root).filter((x) => x.checked).map((x) => x.dataset.holy);
+      const her = $$(".heresy-row", root).map((r) => ({ name: $(".hn", r).value.trim(), status: $(".hs", r).value, belief: $(".hb", r).value.trim() })).filter((h) => h.name).map((h) => ({ name: h.name, ...(h.status ? { status: h.status } : {}), ...(h.belief ? { belief: h.belief } : {}) }));
+      if (gods.length) { if (gs.length) next.deities = gs; else delete next.deities; }
+      if (places.length) { if (hs.length) next.holy = hs; else delete next.holy; }
+      if (her.length) next.heresies = her; else delete next.heresies;
+      state.entryTab = "faith";
+      saveCharEdit(e, { faith: next }, "신앙");
+    };
+  });
+}
+function deityHTML(e) {
+  const by = faithsOf().filter((f) => (f.faith?.deities || []).includes(e.id));
+  const rel = (e.relations || []).filter((r) => isDeityType(findEntry(r.to)?.type)).map((r) => `${r.label} → ${nameOf(r.to)}`);
+  return `${kvList(DEITY_KEYS, e.deity)}
+    <p class="section-label">섬기는 신앙</p>${by.length ? `<div class="demo-legend">${chipRefs(by.map((x) => x.id))}</div>` : `<p class="meta">이 신을 모시는 교단의 '신앙' 탭에서 이어집니다.</p>`}
+    ${rel.length ? `<p class="section-label">다른 신과의 관계</p><ul class="list-plain">${rel.map((x) => `<li class="small">${esc(x)}</li>`).join("")}</ul>` : ""}
+    ${askRow("deity-edit", "deity-ask")}`;
+}
+function openDeityEditor(e) {
+  const d = e.deity || {};
+  openSheet(`<h2 class="sheet-title">${esc(e.name)} · 신격</h2>
+    <form class="form" id="deityForm">${DEITY_KEYS.map(([k, l]) => `<label>${l}<textarea data-k="${k}" rows="2">${esc(d[k] || "")}</textarea></label>`).join("")}
+      <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    root.onclick = (ev) => { if (ev.target.closest('[data-act="cancel"]')) openEntry(e.id); };
+    root.onsubmit = (ev) => {
+      ev.preventDefault();
+      state.entryTab = "deity";
+      saveCharEdit(e, { deity: mergeStrMap(d, Object.fromEntries($$("[data-k]", root).map((x) => [x.dataset.k, x.value])), DEITY_KEYS.map(([k]) => k)) }, "신격");
+    };
+  });
+}
+function faithBarHTML(e) {
+  const list = (e.faiths || []).filter((x) => findEntry(x.ref));
+  const color = (i) => `var(--t-${REGION_COLORS[(i + 3) % REGION_COLORS.length]})`;
+  return `<p class="section-label">신자 분포</p>
+    ${list.length ? `<div class="demo-bar" role="img" aria-label="${esc(list.map((x) => `${nameOf(x.ref)} ${x.pct}%`).join(", "))}">${list.map((x, i) => `<span style="width:${x.pct}%;background:${color(i)}"></span>`).join("")}</div>
+      <div class="demo-legend">${list.map((x, i) => `<button type="button" class="ref-chip" data-ref="${x.ref}"><span class="tdot" style="background:${color(i)}"></span>${esc(nameOf(x.ref))} ${x.pct}%</button>`).join("")}</div>` : `<p class="meta">아직 정하지 않았습니다.</p>`}
+    <div class="row sec-actions"><button class="btn btn-small" type="button" data-act="faith-share-edit">신자 분포 편집</button></div>`;
+}
+function openFaithShareEditor(e) {
+  // 신앙 세력을 앞에, 나머지 세력도 고를 수 있게(숭배 결사처럼 이름으로 알아보기 어려운 신앙)
+  const fs = [...faithsOf(), ...liveEntries().filter((x) => isFactionType(x.type) && !isFaithEntry(x))];
+  if (!fs.length) { toast("교단·종교 세력 항목이 먼저 있어야 합니다"); return; }
+  const row = (x = {}) => `<div class="kv-row fs-row"><select class="fr"><option value="">신앙</option>${fs.map((f) => `<option value="${f.id}"${f.id === x.ref ? " selected" : ""}>${esc(f.name)}</option>`).join("")}</select><input class="fp" inputmode="decimal" placeholder="%" value="${x.pct ?? ""}"><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button></div>`;
+  openSheet(`<h2 class="sheet-title">${esc(e.name)} · 신자 분포</h2>
+    <form class="form" id="fsForm"><div id="fsRows">${(e.faiths?.length ? e.faiths : [{}]).map(row).join("")}</div>
+      <button type="button" class="btn btn-ghost btn-small" data-act="fs-add">신앙 추가</button>
+      <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    root.onclick = (ev) => {
+      if (ev.target.closest('[data-act="cancel"]')) openEntry(e.id);
+      else if (ev.target.closest('[data-act="fs-add"]')) $("#fsRows", root).insertAdjacentHTML("beforeend", row());
+      else if (ev.target.closest("[data-del-row]")) ev.target.closest(".kv-row").remove();
+    };
+    root.onsubmit = (ev) => {
+      ev.preventDefault();
+      let list;
+      try { list = normalizeFaithShares($$(".fs-row", root).map((r) => ({ ref: $(".fr", r).value, pct: $(".fp", r).value })).filter((x) => x.ref && x.pct !== "")); } catch (err) { toast(err.message); return; }
+      state.entryTab = "people";
+      saveCharEdit(e, { faiths: list }, "신자 분포");
+    };
+  });
+}
+function lawsHTML(e) {
+  const list = e.laws || [];
+  const rules = liveEntries().filter((p) => isPlaceType(p.type) && rulersOf(p.id, worldCalendar().now).some((f) => f.id === e.id));
+  return `${rules.length ? `<p class="meta">다스리는 곳: ${rules.map((p) => esc(p.name)).join(", ")} · 지역을 정하지 않은 법은 이곳 전체에 적용됩니다.</p>` : `<p class="meta">이 세력이 다스리는 곳이 관계(통치·지배·영토 등)로 이어져 있지 않으면, 법마다 적용 지역을 정해 주세요.</p>`}
+    ${list.length ? LAW_KINDS.filter((k) => list.some((l) => l.kind === k)).map((k) => `<p class="section-label">${k}</p>${list.filter((l) => l.kind === k).map((l) => `<div class="secret-row"><span class="txt"><b>${esc(l.name)}</b> — ${esc(l.text)}${l.penalty ? `<br><span class="meta">처벌: ${esc(l.penalty)}</span>` : ""}<br><span class="meta">${l.enforcer ? `집행 ${esc(nameOf(l.enforcer))} · ` : ""}${l.places?.length ? `지역 ${l.places.map((x) => esc(nameOf(x))).join(", ")} · ` : ""}${l.since != null || l.until != null ? `${l.since != null ? esc(fmtYear(l.since)) : ""}~${l.until != null ? esc(fmtYear(l.until)) : ""}` : "기간 없음"}</span></span><button class="btn btn-small btn-ghost" type="button" data-law="${l.id}">고치기</button></div>`).join("")}`).join("") : `<p class="meta">아직 법이 없습니다.</p>`}
+    <div class="row sec-actions"><button class="btn btn-small" type="button" data-act="law-add">법 더하기</button><button class="btn btn-small btn-primary" type="button" data-act="law-ask">Claude와 정하기</button><button class="btn btn-small" type="button" data-act="law-code">법전</button></div>`;
+}
+function openLawEditor(f, l = null) {
+  const cur = l || { kind: "금지" };
+  const places = liveEntries().filter((x) => isPlaceType(x.type));
+  openSheet(`<h2 class="sheet-title">${esc(f.name)} · ${l ? "법 고치기" : "법 더하기"}</h2>
+    <form class="form" id="lawForm">
+      <label>이름<input id="lw-name" value="${esc(cur.name || "")}" placeholder="예: 야간 등화 금지령"></label>
+      <fieldset><legend>종류</legend><div class="seg">${LAW_KINDS.map((k) => `<label><input type="radio" name="lw-kind" value="${k}"${cur.kind === k ? " checked" : ""}><span>${k}</span></label>`).join("")}</div></fieldset>
+      <label>내용<textarea id="lw-text" rows="3">${esc(cur.text || "")}</textarea></label>
+      <label>처벌 <small>선택</small><input id="lw-pen" value="${esc(cur.penalty || "")}"></label>
+      <label>집행 <small>선택</small><select id="lw-enf"><option value="">없음</option>${entryOptions((x) => isFactionType(x.type) || isCharacterType(x.type), cur.enforcer || "")}</select></label>
+      ${places.length ? `<fieldset><legend>적용 지역 <small>비우면 다스리는 곳 전체</small></legend><div class="pick-box">${places.map((p) => `<label class="pick"><input type="checkbox" data-lp="${p.id}"${(cur.places || []).includes(p.id) ? " checked" : ""}> ${esc(p.name)}</label>`).join("")}</div></fieldset>` : ""}
+      <div class="time-row"><label>시행한 해 <small>선택</small><input id="lw-since" inputmode="decimal" value="${cur.since ?? ""}"></label><label>폐지한 해 <small>선택</small><input id="lw-until" inputmode="decimal" value="${cur.until ?? ""}"></label></div>
+      <div class="sheet-actions">${l ? `<button class="btn btn-danger" type="button" data-act="lw-del">지우기</button>` : ""}<button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    const save = (list, note) => { state.entryTab = "law"; saveCharEdit(f, { laws: list }, note); };
+    root.onclick = async (ev) => {
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "cancel") openEntry(f.id);
+      else if (act === "lw-del") { if (await confirmBox(`'${l.name}' 법을 지울까요?`, "지우기", true)) save((f.laws || []).filter((x) => x.id !== l.id), "법 삭제"); }
+    };
+    root.onsubmit = (ev) => {
+      ev.preventDefault();
+      const name = $("#lw-name", root).value.trim();
+      const text = $("#lw-text", root).value.trim();
+      if (!name || !text) { toast("이름과 내용을 넣어 주세요"); return; }
+      const since = parseYear($("#lw-since", root).value);
+      const until = parseYear($("#lw-until", root).value);
+      if (since != null && until != null && until < since) { toast("폐지한 해가 시행한 해보다 앞섭니다"); return; }
+      const pen = $("#lw-pen", root).value.trim();
+      const enf = $("#lw-enf", root).value;
+      const ps = $$("[data-lp]", root).filter((x) => x.checked).map((x) => x.dataset.lp);
+      const next = { id: l?.id || `lw-${uid().slice(-6)}`, name, kind: $$('[name="lw-kind"]', root).find((x) => x.checked)?.value || "금지", text, ...(pen ? { penalty: pen } : {}), ...(enf ? { enforcer: enf } : {}), ...(ps.length ? { places: ps } : {}), ...(since != null ? { since } : {}), ...(until != null ? { until } : {}) };
+      const list = (f.laws || []).map((x) => (x.id === next.id ? next : x));
+      if (!l) list.push(next);
+      save(list, l ? "법 고침" : "법");
+    };
+  });
+}
+function openLawCode(placeId = null, year = null) {
+  const places = liveEntries().filter((x) => isPlaceType(x.type));
+  if (!places.length) { toast("장소 항목이 먼저 있어야 합니다"); return; }
+  const pid = placeId || state.lawPlace || places[0].id;
+  const y = year ?? state.lawYear ?? worldCalendar().now;
+  state.lawPlace = pid;
+  state.lawYear = y;
+  const list = lawsAt(pid, y);
+  const rulers = rulersOf(pid, y);
+  openSheet(`<h2 class="sheet-title">법전</h2>
+    <div class="time-row"><label class="form">장소<select id="lc-place">${places.map((p) => `<option value="${p.id}"${p.id === pid ? " selected" : ""}>${esc(p.name)}</option>`).join("")}</select></label><label class="form">해<input id="lc-year" inputmode="decimal" value="${y ?? ""}" placeholder="비우면 기간 무시"></label></div>
+    <p class="meta">${rulers.length ? `다스리는 세력: ${rulers.map((f) => esc(f.name)).join(", ")}` : "다스리는 세력이 관계로 이어져 있지 않습니다."} · 적용되는 법 ${list.length}개</p>
+    ${LAW_KINDS.filter((k) => list.some((x) => x.l.kind === k)).map((k) => `<section class="check-group"><h3>${k} <span class="n">${list.filter((x) => x.l.kind === k).length}</span></h3>${list.filter((x) => x.l.kind === k).map((x) => `<div class="check-item"><span class="txt"><b>${esc(x.l.name)}</b> — ${esc(x.l.text)}${x.l.penalty ? ` · 처벌 ${esc(x.l.penalty)}` : ""}<br><span class="meta">${esc(x.f.name)} · ${esc(x.why)}</span></span><button type="button" class="ref" data-ref="${x.f.id}">${esc(x.f.name)}</button></div>`).join("")}</section>`).join("") || `<p class="meta">이곳에 그해 적용되는 법이 없습니다.</p>`}`, (root) => {
+    $("#lc-place", root).onchange = (ev) => openLawCode(ev.target.value, y);
+    $("#lc-year", root).onchange = (ev) => { const v = parseYear(ev.target.value); if (v !== state.lawYear && ev.target.isConnected) openLawCode(pid, v); };
+    root.onclick = (ev) => { const r = ev.target.closest("[data-ref]"); if (r) openEntry(r.dataset.ref); };
+  });
+}
+// 용어집 탭
+function renderGlossary(box) {
+  const q = ($("#glSearch")?.value || "").trim().toLowerCase();
+  const all = worldGlossary().slice().sort((a, b) => a.term.localeCompare(b.term, "ko"));
+  const list = q ? all.filter((g) => `${g.term} ${g.reading || ""} ${g.meaning || ""} ${g.category || ""}`.toLowerCase().includes(q)) : all;
+  const langWords = liveEntries().filter((e) => e.lang?.words?.length).flatMap((e) => e.lang.words.map((w) => ({ e, w }))).filter(({ w }) => !all.some((g) => g.term === w.word));
+  box.innerHTML = `${list.length ? `<div class="gl-list">${list.map((g) => `<button type="button" class="gl-item" data-term="${g.id}"><b>${esc(g.term)}</b>${g.reading ? ` <span class="meta">[${esc(g.reading)}]</span>` : ""}${g.category ? ` <span class="pill">${esc(g.category)}</span>` : ""}<span class="gl-mean">${esc(g.meaning || "")}</span>${g.origin ? `<span class="meta">어원 ${esc(nameOf(g.origin))}</span>` : ""}${g.example ? `<span class="meta gl-ex">${esc(g.example)}</span>` : ""}</button>`).join("")}</div>`
+    : `<div class="empty-state"><h3>${all.length ? "찾는 용어가 없습니다" : "용어집이 비어 있습니다"}</h3><p>세계 고유 낱말을 뜻과 함께 모아 두면 원고 화면에 뜻이 나오고, Claude도 그 뜻대로 씁니다.</p></div>`}
+    ${langWords.length ? `<details class="tl-missing"><summary>언어 스케치의 낱말 ${langWords.length}개</summary><ul class="list-plain" style="margin-top:6px">${langWords.slice(0, 60).map(({ e, w }) => `<li class="small"><b>${esc(w.word)}</b> — ${esc(w.meaning || "")} <span class="meta">${esc(e.name)}</span> <button class="btn btn-small btn-ghost" type="button" data-gl-lang="${esc(e.id)}|${esc(w.word)}">용어집에 넣기</button></li>`).join("")}</ul></details>` : ""}`;
+}
+function openTermEditor(g = null, preset = {}) {
+  const cur = g || preset;
+  openSheet(`<h2 class="sheet-title">${g ? "용어 고치기" : "용어 더하기"}</h2>
+    <form class="form" id="termForm">
+      <div class="time-row"><label>낱말<input id="gl-term" value="${esc(cur.term || "")}"></label><label>읽기 <small>선택</small><input id="gl-read" value="${esc(cur.reading || "")}"></label></div>
+      <label>뜻<textarea id="gl-mean" rows="2">${esc(cur.meaning || "")}</textarea></label>
+      <div class="time-row"><label>분류 <small>선택</small><input id="gl-cat" value="${esc(cur.category || "")}" placeholder="예: 직함, 화폐, 의례"></label><label>어원 <small>선택</small><select id="gl-origin"><option value="">없음</option>${entryOptions(() => true, cur.origin || "")}</select></label></div>
+      <label>예문 <small>선택</small><input id="gl-ex" value="${esc(cur.example || "")}"></label>
+      <div class="sheet-actions">${g ? `<button class="btn btn-danger" type="button" data-act="gl-del">지우기</button>` : ""}<button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    const done = async (list, note) => { const w = currentWorld(); w.glossary = list; w.updatedAt = Date.now(); logChange("user", "glossary", null, note); await persist.world(); await persist.worlds(); closeSheet(); renderCodexTabResults(); toast("저장했습니다"); };
+    root.onclick = async (ev) => {
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "cancel") closeSheet();
+      else if (act === "gl-del") { if (await confirmBox(`'${g.term}'을(를) 용어집에서 지울까요?`, "지우기", true)) await done(worldGlossary().filter((x) => x.id !== g.id), `용어 삭제: ${g.term}`); }
+    };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      const term = $("#gl-term", root).value.trim();
+      const meaning = $("#gl-mean", root).value.trim();
+      if (!term || !meaning) { toast("낱말과 뜻을 넣어 주세요"); return; }
+      if (worldGlossary().some((x) => x.term === term && x.id !== g?.id)) { toast("같은 낱말이 이미 있습니다"); return; }
+      const opt = (id, k) => { const v = $(id, root).value.trim(); return v ? { [k]: v } : {}; };
+      const next = { id: g?.id || `gl-${uid().slice(-6)}`, term, meaning, ...opt("#gl-read", "reading"), ...opt("#gl-cat", "category"), ...opt("#gl-origin", "origin"), ...opt("#gl-ex", "example") };
+      const list = worldGlossary().filter((x) => x.id !== next.id);
+      list.push(next);
+      await done(list, `용어: ${term}`);
+    };
+  });
+}
+async function findNewWords(btn) {
+  const scenes = state.manuscripts.filter((m) => String(m.body || "").trim());
+  if (!scenes.length) { toast("본문이 있는 원고가 없습니다"); return; }
+  const text = scenes.slice().sort((a, b) => b.updatedAt - a.updatedAt).map((m) => `### ${m.title}\n${m.body}`).join("\n\n").slice(0, 60000);
+  const known = [...worldGlossary().map((g) => g.term), ...liveEntries().flatMap((e) => [e.name, ...(e.aliases || [])])];
+  const label = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "찾는 중…";
+  try {
+    const out = await quickAsk("너는 세계관 용어집 편집자다. 원고에서 이 세계에만 있는 고유 낱말(지어낸 낱말, 세계 고유의 직함·화폐·의례·물건·욕설 이름 등)을 찾는다. 이미 아는 낱말과 일반 한국어 낱말, 인물·장소 이름은 뺀다. 뜻은 원고에서 짐작할 수 있는 만큼만 쓴다. 한국어로 쓴다.", `이미 아는 낱말: ${known.slice(0, 400).join(", ")}\n\n원고:\n${text}`, 8000, { schema: { type: "object", properties: { words: { type: "array", items: { type: "object", properties: { term: S_STR, meaning: S_STR, example: S_STR }, required: ["term", "meaning", "example"], additionalProperties: false } } }, required: ["words"], additionalProperties: false } });
+    if (out == null) return;
+    const words = (JSON.parse(out).words || []).filter((w) => w.term && !known.includes(w.term));
+    if (!words.length) { toast("새 낱말을 찾지 못했습니다"); return; }
+    openSheet(`<h2 class="sheet-title">원고에서 찾은 새 낱말</h2><p class="meta" style="margin:0 0 8px">고른 것만 용어집에 넣습니다. 뜻은 넣은 뒤 고칠 수 있습니다.</p>
+      <div class="prop-list">${words.map((w, i) => `<label class="prop-row"><input type="checkbox" data-nw="${i}" checked><span><b>${esc(w.term)}</b> — ${esc(w.meaning)}${w.example ? `<br><span class="meta">${esc(w.example)}</span>` : ""}</span></label>`).join("")}</div>
+      <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">닫기</button><button class="btn btn-primary" type="button" data-act="nw-add">고른 것 넣기</button></div>`, (root) => {
+      root.onclick = async (ev) => {
+        const act = ev.target.closest("[data-act]")?.dataset.act;
+        if (act === "cancel") closeSheet();
+        else if (act === "nw-add") {
+          const picked = words.filter((_, i) => $(`[data-nw="${i}"]`, root).checked);
+          const w = currentWorld();
+          w.glossary = [...worldGlossary(), ...picked.map((x) => ({ id: `gl-${uid().slice(-6)}`, term: x.term, meaning: x.meaning, ...(x.example ? { example: x.example } : {}) }))];
+          w.updatedAt = Date.now();
+          logChange("user", "glossary", null, `용어 ${picked.length}개(원고에서)`);
+          await persist.world();
+          await persist.worlds();
+          closeSheet();
+          renderCodexTabResults();
+          toast(`${picked.length}개를 넣었습니다`);
+        }
+      };
+    });
+  } catch (err) { toast(apiMessage(err)); }
+  finally { if (btn.isConnected) { btn.disabled = false; btn.textContent = label; } }
+}
+// 하늘(달·요일·별자리·천문 사건)
+function openSkyEditor() {
+  const w = currentWorld();
+  const months = worldMonths(w);
+  const sky = worldSky(w);
+  const moonRow = (m = {}) => `<div class="kv-row moon-row"><input class="mn" placeholder="달 이름" value="${esc(m.name || "")}"><input class="mp" inputmode="decimal" placeholder="주기(일)" value="${m.period ?? ""}"><input class="mo" inputmode="decimal" placeholder="기준 보름" value="${m.offset ?? ""}"><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button></div>`;
+  const starRow = (s = {}) => `<div class="kv-row star-row"><input class="sn" placeholder="별자리" value="${esc(s.name || "")}"><input class="sm" placeholder="보이는 달(1,2)" value="${esc((s.months || []).join(","))}"><input class="sx" placeholder="뜻" value="${esc(s.meaning || "")}"><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button></div>`;
+  const evRow = (e = {}) => `<div class="kv-row skyev-row"><input class="en" placeholder="이름" value="${esc(e.name || "")}"><select class="ek">${SKY_KINDS.map((k) => `<option${e.kind === k ? " selected" : ""}>${k}</option>`).join("")}</select><input class="ey" inputmode="decimal" placeholder="해" value="${e.year ?? ""}"><select class="em"><option value="">달</option>${months.map((m, i) => `<option value="${i + 1}"${e.month === i + 1 ? " selected" : ""}>${esc(m.name)}</option>`).join("")}</select><input class="ed" inputmode="numeric" placeholder="날" value="${e.day ?? ""}"><input class="ev" inputmode="numeric" placeholder="몇 해마다" value="${e.every ?? ""}"><button type="button" class="icon-btn" data-del-row aria-label="삭제">×</button></div>`;
+  openSheet(`<h2 class="sheet-title">달·요일·하늘</h2>
+    <form class="form" id="skyForm">
+      <fieldset><legend>달 <small>주기는 보름에서 다음 보름까지의 날 수, 기준 보름은 0년 첫날로부터 첫 보름까지의 날 수</small></legend><div id="moonRows">${worldMoons(w).map(moonRow).join("")}</div><button type="button" class="btn btn-ghost btn-small" data-add="moon">달 더하기</button></fieldset>
+      <label>요일 이름 <small>쉼표로, 순서대로</small><input id="sk-wd" value="${esc(worldWeekdays(w).join(", "))}" placeholder="예: 불, 물, 바람, 흙, 별"></label>
+      <label>0년 첫날의 요일 번호 <small>0부터</small><input id="sk-wo" inputmode="numeric" value="${Number(w.calendar?.weekOffset) || 0}"></label>
+      <fieldset><legend>별자리</legend><div id="starRows">${sky.stars.map(starRow).join("")}</div><button type="button" class="btn btn-ghost btn-small" data-add="star">별자리 더하기</button></fieldset>
+      <fieldset><legend>천문 사건</legend><div id="evRows">${sky.events.map(evRow).join("")}</div><button type="button" class="btn btn-ghost btn-small" data-add="ev">사건 더하기</button></fieldset>
+      <div class="sheet-actions"><button class="btn" type="button" data-act="sky-ask">Claude와 정하기</button><button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    root.onclick = (ev) => {
+      const add = ev.target.closest("[data-add]")?.dataset.add;
+      if (add === "moon") $("#moonRows", root).insertAdjacentHTML("beforeend", moonRow());
+      else if (add === "star") $("#starRows", root).insertAdjacentHTML("beforeend", starRow());
+      else if (add === "ev") $("#evRows", root).insertAdjacentHTML("beforeend", evRow());
+      else if (ev.target.closest("[data-del-row]")) ev.target.closest(".kv-row").remove();
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "cancel") closeSheet();
+      else if (act === "sky-ask") { closeSheet(); startInNewThread("이 세계의 하늘을 정해 줘. 달의 수와 이름·주기, 요일 이름, 계절별로 잘 보이는 별자리와 그 뜻, 역사에 남은 천문 사건(일식·혜성 등)을 세계관과 달력에 맞게 제안하고, 내가 고르면 set_sky로 저장해 줘. "); }
+    };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      try {
+        const res = TOOL_IMPL.set_sky({
+          moons: $$(".moon-row", root).map((r) => ({ name: $(".mn", r).value, period: $(".mp", r).value, offset: $(".mo", r).value })).filter((m) => m.name.trim()),
+          weekdays: $("#sk-wd", root).value.split(/[,，]/),
+          week_offset: $("#sk-wo", root).value,
+          stars: $$(".star-row", root).map((r) => ({ name: $(".sn", r).value, months: $(".sm", r).value.split(/[,，\s]+/).filter(Boolean).map(Number), meaning: $(".sx", r).value })).filter((s) => s.name.trim()),
+          events: $$(".skyev-row", root).map((r) => ({ name: $(".en", r).value, kind: $(".ek", r).value, year: $(".ey", r).value, month: $(".em", r).value, day: $(".ed", r).value, every: Number($(".ev", r).value) || 0 })).filter((e) => e.name.trim()),
+        });
+        state.log.at(-1).by = "user";
+        await persist.world();
+        await persist.worlds();
+        closeSheet();
+        renderTimeline();
+        toast(res.content.split(" · ")[0].replace("하늘 저장: ", "저장했습니다 · "));
+      } catch (err) { toast(err.message); }
+    };
+  });
+}
+function worldStatusHTML(m) {
+  const t = sceneWorldText(m);
+  if (!t) return "";
+  return `<section class="check-group"><h3>이곳의 법·신앙·하늘</h3>${t.split("\n").map((l) => { const [k, ...v] = l.split(": "); return `<div class="check-item"><span class="txt"><b>${esc(k.replace(/\(.*\)$/, ""))}</b> ${esc(v.join(": "))}</span></div>`; }).join("")}${m.card?.place ? `<div class="row"><button class="btn btn-small btn-ghost" type="button" data-law-code="${m.card.place}|${m.card.when?.year ?? ""}">법전 보기</button></div>` : ""}</section>`;
 }
 async function planAction(work, act, btn) {
   if (!work) return;
@@ -9120,6 +9816,10 @@ function bindCodexTabs() {
     const cad = e.target.closest("[data-card-add]");
     if (cad) { openCardEditor(findWork(state.workId), null, cad.dataset.cardAdd); return; }
     const msOf = (id) => state.manuscripts.find((x) => x.id === id);
+    const glt = e.target.closest("[data-term]");
+    if (glt) { openTermEditor(worldGlossary().find((g) => g.id === glt.dataset.term)); return; }
+    const gll = e.target.closest("[data-gl-lang]");
+    if (gll) { const [eid, word] = gll.dataset.glLang.split("|"); const src = findEntry(eid); const w0 = src?.lang?.words?.find((x) => x.word === word); openTermEditor(null, { term: word, meaning: w0?.meaning || "", origin: eid }); return; }
     const cop = e.target.closest("[data-card-open]");
     if (cop) { openCardEditor(findWork(state.workId), msOf(cop.dataset.cardOpen)); return; }
     const cwr = e.target.closest("[data-card-write]");
@@ -9167,6 +9867,9 @@ function bindCodexTabs() {
     else if (act === "fs-new") openForeshadowEditor(null);
     else if (act === "work-new") openWorkEditor(null);
     else if (act === "work-edit") openWorkEditor(findWork(state.workId));
+    else if (act === "gl-new") openTermEditor(null);
+    else if (act === "gl-find") await findNewWords(e.target.closest("[data-act]"));
+    else if (act === "gl-ask") startInNewThread("이 세계의 고유 낱말을 용어집으로 정리해 줘. 설정집과 원고에서 직함·화폐·의례·물건·욕설·인사말처럼 이 세계에만 있을 낱말을 찾거나 만들어 뜻·어원·예문과 함께 제안하고, 내가 고르면 set_term으로 저장해 줘. ");
     else if (act === "ch-add") openChapterEditor(findWork(state.workId), null);
     else if (act === "work-ask") { const wk = findWork(state.workId); startInNewThread(wk ? `작품 「${wk.title}」(${wk.id})의 장 구성을 짜 줘. 지금 있는 장면과 설정, 사건 연표를 보고 장 제목과 순서를 제안하고, 기존 장면을 어느 장에 둘지도 알려 줘. 내가 고르면 set_work의 chapters와 save_manuscript로 정리해 줘. ` : "이 세계관으로 쓸 작품의 구성을 짜 줘. 제목, 한 줄 소개, 장 구성을 제안하고, 내가 고르면 set_work로 저장해 줘. "); }
     else if (act === "fs-ask") startInNewThread("원고함과 설정에서 복선과 예언을 찾아 줘. 깔렸지만 아직 회수되지 않은 것, 회수된 것을 나눠서 알려 주고, 내가 받아들이면 set_foreshadow로 기록해 줘. ");
@@ -9199,9 +9902,10 @@ function entryTabsFor(e) {
   if (isCharacterType(e.type)) return CHAR_TABS;
   if (isSpeciesType(e.type)) return SPECIES_TABS;
   if (isPlaceType(e.type)) return PLACE_TABS;
-  if (isFactionType(e.type)) return FACTION_TABS;
+  if (isFactionType(e.type)) return [...FACTION_TABS, ...(isFaithEntry(e) ? [["faith", "신앙"]] : []), ["law", "법"]];
   if (isEventType(e.type)) return EVENT_TABS;
   if (isItemType(e.type)) return ITEM_TABS;
+  if (isDeityType(e.type)) return [["base", "기본"], ["deity", "신격"]];
   if (isMagicEntry(e)) return MAGIC_TABS;
   return null;
 }
@@ -9226,6 +9930,9 @@ function charTabsHTML(e) {
     history: hasKeys(e.artifact) ? "✓" : "",
     card: e.item || e.magicItem ? `${ITEM_KEYS.filter(([k]) => e.item?.[k]).length}/8` : "",
     craft: e.recipe || e.sources?.length || usedIn(e).length ? "✓" : "",
+    faith: `${FAITH_KEYS.filter(([k]) => e.faith?.[k]).length}/${FAITH_KEYS.length}`,
+    law: e.laws?.length || "",
+    deity: hasKeys(e.deity) ? "✓" : "",
     bio: (lifeOf(e) ? 1 : 0) + SPECIES_KEYS.filter(([k, , g]) => g === "bio" && e.species?.[k]).length || "",
     society: SPECIES_KEYS.filter(([k, , g]) => g === "society" && e.species?.[k]).length || "",
     culture: SPECIES_KEYS.filter(([k, , g]) => g === "culture" && e.species?.[k]).length || "",
@@ -9252,7 +9959,10 @@ function charSectionHTML(e, tab) {
   if (tab === "dist") return distHTML(e);
   if (tab === "ranks") return ranksHTML(e);
   if (tab === "comp") return compHTML(e);
-  if (tab === "people") return demoBarHTML(e) + placeGroupHTML(e, tab);
+  if (tab === "people") return demoBarHTML(e) + faithBarHTML(e) + placeGroupHTML(e, tab);
+  if (tab === "faith") return faithHTML(e);
+  if (tab === "law") return lawsHTML(e);
+  if (tab === "deity") return deityHTML(e);
   if (tab === "economy") return placeGroupHTML(e, tab) + placeMaterialsHTML(e);
   if (tab === "rumor") return rumorsHTML(e);
   if (tab === "climate") return climateHTML(e);
@@ -9879,7 +10589,7 @@ function renderCalendarView(root, tabs) {
   const off = obs.filter((o) => !months[o.month - 1] || o.day > months[o.month - 1].days);
   const byMonth = months.map((m, i) => ({ m, list: obs.filter((o) => o.month === i + 1).sort((a, b) => a.day - b.day) })).filter((x) => x.list.length);
   root.innerHTML = `${tabs}
-    <div class="tl-head"><div><span class="eyebrow">달</span><p class="tl-cal">${months.length}달 · 한 해 ${total}일${hasOwnMonths() ? "" : " (기본값)"}</p></div><button class="btn btn-small" type="button" data-calv="months">달 편집</button></div>
+    <div class="tl-head"><div><span class="eyebrow">달</span><p class="tl-cal">${months.length}달 · 한 해 ${total}일${hasOwnMonths() ? "" : " (기본값)"}</p></div><div class="row"><button class="btn btn-small" type="button" data-calv="sky">하늘</button><button class="btn btn-small" type="button" data-calv="months">달 편집</button></div></div>${worldMoons().length || worldWeekdays().length ? `<p class="meta" style="margin:4px 0 0">하늘: ${esc([worldMoons().map((m) => `${m.name}(${m.period}일)`).join(", "), worldWeekdays().length ? `요일 ${worldWeekdays().join("·")}` : ""].filter(Boolean).join(" · "))}</p>` : ""}
     ${strip}
     <div class="cal-legend">${OBSERVANCE_KINDS.map((k) => `<span><span class="cal-dot static k-${k}"></span>${k}</span>`).join("")}</div>
     <div class="row sec-actions"><button class="btn btn-small btn-primary" type="button" data-calv="add">기념일 더하기</button><button class="btn btn-small" type="button" data-calv="ask">Claude와 정하기</button></div>
@@ -9897,7 +10607,7 @@ function openObservanceEditor(o, preset = {}, back = null) {
       <label>이름<input id="ob-name" value="${esc(cur.name || "")}" placeholder="예: 첫 불의 날"></label>
       <fieldset><legend>종류</legend><div class="seg">${OBSERVANCE_KINDS.map((k) => `<label><input type="radio" name="ob-k" value="${k}"${cur.kind === k ? " checked" : ""}><span>${k}</span></label>`).join("")}</div></fieldset>
       <div class="time-row"><label>달<select id="ob-month">${months.map((m, i) => `<option value="${i + 1}"${cur.month === i + 1 ? " selected" : ""}>${esc(m.name)}</option>`).join("")}</select></label><label>날<input id="ob-day" inputmode="numeric" value="${cur.day ?? ""}"></label><label>며칠 동안<input id="ob-days" inputmode="numeric" value="${cur.days ?? 1}"></label></div>
-      <div class="time-row"><label>처음 지킨 해 <small>선택</small><input id="ob-since" inputmode="decimal" value="${cur.since ?? ""}"></label><label>계기가 된 사건<select id="ob-ref"><option value="">없음</option>${entryOptions((x) => isEventType(x.type), cur.ref)}</select></label></div>
+      <div class="time-row"><label>처음 지킨 해 <small>선택</small><input id="ob-since" inputmode="decimal" value="${cur.since ?? ""}"></label><label>신앙 <small>선택</small><select id="ob-faith"><option value="">없음</option>${faithsOf().map((x) => `<option value="${x.id}"${x.id === cur.faith ? " selected" : ""}>${esc(x.name)}</option>`).join("")}</select></label><label>계기가 된 사건<select id="ob-ref"><option value="">없음</option>${entryOptions((x) => isEventType(x.type), cur.ref)}</select></label></div>
       <label>그날 하는 일·금하는 일 <small>선택</small><textarea id="ob-desc" rows="2">${esc(cur.desc || "")}</textarea></label>
       <div class="sheet-actions">${o ? `<button class="btn btn-danger" type="button" data-act="ob-del">지우기</button>` : ""}<button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
     const done = async (list, note) => {
@@ -9927,8 +10637,9 @@ function openObservanceEditor(o, preset = {}, back = null) {
       const since = sv ? parseYear(sv) : null;
       if (sv && since === null) { toast("처음 지킨 해는 숫자로 넣어 주세요"); return; }
       const ref = $("#ob-ref", root).value;
+      const faith = $("#ob-faith", root)?.value || "";
       const desc = $("#ob-desc", root).value.trim();
-      const next = { id: o?.id || uid().slice(-6), name, kind: root.querySelector('input[name="ob-k"]:checked')?.value || "기념일", month, day, ...(days > 1 ? { days } : {}), ...(since != null ? { since } : {}), ...(ref ? { ref } : {}), ...(desc ? { desc } : {}) };
+      const next = { id: o?.id || uid().slice(-6), name, kind: root.querySelector('input[name="ob-k"]:checked')?.value || "기념일", month, day, ...(days > 1 ? { days } : {}), ...(since != null ? { since } : {}), ...(ref ? { ref } : {}), ...(faith ? { faith } : {}), ...(desc ? { desc } : {}) };
       const list = worldObservances(w).filter((x) => x.id !== next.id);
       list.push(next);
       done(list, `기념일: ${name}`);
@@ -11154,6 +11865,14 @@ const CHAR_ASK = {
   "ab-rule": (e) => `${e.name}(${e.id})의 능력과 대가가 세계 규칙(마법 체계 등)과 맞는지 점검해 줘. 어긋나는 점, 너무 쉬운 능력, 대가가 약한 능력을 짚고 고칠 방향을 제안해 줘. `,
 };
 async function handleCharAct(act, e, ev, root) {
+  if (act === "faith-edit") { openFaithEditor(e); return true; }
+  if (act === "faith-ask") { closeSheet(); startInNewThread(`${e.name}(${e.id})의 신앙을 정해 줘. 기원, 교리, 의례, 성직과 조직, 경전, 금기, 사후관, 일상의 신앙과 모시는 신, 성지, 이단을 세계관에 맞게 제안하고, 내가 고르면 set_faith로 저장해 줘. 신격 항목이 더 필요하면 만들자고 제안해 줘. `); return true; }
+  if (act === "deity-edit") { openDeityEditor(e); return true; }
+  if (act === "deity-ask") { closeSheet(); startInNewThread(`${e.name}(${e.id})의 신격을 정해 줘. 다스리는 것, 상징, 모습, 신화, 섬기는 법과 다른 신과의 관계를 세계관에 맞게 제안하고, 내가 고르면 set_deity와 set_relation으로 저장해 줘. `); return true; }
+  if (act === "faith-share-edit") { openFaithShareEditor(e); return true; }
+  if (act === "law-add") { openLawEditor(e, null); return true; }
+  if (act === "law-ask") { closeSheet(); startInNewThread(`${e.name}(${e.id})의 법과 제도를 정해 줘. 금지·의무·권리·절차·형벌로 나눠 이 세력의 성격과 역사에 맞는 법, 처벌, 집행 기관, 적용 지역, 시행 연도를 제안하고, 내가 고르면 set_law로 저장해 줘. `); return true; }
+  if (act === "law-code") { const p = liveEntries().find((x) => isPlaceType(x.type) && rulersOf(x.id, worldCalendar().now).some((f) => f.id === e.id)); openLawCode(p?.id || null); return true; }
   if (CHAR_ASK[act]) { closeSheet(); startInNewThread(CHAR_ASK[act](e)); return true; }
   if (act === "inner-edit") { openInnerEditor(e); return true; }
   if (act === "arc-edit") { openArcEditor(e); return true; }
@@ -11491,6 +12210,8 @@ function openEntry(ref) {
       if (refBtn) { openEntry(refBtn.dataset.ref); return; }
       const secBtn = ev.target.closest("[data-sec]");
       if (secBtn) { await handleSecretAct(e, secBtn.dataset.sec); return; }
+      const lawBtn = ev.target.closest("[data-law]");
+      if (lawBtn) { if (state.busy) { toast("Claude가 작업 중입니다"); return; } openLawEditor(e, (e.laws || []).find((x) => x.id === lawBtn.dataset.law)); return; }
       const etab = ev.target.closest("[data-etab]");
       if (etab) { state.entryTab = etab.dataset.etab; openEntry(e.id); return; }
       const msOpen = ev.target.closest("[data-ms-open]");
@@ -14498,6 +15219,7 @@ function openCalendarSheet() {
         <p class="meta" style="margin:4px 0 0">끝 연도를 비우면 지금까지 이어지는 시대입니다.</p>
       </fieldset>
       <div class="sheet-actions">
+        <button class="btn" type="button" data-cal="sky">달·요일·하늘</button>
         <button class="btn" type="button" data-cal="cancel">취소</button>
         <button class="btn btn-primary" type="submit">저장</button>
       </div>
@@ -14511,6 +15233,7 @@ function openCalendarSheet() {
     root.addEventListener("input", (ev) => { if (ev.target.matches("#c-prefix, #c-suffix")) preview(); });
     root.onclick = (ev) => {
       const act = ev.target.closest("[data-cal]")?.dataset.cal;
+      if (act === "sky") { openSkyEditor(); return; }
       if (act === "add") $("#c-eras", root).insertAdjacentHTML("beforeend", eraRow());
       else if (act === "cancel") closeSheet();
       else if (ev.target.closest("[data-del-row]")) ev.target.closest(".era-row").remove();
@@ -14673,6 +15396,7 @@ function bindTimeline() {
     const calv = e.target.closest("[data-calv]")?.dataset.calv;
     if (calv) {
       if (calv === "months") openMonthsEditor(null);
+      else if (calv === "sky") openSkyEditor();
       else if (calv === "add") openObservanceEditor(null, {}, null);
       else if (calv === "ask") startInNewThread("이 세계의 달력에 기념일·축제·금기일을 정해 줘. 지난 사건, 종교, 계절, 생업에서 생겨난 날을 제안하고, 달 이름과 날 수도 아직 정하지 않았다면 함께 제안해 줘. 내가 고르면 set_calendar의 months와 set_observance로 저장해 줘. ");
       return;
@@ -15795,6 +16519,9 @@ function exportMarkdown() {
     parts.push("", "## 이름 규칙");
     for (const r of rules) parts.push("", `### ${r.name}`, r.applies?.length ? `*적용: ${r.applies.join(", ")}*` : "", "", r.rules || "", r.examples?.length ? `\n예: ${r.examples.join(", ")}` : "");
   }
+  const gls = worldGlossary(w);
+  if (gls.length) { parts.push("", "## 용어집"); for (const g of gls.slice().sort((a, b) => a.term.localeCompare(b.term, "ko"))) parts.push(`- **${g.term}**${g.reading ? ` [${g.reading}]` : ""}: ${g.meaning || ""}${g.category ? ` (${g.category})` : ""}${g.example ? ` — ${g.example}` : ""}`); }
+  if (worldMoons(w).length || worldWeekdays(w).length || worldSky(w).stars.length || worldSky(w).events.length) { parts.push("", "## 하늘"); if (worldMoons(w).length) parts.push(`- 달: ${worldMoons(w).map((m) => `${m.name}(${m.period}일)`).join(", ")}`); if (worldWeekdays(w).length) parts.push(`- 요일: ${worldWeekdays(w).join(", ")}`); for (const s of worldSky(w).stars) parts.push(`- 별자리 ${s.name}${s.meaning ? `: ${s.meaning}` : ""}`); for (const x of worldSky(w).events) parts.push(`- ${x.name}(${x.kind}) ${fmtYear(x.year)}${x.every ? `부터 ${x.every}년마다` : ""}`); }
   const secs = allSecrets();
   if (secs.length) { parts.push("", "## 비밀"); for (const s of secs) parts.push(`- **${s.owner.name}**: ${s.text} — ${SECRET_LEVEL_TEXT[s.level] || s.level}${s.knowers?.length ? `, 아는 이 ${s.knowers.map(nameOf).join(", ")}` : ""}, 독자에게 ${revealText(s.reveal)}`); }
   const planned = worldWorks(w).filter((wk) => planOf(wk).paragraph || planOf(wk).synopsis || (wk.chapters || []).some((c) => c.summary) || workOrder(wk).some(hasCard));
@@ -15933,6 +16660,7 @@ function bindGlobal() {
     else if (act === "checks") openChecksSheet();
     else if (act === "coverage") openCoverageMap();
     else if (act === "secrets") openSecretsOverview();
+    else if (act === "lawcode") openLawCode();
     else if (act === "compare") openCompare();
     else if (act === "comp-table") openCompositionTable();
     else if (act === "economy") openEconomySheet();
