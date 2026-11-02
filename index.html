@@ -985,6 +985,66 @@ dd.blank.warn { color: var(--danger); }
 .j-pt.cur text { fill: var(--bg); }
 .journey-list { margin: 6px 0 8px; padding-left: 20px; font-size: 13px; max-height: 120px; overflow-y: auto; }
 .journey-list li.cur { font-weight: 700; color: var(--accent); }
+/* 원고 · 집필 */
+.ms-views { margin: 12px 0 0; }
+.work-chips { margin-top: 12px; }
+.work-head { margin: 12px 0 6px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.work-head h2 { margin: 0; font: 700 20px/1.3 var(--font-display); }
+.work-stats { margin: 4px 0 6px; font-size: 13.5px; }
+.st-pills { display: flex; flex-wrap: wrap; gap: 4px; }
+.pill.st-구상 { background: var(--surface-2); }
+.pill.st-초고 { background: color-mix(in srgb, var(--t-event) 20%, var(--surface)); }
+.pill.st-퇴고 { background: color-mix(in srgb, var(--t-place) 20%, var(--surface)); }
+.pill.st-완료 { background: color-mix(in srgb, var(--t-species) 24%, var(--surface)); }
+.style-sum { margin: 8px 0; }
+.st-dot { flex: none; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--muted); }
+.st-dot.st-초고 { border-color: var(--t-event); }
+.st-dot.st-퇴고 { border-color: var(--t-place); background: color-mix(in srgb, var(--t-place) 40%, transparent); }
+.st-dot.st-완료 { border-color: var(--t-species); background: var(--t-species); }
+.ch-sec { margin-top: 14px; }
+.ch-head { display: flex; align-items: center; gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--line); }
+.ch-head b { font-size: 15px; }
+.ch-head .sp { flex: 1; }
+.sc-list { min-height: 12px; padding: 4px 0; }
+.sc-row { display: flex; align-items: center; gap: 4px; border-bottom: 1px solid var(--line); background: var(--bg); }
+.sc-row.dragging { opacity: .85; background: var(--surface); box-shadow: 0 4px 14px rgba(0, 0, 0, .14); position: relative; z-index: 2; }
+.sc-handle { flex: none; width: 34px; height: 40px; display: grid; place-items: center; color: var(--muted); font-size: 18px; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+.sc-main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; border: 0; background: none; padding: 9px 0; color: var(--ink); font: inherit; text-align: left; }
+.sc-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.sc-n { flex: none; font: 500 12px var(--font-mono); color: var(--muted); }
+.ent-mark { display: inline; border: 0; padding: 0; margin: 0; background: none; color: inherit; font: inherit; line-height: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--accent) 60%, transparent); text-decoration-thickness: 2px; text-underline-offset: 3px; cursor: pointer; }
+.ent-peek, .w-peek { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--accent); border-radius: 12px; background: var(--surface); }
+.ex-pick { align-items: flex-start; padding: 8px; border: 1px solid var(--line); border-radius: 10px; margin-bottom: 6px; }
+.ex-pick span { font-size: 14px; line-height: 1.45; }
+.ex-quote { margin: 4px 0 0; padding: 2px 8px; border-left: 3px solid var(--line); color: var(--muted); font-size: 13px; }
+.writer { position: fixed; left: 0; right: 0; top: 0; height: 100%; z-index: 35; display: flex; flex-direction: column; background: var(--bg); padding: calc(env(safe-area-inset-top, 0px) + 6px) 12px calc(env(safe-area-inset-bottom, 0px) + 6px); }
+body.writing { overflow: hidden; }
+.w-top { display: flex; align-items: center; gap: 6px; }
+.w-title { flex: 1; min-width: 0; border: 0; border-bottom: 1px solid var(--line); background: none; padding: 6px 2px; color: var(--ink); font: 700 18px var(--font-display); }
+.w-top select { flex: none; padding: 6px 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-size: 14px; }
+.w-crumb { margin: 4px 2px 0; font-size: 12.5px; color: var(--muted); }
+.w-body { flex: 1; min-height: 0; width: 100%; margin-top: 8px; border: 0; background: none; color: var(--ink); resize: none; padding: 6px 2px; font: 17px/1.85 var(--font-body); outline: none; }
+.w-preview { flex: 1; min-height: 0; overflow-y: auto; margin-top: 8px; padding: 6px 2px; }
+.w-peek { max-height: 45%; overflow-y: auto; margin-top: 6px; }
+.w-peek-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.w-peek-head .sp { flex: 1; }
+.pm-modes { margin: 4px 0 8px; }
+.pm-free { width: 100%; margin-bottom: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); font-size: 15px; }
+.pm-before, .pm-after { white-space: pre-wrap; padding: 8px 10px; border-radius: 10px; font-size: 14.5px; line-height: 1.7; }
+.pm-before { background: var(--surface-2); color: var(--muted); }
+.pm-after { background: color-mix(in srgb, var(--accent) 12%, var(--surface)); }
+.pm-cmp .meta { margin: 6px 0 2px; }
+.w-ents { display: flex; gap: 6px; align-items: center; overflow-x: auto; scrollbar-width: none; padding: 6px 0 2px; border-top: 1px solid var(--line); }
+.w-ents::-webkit-scrollbar { display: none; }
+.w-ents .lbl { flex: none; font-size: 11px; color: var(--muted); letter-spacing: .06em; }
+.w-ents .meta { white-space: nowrap; font-size: 12px; }
+.ent-chip { flex: none; display: inline-flex; align-items: center; gap: 3px; border: 1px solid var(--line); border-left: 3px solid var(--tc); border-radius: 999px; background: var(--surface); color: var(--ink); padding: 3px 10px; font-size: 13px; }
+.ent-chip small { color: var(--muted); font-size: 11px; }
+.w-bar { display: flex; align-items: center; gap: 6px; padding-top: 6px; flex-wrap: wrap; }
+.w-bar .sp { flex: 1; }
+.w-count { font: 500 12px var(--font-mono); color: var(--muted); }
+.w-saved { font-size: 11.5px; color: var(--muted); }
+.w-bar .icon-btn { width: 36px; min-height: 34px; }
 /* 등장 비중 */
 .presence { display: flex; flex-direction: column; gap: 4px; }
 .pres-row { display: grid; grid-template-columns: 76px minmax(0, 1fr) 32px; grid-template-rows: auto auto; gap: 2px 8px; align-items: center; width: 100%; text-align: left; border: 0; border-bottom: 1px solid var(--line); background: none; padding: 6px 0; color: var(--ink); }
@@ -1221,6 +1281,7 @@ dd.blank.warn { color: var(--danger); }
   </nav>
 </div>
 
+<div id="writer" class="writer" hidden role="dialog" aria-modal="true" aria-label="집필 화면"></div>
 <div id="sheet" class="sheet" hidden>
   <div class="sheet-backdrop" data-close-sheet></div>
   <div class="sheet-panel" role="dialog" aria-modal="true" id="sheetBody"></div>
@@ -2274,6 +2335,60 @@ const TOOLS_V11 = [
   },
   toolV10("respond"),
 ];
+// v12: 작품 → 장 → 장면 구조, 작품마다 문체 가이드, 원고에서 설정 뽑기 제안.
+const MS_STATUS = ["구상", "초고", "퇴고", "완료"];
+const STYLE_KEYS = [["pov", "시점"], ["pov_char", "시점 인물"], ["tense", "시제"], ["sentence", "문장 길이"], ["tone", "문체"], ["avoid", "피할 표현"], ["favor", "즐겨 쓸 낱말"], ["dialogue", "대사 규칙"], ["sample", "예시 문단"]];
+const STYLE_IDS = STYLE_KEYS.map(([k]) => k);
+const STYLE_PARAM = { type: "object", description: "문체 가이드. 넣은 칸만 덮어쓰고 빈 문자열이면 지운다.", properties: Object.fromEntries(STYLE_KEYS.map(([k, l]) => [k, { type: "string", description: { pov: "시점. 예: 1인칭, 3인칭 제한, 3인칭 전지", tense: "시제. 예: 과거형, 현재형", sentence: "문장 길이와 리듬", avoid: "쓰지 않을 표현·낱말", favor: "자주 쓸 낱말·세계 고유 어휘", dialogue: "대사 표기와 말투 규칙", sample: "이 문체로 쓴 예시 문단" }[k] || l }])) };
+const SYSTEM_V12 = SYSTEM_V11 + `
+
+## 작품과 원고
+- 원고함의 장면은 작품 → 장 → 장면 순서로 묶인다. 작품에 속한 장면을 쓸 때는 save_manuscript에 work_id와 chapter를 넣고, 필요하면 get_manuscripts의 work_id로 장면 순서와 앞뒤 장면을 읽어 흐름을 잇는다.
+- 작품에 문체 가이드(시점, 시제, 문장 길이, 문체, 피할 표현, 즐겨 쓸 낱말, 대사 규칙)가 있으면 그 작품의 원고를 쓰고 고칠 때 따른다. 작품과 장 구성, 문체 가이드는 set_work로 정한다.
+- 원고를 쓰다가 설정집에 없는 인물·장소·사실·복선이 생기면, 원고를 저장한 뒤 설정집에 넣을지 사용자에게 제안한다.`;
+const toolV11 = (name) => TOOLS_V11.find((t) => t.name === name);
+const TOOLS_V12 = [
+  ...TOOLS_V11.filter((t) => !["save_manuscript", "get_manuscripts", "respond"].includes(t.name)),
+  {
+    name: "save_manuscript",
+    description: toolV11("save_manuscript").description + " 작품의 장면이면 work_id와 chapter를 넣는다. 새 장면은 after_id 뒤(없으면 그 장의 끝)에 놓인다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        ...toolV11("save_manuscript").input_schema.properties,
+        work_id: { type: "string", description: "작품 id(작품 밖 원고면 넣지 않는다. 빈 문자열이면 작품에서 뺀다)" },
+        chapter: { type: "string", description: "장 id나 장 제목(없는 제목이면 그 작품 끝에 새 장을 만든다)" },
+        status: { type: "string", enum: MS_STATUS },
+        after_id: { type: "string", description: "이 장면 바로 뒤에 놓는다(같은 작품의 장면 id)" },
+      },
+      required: ["title", "kind", "body"],
+    },
+    eager_input_streaming: true,
+  },
+  {
+    name: "get_manuscripts",
+    description: toolV11("get_manuscripts").description + " work_id를 주면 그 작품의 장·장면 순서, 상태, 글자 수와 문체 가이드를 준다.",
+    input_schema: { type: "object", properties: { ...toolV11("get_manuscripts").input_schema.properties, work_id: { type: "string" } } },
+    eager_input_streaming: true,
+  },
+  {
+    name: "set_work",
+    description: "작품을 만들거나 고친다. work_id가 없으면 같은 title의 작품을 고치고, 없으면 새로 만든다. chapters를 주면 장 목록과 순서를 통째로 바꾸고(id가 있으면 그 장을 유지), 빠진 장의 장면은 작품 밖 원고가 된다. style은 넣은 칸만 덮어쓴다. remove가 true면 작품을 지우고 장면은 작품 밖 원고로 남긴다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        work_id: { type: "string" },
+        title: { type: "string" },
+        logline: { type: "string", description: "한 줄 소개" },
+        chapters: { type: "array", items: { type: "object", properties: { id: { type: "string" }, title: { type: "string" } }, required: ["title"] } },
+        style: STYLE_PARAM,
+        remove: { type: "boolean" },
+      },
+    },
+    eager_input_streaming: true,
+  },
+  toolV11("respond"),
+];
 const PROMPT_SETS = {
   1: { system: SYSTEM_V1, tools: TOOLS_V1 },
   2: { system: SYSTEM_V2, tools: TOOLS_V2 },
@@ -2286,8 +2401,9 @@ const PROMPT_SETS = {
   9: { system: SYSTEM_V9, tools: TOOLS_V9 },
   10: { system: SYSTEM_V10, tools: TOOLS_V10 },
   11: { system: SYSTEM_V11, tools: TOOLS_V11 },
+  12: { system: SYSTEM_V12, tools: TOOLS_V12 },
 };
-const PROMPT_CURRENT = 11;
+const PROMPT_CURRENT = 12;
 // 버전 정보가 없는 예전 대화는 만든 시각으로 버전을 추정한다(각 버전의 배포 완료 시각, UTC).
 const PROMPT_RELEASES = [
   { v: 2, at: Date.parse("2026-11-01T15:35:14Z") },
@@ -2366,6 +2482,7 @@ const TOOL_STATUS = {
   set_recipe: "만드는 법을 적는 중…",
   set_economy: "물가를 정리하는 중…",
   set_tech: "기술 수준을 정리하는 중…",
+  set_work: "작품 구성을 정리하는 중…",
 };
 
 /* ============================================================
@@ -2474,6 +2591,8 @@ const state = {
   causalAll: false,
   mapJourney: null,
   fsFilter: "all",
+  msView: LS.get("lk.msview", null), // 원고함 보기: works | all (정하지 않았으면 작품이 있을 때 works)
+  workId: null,
   lifeYear: null,
   lifeZoom: 1,
   lifeAll: false,    // 다음에 만들 대화의 모드(인물 인터뷰 등)
@@ -3562,20 +3681,131 @@ function perspectiveName(by) {
   return e && e.id === by ? `${e.name}(${e.id})` : String(by);
 }
 const worldNaming = (w = currentWorld()) => (Array.isArray(w?.naming) ? w.naming : []);
+/* ---- 작품 · 장 · 장면 (v12) ---- */
+const worldWorks = (w = currentWorld()) => (Array.isArray(w?.works) ? w.works : []);
+const findWork = (ref, w = currentWorld()) => { const t = String(ref ?? "").trim(); return t ? worldWorks(w).find((x) => x.id === t) || worldWorks(w).find((x) => x.title === t) || null : null; };
+const workScenes = (work, chId = null) => state.manuscripts.filter((m) => m.workId === work.id && (chId == null || m.chapterId === chId)).sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || a.createdAt - b.createdAt);
+function workOrder(work) {
+  // 장 순서대로 펼친 장면 목록(장이 없어진 장면은 맨 끝)
+  const out = [];
+  for (const ch of work.chapters || []) out.push(...workScenes(work, ch.id));
+  const known = new Set((work.chapters || []).map((c) => c.id));
+  out.push(...state.manuscripts.filter((m) => m.workId === work.id && !known.has(m.chapterId)));
+  return out;
+}
+function textStats(text) {
+  const t = String(text || "").replace(/^#{1,6}\s+/gm, "").replace(/^>\s?/gm, "").replace(/\*\*|__/g, "");
+  const withSpace = t.replace(/\n/g, "").length;
+  const noSpace = t.replace(/\s/g, "").length;
+  return { withSpace, noSpace, sheets: withSpace / 200 };
+}
+const fmtCount = (n) => (n >= 10000 ? `${(Math.round(n / 1000) / 10).toLocaleString("ko-KR")}만` : n.toLocaleString("ko-KR"));
+const fmtSheets = (x) => (x < 0.05 ? "0" : x < 10 ? String(Math.round(x * 10) / 10) : String(Math.round(x)));
+function styleText(style, sep = "\n") {
+  const s = STYLE_KEYS.filter(([k]) => style?.[k]);
+  return s.map(([k, l]) => `${l}: ${style[k]}`).join(sep);
+}
+function placeScene(m, work, chId, afterId = null) {
+  const list = workScenes(work, chId).filter((x) => x !== m);
+  let i = afterId ? list.findIndex((x) => x.id === afterId) + 1 : list.length;
+  if (i <= 0 && afterId) i = list.length;
+  list.splice(i, 0, m);
+  m.workId = work.id;
+  m.chapterId = chId;
+  const now = Date.now();
+  list.forEach((x, k) => { if (x.order !== k) { x.order = k; if (x !== m) x.updatedAt = now; } });
+}
+function resolveChapter(work, ref, w = currentWorld()) {
+  const t = String(ref ?? "").trim();
+  if (!t) return work.chapters?.at(-1)?.id || addChapter(work, "1장").id;
+  const ch = (work.chapters || []).find((c) => c.id === t) || (work.chapters || []).find((c) => c.title === t);
+  return ch ? ch.id : addChapter(work, t).id;
+}
+function addChapter(work, title) {
+  const ch = { id: `ch-${uid().slice(-6)}`, title: String(title).trim() || `${(work.chapters || []).length + 1}장` };
+  work.chapters = [...(work.chapters || []), ch];
+  return ch;
+}
+function releaseScenes(pred) {
+  const now = Date.now();
+  for (const m of state.manuscripts) if (pred(m)) { delete m.workId; delete m.chapterId; delete m.order; m.updatedAt = now; }
+}
+function workOutlineText(work) {
+  const lines = [`# 작품 「${work.title}」(${work.id})${work.logline ? ` — ${work.logline}` : ""}`];
+  const st = styleText(work.style);
+  if (st) lines.push("문체 가이드:", ...st.split("\n").map((x) => `- ${x}`));
+  let total = 0;
+  for (const ch of work.chapters || []) {
+    const scenes = workScenes(work, ch.id);
+    lines.push(`## ${ch.title} (${ch.id}) · 장면 ${scenes.length}`);
+    for (const m of scenes) { const n = textStats(m.body).withSpace; total += n; lines.push(`- ${m.id} [${m.status || "초고"}] ${m.title} · ${n}자${m.refs?.length ? ` · ${m.refs.slice(0, 6).map(nameOf).join(", ")}` : ""}`); }
+  }
+  lines.push(`합계 ${total}자`);
+  return lines.join("\n");
+}
+// 본문 속 설정 인식: 이름·별칭(두 글자 이상)을 긴 것부터 찾고 겹치는 자리는 한 번만 센다
+function entityTerms() {
+  const terms = [];
+  for (const e of liveEntries()) for (const n of [e.name, ...(e.aliases || [])]) { const t = String(n || "").trim(); if (t.length >= 2) terms.push({ t, id: e.id }); }
+  return terms.sort((a, b) => b.t.length - a.t.length);
+}
+function recognizeEntities(text, ignore = [], terms = entityTerms()) {
+  const src = String(text || "");
+  const taken = [];
+  const hits = new Map();
+  const skip = new Set(ignore || []);
+  for (const { t, id } of terms) {
+    if (skip.has(id)) continue;
+    let i = src.indexOf(t);
+    while (i >= 0) {
+      const j = i + t.length;
+      if (!taken.some(([a, b]) => i < b && j > a)) {
+        taken.push([i, j]);
+        const h = hits.get(id) || { id, count: 0, first: i, ranges: [] };
+        h.count++;
+        h.ranges.push([i, j]);
+        hits.set(id, h);
+      }
+      i = src.indexOf(t, j);
+    }
+  }
+  return [...hits.values()].sort((a, b) => a.first - b.first);
+}
+function autoRefs(m) {
+  const found = recognizeEntities(m.body, m.ignore).map((h) => h.id);
+  const ign = new Set(m.ignore || []);
+  return [...new Set([...(m.refs || []), ...found])].filter((id) => !ign.has(id) && findEntry(id));
+}
 function saveManuscript(d, by) {
   const now = Date.now();
   if (!String(d.title || "").trim()) throw new Error("제목이 필요합니다.");
   if (!MS_KINDS.includes(d.kind)) throw new Error(`kind는 ${MS_KINDS.join(", ")} 중 하나여야 합니다.`);
   const refs = (d.refs || []).map((r) => findEntry(r)?.id).filter(Boolean);
+  if (d.status !== undefined && d.status !== "" && !MS_STATUS.includes(d.status)) throw new Error(`status는 ${MS_STATUS.join(", ")} 중 하나여야 합니다.`);
+  const work = d.work_id ? findWork(d.work_id) : null;
+  if (d.work_id && !work) throw new Error(`작품 '${d.work_id}'가 없습니다. set_work로 먼저 만드세요.`);
+  const place = (m) => {
+    if (d.work_id === "") { if (m.workId) releaseScenes((x) => x === m); return; }
+    if (!work) return;
+    const chId = d.chapter !== undefined || m.workId !== work.id || !m.chapterId ? resolveChapter(work, d.chapter) : m.chapterId;
+    if (m.workId !== work.id || m.chapterId !== chId || d.after_id) placeScene(m, work, chId, d.after_id || null);
+    work.updatedAt = now;
+    currentWorld().updatedAt = now;
+  };
   if (d.id) {
     const m = state.manuscripts.find((x) => x.id === d.id);
     if (!m) throw new Error(`${d.id} 원고가 없습니다.`);
     Object.assign(m, { title: String(d.title).trim(), kind: d.kind, body: String(d.body || ""), refs, updatedAt: now, by });
+    if (d.status) m.status = d.status;
+    place(m);
+    m.refs = autoRefs(m);
     logChange(by, "manuscript", null, `원고 수정: ${m.title}`);
     return m;
   }
-  const m = { id: `ms-${uid().slice(-6)}`, title: String(d.title).trim(), kind: d.kind, body: String(d.body || ""), refs, createdAt: now, updatedAt: now, by };
+  const m = { id: `ms-${uid().slice(-6)}`, title: String(d.title).trim(), kind: d.kind, body: String(d.body || ""), refs, createdAt: now, updatedAt: now, by, ...(d.status ? { status: d.status } : work ? { status: "초고" } : {}) };
   state.manuscripts.push(m);
+  place(m);
+  m.refs = autoRefs(m);
   logChange(by, "manuscript", null, `원고 추가: ${m.title}`);
   return m;
 }
@@ -3923,6 +4153,46 @@ const TOOL_IMPL = {
     logChange("claude", "world", null, "기술 수준");
     return { content: (techText(w, 40) || "기술 수준 표가 비었다.") + (unknown.length ? `\n분야를 더했다: ${unknown.join(", ")}` : ""), action: { kind: "world", text: "기술 수준" }, changed: true };
   },
+  set_work({ work_id, title, logline, chapters, style, remove }) {
+    const w = currentWorld();
+    const works = worldWorks(w).map((x) => ({ ...x }));
+    let work = work_id ? works.find((x) => x.id === work_id) : works.find((x) => x.title === String(title || "").trim());
+    if (work_id && !work) throw new Error(`작품 '${work_id}'가 없습니다.`);
+    if (remove) {
+      if (!work) throw new Error("지울 작품이 없습니다.");
+      w.works = works.filter((x) => x !== work);
+      releaseScenes((m) => m.workId === work.id);
+      w.updatedAt = Date.now();
+      logChange("claude", "manuscript", null, `작품 삭제: ${work.title}`);
+      return { content: `작품 삭제: ${work.title} (장면은 작품 밖 원고로 남김)`, action: { kind: "world", text: `작품 삭제 · ${work.title}` }, changed: true };
+    }
+    if (!work) {
+      const t = String(title || "").trim();
+      if (!t) throw new Error("새 작품에는 title이 필요합니다.");
+      work = { id: `wk-${uid().slice(-6)}`, title: t, chapters: [], createdAt: Date.now() };
+      works.push(work);
+    }
+    if (title !== undefined && String(title).trim()) {
+      if (works.some((x) => x !== work && x.title === String(title).trim())) throw new Error(`같은 제목의 작품이 있습니다: ${title}`);
+      work.title = String(title).trim();
+    }
+    if (logline !== undefined) { const t = String(logline || "").trim(); if (t) work.logline = t; else delete work.logline; }
+    if (style) { const st = mergeStrMap(work.style, style, STYLE_IDS); if (hasKeys(st)) work.style = st; else delete work.style; }
+    let dropped = 0;
+    if (chapters !== undefined) {
+      const old = work.chapters || [];
+      const next = chapters.map((c) => { const t = String(c.title || "").trim(); const prev = c.id && old.find((x) => x.id === c.id); return prev ? { id: prev.id, title: t || prev.title } : { id: `ch-${uid().slice(-6)}`, title: t || "새 장" }; });
+      const keep = new Set(next.map((c) => c.id));
+      dropped = state.manuscripts.filter((m) => m.workId === work.id && !keep.has(m.chapterId)).length;
+      releaseScenes((m) => m.workId === work.id && !keep.has(m.chapterId));
+      work.chapters = next;
+    }
+    work.updatedAt = Date.now();
+    w.works = works;
+    w.updatedAt = Date.now();
+    logChange("claude", "manuscript", null, `작품: ${work.title}`);
+    return { content: `작품 저장: 「${work.title}」(${work.id}) · 장 ${(work.chapters || []).map((c) => `${c.title}(${c.id})`).join(", ") || "없음"}${work.style ? `\n문체 가이드: ${styleText(work.style, " / ")}` : ""}${dropped ? `\n장이 빠져 작품 밖으로 옮긴 장면 ${dropped}개` : ""}`, action: { kind: "world", text: `작품 · ${work.title}` }, changed: true };
+  },
   set_rumor({ id, text, truth, note, remove }) {
     const e = findEntry(id);
     if (!e || e.deleted) throw new Error(`${id} 항목이 없습니다.`);
@@ -4072,15 +4342,23 @@ const TOOL_IMPL = {
     updateEntry(e, { perspectives: list }, "claude", remove ? "관점 삭제" : "관점 기록");
     return { content: `${remove ? "관점 삭제" : "관점 기록"}: ${e.id} ${e.name} ← ${perspectiveName(key)}`, action: { kind: "update", text: `${e.name} · ${perspectiveName(key)}의 관점`, ref: e.id }, changed: true };
   },
-  save_manuscript({ id, title, kind, body, refs }) {
-    const ms = saveManuscript({ id, title, kind, body, refs }, "claude");
+  save_manuscript({ id, title, kind, body, refs, work_id, chapter, status, after_id }) {
+    const ms = saveManuscript({ id, title, kind, body, refs, work_id, chapter, status, after_id }, "claude");
     return { content: `원고함 저장: ${ms.id} (${ms.kind} · ${ms.title})`, action: { kind: "create", text: `원고 ${ms.title}`, ms: ms.id }, changed: true };
   },
-  get_manuscripts({ id, query }) {
+  get_manuscripts({ id, query, work_id }) {
     if (id) {
       const m = state.manuscripts.find((x) => x.id === id);
       if (!m) throw new Error(`${id} 원고가 없습니다.`);
-      return { content: `# ${m.title} (${m.kind}, ${m.id})\n관련 항목: ${(m.refs || []).join(", ") || "없음"}\n\n${m.body}`, action: { kind: "read", text: `원고 · ${m.title}` } };
+      const wk = m.workId && findWork(m.workId);
+      const ch = wk && (wk.chapters || []).find((c) => c.id === m.chapterId);
+      const pos = wk ? `\n작품: 「${wk.title}」(${wk.id})${ch ? ` › ${ch.title}(${ch.id})` : ""} · 상태 ${m.status || "초고"}${(() => { const o = workOrder(wk); const i = o.indexOf(m); return `${o[i - 1] ? ` · 앞 장면 ${o[i - 1].id} ${o[i - 1].title}` : ""}${o[i + 1] ? ` · 뒤 장면 ${o[i + 1].id} ${o[i + 1].title}` : ""}`; })()}${styleText(wk.style) ? `\n문체 가이드: ${styleText(wk.style, " / ")}` : ""}` : "";
+      return { content: `# ${m.title} (${m.kind}, ${m.id})${pos}\n관련 항목: ${(m.refs || []).join(", ") || "없음"}\n\n${m.body}`, action: { kind: "read", text: `원고 · ${m.title}` } };
+    }
+    if (work_id) {
+      const wk = findWork(work_id);
+      if (!wk) throw new Error(`작품 '${work_id}'가 없습니다.`);
+      return { content: workOutlineText(wk), action: { kind: "read", text: `작품 · ${wk.title}` } };
     }
     let list = state.manuscripts.slice().sort((a, b) => b.updatedAt - a.updatedAt);
     const q = String(query || "").trim().toLowerCase();
@@ -4257,6 +4535,10 @@ function contextNoteFor(thread) {
       lines.push(rules.length ? `이름 규칙:\n${rules.map((r) => `- ${r.name}${r.applies?.length ? ` (적용: ${r.applies.join(", ")})` : ""}: ${cut(r.rules, 160)}${r.examples?.length ? ` · 예: ${r.examples.slice(0, 6).join(", ")}` : ""}`).join("\n")}` : "이름 규칙: 없음", `원고함: ${state.manuscripts.length}편${state.manuscripts.length ? " (get_manuscripts로 읽는다)" : ""}`, "");
       const pinned = state.maps.filter((m) => m.pins.length);
       if (pinned.length) lines.push(`지도(핀의 대략적인 위치):\n${pinned.map((m) => `- ${m.name}: ${mapPinsText(m)}`).join("\n")}`, "");
+      if (v >= 12) {
+        const works = worldWorks(w);
+        if (works.length) lines.push(`작품:\n${works.slice(0, 8).map((wk) => { const sc = workOrder(wk); const n = sc.reduce((a, m) => a + textStats(m.body).withSpace, 0); return `- 「${wk.title}」(${wk.id}) 장 ${(wk.chapters || []).length} · 장면 ${sc.length} · ${n}자${wk.logline ? ` · ${wk.logline}` : ""}${styleText(wk.style) ? `\n  문체: ${cut(styleText(wk.style, " / "), 300)}` : ""}`; }).join("\n")}`);
+      }
       if (v >= 11) {
         lines.push(`달: ${worldMonths(w).map((m) => `${m.name}(${m.days}일)`).join(", ")}${hasOwnMonths(w) ? "" : " (기본값)"}`);
         const obs = worldObservances(w);
@@ -5397,10 +5679,12 @@ function renderCodexTab(root) {
   const head = codexTabsHTML();
   const t = state.codexTab;
   if (t === "ms") {
+    const all = msViewNow() === "all";
     root.innerHTML = `${head}
-      <div class="codex-tools"><input id="msSearch" type="search" placeholder="원고 찾기" value="${esc(state.msQuery)}" aria-label="원고 찾기"><button class="btn btn-primary" type="button" data-act="ms-new">새 원고</button></div>
+      <div class="seg-tabs ms-views" role="tablist"><button type="button" role="tab" data-msview="works" aria-selected="${!all}">작품</button><button type="button" role="tab" data-msview="all" aria-selected="${all}">모든 원고</button></div>
+      ${all ? `<div class="codex-tools"><input id="msSearch" type="search" placeholder="원고 찾기" value="${esc(state.msQuery)}" aria-label="원고 찾기"><button class="btn btn-primary" type="button" data-act="ms-new">새 원고</button></div>` : ""}
       <div id="ctabResults"></div>`;
-    $("#msSearch", root).oninput = (e) => { state.msQuery = e.target.value; renderCodexTabResults(); };
+    if (all) $("#msSearch", root).oninput = (e) => { state.msQuery = e.target.value; renderCodexTabResults(); };
   } else if (t === "senses") {
     root.innerHTML = `${head}
       <p class="meta" style="margin:12px 0 0">장소마다 소리·냄새·빛·촉감·맛을 모아 둡니다. 장면을 쓸 때 꺼내 쓰세요.</p>
@@ -5426,6 +5710,7 @@ function renderCodexTabResults() {
   const box = $("#ctabResults");
   if (!box) return;
   const t = state.codexTab;
+  if (t === "ms" && msViewNow() !== "all") { renderWorks(box); return; }
   if (t === "ms") {
     const counts = {};
     for (const m of state.manuscripts) counts[m.kind] = (counts[m.kind] || 0) + 1;
@@ -5544,21 +5829,39 @@ async function askCustomQuestions(btn) {
 function openManuscript(id) {
   const m = state.manuscripts.find((x) => x.id === id);
   if (!m) return;
-  openSheet(`<div class="entry-head"><span class="catno">${esc(m.kind)}</span><span>${fmtDate(m.updatedAt)} · ${m.by === "user" ? "직접 씀" : "Claude"}</span></div>
+  const wk = m.workId && findWork(m.workId);
+  const ch = wk && (wk.chapters || []).find((c) => c.id === m.chapterId);
+  const st = textStats(m.body);
+  openSheet(`<div class="entry-head"><span class="catno">${esc(m.kind)}</span><span>${fmtDate(m.updatedAt)} · ${m.by === "user" ? "직접 씀" : "Claude"}</span>${wk ? `<span class="pill st-${esc(m.status || "초고")}">${esc(m.status || "초고")}</span>` : ""}</div>
     <h2 class="entry-name">${esc(m.title)}</h2>
+    ${wk ? `<p class="meta" style="margin:2px 0 0">「${esc(wk.title)}」${ch ? ` › ${esc(ch.title)}` : ""}</p>` : ""}
+    <p class="meta" style="margin:2px 0 6px">${fmtCount(st.withSpace)}자 · 공백 제외 ${fmtCount(st.noSpace)}자 · 원고지 약 ${fmtSheets(st.sheets)}매</p>
     ${m.refs?.length ? `<p class="meta" style="margin:4px 0 10px">관련: ${m.refs.map((r) => `<button type="button" class="ref" data-ref="${r}">${r}</button> ${esc(nameOf(r))}`).join(" ")}</p>` : ""}
+    ${m.ignore?.length ? `<p class="meta" style="margin:0 0 10px">이 원고에서 무시하는 이름: ${m.ignore.map((id) => `${esc(nameOf(id))} <button type="button" class="link-btn" data-act="ent-unignore" data-id="${id}">되돌리기</button>`).join(" · ")}</p>` : ""}
     <div class="md ms-body">${md(m.body)}</div>
+    <div id="entPeek" class="ent-peek" hidden></div>
     <div class="sheet-actions">
-      <button class="btn btn-primary" type="button" data-act="ms-continue">대화로 이어 쓰기</button>
+      <button class="btn btn-primary" type="button" data-act="ms-write">집필 화면</button>
+      <button class="btn" type="button" data-act="ms-continue">대화로 이어 쓰기</button>
+      <button class="btn" type="button" data-act="ms-extract">설정 뽑기</button>
+      <button class="btn" type="button" data-act="ms-place">${wk ? "작품·장 옮기기" : "작품에 넣기"}</button>
       <button class="btn" type="button" data-act="ms-edit">편집</button>
       <button class="btn" type="button" data-act="ms-copy">복사</button>
       <button class="btn btn-danger" type="button" data-act="ms-delete">삭제</button>
     </div>`, (root) => {
+    markEntities($(".ms-body", root), m);
     root.onclick = async (ev) => {
+      const mark = ev.target.closest(".ent-mark");
+      if (mark) { showEntPeek($("#entPeek", root), mark.dataset.ent); return; }
       const ref = ev.target.closest("[data-ref]");
       if (ref) { openEntry(ref.dataset.ref); return; }
       const act = ev.target.closest("[data-act]")?.dataset.act;
-      if (act === "ms-continue") { closeSheet(); newThread(); fillInput(`원고 '${m.title}'(${m.id})를 읽고 이어서 써 줘. 다 쓰면 같은 원고에 저장해 줘. `); }
+      if (act === "peek-close") { $("#entPeek", root).hidden = true; return; }
+      if (act === "ent-ignore" || act === "ent-unignore") { await setIgnore(m, ev.target.closest("[data-id]").dataset.id, act === "ent-ignore"); openManuscript(m.id); return; }
+      if (act === "ms-write") { openWriter(m.id); return; }
+      if (act === "ms-extract") { openExtract(m); return; }
+      if (act === "ms-place") { openPlaceSheet(m); return; }
+      if (act === "ms-continue") { closeSheet(); newThread(); fillInput(wk ? `원고 '${m.title}'(${m.id})는 작품 「${wk.title}」(${wk.id})${ch ? ` ${ch.title}` : ""}의 장면이야. 앞 장면과 문체 가이드를 확인하고 이어서 써 줘. 다 쓰면 같은 원고에 저장해 줘. ` : `원고 '${m.title}'(${m.id})를 읽고 이어서 써 줘. 다 쓰면 같은 원고에 저장해 줘. `); }
       else if (act === "ms-edit") openMsEditor(m);
       else if (act === "ms-copy") { try { await navigator.clipboard.writeText(`# ${m.title}\n\n${m.body}`); toast("복사했습니다"); } catch { toast("복사하지 못했습니다"); } }
       else if (act === "ms-delete") {
@@ -5596,6 +5899,663 @@ function openMsEditor(m) {
       } catch (err) { toast(err.message); }
     };
   });
+}
+
+/* ---- 원고함 › 작품 보기 ---- */
+const msViewNow = () => state.msView || (worldWorks().length ? "works" : "all");
+function sceneRow(m) {
+  const st = m.status || "초고";
+  return `<div class="sc-row" data-sc="${m.id}"><span class="sc-handle" role="button" tabindex="-1" aria-label="${esc(m.title)} 끌어서 옮기기">≡</span><button class="sc-main" type="button" data-ms="${m.id}"><span class="st-dot st-${esc(st)}" title="${esc(st)}"></span><span class="sc-title">${esc(m.title)}</span><span class="sc-n">${fmtCount(textStats(m.body).withSpace)}자</span></button><button class="icon-btn" type="button" data-sc-menu="${m.id}" aria-label="${esc(m.title)} 메뉴">⋯</button></div>`;
+}
+function renderWorks(box) {
+  const works = worldWorks();
+  const outside = state.manuscripts.filter((m) => !m.workId || !findWork(m.workId)).length;
+  if (!works.length) {
+    box.innerHTML = `<div class="empty-state"><h3>아직 작품이 없습니다</h3><p>작품을 만들면 원고를 장과 장면 순서로 묶고, 문체 가이드를 정해 Claude가 따르게 할 수 있습니다.${outside ? ` 지금 있는 원고 ${outside}개는 '모든 원고'에 그대로 있습니다.` : ""}</p>
+      <div class="row" style="justify-content:center"><button class="btn btn-primary" type="button" data-act="work-new">새 작품</button><button class="btn" type="button" data-act="work-ask">Claude와 구성 짜기</button></div></div>`;
+    return;
+  }
+  const cur = works.find((x) => x.id === state.workId) || works[0];
+  state.workId = cur.id;
+  const scenes = workOrder(cur);
+  const total = scenes.reduce((a, m) => a + textStats(m.body).withSpace, 0);
+  const known = new Set((cur.chapters || []).map((c) => c.id));
+  const lost = scenes.filter((m) => !known.has(m.chapterId));
+  const chapterHTML = (ch) => {
+    const list = workScenes(cur, ch.id);
+    const n = list.reduce((a, m) => a + textStats(m.body).withSpace, 0);
+    return `<section class="ch-sec"><div class="ch-head"><b>${esc(ch.title)}</b><span class="meta">장면 ${list.length} · ${fmtCount(n)}자</span><span class="sp"></span><button class="icon-btn" type="button" data-ch-edit="${ch.id}" aria-label="${esc(ch.title)} 고치기">✎</button></div>
+      <div class="sc-list" data-ch="${ch.id}">${list.map(sceneRow).join("")}</div>
+      <button class="btn btn-ghost btn-small" type="button" data-sc-add="${ch.id}">장면 추가</button></section>`;
+  };
+  box.innerHTML = `<div class="type-chips work-chips" role="toolbar" aria-label="작품">${works.map((wk) => `<button class="type-chip" type="button" data-work="${wk.id}" aria-pressed="${wk.id === cur.id}">${esc(wk.title)}</button>`).join("")}<button class="type-chip" type="button" data-act="work-new">+ 새 작품</button></div>
+    <section class="work-head">
+      <h2>${esc(cur.title)}</h2>${cur.logline ? `<p class="meta" style="margin:2px 0 6px">${esc(cur.logline)}</p>` : ""}
+      <p class="work-stats">장 ${(cur.chapters || []).length} · 장면 ${scenes.length} · ${fmtCount(total)}자 · 원고지 약 ${fmtSheets(total / 200)}매</p>
+      <div class="st-pills">${MS_STATUS.map((k) => `<span class="pill st-${k}">${k} ${scenes.filter((m) => (m.status || "초고") === k).length}</span>`).join("")}</div>
+      <p class="meta style-sum">${cur.style ? `문체: ${esc(cut(styleText(cur.style, " · "), 140))}` : "문체 가이드가 없습니다. 작품 설정에서 정하면 Claude가 이 작품을 쓰고 다듬을 때 따릅니다."}</p>
+      <div class="row"><button class="btn btn-small" type="button" data-act="work-edit">작품 설정</button><button class="btn btn-small" type="button" data-act="ch-add">장 추가</button><button class="btn btn-small btn-primary" type="button" data-act="work-ask">Claude와 구성 짜기</button></div>
+    </section>
+    ${(cur.chapters || []).length ? (cur.chapters || []).map(chapterHTML).join("") : `<p class="meta" style="margin-top:12px">'장 추가'로 첫 장을 만드세요.</p>`}
+    ${lost.length ? `<section class="ch-sec"><div class="ch-head"><b>장 없음</b><span class="meta">장면 ${lost.length}</span></div><div class="sc-list" data-ch="">${lost.map(sceneRow).join("")}</div></section>` : ""}
+    ${outside ? `<p class="meta" style="margin-top:14px">작품 밖 원고 ${outside}개는 '모든 원고'에 있습니다. 원고 화면의 '작품에 넣기'로 옮길 수 있습니다.</p>` : ""}`;
+}
+function bindSceneDrag() {
+  const root = $("#codex");
+  let drag = null;
+  root.addEventListener("pointerdown", (e) => {
+    const h = e.target.closest(".sc-handle");
+    if (!h || state.busy) return;
+    e.preventDefault();
+    const row = h.closest(".sc-row");
+    drag = { row, pointerId: e.pointerId, moved: false, sc: row.closest(".scroll") };
+    row.classList.add("dragging");
+    try { h.setPointerCapture(e.pointerId); } catch { /* 지원 안 함 */ }
+  });
+  root.addEventListener("pointermove", (e) => {
+    if (!drag || e.pointerId !== drag.pointerId) return;
+    drag.moved = true;
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const over = el?.closest(".sc-row");
+    const list = el?.closest(".sc-list") || el?.closest(".ch-sec")?.querySelector(".sc-list");
+    if (over && over !== drag.row && over.closest("#codex")) {
+      const r = over.getBoundingClientRect();
+      over.parentNode.insertBefore(drag.row, e.clientY < r.top + r.height / 2 ? over : over.nextSibling);
+    } else if (list && !over && !list.contains(drag.row)) list.appendChild(drag.row);
+    if (drag.sc) { const r = drag.sc.getBoundingClientRect(); if (e.clientY < r.top + 50) drag.sc.scrollTop -= 12; else if (e.clientY > r.bottom - 60) drag.sc.scrollTop += 12; }
+  });
+  const end = async (e) => {
+    if (!drag || e.pointerId !== drag.pointerId) return;
+    const d = drag;
+    drag = null;
+    d.row.classList.remove("dragging");
+    if (d.moved) await applySceneOrder();
+  };
+  root.addEventListener("pointerup", end);
+  root.addEventListener("pointercancel", end);
+}
+async function applySceneOrder() {
+  const work = findWork(state.workId);
+  if (!work) return;
+  const now = Date.now();
+  let changed = false;
+  for (const list of $$("#codex .sc-list")) {
+    const chId = list.dataset.ch || null;
+    if (!chId) continue;
+    $$(".sc-row", list).forEach((row, i) => {
+      const m = state.manuscripts.find((x) => x.id === row.dataset.sc);
+      if (m && (m.order !== i || m.chapterId !== chId)) { m.order = i; m.chapterId = chId; m.workId = work.id; m.updatedAt = now; changed = true; }
+    });
+  }
+  if (changed) { logChange("user", "manuscript", null, `장면 순서: ${work.title}`); await persist.world(); }
+  renderCodexTabResults();
+}
+async function addScene(work, chId) {
+  if (!work) return;
+  const m = saveManuscript({ title: "새 장면", kind: "장면", body: "", work_id: work.id, chapter: chId, status: "구상" }, "user");
+  await persist.world();
+  renderCodexTabResults();
+  openWriter(m.id, () => { state.codexTab = "ms"; renderCodex(); });
+}
+async function saveWorkChange(note) {
+  const w = currentWorld();
+  w.updatedAt = Date.now();
+  logChange("user", "manuscript", null, note);
+  await persist.world();
+}
+function openSceneMenu(m) {
+  const wk = m && findWork(m.workId);
+  if (!wk) return;
+  openSheet(`<h2 class="sheet-title">${esc(m.title)}</h2>
+    <div class="row"><button class="btn btn-primary" type="button" data-act="sm-write">집필 화면</button><button class="btn" type="button" data-act="sm-open">원고 보기</button></div>
+    <fieldset style="margin-top:12px"><legend>상태</legend><div class="seg">${MS_STATUS.map((k) => `<label><input type="radio" name="sm-st" value="${k}"${(m.status || "초고") === k ? " checked" : ""}><span>${k}</span></label>`).join("")}</div></fieldset>
+    <label class="form" style="margin-top:12px">장<select id="sm-ch">${(wk.chapters || []).map((c) => `<option value="${c.id}"${c.id === m.chapterId ? " selected" : ""}>${esc(c.title)}</option>`).join("")}</select></label>
+    <div class="sheet-actions"><button class="btn" type="button" data-act="sm-up">위로</button><button class="btn" type="button" data-act="sm-down">아래로</button><button class="btn btn-danger" type="button" data-act="sm-out">작품에서 빼기</button></div>`, (root) => {
+    root.onchange = async (ev) => {
+      if (ev.target.name === "sm-st") { m.status = ev.target.value; m.updatedAt = Date.now(); await saveWorkChange(`장면 상태: ${m.title} ${m.status}`); renderCodexTabResults(); toast(`${m.status}(으)로 바꿨습니다`); }
+      else if (ev.target.id === "sm-ch") { placeScene(m, wk, ev.target.value); m.updatedAt = Date.now(); await saveWorkChange(`장면 옮김: ${m.title}`); renderCodexTabResults(); toast("옮겼습니다"); }
+    };
+    root.onclick = async (ev) => {
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "sm-write") openWriter(m.id, () => { state.codexTab = "ms"; renderCodex(); });
+      else if (act === "sm-open") openManuscript(m.id);
+      else if (act === "sm-up" || act === "sm-down") {
+        const list = workScenes(wk, m.chapterId);
+        const i = list.indexOf(m);
+        const j = act === "sm-up" ? i - 1 : i + 1;
+        if (j < 0 || j >= list.length) { toast(act === "sm-up" ? "이미 맨 앞입니다" : "이미 맨 뒤입니다"); return; }
+        [list[i], list[j]] = [list[j], list[i]];
+        const now = Date.now();
+        list.forEach((x, k) => { if (x.order !== k) { x.order = k; x.updatedAt = now; } });
+        await saveWorkChange(`장면 순서: ${m.title}`);
+        renderCodexTabResults();
+      } else if (act === "sm-out") {
+        releaseScenes((x) => x === m);
+        await saveWorkChange(`작품에서 뺌: ${m.title}`);
+        closeSheet();
+        renderCodexTabResults();
+        toast("작품 밖 원고로 옮겼습니다");
+      }
+    };
+  });
+}
+const POV_OPTIONS = ["1인칭", "3인칭 제한", "3인칭 전지", "2인칭"];
+function openWorkEditor(work) {
+  const cur = work || { title: "", style: {} };
+  const st = cur.style || {};
+  const field = (k, l, rows = 2, list = "") => `<label>${l}${rows === 1 ? `<input data-sk="${k}" value="${esc(st[k] || "")}"${list ? ` list="${list}"` : ""}>` : `<textarea data-sk="${k}" rows="${rows}">${esc(st[k] || "")}</textarea>`}</label>`;
+  openSheet(`<h2 class="sheet-title">${work ? "작품 설정" : "새 작품"}</h2>
+    <form class="form" id="workForm">
+      <datalist id="povList">${POV_OPTIONS.map((x) => `<option value="${x}">`).join("")}</datalist>
+      <datalist id="tenseList"><option value="과거형"><option value="현재형"></datalist>
+      <datalist id="povChars">${liveEntries().filter((x) => isCharacterType(x.type)).map((x) => `<option value="${esc(x.name)}">`).join("")}</datalist>
+      <label>제목<input id="wk-title" value="${esc(cur.title)}" placeholder="예: 등대지기의 딸"></label>
+      <label>한 줄 소개 <small>선택</small><input id="wk-logline" value="${esc(cur.logline || "")}"></label>
+      <fieldset><legend>문체 가이드 <small>Claude가 이 작품을 쓰고 다듬을 때 따릅니다</small></legend>
+        <div class="time-row">${field("pov", "시점", 1, "povList")}${field("pov_char", "시점 인물", 1, "povChars")}</div>
+        <div class="time-row">${field("tense", "시제", 1, "tenseList")}${field("sentence", "문장 길이", 1)}</div>
+        ${field("tone", "문체")}${field("avoid", "피할 표현")}${field("favor", "즐겨 쓸 낱말")}${field("dialogue", "대사 규칙")}${field("sample", "예시 문단", 4)}
+      </fieldset>
+      <div class="sheet-actions">${work ? `<button class="btn btn-danger" type="button" data-act="wk-del">작품 지우기</button><button class="btn" type="button" data-act="wk-style-ask">Claude와 문체 정하기</button>` : ""}<button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    root.onclick = async (ev) => {
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "cancel") closeSheet();
+      else if (act === "wk-style-ask") { closeSheet(); startInNewThread(`작품 「${work.title}」(${work.id})의 문체 가이드를 정해 줘. 시점, 시제, 문장 길이, 문체, 피할 표현, 즐겨 쓸 낱말(세계 고유 어휘 포함), 대사 규칙, 예시 문단을 세계관의 분위기에 맞게 제안하고, 내가 고르면 set_work의 style로 저장해 줘. `); }
+      else if (act === "wk-del") {
+        if (!(await confirmBox(`'${work.title}' 작품을 지울까요? 장면은 지우지 않고 작품 밖 원고로 남깁니다.`, "지우기", true))) return;
+        const w = currentWorld();
+        w.works = worldWorks(w).filter((x) => x.id !== work.id);
+        releaseScenes((m) => m.workId === work.id);
+        state.workId = null;
+        await saveWorkChange(`작품 삭제: ${work.title}`);
+        closeSheet();
+        renderCodex();
+        toast("작품을 지웠습니다");
+      }
+    };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      const w = currentWorld();
+      const title = $("#wk-title", root).value.trim();
+      if (!title) { toast("제목을 넣어 주세요"); return; }
+      if (worldWorks(w).some((x) => x.title === title && x.id !== work?.id)) { toast("같은 제목의 작품이 있습니다"); return; }
+      const style = {};
+      for (const inp of $$("[data-sk]", root)) style[inp.dataset.sk] = inp.value;
+      const merged = mergeStrMap({}, style, STYLE_IDS);
+      const logline = $("#wk-logline", root).value.trim();
+      const next = { ...(work || { id: `wk-${uid().slice(-6)}`, chapters: [], createdAt: Date.now() }), title, updatedAt: Date.now() };
+      if (logline) next.logline = logline; else delete next.logline;
+      if (hasKeys(merged)) next.style = merged; else delete next.style;
+      if (!work && !next.chapters.length) next.chapters = [{ id: `ch-${uid().slice(-6)}`, title: "1장" }];
+      w.works = work ? worldWorks(w).map((x) => (x.id === work.id ? next : x)) : [...worldWorks(w), next];
+      state.workId = next.id;
+      state.msView = "works";
+      LS.set("lk.msview", "works");
+      await saveWorkChange(`작품: ${title}`);
+      closeSheet();
+      state.codexTab = "ms";
+      renderCodex();
+      toast("저장했습니다");
+    };
+  });
+}
+function openChapterEditor(work, ch) {
+  if (!work) return;
+  const list = work.chapters || [];
+  openSheet(`<h2 class="sheet-title">${ch ? "장 고치기" : "장 추가"}</h2>
+    <form class="form" id="chForm"><label>장 제목<input id="ch-title" value="${esc(ch?.title || `${list.length + 1}장`)}"></label>
+      <div class="sheet-actions">${ch ? `<button class="btn btn-danger" type="button" data-act="ch-del">장 지우기</button>${list.indexOf(ch) > 0 ? `<button class="btn" type="button" data-act="ch-up">앞으로</button>` : ""}` : ""}<button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
+    const done = async (note) => { work.updatedAt = Date.now(); await saveWorkChange(note); closeSheet(); renderCodexTabResults(); };
+    root.onclick = async (ev) => {
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "cancel") closeSheet();
+      else if (act === "ch-up") { const i = list.indexOf(ch); work.chapters = [...list.slice(0, i - 1), ch, list[i - 1], ...list.slice(i + 1)]; await done(`장 순서: ${ch.title}`); }
+      else if (act === "ch-del") {
+        const n = workScenes(work, ch.id).length;
+        if (!(await confirmBox(`'${ch.title}' 장을 지울까요?${n ? ` 장면 ${n}개는 작품 밖 원고로 남깁니다.` : ""}`, "지우기", true))) return;
+        work.chapters = list.filter((c) => c !== ch);
+        releaseScenes((m) => m.workId === work.id && m.chapterId === ch.id);
+        await done(`장 삭제: ${ch.title}`);
+      }
+    };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      const title = $("#ch-title", root).value.trim();
+      if (!title) { toast("장 제목을 넣어 주세요"); return; }
+      if (ch) ch.title = title; else addChapter(work, title);
+      await done(ch ? `장 이름: ${title}` : `장 추가: ${title}`);
+    };
+  });
+}
+function openPlaceSheet(m) {
+  const works = worldWorks();
+  const wk0 = (m.workId && findWork(m.workId)) || works[0];
+  const chOpts = (wk, sel) => `${(wk?.chapters || []).map((c) => `<option value="${c.id}"${c.id === sel ? " selected" : ""}>${esc(c.title)}</option>`).join("")}<option value="__new">새 장</option>`;
+  openSheet(`<h2 class="sheet-title">${esc(m.title)} · ${m.workId ? "작품·장 옮기기" : "작품에 넣기"}</h2>
+    <form class="form" id="placeForm">
+      ${works.length ? `<label>작품<select id="pl-work">${works.map((x) => `<option value="${x.id}"${x.id === wk0.id ? " selected" : ""}>${esc(x.title)}</option>`).join("")}<option value="__new">새 작품</option></select></label>` : `<input type="hidden" id="pl-work" value="__new">`}
+      <label id="pl-new-wrap"${works.length ? " hidden" : ""}>새 작품 제목<input id="pl-new" placeholder="예: 등대지기의 딸"></label>
+      <label>장<select id="pl-ch">${chOpts(wk0, m.chapterId)}</select></label>
+      <label id="pl-chnew-wrap" hidden>새 장 제목<input id="pl-chnew" placeholder="예: 1장 꺼진 불"></label>
+      <label>상태<select id="pl-st">${MS_STATUS.map((k) => `<option${(m.status || "초고") === k ? " selected" : ""}>${k}</option>`).join("")}</select></label>
+      <div class="sheet-actions">${m.workId ? `<button class="btn btn-danger" type="button" data-act="pl-out">작품에서 빼기</button>` : ""}<button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">${m.workId ? "옮기기" : "넣기"}</button></div></form>`, (root) => {
+    const sync = () => {
+      const wv = $("#pl-work", root).value;
+      $("#pl-new-wrap", root).hidden = wv !== "__new";
+      if (ev0) $("#pl-ch", root).innerHTML = chOpts(wv === "__new" ? null : findWork(wv), m.chapterId);
+      $("#pl-chnew-wrap", root).hidden = $("#pl-ch", root).value !== "__new";
+    };
+    let ev0 = false;
+    sync();
+    ev0 = true;
+    root.onchange = (ev) => { if (ev.target.id === "pl-work" || ev.target.id === "pl-ch") { if (ev.target.id === "pl-ch") { $("#pl-chnew-wrap", root).hidden = ev.target.value !== "__new"; return; } sync(); } };
+    root.onclick = async (ev) => {
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "cancel") openManuscript(m.id);
+      else if (act === "pl-out") { releaseScenes((x) => x === m); await saveWorkChange(`작품에서 뺌: ${m.title}`); renderCodex(); openManuscript(m.id); toast("작품 밖 원고로 옮겼습니다"); }
+    };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      const w = currentWorld();
+      let wk = findWork($("#pl-work", root).value);
+      if (!wk) {
+        const title = $("#pl-new", root).value.trim();
+        if (!title) { toast("새 작품 제목을 넣어 주세요"); return; }
+        if (findWork(title)) { toast("같은 제목의 작품이 있습니다"); return; }
+        wk = { id: `wk-${uid().slice(-6)}`, title, chapters: [], createdAt: Date.now() };
+        w.works = [...worldWorks(w), wk];
+      }
+      let chId = $("#pl-ch", root).value;
+      if (chId === "__new" || !chId) chId = addChapter(wk, $("#pl-chnew", root).value.trim() || `${(wk.chapters || []).length + 1}장`).id;
+      placeScene(m, wk, chId);
+      m.status = $("#pl-st", root).value;
+      m.updatedAt = Date.now();
+      state.workId = wk.id;
+      await saveWorkChange(`작품에 넣음: ${m.title}`);
+      renderCodex();
+      openManuscript(m.id);
+      toast(`「${wk.title}」에 넣었습니다`);
+    };
+  });
+}
+
+/* ---- 본문 속 설정 인식 ---- */
+function markEntities(container, m) {
+  if (!container) return;
+  const terms = entityTerms();
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, { acceptNode: (n) => (n.parentElement.closest("code, pre, .ent-mark") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT) });
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  for (const node of nodes) {
+    const text = node.nodeValue;
+    const ranges = recognizeEntities(text, m.ignore, terms).flatMap((h) => h.ranges.map(([a, b]) => ({ a, b, id: h.id }))).sort((x, y) => x.a - y.a);
+    if (!ranges.length) continue;
+    const frag = document.createDocumentFragment();
+    let pos = 0;
+    for (const r of ranges) {
+      if (r.a > pos) frag.append(text.slice(pos, r.a));
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "ent-mark";
+      b.dataset.ent = r.id;
+      b.textContent = text.slice(r.a, r.b);
+      frag.append(b);
+      pos = r.b;
+    }
+    if (pos < text.length) frag.append(text.slice(pos));
+    node.replaceWith(frag);
+  }
+}
+function entPeekHTML(id, closeAct = "peek-close") {
+  const e = findEntry(id);
+  if (!e) return "";
+  const v = e.voice;
+  const ai = isCharacterType(e.type) ? ageInfo(e, worldCalendar().now) : null;
+  return `<div class="entry-head" style="--tc:${typeColor(e.type)}"><span class="catno">${e.id}</span><span>${esc(typeInfo(e.type).label)}</span>${statusBadge(e)}</div>
+    <strong class="gc-name">${esc(e.name)}</strong>
+    <p class="gc-sum">${esc(e.summary || "요약 없음")}</p>
+    ${ai ? `<p class="meta" style="margin:0">${esc(ai.text)}</p>` : ""}
+    ${v?.tone ? `<p class="meta" style="margin:0">말투: ${esc(cut(v.tone, 80))}</p>` : ""}
+    <div class="row" style="margin-top:8px"><button class="btn btn-small btn-primary" type="button" data-ref="${e.id}">자세히</button><button class="btn btn-small" type="button" data-act="ent-ignore" data-id="${e.id}">이 원고에서 무시</button><button class="btn btn-small btn-ghost" type="button" data-act="${closeAct}">닫기</button></div>`;
+}
+function showEntPeek(box, id) {
+  if (!box) return;
+  box.innerHTML = entPeekHTML(id);
+  box.hidden = false;
+  box.scrollIntoView({ block: "nearest" });
+}
+async function setIgnore(m, id, on) {
+  const cur = new Set(m.ignore || []);
+  if (on) cur.add(id); else cur.delete(id);
+  if (cur.size) m.ignore = [...cur]; else delete m.ignore;
+  if (on) m.refs = (m.refs || []).filter((r) => r !== id);
+  m.refs = autoRefs(m);
+  m.updatedAt = Date.now();
+  await persist.ms();
+  toast(on ? `이 원고에서 '${nameOf(id)}'을(를) 무시합니다` : "되돌렸습니다");
+}
+
+/* ---- 집필 화면 ---- */
+const writer = { id: null, timer: null, entTimer: null, dirty: false, sel: null, back: null, logged: false, others: 0, chOthers: 0, polish: null, mode: "short" };
+function openWriter(id, back = null) {
+  const m = state.manuscripts.find((x) => x.id === id);
+  if (!m) return;
+  closeSheet();
+  Object.assign(writer, { id, back, dirty: false, sel: null, logged: false, polish: null });
+  const wk = m.workId && findWork(m.workId);
+  const ch = wk && (wk.chapters || []).find((c) => c.id === m.chapterId);
+  const order = wk ? workOrder(wk) : [];
+  const i = order.indexOf(m);
+  writer.others = order.filter((x) => x !== m).reduce((a, x) => a + textStats(x.body).withSpace, 0);
+  writer.chOthers = order.filter((x) => x !== m && x.chapterId === m.chapterId).reduce((a, x) => a + textStats(x.body).withSpace, 0);
+  const el = $("#writer");
+  el.innerHTML = `<div class="w-top"><button class="icon-btn" type="button" data-w="close" aria-label="닫기">←</button><input id="w-title" class="w-title" value="${esc(m.title)}" aria-label="제목">${wk ? `<select id="w-status" aria-label="상태">${MS_STATUS.map((k) => `<option${(m.status || "초고") === k ? " selected" : ""}>${k}</option>`).join("")}</select>` : ""}</div>
+    ${wk ? `<p class="w-crumb">「${esc(wk.title)}」${ch ? ` › ${esc(ch.title)}` : ""} · <span id="w-totals"></span>${wk.style ? ` · <button type="button" class="link-btn" data-w="style">문체 가이드</button>` : ""}</p>` : ""}
+    <textarea id="w-body" class="w-body" placeholder="쓰기 시작하세요" spellcheck="false">${esc(m.body)}</textarea>
+    <div id="w-preview" class="md w-preview" hidden></div>
+    <div id="w-peek" class="w-peek" hidden></div>
+    <div id="w-ents" class="w-ents" aria-label="본문에 나온 설정"></div>
+    <div class="w-bar"><span id="w-count" class="w-count"></span><span id="w-saved" class="w-saved">저장됨</span><span class="sp"></span>
+      <button class="btn btn-small" type="button" data-w="polish" id="w-polish" disabled>다듬기</button>
+      <button class="btn btn-small btn-ghost" type="button" data-w="preview" aria-pressed="false">미리보기</button>
+      ${wk ? `<button class="icon-btn" type="button" data-w="prev" aria-label="앞 장면"${order[i - 1] ? "" : " disabled"}>‹</button><button class="icon-btn" type="button" data-w="next" aria-label="뒤 장면"${order[i + 1] ? "" : " disabled"}>›</button>` : ""}</div>`;
+  el.hidden = false;
+  document.body.classList.add("writing");
+  fitWriter();
+  updateWriterStats();
+  updateWriterEnts();
+}
+function fitWriter() {
+  const el = $("#writer");
+  if (!el || el.hidden) return;
+  const vv = window.visualViewport;
+  if (vv) { el.style.height = `${vv.height}px`; el.style.top = `${vv.offsetTop}px`; }
+}
+function updateWriterStats() {
+  const ta = $("#w-body");
+  if (!ta) return;
+  const st = textStats(ta.value);
+  $("#w-count").textContent = `${fmtCount(st.withSpace)}자 · 공백 제외 ${fmtCount(st.noSpace)} · 원고지 약 ${fmtSheets(st.sheets)}매`;
+  const tot = $("#w-totals");
+  if (tot) tot.textContent = `장 ${fmtCount(writer.chOthers + st.withSpace)}자 · 작품 ${fmtCount(writer.others + st.withSpace)}자`;
+}
+function updateWriterEnts() {
+  const box = $("#w-ents");
+  const m = state.manuscripts.find((x) => x.id === writer.id);
+  if (!box || !m) return;
+  const hits = recognizeEntities($("#w-body").value, m.ignore).slice(0, 24);
+  box.innerHTML = hits.length ? `<span class="lbl">등장</span>${hits.map((h) => { const e = findEntry(h.id); return `<button type="button" class="ent-chip" data-went="${h.id}" style="--tc:${typeColor(e.type)}">${esc(e.name)}${h.count > 1 ? `<small>${h.count}</small>` : ""}</button>`; }).join("")}` : `<span class="lbl">등장</span><span class="meta">본문에 나온 설정이 여기 보입니다</span>`;
+}
+function scheduleWriterSave() {
+  writer.dirty = true;
+  $("#w-saved").textContent = "쓰는 중…";
+  clearTimeout(writer.timer);
+  writer.timer = setTimeout(() => saveWriter(), 1000);
+}
+async function saveWriter() {
+  clearTimeout(writer.timer);
+  const m = state.manuscripts.find((x) => x.id === writer.id);
+  if (!m || !writer.dirty || !$("#w-body")) return;
+  m.title = $("#w-title").value.trim() || m.title;
+  m.body = $("#w-body").value;
+  m.updatedAt = Date.now();
+  m.by = "user";
+  m.refs = autoRefs(m);
+  writer.dirty = false;
+  if (!writer.logged) { logChange("user", "manuscript", null, `원고 수정: ${m.title}`); writer.logged = true; }
+  $("#w-saved").textContent = "저장 중…";
+  await Promise.all([persist.ms(), persist.log()]);
+  if (!writer.dirty && $("#w-saved")) $("#w-saved").textContent = "저장됨";
+}
+async function closeWriter() {
+  await saveWriter();
+  const el = $("#writer");
+  const id = writer.id;
+  const back = writer.back;
+  el.hidden = true;
+  el.innerHTML = "";
+  el.style.height = "";
+  el.style.top = "";
+  document.body.classList.remove("writing");
+  writer.id = null;
+  renderCodex();
+  if (back) back(); else openManuscript(id);
+}
+const POLISH_MODES = [["style", "문체 가이드에 맞추기"], ["short", "짧게"], ["rich", "풍부하게"], ["sense", "감각 묘사 더하기"], ["voice", "대사를 말투에 맞추기"], ["free", "직접 지시만"]];
+const POLISH_ASK = { style: "작품의 문체 가이드에 맞게 고친다.", short: "뜻과 사건은 그대로 두고 더 짧고 간결하게 고친다.", rich: "행동과 묘사를 조금 더해 장면을 풍부하게 한다. 새 사건은 만들지 않는다.", sense: "그 장소의 감각(소리·냄새·빛·촉감·맛)을 살려 묘사를 더한다.", voice: "대사를 각 인물의 말투 카드에 맞게 고치고, 서술은 그대로 둔다.", free: "" };
+const POLISH_SCHEMA = { type: "object", additionalProperties: false, required: ["text", "note"], properties: { text: { type: "string" }, note: { type: "string" } } };
+function openPolishPanel() {
+  const ta = $("#w-body");
+  const m = state.manuscripts.find((x) => x.id === writer.id);
+  if (!writer.sel || !ta || !m) { toast("다듬을 부분을 먼저 고르세요"); return; }
+  const [s, e] = writer.sel;
+  const wk = m.workId && findWork(m.workId);
+  const modes = POLISH_MODES.filter(([k]) => k !== "style" || wk?.style);
+  if (!modes.some(([k]) => k === writer.mode)) writer.mode = modes[0][0];
+  const box = $("#w-peek");
+  box.innerHTML = `<div class="w-peek-head"><b>다듬기</b><span class="meta">고른 부분 ${fmtCount(e - s)}자</span><span class="sp"></span><button class="icon-btn" type="button" data-w="peek-close" aria-label="닫기">×</button></div>
+    <div class="type-chips pm-modes">${modes.map(([k, l]) => `<button class="type-chip" type="button" data-pm="${k}" aria-pressed="${writer.mode === k}">${l}</button>`).join("")}</div>
+    <input id="pm-free" class="pm-free" placeholder="직접 지시 (선택) 예: 더 불안하게" aria-label="직접 지시">
+    <div class="row"><button class="btn btn-primary btn-small" type="button" data-w="polish-run">다듬기</button></div>
+    <div id="pm-out"></div>`;
+  box.hidden = false;
+}
+async function runPolish(again = false) {
+  const ta = $("#w-body");
+  const m = state.manuscripts.find((x) => x.id === writer.id);
+  if (!writer.sel || !ta || !m) return;
+  const [s, e] = writer.sel;
+  const src = ta.value.slice(s, e);
+  if (!src.trim()) { toast("다듬을 부분을 먼저 고르세요"); return; }
+  const out = $("#pm-out");
+  const btn = $('[data-w="polish-run"]');
+  if (btn) btn.disabled = true;
+  out.innerHTML = `<p class="status-line">다듬는 중…</p>`;
+  try {
+    const w = currentWorld();
+    const wk = m.workId && findWork(m.workId);
+    const near = recognizeEntities(ta.value.slice(Math.max(0, s - 400), Math.min(ta.value.length, e + 200)), m.ignore).map((h) => findEntry(h.id)).filter(Boolean);
+    const voices = near.filter((x) => isCharacterType(x.type) && hasKeys(x.voice)).map((x) => `- ${x.name}: ${[x.voice.tone && `어조 ${x.voice.tone}`, x.voice.habits && `말버릇 ${x.voice.habits}`, x.voice.phrases?.length && `자주 쓰는 표현 ${x.voice.phrases.join(" / ")}`].filter(Boolean).join("; ")}`);
+    const places = near.filter((x) => isPlaceType(x.type) && hasKeys(x.senses)).map((x) => `- ${x.name}: ${Object.entries(x.senses).map(([k, v]) => `${k} ${v}`).join("; ")}`);
+    const facts = near.slice(0, 8).map((x) => `- ${x.name}(${typeInfo(x.type).label}): ${cut(x.summary || "", 100)}`);
+    const free = $("#pm-free")?.value.trim() || "";
+    const ask = `${POLISH_ASK[writer.mode] || ""}${free ? ` ${free}` : ""}`.trim() || "자연스럽게 다듬는다.";
+    const text = await quickAsk(
+      "너는 소설 편집자다. [고칠 부분]만 다시 쓴다. 앞뒤 문맥과 자연스럽게 이어지고, 세계관 설정과 어긋나지 않게 한다. 고칠 부분에 없던 사건이나 정보를 지어내지 않는다. 문단 나눔과 마크다운 표기는 원문을 따른다. text에는 바꾼 부분만, note에는 무엇을 바꿨는지 한 줄로 쓴다.",
+      `${cut(worldOverviewText(w), 900)}\n${wk?.style ? `\n문체 가이드:\n${styleText(wk.style)}\n` : ""}${voices.length ? `\n인물 말투:\n${voices.join("\n")}\n` : ""}${places.length ? `\n장소 감각:\n${places.join("\n")}\n` : ""}${facts.length ? `\n나오는 설정:\n${facts.join("\n")}\n` : ""}\n앞 문맥:\n${ta.value.slice(Math.max(0, s - 1200), s)}\n\n[고칠 부분]\n${src}\n[/고칠 부분]\n\n뒤 문맥:\n${ta.value.slice(e, e + 600)}\n\n요청: ${ask}${again && writer.polish ? `\n앞서 낸 안과 다르게 써 줘. 앞서 낸 안: ${writer.polish.text}` : ""}`,
+      8000,
+      { schema: POLISH_SCHEMA, strong: true, effort: "medium" },
+    );
+    if (text === null) { out.innerHTML = ""; return; }
+    const g = JSON.parse(text);
+    writer.polish = { s, e, src, text: g.text, note: g.note };
+    out.innerHTML = `<div class="pm-cmp"><p class="meta">전</p><div class="pm-before">${esc(src)}</div><p class="meta">후</p><div class="pm-after">${esc(g.text)}</div>${g.note ? `<p class="meta">${esc(g.note)}</p>` : ""}
+      <div class="row"><button class="btn btn-primary btn-small" type="button" data-w="polish-apply">바꾸기</button><button class="btn btn-small" type="button" data-w="polish-again">다른 안</button><button class="btn btn-small btn-ghost" type="button" data-w="peek-close">취소</button></div></div>`;
+    $(".pm-cmp .row", out)?.scrollIntoView({ block: "nearest" });
+  } catch (err) { out.innerHTML = `<p class="note note-error">${esc(err instanceof SyntaxError ? "결과를 읽지 못했습니다. 다시 시도해 주세요" : describeError(err))}</p>`; }
+  finally { if (btn) btn.disabled = false; }
+}
+function applyPolish() {
+  const ta = $("#w-body");
+  const p = writer.polish;
+  if (!ta || !p) return;
+  if (ta.value.slice(p.s, p.e) !== p.src) { toast("그사이 본문이 바뀌어 바꾸지 못했습니다. 다시 골라 주세요"); return; }
+  ta.setRangeText(p.text, p.s, p.e, "select");
+  writer.sel = [p.s, p.s + p.text.length];
+  writer.polish = null;
+  $("#w-peek").hidden = true;
+  scheduleWriterSave();
+  updateWriterStats();
+  updateWriterEnts();
+  toast("바꿨습니다");
+}
+function bindWriter() {
+  const el = $("#writer");
+  el.addEventListener("input", (e) => {
+    if (e.target.id === "w-body") {
+      scheduleWriterSave();
+      updateWriterStats();
+      clearTimeout(writer.entTimer);
+      writer.entTimer = setTimeout(updateWriterEnts, 600);
+    } else if (e.target.id === "w-title") scheduleWriterSave();
+  });
+  el.addEventListener("change", async (e) => {
+    if (e.target.id !== "w-status") return;
+    const m = state.manuscripts.find((x) => x.id === writer.id);
+    if (!m) return;
+    m.status = e.target.value;
+    m.updatedAt = Date.now();
+    await persist.ms();
+    toast(`${m.status}(으)로 바꿨습니다`);
+  });
+  document.addEventListener("selectionchange", () => {
+    const ta = $("#w-body");
+    if (!ta || document.activeElement !== ta) return;
+    const has = ta.selectionEnd > ta.selectionStart;
+    writer.sel = has ? [ta.selectionStart, ta.selectionEnd] : null;
+    const b = $("#w-polish");
+    if (b) b.disabled = !has;
+  });
+  el.addEventListener("click", async (e) => {
+    if (e.target.closest("[data-ref]")) return; // 항목 열기는 전체 클릭 처리가 맡는다(시트가 집필 화면 위에 뜬다)
+    const pm = e.target.closest("[data-pm]");
+    if (pm) { writer.mode = pm.dataset.pm; for (const b of $$("[data-pm]", el)) b.setAttribute("aria-pressed", String(b === pm)); return; }
+    const went = e.target.closest("[data-went]");
+    if (went) { const box = $("#w-peek"); box.innerHTML = entPeekHTML(went.dataset.went); box.hidden = false; return; }
+    const act = e.target.closest("[data-act]")?.dataset.act;
+    if (act === "peek-close") { $("#w-peek").hidden = true; return; }
+    if (act === "ent-ignore") {
+      const m = state.manuscripts.find((x) => x.id === writer.id);
+      await setIgnore(m, e.target.closest("[data-id]").dataset.id, true);
+      $("#w-peek").hidden = true;
+      updateWriterEnts();
+      return;
+    }
+    const w = e.target.closest("[data-w]")?.dataset.w;
+    if (!w) return;
+    if (w === "close") closeWriter();
+    else if (w === "peek-close") $("#w-peek").hidden = true;
+    else if (w === "polish") openPolishPanel();
+    else if (w === "polish-run") runPolish(false);
+    else if (w === "polish-again") runPolish(true);
+    else if (w === "polish-apply") applyPolish();
+    else if (w === "style") {
+      const m = state.manuscripts.find((x) => x.id === writer.id);
+      const wk = m && findWork(m.workId);
+      const box = $("#w-peek");
+      box.innerHTML = `<div class="w-peek-head"><b>문체 가이드</b><span class="sp"></span><button class="icon-btn" type="button" data-w="peek-close" aria-label="닫기">×</button></div><dl class="fields">${STYLE_KEYS.filter(([k]) => wk?.style?.[k]).map(([k, l]) => `<div><dt>${l}</dt><dd>${esc(wk.style[k])}</dd></div>`).join("")}</dl>`;
+      box.hidden = false;
+    } else if (w === "preview") {
+      const pv = $("#w-preview");
+      const on = pv.hidden;
+      if (on) pv.innerHTML = md($("#w-body").value);
+      pv.hidden = !on;
+      $("#w-body").hidden = on;
+      e.target.closest("[data-w]").setAttribute("aria-pressed", String(on));
+    } else if (w === "prev" || w === "next") {
+      await saveWriter();
+      const m = state.manuscripts.find((x) => x.id === writer.id);
+      const wk = m && findWork(m.workId);
+      const order = wk ? workOrder(wk) : [];
+      const other = order[order.indexOf(m) + (w === "next" ? 1 : -1)];
+      if (other) openWriter(other.id, writer.back);
+    }
+  });
+  window.visualViewport?.addEventListener("resize", fitWriter);
+  window.visualViewport?.addEventListener("scroll", fitWriter);
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden" && writer.id) saveWriter(); });
+}
+
+/* ---- 원고에서 설정 뽑기 ---- */
+const EXTRACT_SCHEMA = {
+  type: "object", additionalProperties: false, required: ["entries", "facts", "foreshadows"],
+  properties: {
+    entries: { type: "array", items: { type: "object", additionalProperties: false, required: ["type", "name", "summary", "quote"], properties: { type: { type: "string" }, name: { type: "string" }, summary: { type: "string" }, quote: { type: "string" } } } },
+    facts: { type: "array", items: { type: "object", additionalProperties: false, required: ["id", "fact", "quote"], properties: { id: { type: "string" }, fact: { type: "string" }, quote: { type: "string" } } } },
+    foreshadows: { type: "array", items: { type: "object", additionalProperties: false, required: ["text", "quote"], properties: { text: { type: "string" }, quote: { type: "string" } } } },
+  },
+};
+let extractResult = null;
+function openExtract(m) {
+  extractResult = null;
+  openSheet(`<h2 class="sheet-title">설정 뽑기 · ${esc(m.title)}</h2>
+    <p class="meta" style="margin:0 0 8px">원고를 읽고 설정집에 없는 인물·장소 등, 기존 항목의 새 사실, 깔린 복선을 찾습니다(짧은 요청 한 번). 고른 것만 저장합니다. 새 항목은 초안이 됩니다.</p>
+    <div class="row"><button class="btn btn-primary btn-small" type="button" data-act="ex-run">찾기</button><button class="btn btn-small btn-ghost" type="button" data-act="ex-back">원고로</button></div>
+    <div id="exOut"></div>`, (root) => {
+    root.onclick = async (ev) => {
+      const ref = ev.target.closest("[data-ref]");
+      if (ref) { openEntry(ref.dataset.ref); return; }
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "ex-back") openManuscript(m.id);
+      else if (act === "ex-run") runExtract(m, root, ev.target.closest("[data-act]"));
+      else if (act === "ex-save") saveExtract(m, root);
+    };
+  });
+}
+async function runExtract(m, root, btn) {
+  const out = $("#exOut", root);
+  btn.disabled = true;
+  out.innerHTML = `<p class="status-line">원고를 읽는 중…</p>`;
+  try {
+    const w = currentWorld();
+    const near = recognizeEntities(m.body, m.ignore).slice(0, 14).map((h) => findEntry(h.id)).filter(Boolean);
+    const text = await quickAsk(
+      "너는 소설 원고에서 세계관 설정을 뽑아내는 편집자다. 설정집에 아직 없는 인물·장소·세력·사물 등(entries), 설정집에 있는 항목에 대해 원고에서 새로 드러난 사실(facts, id는 설정집 목록의 id), 나중에 회수될 복선(foreshadows)을 찾는다. 이미 설정집에 적힌 내용과 이미 있는 복선은 빼고, 원고에 분명히 나온 것만 고른다. quote에는 근거가 된 원고 문장을 그대로 짧게 옮긴다. type은 분류 목록의 이름 중 하나를 쓴다. 없으면 빈 배열을 돌려준다.",
+      `${cut(worldOverviewText(w), 900)}\n\n분류 목록: ${worldTypes().map((t) => t.label).join(", ")}\n\n설정집 목록:\n${liveEntries().slice(0, 300).map(indexLine).join("\n")}\n\n원고에 나오는 항목의 자세한 설정:\n${near.map((x) => cut(entryToText(x), 700)).join("\n\n") || "(없음)"}\n\n이미 있는 복선: ${worldForeshadows(w).map((f) => f.text).join(" / ") || "(없음)"}\n\n# 원고: ${m.title}\n${cut(m.body, 24000)}`,
+      8000,
+      { schema: EXTRACT_SCHEMA, effort: "medium" },
+    );
+    if (text === null) { out.innerHTML = ""; return; }
+    const g = JSON.parse(text);
+    extractResult = {
+      entries: (g.entries || []).filter((x) => x.name && !findEntry(x.name)),
+      facts: (g.facts || []).filter((x) => liveRef(x.id) && x.fact),
+      foreshadows: (g.foreshadows || []).filter((x) => x.text && !worldForeshadows(w).some((f) => f.text === x.text)),
+    };
+    const r = extractResult;
+    const n = r.entries.length + r.facts.length + r.foreshadows.length;
+    const q = (x) => (x.quote ? `<blockquote class="ex-quote">${esc(x.quote)}</blockquote>` : "");
+    out.innerHTML = n ? `${r.entries.length ? `<p class="section-label">새 항목 <small class="meta">${r.entries.length}</small></p>${r.entries.map((x, i) => `<label class="pick ex-pick"><input type="checkbox" data-ex="entries" value="${i}" checked><span><b>${esc(x.name)}</b> <small class="meta">${esc(x.type)}</small><br>${esc(x.summary)}${q(x)}</span></label>`).join("")}` : ""}
+      ${r.facts.length ? `<p class="section-label">새 사실 <small class="meta">${r.facts.length}</small></p>${r.facts.map((x, i) => `<label class="pick ex-pick"><input type="checkbox" data-ex="facts" value="${i}" checked><span><b>${esc(nameOf(x.id))}</b> <small class="meta">${x.id}</small><br>${esc(x.fact)}${q(x)}</span></label>`).join("")}` : ""}
+      ${r.foreshadows.length ? `<p class="section-label">복선 <small class="meta">${r.foreshadows.length}</small></p>${r.foreshadows.map((x, i) => `<label class="pick ex-pick"><input type="checkbox" data-ex="foreshadows" value="${i}" checked><span>${esc(x.text)}${q(x)}</span></label>`).join("")}` : ""}
+      <div class="row" style="margin-top:10px"><button class="btn btn-primary btn-small" type="button" data-act="ex-save">고른 것 저장</button><button class="btn btn-small" type="button" data-act="ex-run">다시 찾기</button></div>`
+      : `<p class="note">설정집에 넣을 새 내용을 찾지 못했습니다.</p>`;
+  } catch (err) { out.innerHTML = `<p class="note note-error">${esc(err instanceof SyntaxError ? "결과를 읽지 못했습니다. 다시 시도해 주세요" : describeError(err))}</p>`; }
+  finally { btn.disabled = false; }
+}
+async function saveExtract(m, root) {
+  if (state.busy) { toast("Claude가 작업 중입니다"); return; }
+  const r = extractResult;
+  if (!r) return;
+  const pick = (k) => $$(`input[data-ex="${k}"]:checked`, root).map((i) => r[k][Number(i.value)]).filter(Boolean);
+  const w = currentWorld();
+  const made = [];
+  const skipped = [];
+  const fallback = (worldTypes().find((t) => t.key === "other") || worldTypes()[0]).key;
+  for (const x of pick("entries")) {
+    try {
+      const e = createEntry({ type: findType(x.type)?.key || fallback, name: x.name, summary: x.summary, status: "초안", body: `${x.quote ? `> ${x.quote}\n\n` : ""}— 원고 '${m.title}'에서` }, "user");
+      made.push(e);
+    } catch (err) { skipped.push(`${x.name}: ${err.message}`); }
+  }
+  const byId = new Map();
+  for (const f of pick("facts")) { if (!byId.has(f.id)) byId.set(f.id, []); byId.get(f.id).push(f); }
+  for (const [id, list] of byId) {
+    const e = findEntry(id);
+    if (!e) continue;
+    updateEntry(e, { append_body: `### 원고 '${m.title}'에서\n${list.map((f) => `- ${f.fact}`).join("\n")}` }, "user", `원고에서: ${m.title}`);
+  }
+  const fs = pick("foreshadows");
+  if (fs.length) {
+    w.foreshadows = [...worldForeshadows(w), ...fs.map((x) => ({ id: uid().slice(-6), kind: "복선", text: x.text, plant: m.id, status: "깔림", ...(x.quote ? { note: `“${x.quote}”` } : {}), createdAt: Date.now() }))];
+    w.updatedAt = Date.now();
+  }
+  if (made.length) { m.refs = [...new Set([...(m.refs || []), ...made.map((e) => e.id)])]; m.updatedAt = Date.now(); }
+  logChange("user", "manuscript", null, `설정 뽑기: ${m.title}`);
+  await persist.world();
+  renderCodex();
+  openManuscript(m.id);
+  toast(`새 항목 ${made.length} · 사실 ${[...byId.values()].flat().length} · 복선 ${fs.length}개를 저장했습니다${skipped.length ? ` (건너뜀: ${skipped.join(" / ")})` : ""}`);
 }
 
 /* ---- 이름 규칙 ---- */
@@ -5793,6 +6753,17 @@ function bindCodexTabs() {
     if (tabBtn) { state.codexTab = tabBtn.dataset.ctab; renderCodex(); return; }
     const kind = e.target.closest("[data-mskind]");
     if (kind) { state.msKind = kind.dataset.mskind; renderCodexTabResults(); return; }
+    const msv = e.target.closest("[data-msview]");
+    if (msv) { state.msView = msv.dataset.msview; LS.set("lk.msview", state.msView); renderCodex(); return; }
+    const wkb = e.target.closest("[data-work]");
+    if (wkb) { state.workId = wkb.dataset.work; renderCodexTabResults(); return; }
+    const che = e.target.closest("[data-ch-edit]");
+    if (che) { const wk = findWork(state.workId); openChapterEditor(wk, wk.chapters.find((c) => c.id === che.dataset.chEdit)); return; }
+    const sca = e.target.closest("[data-sc-add]");
+    if (sca) { await addScene(findWork(state.workId), sca.dataset.scAdd); return; }
+    const scm = e.target.closest("[data-sc-menu]");
+    if (scm) { openSceneMenu(state.manuscripts.find((m) => m.id === scm.dataset.scMenu)); return; }
+    if (e.target.closest(".sc-handle")) return;
     const ms = e.target.closest("[data-ms]");
     if (ms) { openManuscript(ms.dataset.ms); return; }
     const sc = e.target.closest("[data-sense-copy]");
@@ -5830,6 +6801,10 @@ function bindCodexTabs() {
     if (act === "ms-new") openMsEditor(null);
     else if (act === "naming-new") openNamingEditor(null);
     else if (act === "fs-new") openForeshadowEditor(null);
+    else if (act === "work-new") openWorkEditor(null);
+    else if (act === "work-edit") openWorkEditor(findWork(state.workId));
+    else if (act === "ch-add") openChapterEditor(findWork(state.workId), null);
+    else if (act === "work-ask") { const wk = findWork(state.workId); startInNewThread(wk ? `작품 「${wk.title}」(${wk.id})의 장 구성을 짜 줘. 지금 있는 장면과 설정, 사건 연표를 보고 장 제목과 순서를 제안하고, 기존 장면을 어느 장에 둘지도 알려 줘. 내가 고르면 set_work의 chapters와 save_manuscript로 정리해 줘. ` : "이 세계관으로 쓸 작품의 구성을 짜 줘. 제목, 한 줄 소개, 장 구성을 제안하고, 내가 고르면 set_work로 저장해 줘. "); }
     else if (act === "fs-ask") startInNewThread("원고함과 설정에서 복선과 예언을 찾아 줘. 깔렸지만 아직 회수되지 않은 것, 회수된 것을 나눠서 알려 주고, 내가 받아들이면 set_foreshadow로 기록해 줘. ");
     else if (act === "naming-ask") { startInNewThread("이 세계의 나라·종족마다 이름 규칙을 만들어 줘. 음절 구조, 자주 쓰는 소리와 어미, 성(姓)과 지명 규칙, 예시 이름까지 정해서 set_naming_rule로 저장해 줘. "); }
     else if (act === "senses-ask") { startInNewThread("감각이 비어 있는 장소들의 소리·냄새·빛·촉감·맛을 그 장소답게 정해서 senses에 채워 줘. 확정 설정과 어긋나지 않게. "); }
@@ -12016,7 +12991,7 @@ async function renderSettings() {
       <div class="radio-list">${MODEL_CHOICES.map((m) => { const p = PRICES[m.id]; return `<label class="radio"><input type="radio" name="model" value="${m.id}"${settings.model === m.id ? " checked" : ""}><span class="t">${p.label}</span><span class="s">입력 $${p.in} · 출력 $${p.out} / 100만 토큰 — ${m.note}</span></label>`; }).join("")}</div>
       <p>Opus와 Sonnet은 안전 정책 오판으로 거절되면 서버가 권장 모델로 자동 재시도합니다.</p>
       <label class="switch">짧은 요청은 Haiku 5.5로 <input type="checkbox" id="quickHaiku"${settings.quickHaiku ? " checked" : ""}></label>
-      <p>대화와 따로 한 번씩 보내는 요청(이름 만들기, 맞춤 질문, 그림 프롬프트, 그날의 날씨, 장소 생성기, 허점 찾기, 낱말 만들기, 역사 공백 채우기, 사물 생성기, 시대착오 찾기)을 Haiku 5.5로 보냅니다. Haiku 5.5는 입력 $${PRICES[QUICK_MODEL].in} · 출력 $${PRICES[QUICK_MODEL].out} / 100만 토큰입니다. 판례로 남는 규칙 판정과 대화는 위에서 고른 모델을 씁니다. Haiku가 거절하면 위 모델로 한 번 더 묻습니다.</p>
+      <p>대화와 따로 한 번씩 보내는 요청(이름 만들기, 맞춤 질문, 그림 프롬프트, 그날의 날씨, 장소 생성기, 허점 찾기, 낱말 만들기, 역사 공백 채우기, 사물 생성기, 시대착오 찾기, 원고에서 설정 뽑기)을 Haiku 5.5로 보냅니다. Haiku 5.5는 입력 $${PRICES[QUICK_MODEL].in} · 출력 $${PRICES[QUICK_MODEL].out} / 100만 토큰입니다. 판례로 남는 규칙 판정, 원고 부분 다듬기, 대화는 위에서 고른 모델을 씁니다. Haiku가 거절하면 위 모델로 한 번 더 묻습니다.</p>
     </section>
 
     <section class="card">
@@ -12535,6 +13510,8 @@ function bindGlobal() {
 async function init() {
   bindGlobal();
   bindCodexTabs();
+  bindSceneDrag();
+  bindWriter();
   bindGraph();
   bindTree();
   bindMatrix();
