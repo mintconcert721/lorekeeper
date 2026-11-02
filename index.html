@@ -1084,6 +1084,29 @@ body.writing { overflow: hidden; }
 .pill.sev-mid { background: color-mix(in srgb, var(--t-event) 22%, var(--surface)); }
 .check-issue { align-items: flex-start; justify-content: space-between; }
 .check-issue .txt { flex: 1 1 220px; min-width: 0; overflow-wrap: anywhere; line-height: 1.5; }
+/* 점검 센터 */
+.audit-hub { margin: 0 0 12px; }
+.audit-hub h2 { margin: 0 0 8px; }
+.hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.hub-btn { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); color: var(--ink); font: inherit; text-align: left; }
+.hub-btn b { font-size: 14.5px; }
+.hub-btn span { font-size: 12.5px; color: var(--muted); line-height: 1.4; }
+.hub-reports { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; }
+.hub-rep { display: flex; justify-content: space-between; gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font: inherit; font-size: 13.5px; text-align: left; }
+.hub-sub { margin: 14px 0 0; font-size: 14px; color: var(--muted); }
+.audit-run { display: flex; align-items: center; gap: 8px; padding: 8px 10px; margin: 6px 0; border-radius: 10px; background: var(--accent-soft); font-size: 13.5px; }
+.audit-run.stopped { background: var(--danger-soft); color: var(--danger); }
+.audit-run .sp { flex: 1; }
+.spinner { flex: none; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--accent); border-right-color: transparent; animation: spin 1s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+.audit-filter { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 10px 0 4px; }
+.audit-filter .seg { margin: 0; flex: none; gap: 4px; }
+.audit-filter .seg label { flex: none; }
+.audit-filter .seg span { padding: 5px 10px; font-size: 13px; white-space: nowrap; }
+.audit-filter select { padding: 6px 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-size: 13.5px; }
+.audit-issue.done { opacity: .6; }
+.audit-issue .ex-quote { display: block; margin-top: 4px; }
+@media (max-width: 380px) { .hub-grid { grid-template-columns: 1fr; } }
 .w-body { flex: 1; min-height: 0; width: 100%; margin-top: 8px; border: 0; background: none; color: var(--ink); resize: none; padding: 6px 2px; font: 17px/1.85 var(--font-body); outline: none; }
 .w-preview { flex: 1; min-height: 0; overflow-y: auto; margin-top: 8px; padding: 6px 2px; }
 .w-peek { max-height: 45%; overflow-y: auto; margin-top: 6px; }
@@ -6190,6 +6213,8 @@ function computeChecks() {
 }
 function openChecksSheet() {
   if (!currentWorld()) { toast("먼저 세계관을 만드세요"); return; }
+  // 보고서 목록은 이 기기 저장소에서 읽어 와 점검 센터 칸만 다시 그린다
+  if (audit.wid !== state.worldId) loadAudits().then(() => { const hub = $("#sheetBody .audit-hub"); if (hub) hub.outerHTML = auditHubHTML(); });
   const issues = computeChecks();
   const groups = [];
   for (const it of issues) {
@@ -6200,18 +6225,27 @@ function openChecksSheet() {
   groups.sort((a, b) => (a.sev === b.sev ? 0 : a.sev === "warn" ? -1 : 1));
   const warns = issues.filter((x) => x.sev === "warn");
   openSheet(`<h2 class="sheet-title">설정 점검</h2>
+    ${auditHubHTML()}
+    <h3 class="hub-sub">앱이 바로 찾은 것(무료)</h3>
     <p class="meta" style="margin:0">확정·초안 항목 ${liveEntries().length}개를 살폈습니다. ${warns.length ? `확인이 필요한 곳 ${warns.length}개, ` : "모순으로 보이는 곳은 없고, "}채울 곳 ${issues.length - warns.length}개가 있습니다.</p>
     ${groups.map((g) => `<section class="check-group"><h3 class="${g.sev === "warn" ? "sev-warn" : ""}">${esc(g.name)} <span class="n">${g.items.length}</span></h3>
       ${g.items.slice(0, 30).map((it) => `<div class="check-item"><span class="txt">${esc(it.text)}</span>${it.refs.slice(0, 4).map((id) => `<button type="button" class="ref" data-ref="${id}">${id}</button>`).join("")}</div>`).join("")}
       ${g.items.length > 30 ? `<p class="meta">외 ${g.items.length - 30}개</p>` : ""}</section>`).join("") || `<p>살펴볼 항목이 아직 없습니다.</p>`}
     <section class="card" style="margin-top:16px">
-      <h2>Claude 심층 점검</h2>
-      <p>앱이 찾을 수 없는 세계 규칙 위반, 서술끼리의 모순, 거리·나이 불일치를 Claude가 확정 설정을 읽고 찾습니다. 새 대화에 요청을 채워 두니, 내용을 보고 보내세요. 설정 양만큼 비용이 듭니다.</p>
-      <div class="row"><button class="btn btn-primary" type="button" data-act="deep-check">요청 채우기</button></div>
+      <h2>대화로 점검 묻기</h2>
+      <p>새 대화에 '설정 전체를 점검해 줘' 요청을 채웁니다. 대화 속 Claude는 필요한 항목만 골라 읽으므로, 빠짐없이 보려면 위의 '카테고리 전수점검'을 쓰세요.</p>
+      <div class="row"><button class="btn btn-primary" type="button" data-act="deep-check">대화에 요청 채우기</button></div>
     </section>`, (root) => {
     root.onclick = (ev) => {
       const ref = ev.target.closest("[data-ref]");
       if (ref) { openEntry(ref.dataset.ref); return; }
+      const hubAct = ev.target.closest("[data-act]")?.dataset.act;
+      if (hubAct === "hub-entries") { openEntryAuditSetup(); return; }
+      if (hubAct === "hub-story") { openStoryAuditSetup(); return; }
+      const hr = ev.target.closest("[data-hub-rep]");
+      if (hr) { const rep = audit.list.find((x) => x.id === hr.dataset.hubRep); if (rep) { state.auditMore = false; openAuditReport(rep); } return; }
+      const hw = ev.target.closest("[data-hub-work]");
+      if (hw) { closeSheet(); state.workId = hw.dataset.hubWork; state.workTab = "plan"; state.msView = "works"; state.codexTab = "ms"; renderCodex(); return; }
       if (ev.target.closest('[data-act="deep-check"]')) {
         if (state.busy) { toast("Claude가 작업 중입니다"); return; }
         const found = warns.slice(0, 15).map((x) => `- ${x.text}`);
@@ -6910,6 +6944,533 @@ function gotoPlanRef(work, ref) {
   if (ch) { openChapterEditor(work, ch); return; }
   const m = state.manuscripts.find((x) => x.id === ref);
   if (m) openCardEditor(work, m);
+}
+/* ============================================================
+   점검 센터: 카테고리 전수점검 · 스토리 전체 점검
+   - 항목·장면을 묶음으로 나눠 빠짐없이 보내고, 항목마다 판정을 받아 빠진 것은 다시 보낸다.
+   - 세계관 공통 맥락(개요·공통 규칙·색인)은 프롬프트 캐시로 묶음끼리 재사용한다.
+   - 보고서(audits:<세계관>)와 장면 기록(scenerec:<세계관>)은 이 기기에만 남는다(동기화하지 않음).
+   ============================================================ */
+const AUDIT_KEEP = 6;
+const AUDIT_KINDS = ["템플릿·공통 규칙", "항목 안 모순", "다른 항목과 모순", "세계 규칙 위반", "연표·나이", "빈 핵심 정보", "참조 오류", "기타"];
+const STORY_KINDS = ["연속성", "시간선", "인물", "플롯 허점", "회수 안 된 복선", "사라진 가닥", "설정 위반", "계획 대비", "속도", "기타"];
+const SEVS = ["높음", "중간", "낮음"];
+const AUDIT_MODELS = ["claude-opus-5-5", "claude-sonnet-5-5"];
+const audit = { list: null, wid: null, running: null, stop: false };
+async function loadAudits() {
+  if (!audit.list || audit.wid !== state.worldId) { audit.list = (await idb.get("audits:" + state.worldId)) || []; audit.wid = state.worldId; }
+  return audit.list;
+}
+async function saveAudits() {
+  if (audit.wid !== state.worldId) return;
+  if (audit.list.length > AUDIT_KEEP) audit.list = audit.list.slice(-AUDIT_KEEP);
+  await idb.set("audits:" + state.worldId, audit.list);
+}
+function textHash(s) {
+  const t = String(s || "");
+  let h = 5381;
+  for (let i = 0; i < t.length; i++) h = ((h << 5) + h + t.charCodeAt(i)) | 0;
+  return `${(h >>> 0).toString(36)}.${t.length.toString(36)}`;
+}
+// 정해진 형식으로 한 번 묻는다. shared는 캐시해 묶음끼리 다시 쓴다.
+async function auditAsk(system, shared, user, schema, { model = settings.model, maxTokens = 20000, effort = "medium" } = {}) {
+  if (!settings.apiKey) throw new Error("설정에서 API 키를 먼저 넣으세요");
+  const client = new Anthropic({ apiKey: settings.apiKey, dangerouslyAllowBrowser: true });
+  const params = { model, max_tokens: maxTokens, system: [{ type: "text", text: system }, ...(shared ? [{ type: "text", text: shared, cache_control: { type: "ephemeral" } }] : [])], messages: [{ role: "user", content: user }], output_config: { effort, format: { type: "json_schema", schema } } };
+  if (PRICES[model]?.fallback) { params.betas = ["server-side-fallback-2026-07-01"]; params.fallbacks = "default"; }
+  const msg = await client.beta.messages.create(params);
+  const cost = calcCost(msg.usage, msg.model);
+  addCost(cost);
+  if (msg.stop_reason === "refusal") throw new Error("안전 정책에 따라 답할 수 없습니다");
+  if (msg.stop_reason === "max_tokens") throw new Error("답이 길어져 끊겼습니다");
+  const text = msg.content.filter((b) => b.type === "text").map((b) => b.text).join("");
+  return { data: JSON.parse(text), cost };
+}
+async function countTok(text, model = settings.model) {
+  const client = new Anthropic({ apiKey: settings.apiKey, dangerouslyAllowBrowser: true });
+  const r = await client.messages.countTokens({ model, messages: [{ role: "user", content: text || "." }] });
+  return r.input_tokens || 0;
+}
+function auditSharedContext(w = currentWorld()) {
+  const list = liveEntries();
+  const magic = list.filter((e) => isMagicType(e.type)).slice(0, 6);
+  return [
+    "[세계관 공통 맥락 · 모든 묶음에 같다]",
+    worldOverviewText(w),
+    commonRulesText(w),
+    calendarText(),
+    economyText(w) || "",
+    techText(w) || "",
+    magic.length ? `세계 규칙(마법 체계):\n${magic.map((e) => cut(entryToText(e), 1500)).join("\n\n")}` : "",
+    `설정집 색인(전체 ${list.length}개):\n${list.map(indexLine).join("\n")}`,
+  ].filter(Boolean).join("\n\n");
+}
+const fmtUsd = (v) => `$${v < 0.01 ? v.toFixed(4) : v.toFixed(2)}`;
+const sevClass = (s) => (s === "높음" ? "high" : s === "중간" ? "mid" : "low");
+
+/* ---- 카테고리 전수점검 ---- */
+const AUDIT_SYS = `너는 세계관 설정집의 교정 편집자다. 주어진 항목을 하나도 빠짐없이 점검한다. 세계관 공통 맥락과 설정집 색인, 함께 준 관련 항목을 기준으로 다음을 찾는다.
+1. 템플릿과 공통 작성 규칙 위반: 정해지지 않은 것을 단정함, 단위·기준 시점 누락, 참조할 때 식별자 누락
+2. 항목 안의 모순(칸끼리, 본문과 칸)
+3. 다른 항목과의 모순: 연도, 나이, 관계, 소속, 위치, 능력의 조건과 대가
+4. 세계 규칙(마법 체계, 기술 수준, 화폐·물가, 달력) 위반
+5. 연표와 나이의 어긋남
+6. 그 분류에 꼭 필요한데 비어 있는 핵심 정보(사소한 빈 칸은 빼고)
+7. 참조 오류(없는 식별자, 다른 항목을 가리키는 식별자)
+추측으로 문제를 만들지 않는다. evidence에는 근거가 되는 문장을 그대로 인용하고, related에는 함께 어긋나는 항목의 식별자를 넣는다. 확정 항목끼리 모순이면 둘 다 적되 어느 쪽을 고치면 좋을지 suggestion에 쓴다. 문제가 없는 항목은 ok를 true로 두고 issues를 비운다. 한국어로 쓴다.`;
+const AUDIT_SCHEMA = { type: "object", properties: { verdicts: { type: "array", items: { type: "object", properties: { id: S_STR, ok: { type: "boolean" }, issues: { type: "array", items: { type: "object", properties: { field: S_STR, kind: { type: "string", enum: AUDIT_KINDS }, severity: { type: "string", enum: SEVS }, problem: S_STR, evidence: S_STR, suggestion: S_STR, related: { type: "array", items: S_STR } }, required: ["field", "kind", "severity", "problem", "evidence", "suggestion", "related"], additionalProperties: false } } }, required: ["id", "ok", "issues"], additionalProperties: false } } }, required: ["verdicts"], additionalProperties: false };
+const SYNTH_SCHEMA = { type: "object", properties: { summary: S_STR, patterns: { type: "array", items: { type: "object", properties: { problem: S_STR, refs: { type: "array", items: S_STR }, suggestion: S_STR }, required: ["problem", "refs", "suggestion"], additionalProperties: false } } }, required: ["summary", "patterns"], additionalProperties: false };
+function auditTargets(types, statuses) {
+  return liveEntries().filter((e) => types.includes(e.type) && statuses.includes(statusOf(e)));
+}
+// 지난 점검 뒤 바뀐 항목과, 그것과 이어진 항목
+function changedSince(prev, list) {
+  const changed = new Set(list.filter((e) => !prev?.verdicts?.[e.id] || (e.updatedAt || 0) > (prev.verdicts[e.id].at || 0)).map((e) => e.id));
+  const near = new Set(changed);
+  for (const id of changed) {
+    for (const r of findEntry(id)?.relations || []) near.add(r.to);
+    for (const { from } of incoming(id)) near.add(from.id);
+  }
+  return list.filter((e) => near.has(e.id));
+}
+function auditChunks(entries) {
+  const byType = new Map();
+  for (const e of entries) { if (!byType.has(e.type)) byType.set(e.type, []); byType.get(e.type).push(e); }
+  const chunks = [];
+  for (const [type, list] of byType) {
+    let cur = [];
+    let size = 0;
+    for (const e of list.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }))) {
+      const n = entryToText(e).length;
+      if (cur.length && (size + n > 18000 || cur.length >= 10)) { chunks.push({ type, ids: cur, done: false }); cur = []; size = 0; }
+      cur.push(e.id);
+      size += n;
+    }
+    if (cur.length) chunks.push({ type, ids: cur, done: false });
+  }
+  return chunks;
+}
+function auditChunkPrompt(chunk) {
+  const t = typeInfo(chunk.type);
+  const ents = chunk.ids.map(findEntry).filter(Boolean);
+  const inChunk = new Set(ents.map((e) => e.id));
+  const rel = new Map();
+  for (const e of ents) {
+    for (const r of e.relations || []) if (!inChunk.has(r.to)) { const x = findEntry(r.to); if (x && !x.deleted) rel.set(x.id, x); }
+    for (const { from } of incoming(e.id)) if (!inChunk.has(from.id)) rel.set(from.id, from);
+  }
+  const relList = [...rel.values()].slice(0, 16);
+  return `분류: ${t.label} (${t.code || "?"})\n${t.template ? `템플릿:\n${t.template}` : "템플릿 없음"}\n\n점검할 항목 ${ents.length}개:\n\n${ents.map(entryToText).join("\n\n")}${relList.length ? `\n\n참고: 이 항목들과 이어진 다른 항목(점검 대상이 아니고, 모순을 볼 때만 쓴다):\n\n${relList.map((x) => cut(entryToText(x), 900)).join("\n\n")}` : ""}\n\n점검할 항목 id: ${ents.map((e) => e.id).join(", ")}\nverdicts에 위 id마다 하나씩 판정을 넣는다.`;
+}
+function applyVerdicts(rep, ids, verdicts) {
+  const allowed = new Set(ids);
+  for (const v of verdicts || []) {
+    const e = findEntry(v.id);
+    if (!e || !allowed.has(e.id)) continue;
+    const issues = (v.issues || []).filter((it) => String(it.problem || "").trim());
+    rep.verdicts[e.id] = { ok: !issues.length, at: e.updatedAt || 0 };
+    rep.issues = rep.issues.filter((x) => x.ref !== e.id);
+    for (const it of issues) rep.issues.push({ id: uid(), ref: e.id, type: e.type, field: String(it.field || ""), kind: AUDIT_KINDS.includes(it.kind) ? it.kind : "기타", severity: SEVS.includes(it.severity) ? it.severity : "중간", problem: String(it.problem), evidence: String(it.evidence || ""), suggestion: String(it.suggestion || ""), related: (it.related || []).map((r) => findEntry(r)?.id).filter((r) => r && r !== e.id), state: "open" });
+  }
+}
+async function estimateEntryAudit(targets, model) {
+  const chunks = auditChunks(targets);
+  const shared = auditSharedContext();
+  const p = PRICES[model];
+  const sharedTok = await countTok(shared, model);
+  const bodyText = chunks.map(auditChunkPrompt).join("\n\n");
+  const bodyTok = await countTok(bodyText, model);
+  const n = chunks.length;
+  const inCost = (sharedTok * p.in * 1.25 + sharedTok * Math.max(0, n - 1) * p.cacheRead + bodyTok * p.in) / 1e6;
+  const lo = inCost + (targets.length * 250 * p.out) / 1e6;
+  const hi = inCost + (targets.length * 900 * p.out) / 1e6 + (n * 1500 * p.out) / 1e6;
+  return { chunks: n, sharedTok, bodyTok, lo, hi };
+}
+async function runEntryAudit(rep, onProgress = () => {}) {
+  if (audit.running) { toast("다른 점검이 진행 중입니다"); return; }
+  audit.running = rep.id;
+  audit.stop = false;
+  rep.status = "running";
+  delete rep.error;
+  const shared = auditSharedContext();
+  try {
+    for (const ch of rep.chunks) {
+      if (ch.done) continue;
+      if (audit.stop) break;
+      const ids = ch.ids.filter((id) => findEntry(id) && !findEntry(id).deleted);
+      if (!ids.length) { ch.done = true; continue; }
+      let res;
+      try { res = await auditAsk(AUDIT_SYS, shared, auditChunkPrompt({ ...ch, ids }), AUDIT_SCHEMA, { model: rep.model }); }
+      catch (err) { rep.error = apiMessage(err); break; }
+      rep.cost += res.cost;
+      applyVerdicts(rep, ids, res.data.verdicts);
+      const missing = ids.filter((id) => !rep.verdicts[id] || (rep.verdicts[id].at || 0) < (findEntry(id).updatedAt || 0));
+      if (missing.length && !ch.retry) rep.chunks.push({ type: ch.type, ids: missing, done: false, retry: true });
+      else for (const id of missing) rep.verdicts[id] = { ok: null, at: findEntry(id).updatedAt || 0 };
+      ch.done = true;
+      await saveAudits();
+      onProgress(rep);
+    }
+    if (!audit.stop && !rep.error && rep.chunks.every((c) => c.done)) {
+      const open = rep.issues.filter((x) => x.state === "open");
+      if (open.length >= 3) {
+        const lines = open.slice(0, 200).map((x) => `- ${x.ref} ${nameOf(x.ref)}(${typeInfo(x.type).label}) [${x.kind}/${x.severity}] ${cut(x.problem, 140)}${x.related.length ? ` · 함께: ${x.related.join(", ")}` : ""}`);
+        try {
+          const r = await auditAsk("너는 세계관 설정집의 교정 편집자다. 항목별 점검 결과를 모아 전체를 요약하고, 여러 항목에 걸친 문제(같은 원인, 체계적인 어긋남)를 묶는다. refs에는 관련 항목 식별자를 넣는다. 한국어로 쓴다.", null, `항목별 점검에서 나온 문제 ${open.length}개:\n${lines.join("\n")}\n\n전체 요약(2~4문장)과, 여러 항목에 걸친 문제를 많아야 8개 묶어라.`, SYNTH_SCHEMA, { model: rep.model, maxTokens: 12000, effort: "low" });
+          rep.summary = String(r.data.summary || "");
+          rep.patterns = (r.data.patterns || []).map((x) => ({ problem: x.problem, suggestion: x.suggestion, refs: (x.refs || []).map((id) => findEntry(id)?.id).filter(Boolean) }));
+          rep.cost += r.cost;
+        } catch { /* 종합은 없어도 된다 */ }
+      } else rep.summary = open.length ? "" : "문제를 찾지 못했습니다.";
+      rep.status = "done";
+      rep.finishedAt = Date.now();
+    } else rep.status = "stopped";
+  } finally {
+    audit.running = null;
+    await saveAudits();
+    onProgress(rep);
+  }
+}
+async function openEntryAuditSetup() {
+  if (!currentWorld()) return;
+  await loadAudits();
+  const types = worldTypes();
+  const list = liveEntries();
+  const counts = Object.fromEntries(types.map((t) => [t.key, list.filter((e) => e.type === t.key).length]));
+  const prev = (audit.list || []).filter((r) => r.kind === "entries" && r.status === "done").at(-1);
+  openSheet(`<h2 class="sheet-title">카테고리 전수점검</h2>
+    <p class="meta" style="margin:0 0 8px">고른 분류의 항목을 하나도 빠짐없이 Claude가 읽고 판정합니다. 항목 안의 모순, 다른 항목과의 모순, 세계 규칙 위반, 템플릿·공통 규칙, 연표·나이, 비어 있는 핵심 정보를 봅니다.</p>
+    <form class="form" id="auditForm">
+      <fieldset><legend>분류</legend><div class="pick-box">${types.filter((t) => counts[t.key]).map((t) => `<label class="pick"><input type="checkbox" data-at="${t.key}" checked> ${esc(t.label)} <span class="meta">${counts[t.key]}</span></label>`).join("") || `<p class="meta">항목이 없습니다.</p>`}</div></fieldset>
+      <fieldset><legend>상태</legend><div class="seg"><label><input type="radio" name="au-st" value="canon"><span>확정만</span></label><label><input type="radio" name="au-st" value="both" checked><span>확정 + 초안</span></label></div></fieldset>
+      <label>모델<select id="au-model">${AUDIT_MODELS.map((m) => `<option value="${m}"${m === (AUDIT_MODELS.includes(settings.model) ? settings.model : AUDIT_MODELS[0]) ? " selected" : ""}>${PRICES[m].label}</option>`).join("")}</select></label>
+      ${prev ? `<label class="pick"><input type="checkbox" id="au-changed" checked> 지난 점검(${new Date(prev.at).toLocaleDateString("ko-KR")}) 뒤 바뀐 항목과 이어진 항목만</label>` : ""}
+      <p class="meta" id="au-est">'예상 비용'으로 묶음 수와 비용을 먼저 볼 수 있습니다(토큰 계산은 무료).</p>
+      <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">닫기</button><button class="btn" type="button" data-act="au-est">예상 비용</button><button class="btn btn-primary" type="submit">점검 시작</button></div>
+    </form>`, (root) => {
+    const pick = () => {
+      const tsel = $$("[data-at]", root).filter((x) => x.checked).map((x) => x.dataset.at);
+      const st = $$('[name="au-st"]', root).find((x) => x.checked)?.value === "canon" ? ["canon"] : ["canon", "draft"];
+      let targets = auditTargets(tsel, st);
+      const only = $("#au-changed", root)?.checked;
+      if (only && prev) targets = changedSince(prev, targets);
+      return { tsel, st, targets, only: !!only, model: $("#au-model", root).value };
+    };
+    root.onclick = async (ev) => {
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "cancel") closeSheet();
+      else if (act === "au-est") {
+        const p = pick();
+        if (!p.targets.length) { toast("점검할 항목이 없습니다"); return; }
+        if (!settings.apiKey) { toast("설정에서 API 키를 먼저 넣으세요"); return; }
+        const b = ev.target.closest("[data-act]");
+        b.disabled = true;
+        $("#au-est", root).textContent = "계산하는 중…";
+        try {
+          const e = await estimateEntryAudit(p.targets, p.model);
+          $("#au-est", root).textContent = `항목 ${p.targets.length}개 · 묶음 ${e.chunks}개 · 입력 약 ${fmtCount(e.sharedTok + e.bodyTok)}토큰(공통 맥락 ${fmtCount(e.sharedTok)}은 캐시로 재사용) · 예상 ${fmtUsd(e.lo)} ~ ${fmtUsd(e.hi)}`;
+        } catch (err) { $("#au-est", root).textContent = `계산하지 못했습니다: ${apiMessage(err)}`; }
+        b.disabled = false;
+      }
+    };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      if (state.busy || audit.running) { toast("다른 작업이 진행 중입니다"); return; }
+      if (!settings.apiKey) { toast("설정에서 API 키를 먼저 넣으세요"); return; }
+      const p = pick();
+      if (!p.targets.length) { toast(p.only ? "지난 점검 뒤 바뀐 항목이 없습니다" : "점검할 항목이 없습니다"); return; }
+      const rep = { id: uid(), kind: "entries", at: Date.now(), model: p.model, scope: { types: p.tsel, statuses: p.st, onlyChanged: p.only }, chunks: auditChunks(p.targets), verdicts: {}, issues: [], cost: 0, status: "running" };
+      if (p.only && prev) {
+        // 바뀌지 않은 항목의 판정과 문제는 지난 보고서에서 이어받는다
+        const redo = new Set(p.targets.map((e) => e.id));
+        for (const [id, v] of Object.entries(prev.verdicts || {})) if (!redo.has(id) && findEntry(id)) rep.verdicts[id] = v;
+        rep.issues = (prev.issues || []).filter((x) => !redo.has(x.ref) && findEntry(x.ref)).map((x) => ({ ...x }));
+        rep.scope.types = [...new Set([...(prev.scope?.types || []), ...p.tsel])];
+      }
+      audit.list.push(rep);
+      await saveAudits();
+      openAuditReport(rep);
+      runEntryAudit(rep, () => { if (state.auditOpen === rep.id) openAuditReport(rep, true); });
+    };
+  });
+}
+
+/* ---- 스토리 전체 점검 ---- */
+const REC_SCHEMA = { type: "object", properties: { summary: S_STR, when: S_STR, where: S_STR, cast: { type: "array", items: S_STR }, events: { type: "array", items: S_STR }, learned: { type: "array", items: { type: "object", properties: { who: S_STR, what: S_STR }, required: ["who", "what"], additionalProperties: false } }, items: { type: "array", items: S_STR }, changes: { type: "array", items: S_STR }, opened: { type: "array", items: S_STR }, closed: { type: "array", items: S_STR } }, required: ["summary", "when", "where", "cast", "events", "learned", "items", "changes", "opened", "closed"], additionalProperties: false };
+const STORY_SCHEMA = { type: "object", properties: { summary: S_STR, issues: { type: "array", items: { type: "object", properties: { refs: { type: "array", items: S_STR }, kind: { type: "string", enum: STORY_KINDS }, severity: { type: "string", enum: SEVS }, problem: S_STR, evidence: S_STR, suggestion: S_STR }, required: ["refs", "kind", "severity", "problem", "evidence", "suggestion"], additionalProperties: false } } }, required: ["summary", "issues"], additionalProperties: false };
+const VERIFY_SCHEMA = { type: "object", properties: { verdict: { type: "string", enum: ["맞음", "아님", "애매"] }, reason: S_STR }, required: ["verdict", "reason"], additionalProperties: false };
+const STORY_FULL_LIMIT = 120000; // 이보다 적은 토큰이면 본문 전체를 한 번에 본다
+async function loadSceneRecs() { return (await idb.get("scenerec:" + state.worldId)) || {}; }
+function storyScenes(workIds) {
+  const out = [];
+  for (const id of workIds) { const wk = findWork(id); if (wk) for (const m of workOrder(wk)) if (String(m.body || "").trim()) out.push({ wk, m }); }
+  return out;
+}
+function recText(r) {
+  if (!r) return "(기록 없음)";
+  const l = [`요약: ${r.summary}`];
+  if (r.when || r.where) l.push(`때·곳: ${[r.when, r.where].filter(Boolean).join(" · ")}`);
+  if (r.cast?.length) l.push(`등장: ${r.cast.join(", ")}`);
+  if (r.events?.length) l.push(`일어난 일: ${r.events.join(" / ")}`);
+  if (r.learned?.length) l.push(`알게 된 것: ${r.learned.map((x) => `${x.who}: ${x.what}`).join(" / ")}`);
+  if (r.items?.length) l.push(`사물의 움직임: ${r.items.join(" / ")}`);
+  if (r.changes?.length) l.push(`상태 변화: ${r.changes.join(" / ")}`);
+  if (r.opened?.length) l.push(`연 질문: ${r.opened.join(" / ")}`);
+  if (r.closed?.length) l.push(`닫은 질문: ${r.closed.join(" / ")}`);
+  return l.join("\n");
+}
+function storyCastText(scenes) {
+  const ids = new Map();
+  for (const { m } of scenes) for (const id of [...(m.refs || []), m.card?.pov, ...(m.card?.cast || [])].filter(Boolean)) ids.set(id, (ids.get(id) || 0) + 1);
+  const top = [...ids.entries()].sort((a, b) => b[1] - a[1]).slice(0, 25).map(([id]) => findEntry(id)).filter((e) => e && !e.deleted);
+  return top.map((e) => cut(entryToText(e), 1000)).join("\n\n");
+}
+function storyFsText() {
+  const fs = worldForeshadows();
+  return fs.length ? `복선·예언:\n${fs.slice(0, 40).map((f) => `- [${f.status}] ${cut(f.text, 100)}${f.plant ? ` (깔린 곳 ${f.plant})` : ""}${f.payoff ? ` (회수 ${f.payoff})` : ""}`).join("\n")}` : "";
+}
+function storyBodyText(scenes, recs, full) {
+  const parts = [];
+  let curWk = null;
+  for (const { wk, m } of scenes) {
+    if (wk !== curWk) { curWk = wk; parts.push(`\n# 작품 「${wk.title}」(${wk.id})\n${planOf(wk).paragraph ? `한 문단:\n${planOf(wk).paragraph}\n` : ""}`); }
+    const ch = chapterOf(wk, m.chapterId);
+    parts.push(`### ${m.id} 「${m.title}」 · ${ch ? chapterLabel(wk, ch) : "장 없음"} · ${textStats(m.body).withSpace}자${hasCard(m) ? `\n카드: ${cardText(m, false).replace(/\n/g, " / ")}` : ""}\n${full ? m.body : recText(recs[m.id]?.rec)}`);
+  }
+  return parts.join("\n\n");
+}
+const STORY_SYS = `너는 장편 소설의 원고 검토 편집자다. 작품 전체를 처음부터 끝까지 읽고 다음 문제를 찾는다.
+- 연속성: 죽거나 떠난 인물이 다시 나옴, 사물이 두 곳에 있음, 알기 전에 아는 것, 다친 몸이 멀쩡함
+- 시간선: 날짜와 순서, 이동 시간, 나이
+- 인물: 동기·말투·성장이 인물 설정이나 앞 장면과 어긋남
+- 플롯 허점: 근거 없는 해결, 인과가 끊긴 전개, 설명되지 않는 선택
+- 회수 안 된 복선과 사라진 줄거리 가닥
+- 설정 위반: 마법 규칙, 기술 수준, 세력 관계, 물가
+- 계획 대비: 계획(한 문단, 장 요약, 장면 카드)에서 벗어난 장면
+- 속도: 지나치게 늘어지거나 서두르는 구간
+refs에는 문제가 드러나는 장면 id(ms-…)를 넣고, evidence에는 근거 문장이나 기록을 인용한다. 실제로 고칠 만한 문제만, 중요한 것부터 많아야 25개. 한국어로 쓴다.`;
+async function estimateStoryAudit(workIds, model, recModel) {
+  const scenes = storyScenes(workIds);
+  const recs = await loadSceneRecs();
+  const fullText = storyBodyText(scenes, recs, true);
+  const fullTok = await countTok(fullText, model);
+  const full = fullTok <= STORY_FULL_LIMIT;
+  const need = full ? [] : scenes.filter(({ m }) => recs[m.id]?.hash !== textHash(m.title + "\n" + m.body));
+  const p = PRICES[model];
+  const pr = PRICES[recModel];
+  const shared = auditSharedContext();
+  const sharedTok = await countTok(shared, model);
+  const recIn = need.reduce((a, { m }) => a + textStats(m.body).withSpace, 0) * 1.2; // 기록용 입력(어림)
+  const recCost = need.length ? (sharedTok * pr.in * 1.25 + sharedTok * Math.max(0, need.length - 1) * pr.cacheRead + recIn * pr.in + need.length * 1200 * pr.out) / 1e6 : 0;
+  const bodyTok = full ? fullTok : Math.round(scenes.length * 450);
+  const passCost = ((sharedTok + bodyTok + 8000) * p.in + 12000 * p.out) / 1e6;
+  return { scenes: scenes.length, full, fullTok, need: need.length, lo: recCost + passCost * 0.7, hi: recCost * 1.5 + passCost * 1.6 };
+}
+async function runStoryAudit(rep, onProgress = () => {}) {
+  if (audit.running) { toast("다른 점검이 진행 중입니다"); return; }
+  audit.running = rep.id;
+  audit.stop = false;
+  rep.status = "running";
+  delete rep.error;
+  const shared = auditSharedContext();
+  try {
+    const scenes = storyScenes(rep.scope.works);
+    const recs = await loadSceneRecs();
+    if (!rep.full) {
+      // 1단계: 바뀐 장면만 기록을 만든다
+      for (const { wk, m } of scenes) {
+        if (audit.stop) break;
+        const hash = textHash(m.title + "\n" + m.body);
+        if (recs[m.id]?.hash === hash) continue;
+        let res;
+        try { res = await auditAsk("너는 원고 기록 담당자다. 장면을 읽고 나중에 작품 전체의 연속성을 점검할 수 있게 사실만 정리한다. 장면에 없는 것을 지어내지 않는다. 인물·장소·사물 이름은 원고에 쓰인 대로 쓰고, 설정집 색인에 있으면 식별자를 괄호로 덧붙인다. 한국어로 쓴다.", shared, `작품 「${wk.title}」 · 장면 ${m.id} 「${m.title}」${hasCard(m) ? `\n카드: ${cardText(m, false).replace(/\n/g, " / ")}` : ""}\n\n본문:\n${m.body}`, REC_SCHEMA, { model: rep.recModel, maxTokens: 8000, effort: "low" }); }
+        catch (err) { rep.error = apiMessage(err); break; }
+        recs[m.id] = { hash, rec: res.data, at: Date.now() };
+        rep.cost += res.cost;
+        rep.recDone = (rep.recDone || 0) + 1;
+        await idb.set("scenerec:" + state.worldId, recs);
+        await saveAudits();
+        onProgress(rep);
+      }
+    }
+    if (!audit.stop && !rep.error) {
+      // 2단계: 작품 전체
+      const body = storyBodyText(scenes, recs, rep.full);
+      const plans = rep.scope.works.map(findWork).filter(Boolean).map((wk) => planText(wk)).join("\n\n");
+      let res;
+      try { res = await auditAsk(STORY_SYS, shared, `계획:\n${plans}\n\n주요 인물·장소 설정:\n${storyCastText(scenes)}\n\n${storyFsText()}\n\n${rep.full ? "원고 전문" : "장면 기록(원문 대신 사실만 정리한 것)"}:\n${body}\n\n작품 전체를 점검하라.`, STORY_SCHEMA, { model: rep.model, maxTokens: 20000, effort: "medium" }); }
+      catch (err) { rep.error = apiMessage(err); }
+      if (res) {
+        rep.cost += res.cost;
+        rep.summary = String(res.data.summary || "");
+        const known = new Set(scenes.map(({ m }) => m.id));
+        rep.issues = (res.data.issues || []).map((x) => ({ id: uid(), refs: (x.refs || []).filter((r) => known.has(r)), kind: STORY_KINDS.includes(x.kind) ? x.kind : "기타", severity: SEVS.includes(x.severity) ? x.severity : "중간", problem: String(x.problem || ""), evidence: String(x.evidence || ""), suggestion: String(x.suggestion || ""), state: "open" })).filter((x) => x.problem);
+        rep.status = "done";
+        rep.finishedAt = Date.now();
+      }
+    }
+    if (rep.status !== "done") rep.status = "stopped";
+  } finally {
+    audit.running = null;
+    await saveAudits();
+    onProgress(rep);
+  }
+}
+async function verifyStoryIssue(rep, it, btn) {
+  const scenes = it.refs.map((id) => state.manuscripts.find((m) => m.id === id)).filter(Boolean);
+  if (!scenes.length) { toast("확인할 장면이 없습니다"); return; }
+  if (btn) { btn.disabled = true; btn.textContent = "확인하는 중…"; }
+  try {
+    const res = await auditAsk("너는 원고 검토 편집자다. 지적된 문제가 장면 원문에 실제로 있는지 원문만 보고 판단한다. 맞음/아님/애매 중 하나로 답하고 근거를 짧게 쓴다. 한국어로 쓴다.", auditSharedContext(), `지적된 문제 [${it.kind}]: ${it.problem}\n근거로 든 것: ${it.evidence}\n\n장면 원문:\n${scenes.map((m) => `### ${m.id} 「${m.title}」\n${m.body}`).join("\n\n")}`, VERIFY_SCHEMA, { model: rep.model, maxTokens: 8000, effort: "low" });
+    it.verify = { verdict: res.data.verdict, reason: String(res.data.reason || ""), at: Date.now() };
+    rep.cost += res.cost;
+    await saveAudits();
+  } catch (err) { toast(apiMessage(err)); }
+  openAuditReport(rep, true);
+}
+async function openStoryAuditSetup() {
+  await loadAudits();
+  const works = worldWorks().filter((wk) => workOrder(wk).some((m) => String(m.body || "").trim()));
+  if (!works.length) { toast("본문이 있는 작품이 없습니다"); return; }
+  openSheet(`<h2 class="sheet-title">스토리 전체 점검</h2>
+    <p class="meta" style="margin:0 0 8px">작품 전체를 읽고 연속성, 시간선, 인물, 플롯 허점, 회수 안 된 복선, 설정 위반, 계획에서 벗어난 장면을 찾습니다. 분량이 적으면 원고 전문을 한 번에 보고, 많으면 장면마다 사실 기록을 먼저 만든 뒤(바뀐 장면만) 전체를 봅니다.</p>
+    <form class="form" id="storyAuditForm">
+      <fieldset><legend>작품</legend><div class="pick-box">${works.map((wk) => `<label class="pick"><input type="checkbox" data-sw="${wk.id}" checked> ${esc(wk.title)} <span class="meta">${workOrder(wk).filter((m) => String(m.body || "").trim()).length}장면</span></label>`).join("")}</div></fieldset>
+      <label>전체 점검 모델<select id="sa-model">${AUDIT_MODELS.map((m) => `<option value="${m}"${m === (AUDIT_MODELS.includes(settings.model) ? settings.model : AUDIT_MODELS[0]) ? " selected" : ""}>${PRICES[m].label}</option>`).join("")}</select></label>
+      <label>장면 기록 모델 <small>분량이 많을 때만 씀</small><select id="sa-rec"><option value="claude-haiku-5-5">Haiku 5.5 (싸게)</option>${AUDIT_MODELS.map((m) => `<option value="${m}">${PRICES[m].label}</option>`).join("")}</select></label>
+      <p class="meta" id="sa-est">'예상 비용'으로 방식과 비용을 먼저 볼 수 있습니다.</p>
+      <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">닫기</button><button class="btn" type="button" data-act="sa-est">예상 비용</button><button class="btn btn-primary" type="submit">점검 시작</button></div>
+    </form>`, (root) => {
+    const pick = () => ({ works: $$("[data-sw]", root).filter((x) => x.checked).map((x) => x.dataset.sw), model: $("#sa-model", root).value, recModel: $("#sa-rec", root).value });
+    root.onclick = async (ev) => {
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "cancel") closeSheet();
+      else if (act === "sa-est") {
+        const p = pick();
+        if (!p.works.length) { toast("작품을 고르세요"); return; }
+        if (!settings.apiKey) { toast("설정에서 API 키를 먼저 넣으세요"); return; }
+        $("#sa-est", root).textContent = "계산하는 중…";
+        try {
+          const e = await estimateStoryAudit(p.works, p.model, p.recModel);
+          $("#sa-est", root).textContent = `장면 ${e.scenes}개 · 원고 약 ${fmtCount(e.fullTok)}토큰 · ${e.full ? "원고 전문을 한 번에 봅니다" : `장면 기록을 먼저 만듭니다(새로 만들 기록 ${e.need}개)`} · 예상 ${fmtUsd(e.lo)} ~ ${fmtUsd(e.hi)}`;
+        } catch (err) { $("#sa-est", root).textContent = `계산하지 못했습니다: ${apiMessage(err)}`; }
+      }
+    };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      if (state.busy || audit.running) { toast("다른 작업이 진행 중입니다"); return; }
+      if (!settings.apiKey) { toast("설정에서 API 키를 먼저 넣으세요"); return; }
+      const p = pick();
+      if (!p.works.length) { toast("작품을 고르세요"); return; }
+      const btn = ev.submitter || $('[type="submit"]', root);
+      btn.disabled = true;
+      btn.textContent = "분량 재는 중…";
+      let full;
+      try { full = (await countTok(storyBodyText(storyScenes(p.works), {}, true), p.model)) <= STORY_FULL_LIMIT; }
+      catch (err) { toast(apiMessage(err)); btn.disabled = false; btn.textContent = "점검 시작"; return; }
+      const rep = { id: uid(), kind: "story", at: Date.now(), model: p.model, recModel: p.recModel, full, scope: { works: p.works }, issues: [], cost: 0, status: "running", total: storyScenes(p.works).length };
+      audit.list.push(rep);
+      await saveAudits();
+      openAuditReport(rep);
+      runStoryAudit(rep, () => { if (state.auditOpen === rep.id) openAuditReport(rep, true); });
+    };
+  });
+}
+
+/* ---- 보고서 ---- */
+function auditProgressText(rep) {
+  if (rep.kind === "entries") {
+    const done = rep.chunks.filter((c) => c.done).length;
+    return `묶음 ${done}/${rep.chunks.length} · 판정 ${Object.keys(rep.verdicts).length}개`;
+  }
+  return rep.full ? "원고 전문을 읽는 중" : `장면 기록 ${rep.recDone || 0}개 만듦 · 그다음 전체 점검`;
+}
+function openAuditReport(rep, refresh = false) {
+  if (refresh && ($("#sheet").hidden || $("#sheetBody [data-audit-rep]")?.dataset.auditRep !== rep.id)) return;
+  state.auditOpen = rep.id;
+  const f = (state.auditFilter ||= { sev: "all", state: "open", type: "all" });
+  const isE = rep.kind === "entries";
+  const all = rep.issues;
+  const list = all.filter((x) => (f.sev === "all" || x.severity === f.sev) && (f.state === "all" || x.state === f.state) && (!isE || f.type === "all" || x.type === f.type));
+  const order = { 높음: 0, 중간: 1, 낮음: 2 };
+  list.sort((a, b) => order[a.severity] - order[b.severity]);
+  const shown = list.slice(0, state.auditMore ? 400 : 60);
+  const verdicts = isE ? Object.values(rep.verdicts) : [];
+  const head = isE ? `판정 ${verdicts.length}개 · 이상 없음 ${verdicts.filter((v) => v.ok).length} · 문제 있는 항목 ${new Set(all.map((x) => x.ref)).size}${verdicts.some((v) => v.ok === null) ? ` · 판정 없음 ${verdicts.filter((v) => v.ok === null).length}` : ""}` : `장면 ${rep.total || 0}개 · ${rep.full ? "원고 전문" : "장면 기록"}으로 점검`;
+  const types = isE ? [...new Set(all.map((x) => x.type))] : [];
+  const issueHTML = (x) => `<div class="check-item check-issue audit-issue${x.state !== "open" ? " done" : ""}"><span class="txt"><span class="pill sev-${sevClass(x.severity)}">${esc(x.severity)}</span> <b>${esc(x.kind)}</b>${isE ? ` · <button type="button" class="ref" data-ref="${x.ref}">${esc(nameOf(x.ref))}</button> <span class="meta">${esc(typeInfo(x.type).label)}${x.field ? ` · ${esc(x.field)}` : ""}</span>` : ` · ${x.refs.map((id) => `<button type="button" class="ref" data-ms-open="${id}">${esc(state.manuscripts.find((m) => m.id === id)?.title || id)}</button>`).join(" ")}`}<br>${esc(x.problem)}${x.evidence ? `<span class="ex-quote">${esc(cut(x.evidence, 220))}</span>` : ""}${x.related?.length ? `<span class="meta">함께: ${x.related.map((id) => `<button type="button" class="ref" data-ref="${id}">${esc(nameOf(id))}</button>`).join(" ")}</span>` : ""}${x.suggestion ? `<br><span class="meta">→ ${esc(x.suggestion)}</span>` : ""}${x.verify ? `<br><span class="pill${x.verify.verdict === "아님" ? "" : x.verify.verdict === "맞음" ? " sev-high" : " sev-mid"}">본문 확인: ${esc(x.verify.verdict)}</span> <span class="meta">${esc(x.verify.reason)}</span>` : ""}</span>
+    <span class="row">${x.state === "open" ? `<button class="btn btn-small btn-ghost" type="button" data-ai-st="${x.id}|fixed">해결</button><button class="btn btn-small btn-ghost" type="button" data-ai-st="${x.id}|ignored">무시</button>` : `<span class="meta">${x.state === "fixed" ? "해결함" : "무시함"}</span><button class="btn btn-small btn-ghost" type="button" data-ai-st="${x.id}|open">되돌리기</button>`}${!isE && x.refs.length ? `<button class="btn btn-small btn-ghost" type="button" data-ai-verify="${x.id}">본문으로 다시 확인</button>` : ""}<button class="btn btn-small btn-ghost" type="button" data-ai-fix="${x.id}">Claude와 고치기</button></span></div>`;
+  const running = rep.status === "running";
+  openSheet(`<h2 class="sheet-title">${isE ? "카테고리 전수점검" : "스토리 전체 점검"}</h2><div data-audit-rep="${rep.id}" hidden></div>
+    <p class="meta" style="margin:0 0 6px">${new Date(rep.at).toLocaleString("ko-KR")} · ${PRICES[rep.model]?.label || rep.model} · 비용 ${fmtUsd(rep.cost || 0)}${isE ? ` · ${rep.scope.types.map((k) => typeInfo(k).label).join(", ")}${rep.scope.onlyChanged ? " · 바뀐 것만" : ""}` : ` · ${rep.scope.works.map((id) => findWork(id)?.title || id).join(", ")}`}</p>
+    ${running ? `<div class="audit-run"><span class="spinner" aria-hidden="true"></span><span>${esc(auditProgressText(rep))}</span><span class="sp"></span>${audit.running === rep.id ? `<button class="btn btn-small" type="button" data-act="au-stop">멈추기</button>` : ""}</div><p class="meta">시트를 닫아도 앱이 열려 있는 동안 계속합니다. 중간에 끊기면 '이어서 하기'로 남은 것만 보냅니다.</p>` : ""}
+    ${rep.status === "stopped" ? `<div class="audit-run stopped"><span>${rep.error ? `멈춤: ${esc(rep.error)}` : "멈췄습니다"} · ${esc(auditProgressText(rep))}</span><span class="sp"></span><button class="btn btn-small btn-primary" type="button" data-act="au-resume">이어서 하기</button></div>` : ""}
+    <p class="work-stats">${head} · 문제 ${all.length}개(열린 것 ${all.filter((x) => x.state === "open").length})</p>
+    ${rep.summary ? `<p>${esc(rep.summary)}</p>` : ""}
+    ${rep.patterns?.length ? `<section class="check-group"><h3>여러 항목에 걸친 문제 <span class="n">${rep.patterns.length}</span></h3>${rep.patterns.map((p) => `<div class="check-item"><span class="txt">${esc(p.problem)}${p.refs.length ? `<br>${p.refs.map((id) => `<button type="button" class="ref" data-ref="${id}">${esc(nameOf(id))}</button>`).join(" ")}` : ""}${p.suggestion ? `<br><span class="meta">→ ${esc(p.suggestion)}</span>` : ""}</span></div>`).join("")}</section>` : ""}
+    <div class="audit-filter"><div class="seg">${["all", ...SEVS].map((s) => `<label><input type="radio" name="af-sev" value="${s}"${f.sev === s ? " checked" : ""}><span>${s === "all" ? "전체" : s}</span></label>`).join("")}</div>
+      <div class="seg">${[["open", "열린 것"], ["all", "모두"]].map(([k, l]) => `<label><input type="radio" name="af-st" value="${k}"${f.state === k ? " checked" : ""}><span>${l}</span></label>`).join("")}</div>
+      ${types.length > 1 ? `<select id="af-type"><option value="all">모든 분류</option>${types.map((t) => `<option value="${t}"${f.type === t ? " selected" : ""}>${esc(typeInfo(t).label)}</option>`).join("")}</select>` : ""}</div>
+    <section class="check-group audit-list">${shown.map(issueHTML).join("") || `<p class="meta">${running ? "아직 찾은 문제가 없습니다." : "보여 줄 문제가 없습니다."}</p>`}${list.length > shown.length ? `<button class="btn btn-small btn-ghost" type="button" data-act="au-more">${list.length - shown.length}개 더 보기</button>` : ""}</section>
+    ${!running ? `<div class="sheet-actions">${isE ? `<button class="btn" type="button" data-act="au-again">바뀐 것만 다시 점검</button>` : `<button class="btn" type="button" data-act="sa-again">다시 점검</button>`}<button class="btn btn-danger" type="button" data-act="au-del">보고서 지우기</button></div>` : ""}`, (root) => {
+    root.onchange = (ev) => {
+      if (ev.target.name === "af-sev") f.sev = ev.target.value;
+      else if (ev.target.name === "af-st") f.state = ev.target.value;
+      else if (ev.target.id === "af-type") f.type = ev.target.value;
+      else return;
+      openAuditReport(rep);
+    };
+    root.onclick = async (ev) => {
+      const r = ev.target.closest("[data-ref]");
+      if (r) { state.auditOpen = null; openEntry(r.dataset.ref); return; }
+      const mo = ev.target.closest("[data-ms-open]");
+      if (mo) { state.auditOpen = null; openManuscript(mo.dataset.msOpen); return; }
+      const stb = ev.target.closest("[data-ai-st]");
+      if (stb) { const [id, st] = stb.dataset.aiSt.split("|"); const it = rep.issues.find((x) => x.id === id); if (it) { it.state = st; await saveAudits(); openAuditReport(rep); } return; }
+      const vb = ev.target.closest("[data-ai-verify]");
+      if (vb) { const it = rep.issues.find((x) => x.id === vb.dataset.aiVerify); if (it) await verifyStoryIssue(rep, it, vb); return; }
+      const fb = ev.target.closest("[data-ai-fix]");
+      if (fb) {
+        const it = rep.issues.find((x) => x.id === fb.dataset.aiFix);
+        if (!it) return;
+        state.auditOpen = null;
+        closeSheet();
+        startInNewThread(isE
+          ? `카테고리 전수점검에서 나온 문제야.\n[${it.kind}/${it.severity}] ${it.ref} ${nameOf(it.ref)}${it.field ? ` · ${it.field}` : ""}: ${it.problem}${it.evidence ? `\n근거: ${it.evidence}` : ""}${it.related.length ? `\n함께 어긋나는 항목: ${it.related.join(", ")}` : ""}${it.suggestion ? `\n점검의 제안: ${it.suggestion}` : ""}\n관련 항목을 읽고 고칠 방법을 2~3가지 제안해 줘. 고치는 건 내가 고른 다음에 해. `
+          : `스토리 전체 점검에서 나온 문제야.\n[${it.kind}/${it.severity}] 장면 ${it.refs.join(", ")}: ${it.problem}${it.evidence ? `\n근거: ${it.evidence}` : ""}${it.suggestion ? `\n점검의 제안: ${it.suggestion}` : ""}\n해당 장면(get_plan의 scene_id, get_manuscripts)을 읽고 고칠 방법을 2~3가지 제안해 줘. 계획을 고쳐야 하면 계획부터. 고치는 건 내가 고른 다음에 해. `);
+        return;
+      }
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "au-stop") { audit.stop = true; toast("이번 묶음이 끝나면 멈춥니다"); }
+      else if (act === "au-more") { state.auditMore = true; openAuditReport(rep); }
+      else if (act === "au-resume") {
+        if (audit.running || state.busy) { toast("다른 작업이 진행 중입니다"); return; }
+        const go = rep.kind === "entries" ? runEntryAudit : runStoryAudit;
+        go(rep, () => { if (state.auditOpen === rep.id) openAuditReport(rep, true); });
+        openAuditReport(rep);
+      } else if (act === "au-again") { state.auditOpen = null; openEntryAuditSetup(); }
+      else if (act === "sa-again") { state.auditOpen = null; openStoryAuditSetup(); }
+      else if (act === "au-del") {
+        if (!(await confirmBox("이 보고서를 지울까요?", "지우기", true))) return;
+        audit.list = audit.list.filter((x) => x !== rep);
+        await saveAudits();
+        state.auditOpen = null;
+        closeSheet();
+      }
+    };
+  });
+}
+function auditHubHTML() {
+  const reps = (audit.wid === state.worldId ? audit.list || [] : []).slice().reverse();
+  const works = worldWorks().filter((wk) => (wk.chapters || []).length);
+  return `<section class="card audit-hub"><h2>점검 센터</h2>
+    <div class="hub-grid">
+      <button class="hub-btn" type="button" data-act="hub-entries"><b>카테고리 전수점검</b><span>고른 분류의 항목을 하나도 빠짐없이 Claude가 판정</span></button>
+      <button class="hub-btn" type="button" data-act="hub-story"><b>스토리 전체 점검</b><span>작품 원고 전체의 연속성·허점·복선</span></button>
+    </div>
+    ${works.length ? `<p class="meta" style="margin:8px 0 4px">작품 구조·연재 점검은 작품의 '계획' 탭에 있습니다: ${works.map((wk) => `<button type="button" class="link-btn" data-hub-work="${wk.id}">${esc(wk.title)}</button>`).join(" · ")}</p>` : ""}
+    ${reps.length ? `<div class="hub-reports">${reps.map((r) => `<button type="button" class="hub-rep" data-hub-rep="${r.id}"><span>${r.kind === "entries" ? "전수점검" : "스토리 점검"} · ${new Date(r.at).toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}</span><span class="meta">${r.status === "running" ? (audit.running === r.id ? "진행 중" : "멈춤") : r.status === "stopped" ? "멈춤" : `열린 문제 ${r.issues.filter((x) => x.state === "open").length} / 전체 ${r.issues.length}`}</span></button>`).join("")}</div><p class="meta" style="margin:6px 0 0">보고서는 이 기기에만 남습니다(최근 ${AUDIT_KEEP}개).</p>` : ""}
+  </section>`;
 }
 async function planAction(work, act, btn) {
   if (!work) return;
@@ -10546,7 +11107,7 @@ function openWorldForm(existing) {
         const threads = (await idb.get("threads:" + id)) || [];
         const maps = (await idb.get("maps:" + id)) || [];
         const blobs = blobRefs({ maps, entries: (await idb.get("entries:" + id)) || [] });
-        await Promise.all([idb.del("entries:" + id), idb.del("log:" + id), idb.del("threads:" + id), idb.del("graph:" + id), idb.del("ms:" + id), idb.del("imgs:" + id), idb.del("maps:" + id), ...blobs.map((img) => idb.del("mapimg:" + img)), ...threads.map((t) => idb.del("conv:" + t.id))]);
+        await Promise.all([idb.del("entries:" + id), idb.del("log:" + id), idb.del("threads:" + id), idb.del("graph:" + id), idb.del("ms:" + id), idb.del("imgs:" + id), idb.del("maps:" + id), idb.del("audits:" + id), idb.del("scenerec:" + id), ...blobs.map((img) => idb.del("mapimg:" + img)), ...threads.map((t) => idb.del("conv:" + t.id))]);
         state.worlds = state.worlds.filter((x) => x.id !== id);
         await persist.worlds();
         closeSheet();
