@@ -1030,6 +1030,60 @@ body.writing { overflow: hidden; }
 .w-title { flex: 1; min-width: 0; border: 0; border-bottom: 1px solid var(--line); background: none; padding: 6px 2px; color: var(--ink); font: 700 18px var(--font-display); }
 .w-top select { flex: none; padding: 6px 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-size: 14px; }
 .w-crumb { margin: 4px 2px 0; font-size: 12.5px; color: var(--muted); }
+.w-card { margin: 4px 2px 0; font-size: 12.5px; color: var(--muted); }
+.w-card summary { cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.w-card p { margin: 4px 0 0; padding: 6px 8px; border-left: 3px solid var(--accent); background: var(--surface); color: var(--ink); line-height: 1.5; max-height: 30vh; overflow-y: auto; }
+/* 이야기 계획(구조 사다리) · 카드판 */
+.wk-tabs { margin-top: 10px; }
+.lv-badge { flex: none; font-size: 11px; padding: 1px 7px; border-radius: 999px; background: var(--surface-2); color: var(--muted); white-space: nowrap; }
+.lv-badge.lv-draft { background: color-mix(in srgb, var(--t-event) 22%, var(--surface)); color: var(--ink); }
+.lv-badge.lv-done { background: color-mix(in srgb, var(--t-species) 26%, var(--surface)); color: var(--ink); }
+.lv-badge.lv-stale { background: var(--danger-soft); color: var(--danger); }
+.plan-progress { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--muted); margin: 2px 2px 8px; }
+.plan-progress b { color: var(--ink); font: 600 13px var(--font-mono); }
+.plan-stale { margin: 0 0 10px; padding: 8px 10px; border-radius: 10px; background: var(--danger-soft); color: var(--danger); font-size: 13px; }
+.ladder { display: flex; flex-direction: column; gap: 10px; }
+.rung { position: relative; padding: 10px 12px 10px 14px; border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 12px; background: var(--surface); }
+.rung-head { display: flex; align-items: center; gap: 8px; }
+.rung-head b { font-size: 15px; }
+.rung-no { flex: none; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font: 700 12px var(--font-mono); }
+.rung-text { margin: 8px 0 4px; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; font-size: 14.5px; }
+.rung-text.small, .small { font-size: 13px; }
+.rung-hint { margin: 8px 0 4px; }
+.rung-act { margin-top: 6px; flex-wrap: wrap; }
+.rung-more summary { margin-top: 8px; cursor: pointer; color: var(--muted); font-size: 13.5px; overflow-wrap: anywhere; }
+.ch-plan { padding: 8px 0; border-top: 1px dashed var(--line); }
+.ch-plan:first-of-type { border-top: 0; }
+.ch-plan-head { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.ch-plan-head .sp { flex: 1; }
+.ch-plan-head .meta { font-size: 12px; }
+.ep-bar { flex: none; width: 54px; height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+.ep-bar i { display: block; height: 100%; background: var(--t-event); }
+.ep-bar i.ok { background: var(--t-species); }
+.ep-bar i.over { background: var(--danger); }
+.next-card { margin: 8px 0 4px; padding: 8px 10px; border-radius: 10px; background: var(--accent-soft); display: flex; flex-direction: column; gap: 2px; }
+.next-card p, .next-card .meta { margin: 0; }
+.check-rung { border-left-color: var(--t-event); }
+.ch-sum { margin: 4px 2px 0; font-size: 12.5px; }
+.card-row { align-items: flex-start; flex-wrap: wrap; padding: 4px 0; }
+.card-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; border: 0; background: none; padding: 6px 0; color: var(--ink); font: inherit; text-align: left; }
+.card-title { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; }
+.card-title b { font-size: 14.5px; overflow-wrap: anywhere; }
+.card-sum { font-size: 13.5px; line-height: 1.45; overflow-wrap: anywhere; }
+.card-arc { font-size: 12.5px; color: var(--accent); overflow-wrap: anywhere; }
+.card-meta { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.card-acts { flex: none; display: flex; flex-direction: column; gap: 2px; padding-top: 4px; }
+.tension { margin-left: 6px; letter-spacing: 1px; color: var(--t-faction); font-size: 10px; }
+.pick-box { display: flex; flex-wrap: wrap; gap: 2px 12px; max-height: 150px; overflow-y: auto; padding: 2px; }
+.prop-list { display: flex; flex-direction: column; gap: 6px; }
+.prop-row { display: flex; gap: 8px; align-items: flex-start; padding: 8px; border: 1px solid var(--line); border-radius: 10px; font-size: 14px; line-height: 1.45; }
+.prop-row input { margin-top: 3px; flex: none; }
+.prop-row > span { min-width: 0; overflow-wrap: anywhere; }
+.pill-new { background: var(--accent-soft); color: var(--accent); }
+.pill.sev-high { background: var(--danger-soft); color: var(--danger); }
+.pill.sev-mid { background: color-mix(in srgb, var(--t-event) 22%, var(--surface)); }
+.check-issue { align-items: flex-start; justify-content: space-between; }
+.check-issue .txt { flex: 1 1 220px; min-width: 0; overflow-wrap: anywhere; line-height: 1.5; }
 .w-body { flex: 1; min-height: 0; width: 100%; margin-top: 8px; border: 0; background: none; color: var(--ink); resize: none; padding: 6px 2px; font: 17px/1.85 var(--font-body); outline: none; }
 .w-preview { flex: 1; min-height: 0; overflow-y: auto; margin-top: 8px; padding: 6px 2px; }
 .w-peek { max-height: 45%; overflow-y: auto; margin-top: 6px; }
@@ -2396,6 +2450,83 @@ const TOOLS_V12 = [
   },
   toolV11("respond"),
 ];
+// v13: 이야기 계획(구조 사다리: 한 줄 → 한 문단 → 시놉시스 → 장 요약 → 장면 카드 → 본문)과 장면 카드.
+// 장면 본문은 계획의 카드 범위 안에서만 쓰고, 계획 밖 아이디어는 따로 제안한다.
+const CARD_TURNS = ["＋→－", "－→＋", "＋→＋", "－→－"];
+const CARD_TEXT_KEYS = [["summary", "요약"], ["goal", "목표"], ["conflict", "갈등"], ["outcome", "결과"], ["reaction", "반응"], ["dilemma", "딜레마"], ["decision", "결정"], ["value", "바뀌는 가치"]];
+const CARD_PROPS = {
+  title: { type: "string", description: "장면 제목" },
+  summary: { type: "string", description: "이 장면에서 일어나는 일(한두 문장)" },
+  pov: { type: "string", description: "시점 인물 항목 id" },
+  place: { type: "string", description: "장소 항목 id" },
+  cast: { type: "array", items: { type: "string" }, description: "함께 나오는 인물 항목 id(시점 인물 빼고). 주면 통째로 바뀐다" },
+  year: { type: "number", description: "이 세계 달력의 해" },
+  month: { type: "string", description: "달 이름이나 번호(선택)" },
+  day: { type: "number", description: "그 달의 며칠(선택)" },
+  goal: { type: "string", description: "시점 인물이 이 장면에서 얻으려는 것" },
+  conflict: { type: "string", description: "그것을 막는 것" },
+  outcome: { type: "string", description: "장면이 끝날 때의 결과. 본문은 여기서 끝난다" },
+  reaction: { type: "string", description: "결과에 대한 인물의 반응(선택)" },
+  dilemma: { type: "string", description: "인물 앞의 딜레마(선택)" },
+  decision: { type: "string", description: "인물의 결정. 다음 장면의 목표가 된다(선택)" },
+  value: { type: "string", description: "이 장면에서 바뀌는 가치. 예: 신뢰, 안전, 희망" },
+  turn: { type: "string", enum: CARD_TURNS, description: "그 가치가 어느 쪽으로 바뀌나" },
+  tension: { type: "number", description: "긴장도 1~5" },
+};
+const SYSTEM_V13 = SYSTEM_V12 + `
+
+## 이야기 계획
+- 작품마다 큰 틀에서 작은 틀로 내려가는 계획이 있다: 한 줄 소개 → 한 문단(시작, 위기 셋, 결말) → 시놉시스 → 장 요약(그 장에서 무슨 일이 일어나고 어떻게 끝나는지) → 장면 카드 → 본문. 한 줄·한 문단·시놉시스·장 요약은 set_plan으로, 장면 카드는 set_scene_card로 저장하고, get_plan으로 계획을 읽는다.
+- 아래 단계는 바로 위 단계를 벗어나지 않게 만든다. 위 단계를 바꿔야 할 것 같으면 바꾸기 전에 사용자에게 묻는다.
+- 장면 본문을 써 달라는 요청을 받으면 먼저 get_plan(scene_id)으로 그 장면의 카드를 찾는다. 카드가 없으면 본문을 쓰지 말고, 어느 장 어디에 들어가는지와 목표·갈등·결과를 담은 카드를 set_scene_card로 만들어 보여 준 뒤 확인을 받는다.
+- 본문은 카드의 범위만 쓴다. 앞 장면의 결과에서 이어 시작하고 이 카드의 결과에서 끝낸다. 다음 장면으로 넘어가지 않는다. 본문은 save_manuscript에 그 장면의 id를 넣어 저장한다.
+- 계획에 없는 새 사건·인물·줄거리 가닥·비밀을 본문에 넣지 않는다. 쓰다가 떠오른 아이디어는 답 끝에 '계획 밖 아이디어'로 따로 적고, 사용자가 받아들이면 계획을 먼저 고친 다음 쓴다.
+- "다음 장면"은 계획에서 본문이 아직 없는 다음 카드다. 마지막 카드까지 쓰면 계획한 이야기가 끝났다고 알린다.
+- 계획이 비어 있는 작품에서 장면을 이어 쓰자고 하면, 먼저 결말을 포함한 한 문단과 장 목록을 함께 정하자고 제안한다.
+- 연재 작품(회차 목표 분량이 있는 작품)은 장 하나가 한 회차다. 회차 분량을 목표에 맞추고, 회차 끝은 다음 화가 궁금해지는 지점에서 끊는다.`;
+const toolV12 = (name) => TOOLS_V12.find((t) => t.name === name);
+const TOOLS_V13 = [
+  ...TOOLS_V12.filter((t) => t.name !== "respond"),
+  {
+    name: "get_plan",
+    description: "작품의 계획을 읽는다: 한 줄 소개, 한 문단, 시놉시스, 장 요약, 장면 카드, 본문 진행, 다시 볼 곳, 다음에 쓸 장면. scene_id를 주면 그 장면의 카드 전체와 장 요약, 앞 장면의 결과와 결정, 다음 카드를 준다.",
+    input_schema: { type: "object", properties: { work_id: { type: "string" }, scene_id: { type: "string", description: "장면 원고 id" } } },
+    eager_input_streaming: true,
+  },
+  {
+    name: "set_plan",
+    description: "작품 계획의 위쪽 단계를 저장한다. 준 칸만 바꾸고 빈 문자열이면 지운다. paragraph는 시작·위기 셋·결말을 한 문장씩 담은 다섯 줄, synopsis는 그것을 단락으로 늘린 1쪽 분량이다. chapters는 장 요약을 넣거나 고친다: id나 제목이 같은 장을 고치고, 없는 제목이면 작품 끝에 새 장을 만든다. 여기서는 장을 지우거나 순서를 바꾸지 않는다(set_work).",
+    input_schema: {
+      type: "object",
+      properties: {
+        work_id: { type: "string" },
+        logline: { type: "string", description: "한 줄 소개" },
+        paragraph: { type: "string", description: "시작, 위기 1, 위기 2, 위기 3, 결말을 한 줄씩" },
+        synopsis: { type: "string", description: "1쪽 시놉시스" },
+        chapters: { type: "array", items: { type: "object", properties: { id: { type: "string" }, title: { type: "string" }, summary: { type: "string", description: "그 장에서 일어나는 일과 장이 끝나는 지점" } } } },
+      },
+      required: ["work_id"],
+    },
+    eager_input_streaming: true,
+  },
+  {
+    name: "set_scene_card",
+    description: "장면 카드를 만들거나 고친다. id(장면 원고 id)를 주면 그 장면의 카드에서 준 칸만 바꾸고(빈 문자열이면 지움), 없으면 work_id의 chapter에서 after_id 뒤(없으면 장 끝)에 본문 없는 새 장면을 카드와 함께 만든다. remove가 true면 카드만 지우고 본문은 남긴다.",
+    input_schema: {
+      type: "object",
+      properties: {
+        id: { type: "string", description: "장면 원고 id(고칠 때)" },
+        work_id: { type: "string" },
+        chapter: { type: "string", description: "장 id나 장 제목(새 장면일 때)" },
+        after_id: { type: "string", description: "이 장면 바로 뒤에 놓는다(새 장면일 때)" },
+        ...CARD_PROPS,
+        remove: { type: "boolean" },
+      },
+    },
+    eager_input_streaming: true,
+  },
+  toolV12("respond"),
+];
 const PROMPT_SETS = {
   1: { system: SYSTEM_V1, tools: TOOLS_V1 },
   2: { system: SYSTEM_V2, tools: TOOLS_V2 },
@@ -2409,8 +2540,9 @@ const PROMPT_SETS = {
   10: { system: SYSTEM_V10, tools: TOOLS_V10 },
   11: { system: SYSTEM_V11, tools: TOOLS_V11 },
   12: { system: SYSTEM_V12, tools: TOOLS_V12 },
+  13: { system: SYSTEM_V13, tools: TOOLS_V13 },
 };
-const PROMPT_CURRENT = 12;
+const PROMPT_CURRENT = 13;
 // 버전 정보가 없는 예전 대화는 만든 시각으로 버전을 추정한다(각 버전의 배포 완료 시각, UTC).
 const PROMPT_RELEASES = [
   { v: 2, at: Date.parse("2026-11-01T15:35:14Z") },
@@ -2490,6 +2622,9 @@ const TOOL_STATUS = {
   set_economy: "물가를 정리하는 중…",
   set_tech: "기술 수준을 정리하는 중…",
   set_work: "작품 구성을 정리하는 중…",
+  get_plan: "이야기 계획을 읽는 중…",
+  set_plan: "이야기 계획을 정리하는 중…",
+  set_scene_card: "장면 카드를 쓰는 중…",
 };
 
 /* ============================================================
@@ -2600,6 +2735,7 @@ const state = {
   fsFilter: "all",
   msView: LS.get("lk.msview", null), // 원고함 보기: works | all (정하지 않았으면 작품이 있을 때 works)
   workId: null,
+  workTab: LS.get("lk.worktab", "scenes"), // 작품 보기: scenes(구성) | plan(계획) | board(카드판)
   lifeYear: null,
   lifeZoom: 1,
   lifeAll: false,    // 다음에 만들 대화의 모드(인물 인터뷰 등)
@@ -3790,6 +3926,300 @@ function workOutlineText(work) {
   lines.push(`합계 ${total}자`);
   return lines.join("\n");
 }
+/* ---- 이야기 계획(v13): 구조 사다리와 장면 카드 ----
+   work.plan = { paragraph, synopsis, lv: { logline: {at}, paragraph: {at, basis, ok}, synopsis: {at, basis, ok} } }
+   chapter.summary + chapter.lv = {at, basis, ok}
+   ms.card = { summary, pov, place, cast[], when: {year, month, day}, goal, conflict, outcome, reaction, dilemma, decision, value, turn, tension, at, basis, ok }
+   at: 마지막으로 고친 때, basis: 그때 바로 위 단계의 at, ok: 사용자가 확정했는지.
+   위 단계의 at이 basis보다 늦으면 '다시 볼 것'이다. */
+const PLAN_STATUS = { empty: "비어 있음", draft: "초안", done: "확정", stale: "다시 볼 것" };
+function lvStatus(text, rec, upperAt) {
+  if (!String(text ?? "").trim()) return "empty";
+  if (upperAt && rec?.basis != null && upperAt > rec.basis) return "stale";
+  return rec?.ok ? "done" : "draft";
+}
+const planOf = (work) => work?.plan || {};
+const lvAt = (rec) => rec?.at || 0;
+const loglineAt = (work) => lvAt(planOf(work).lv?.logline);
+const paragraphAt = (work) => lvAt(planOf(work).lv?.paragraph);
+const synopsisAt = (work) => lvAt(planOf(work).lv?.synopsis);
+const chapterOf = (work, chId) => (work?.chapters || []).find((c) => c.id === chId) || null;
+const chapterSummaryAt = (work, chId) => lvAt(chapterOf(work, chId)?.lv);
+function paragraphStatus(work) { return lvStatus(planOf(work).paragraph, planOf(work).lv?.paragraph, loglineAt(work)); }
+function synopsisStatus(work) { return lvStatus(planOf(work).synopsis, planOf(work).lv?.synopsis, paragraphAt(work)); }
+function chapterStatus(work, ch) { return lvStatus(ch.summary, ch.lv, synopsisAt(work)); }
+const hasCard = (m) => !!m?.card && CARD_TEXT_KEYS.some(([k]) => String(m.card[k] || "").trim());
+function cardStatus(work, m) { return hasCard(m) ? lvStatus("x", m.card, chapterSummaryAt(work, m.chapterId)) : "empty"; }
+// 본문: 카드를 본문보다 나중에 고쳤으면 다시 볼 것
+function bodyStatus(m) {
+  if (!String(m.body || "").trim()) return "empty";
+  if (hasCard(m) && m.card.at && m.card.at > (m.bodyAt || m.updatedAt || 0)) return "stale";
+  return (m.status || "초고") === "완료" ? "done" : "draft";
+}
+// 단계를 고친 기록(위 단계의 at을 basis로 남긴다)
+const lvRec = (upperAt, ok = false, now = Date.now()) => ({ at: now, basis: upperAt || 0, ok });
+function confirmRec(rec, upperAt) { return { ...(rec || { at: Date.now() }), basis: upperAt || 0, ok: true }; }
+function setPlanText(work, key, text, now = Date.now()) {
+  const plan = { ...(work.plan || {}) };
+  plan.lv = { ...(plan.lv || {}) };
+  const t = String(text ?? "").trim();
+  if (key === "logline") {
+    if (t) work.logline = t; else delete work.logline;
+    plan.lv.logline = { at: now };
+  } else {
+    if (t) plan[key] = t; else delete plan[key];
+    plan.lv[key] = lvRec(key === "paragraph" ? loglineAt(work) : paragraphAt(work), false, now);
+  }
+  work.plan = plan;
+  work.updatedAt = now;
+}
+function confirmPlanText(work, key) {
+  const plan = { ...(work.plan || {}) };
+  plan.lv = { ...(plan.lv || {}) };
+  plan.lv[key] = confirmRec(plan.lv[key], key === "paragraph" ? loglineAt(work) : paragraphAt(work));
+  work.plan = plan;
+  work.updatedAt = Date.now();
+}
+function setChapterSummary(work, ch, text, now = Date.now()) {
+  const t = String(text ?? "").trim();
+  if (t) ch.summary = t; else delete ch.summary;
+  ch.lv = lvRec(synopsisAt(work), false, now);
+  work.updatedAt = now;
+}
+function confirmChapter(work, ch) { ch.lv = confirmRec(ch.lv, synopsisAt(work)); work.updatedAt = Date.now(); }
+function confirmCard(work, m) { if (m.card) { m.card = confirmRec(m.card, chapterSummaryAt(work, m.chapterId)); m.updatedAt = Date.now(); } }
+// 카드 입력을 검사하고 합친다(잘못된 값이면 아무것도 바꾸기 전에 오류)
+function mergeCard(cur, p) {
+  const next = { ...(cur || {}) };
+  for (const [k] of CARD_TEXT_KEYS) if (p[k] !== undefined) { const t = String(p[k] ?? "").trim(); if (t) next[k] = t; else delete next[k]; }
+  const ent = (ref, label, pred) => {
+    const x = findEntry(ref);
+    if (!x || x.deleted) throw new Error(`${label} '${ref}' 항목이 없습니다.`);
+    if (pred && !pred(x)) throw new Error(`${label} '${ref}'(${x.name})는 알맞은 분류가 아닙니다.`);
+    return x.id;
+  };
+  if (p.pov !== undefined) { if (String(p.pov ?? "").trim()) next.pov = ent(p.pov, "시점 인물"); else delete next.pov; }
+  if (p.place !== undefined) { if (String(p.place ?? "").trim()) next.place = ent(p.place, "장소"); else delete next.place; }
+  if (p.cast !== undefined) { const l = [...new Set((p.cast || []).filter((x) => String(x ?? "").trim()).map((x) => ent(x, "등장인물")))].filter((id) => id !== next.pov); if (l.length) next.cast = l; else delete next.cast; }
+  if (p.year !== undefined || p.month !== undefined || p.day !== undefined) {
+    const when = { ...(next.when || {}) };
+    if (p.year !== undefined) { const y = p.year === null || p.year === "" ? null : parseYear(p.year); if (p.year !== null && p.year !== "" && y === null) throw new Error("year는 숫자여야 합니다."); if (y === null) delete when.year; else when.year = y; }
+    if (p.month !== undefined) { if (String(p.month ?? "").trim()) { const mn = monthNumber(p.month); if (!mn) throw new Error(`'${p.month}' 달이 없습니다. 이 세계의 달: ${worldMonths().map((x) => x.name).join(", ")}`); when.month = mn; } else { delete when.month; delete when.day; } }
+    if (p.day !== undefined) { if (p.day === null || p.day === "") delete when.day; else { const d = Math.round(Number(p.day)); const mo = worldMonths()[(when.month || 0) - 1]; if (!when.month) throw new Error("day를 넣으려면 month가 필요합니다."); if (!(d >= 1 && d <= mo.days)) throw new Error(`${mo.name}은(는) ${mo.days}일까지 있습니다.`); when.day = d; } }
+    if (when.year == null) { delete when.month; delete when.day; }
+    if (when.year != null) next.when = when; else delete next.when;
+  }
+  if (p.turn !== undefined) { if (String(p.turn ?? "").trim()) { if (!CARD_TURNS.includes(p.turn)) throw new Error(`turn은 ${CARD_TURNS.join(", ")} 중 하나여야 합니다.`); next.turn = p.turn; } else delete next.turn; }
+  if (p.tension !== undefined) { if (p.tension === null || p.tension === "") delete next.tension; else { const n = Math.round(Number(p.tension)); if (!(n >= 1 && n <= 5)) throw new Error("tension은 1에서 5 사이여야 합니다."); next.tension = n; } }
+  return next;
+}
+function cardWhenText(c) {
+  const w = c?.when;
+  if (!w || w.year == null) return "";
+  const mo = w.month ? worldMonths()[w.month - 1] : null;
+  return `${fmtYear(w.year)}${mo ? ` ${mo.name}` : ""}${w.day ? ` ${w.day}일` : ""}`;
+}
+function cardText(m, full = true) {
+  const c = m.card || {};
+  const head = [c.pov ? `시점 ${refName(c.pov)}` : "", c.place ? `장소 ${refName(c.place)}` : "", cardWhenText(c), c.cast?.length ? `등장 ${c.cast.map(refName).join(", ")}` : ""].filter(Boolean).join(" · ");
+  const lines = [];
+  if (c.summary) lines.push(`요약: ${c.summary}`);
+  if (head) lines.push(head);
+  if (c.goal || c.conflict || c.outcome) lines.push(`목표: ${c.goal || "?"} → 갈등: ${c.conflict || "?"} → 결과: ${c.outcome || "?"}`);
+  if (full && (c.reaction || c.dilemma || c.decision)) lines.push(`반응: ${c.reaction || "?"} → 딜레마: ${c.dilemma || "?"} → 결정: ${c.decision || "?"}`);
+  if (c.value || c.turn || c.tension) lines.push([c.value ? `가치: ${c.value}${c.turn ? ` ${c.turn}` : ""}` : c.turn ? `전환 ${c.turn}` : "", c.tension ? `긴장 ${c.tension}/5` : ""].filter(Boolean).join(" · "));
+  return lines.join("\n");
+}
+// 진행: 장 요약, 카드, 본문
+function planProgress(work) {
+  const chs = work.chapters || [];
+  const scenes = workOrder(work);
+  const carded = scenes.filter(hasCard);
+  const written = scenes.filter((m) => String(m.body || "").trim());
+  const next = scenes.find((m) => hasCard(m) && !String(m.body || "").trim()) || null;
+  return { chapters: chs.length, summarized: chs.filter((c) => String(c.summary || "").trim()).length, scenes: scenes.length, carded: carded.length, written: written.length, next };
+}
+function planStaleList(work) {
+  const out = [];
+  if (paragraphStatus(work) === "stale") out.push({ kind: "paragraph", text: "한 문단(한 줄 소개가 바뀜)" });
+  if (synopsisStatus(work) === "stale") out.push({ kind: "synopsis", text: "시놉시스(한 문단이 바뀜)" });
+  for (const ch of work.chapters || []) if (chapterStatus(work, ch) === "stale") out.push({ kind: "chapter", id: ch.id, text: `${ch.title} 요약(시놉시스가 바뀜)` });
+  for (const m of workOrder(work)) {
+    if (cardStatus(work, m) === "stale") out.push({ kind: "card", id: m.id, text: `${m.title} 카드(장 요약이 바뀜)` });
+    if (bodyStatus(m) === "stale") out.push({ kind: "body", id: m.id, text: `${m.title} 본문(카드가 바뀜)` });
+  }
+  return out;
+}
+const serialOf = (work) => (work?.serial?.target > 0 ? work.serial : null);
+const chapterLabel = (work, ch) => { const i = (work.chapters || []).indexOf(ch); return serialOf(work) && i >= 0 ? `${i + 1}화 · ${ch.title}` : ch.title; };
+function planText(work) {
+  const p = planOf(work);
+  const st = (s) => `[${PLAN_STATUS[s]}]`;
+  const lines = [`# 작품 「${work.title}」(${work.id}) 계획`];
+  lines.push(`한 줄 소개: ${work.logline || "(없음)"}`);
+  lines.push(`한 문단 ${st(paragraphStatus(work))}:${p.paragraph ? `\n${p.paragraph}` : " (없음)"}`);
+  lines.push(`시놉시스 ${st(synopsisStatus(work))}:${p.synopsis ? `\n${p.synopsis}` : " (없음)"}`);
+  const ser = serialOf(work);
+  if (ser) lines.push(`연재: 장 하나가 한 회차, 회차 목표 ${ser.target.toLocaleString("ko-KR")}자(공백 포함)`);
+  for (const ch of work.chapters || []) {
+    const scenes = workScenes(work, ch.id);
+    const n = scenes.reduce((a, m) => a + textStats(m.body).withSpace, 0);
+    lines.push(`## ${chapterLabel(work, ch)} (${ch.id}) ${st(chapterStatus(work, ch))} · ${n}자`);
+    lines.push(ch.summary ? `요약: ${ch.summary}` : "요약: (없음)");
+    for (const m of scenes) {
+      const n2 = textStats(m.body).withSpace;
+      lines.push(`- ${m.id} 「${m.title}」 카드 ${PLAN_STATUS[cardStatus(work, m)]} · 본문 ${n2 ? `${n2}자 [${m.status || "초고"}]${bodyStatus(m) === "stale" ? " (카드가 바뀜)" : ""}` : "없음"}`);
+      if (hasCard(m)) lines.push(...cardText(m, false).split("\n").map((x) => `  ${x}`));
+    }
+  }
+  const pr = planProgress(work);
+  lines.push(`진행: 장 요약 ${pr.summarized}/${pr.chapters} · 카드 ${pr.carded}/${pr.scenes} · 본문 ${pr.written}/${pr.scenes}`);
+  lines.push(pr.next ? `다음에 쓸 장면: ${pr.next.id} 「${pr.next.title}」` : pr.carded && pr.carded === pr.written ? "카드가 있는 장면은 모두 본문이 있습니다." : "본문을 기다리는 카드가 없습니다.");
+  const stale = planStaleList(work);
+  if (stale.length) lines.push(`다시 볼 곳: ${stale.map((x) => x.text).join(", ")}`);
+  return lines.join("\n");
+}
+function sceneContextText(m) {
+  const work = findWork(m.workId);
+  if (!work) return `# ${m.title} (${m.id})\n이 장면은 작품에 속하지 않습니다.${hasCard(m) ? `\n${cardText(m)}` : ""}`;
+  const order = workOrder(work);
+  const i = order.indexOf(m);
+  const prev = order[i - 1];
+  const next = order[i + 1];
+  const ch = chapterOf(work, m.chapterId);
+  const lines = [`# 장면 ${m.id} 「${m.title}」 · 작품 「${work.title}」(${work.id}) › ${ch ? chapterLabel(work, ch) : "장 없음"} · ${i + 1}/${order.length}번째 장면`];
+  if (ch?.summary) lines.push(`장 요약: ${ch.summary}`);
+  lines.push(hasCard(m) ? `카드 [${PLAN_STATUS[cardStatus(work, m)]}]:\n${cardText(m)}` : "카드: 없음(본문을 쓰기 전에 카드부터 만든다)");
+  const n = textStats(m.body).withSpace;
+  lines.push(n ? `본문: ${n}자 [${m.status || "초고"}]${bodyStatus(m) === "stale" ? " · 카드가 본문보다 나중에 바뀜" : ""}` : "본문: 없음");
+  if (prev) lines.push(`앞 장면 ${prev.id} 「${prev.title}」: ${hasCard(prev) ? [prev.card.outcome && `결과 ${prev.card.outcome}`, prev.card.decision && `결정 ${prev.card.decision}`].filter(Boolean).join(" · ") || cut(prev.card.summary || "", 120) : "카드 없음"}${String(prev.body || "").trim() ? `\n  앞 장면 끝부분: …${String(prev.body).trim().slice(-200)}` : ""}`);
+  else lines.push("앞 장면: 없음(작품의 첫 장면)");
+  lines.push(next ? `다음 장면 ${next.id} 「${next.title}」: ${hasCard(next) ? cut([next.card.summary, next.card.goal && `목표 ${next.card.goal}`].filter(Boolean).join(" · "), 200) : "카드 없음"}` : "다음 장면: 없음(계획의 마지막 장면)");
+  const ser = serialOf(work);
+  if (ser && ch) { const cn = workScenes(work, ch.id).reduce((a, x) => a + textStats(x.body).withSpace, 0); lines.push(`연재: 이 회차 ${cn}자 / 목표 ${ser.target}자${workScenes(work, ch.id).at(-1) === m ? " · 이 장면이 회차의 끝" : ""}`); }
+  return lines.join("\n");
+}
+// 장면의 앞뒤를 고려한 짧은 계획 요약(첫 메시지)
+function planBriefText(work) {
+  const p = planOf(work);
+  const pr = planProgress(work);
+  const lines = [`- 「${work.title}」(${work.id}) 계획: 장 요약 ${pr.summarized}/${pr.chapters} · 카드 ${pr.carded}/${pr.scenes} · 본문 ${pr.written}/${pr.scenes}${pr.next ? ` · 다음에 쓸 장면 ${pr.next.id} 「${pr.next.title}」` : ""}`];
+  if (p.paragraph) lines.push(`  한 문단: ${cut(p.paragraph.replace(/\n+/g, " "), 300)}`);
+  const chs = (work.chapters || []).filter((c) => c.summary);
+  if (chs.length) lines.push(`  장: ${chs.slice(0, 12).map((c) => `${chapterLabel(work, c)} — ${cut(c.summary, 50)}`).join(" / ")}${chs.length > 12 ? ` 외 ${chs.length - 12}개` : ""}`);
+  return lines.join("\n");
+}
+/* ---- 장면 현황판: 카드의 때와 곳을 기준으로 설정집에서 그 시점의 세계 상태를 계산한다(비용 없음) ---- */
+const SEASON_ORDER = ["봄", "여름", "가을", "겨울"];
+// 달 번호로 계절을 어림한다: 달 이름에 계절 이름이 있으면 그것, 아니면 열두 달에 맞춰(3~5월 봄 …)
+function seasonOfMonth(month, keys) {
+  const months = worldMonths();
+  const mo = months[month - 1];
+  if (!mo) return null;
+  const named = (keys.length ? keys : SEASON_ORDER).find((k) => mo.name.includes(k));
+  if (named) return { key: named, guess: false };
+  const m12 = Math.floor(((month - 1) * 12) / months.length) + 1;
+  const idx = m12 >= 3 && m12 <= 5 ? 0 : m12 >= 6 && m12 <= 8 ? 1 : m12 >= 9 && m12 <= 11 ? 2 : 3;
+  const key = SEASON_ORDER[idx];
+  return keys.length && !keys.includes(key) ? null : { key, guess: true };
+}
+// 같은 해 안에서 날짜를 일 수로(달·날이 있을 때만)
+function dayOfYear(when) {
+  if (!when?.month) return null;
+  const months = worldMonths();
+  let d = 0;
+  for (let i = 0; i < when.month - 1; i++) d += months[i]?.days || 0;
+  return d + (when.day || 1);
+}
+const yearDays = () => worldMonths().reduce((a, m) => a + (m.days || 0), 0) || 365;
+// 두 장면 사이에 흐른 날 수(알 수 없으면 null)
+function daysBetween(a, b) {
+  if (a?.year == null || b?.year == null) return null;
+  const da = dayOfYear(a);
+  const db = dayOfYear(b);
+  if (da == null || db == null) return a.year === b.year ? null : (b.year - a.year) * yearDays();
+  return (b.year - a.year) * yearDays() + (db - da);
+}
+function sceneStatusData(m) {
+  const work = findWork(m.workId);
+  const c = m.card || {};
+  const year = c.when?.year ?? null;
+  const people = [...new Set([c.pov, ...(c.cast || [])].filter(Boolean))].map(findEntry).filter((x) => x && !x.deleted);
+  const place = c.place ? findEntry(c.place) : null;
+  const out = { year, people: [], factions: [], season: null, observances: [], events: [], travel: null, warnings: [] };
+  // 인물: 나이, 생사, 지닌 것
+  for (const p of people) {
+    const row = { e: p, age: null, items: [] };
+    if (year != null && p.when) {
+      if (year < p.when.start) { row.note = `${fmtYear(p.when.start)}에 태어남(아직 없음)`; out.warnings.push(`${p.name}은(는) ${fmtYear(p.when.start)}에 태어나 이 장면(${fmtYear(year)})에는 아직 없습니다.`); }
+      else if (p.when.end != null && year > p.when.end) { row.note = `${fmtYear(p.when.end)}에 죽음`; out.warnings.push(`${p.name}은(는) ${fmtYear(p.when.end)}에 죽어 이 장면(${fmtYear(year)})에는 없어야 합니다.`); }
+      else row.age = ageInfo(p, year);
+      if (row.age?.text?.includes("수명을 넘김")) out.warnings.push(`${p.name}은(는) 이 장면에서 종족 수명을 넘깁니다.`);
+    }
+    row.items = liveEntries().filter((x) => x.artifact && findEntry(artifactHolder(x, year ?? worldCalendar().now))?.id === p.id);
+    out.people.push(row);
+  }
+  // 세력: 등장인물과 장소에 이어진 세력, 그 해의 세력끼리 관계
+  const facIds = new Set();
+  for (const x of [...people, place].filter(Boolean)) {
+    for (const r of x.relations || []) { const t = findEntry(r.to); if (t && !t.deleted && isFactionType(t.type) && relActive(r, year)) facIds.add(t.id); }
+    for (const { from, rel } of incoming(x.id).map((i) => ({ from: i.from, rel: (i.from.relations || []).find((r) => r.to === x.id) }))) if (isFactionType(from.type) && (!rel || relActive(rel, year))) facIds.add(from.id);
+  }
+  const facs = [...facIds].map(findEntry);
+  for (const a of facs) for (const r of a.relations || []) if (facIds.has(r.to) && relActive(r, year)) out.factions.push({ a, b: findEntry(r.to), label: r.label, years: relYears(r) });
+  out.factionList = facs;
+  // 장소: 계절과 기후, 같은 해 이곳의 사건
+  if (place) {
+    const cl = place.climate || {};
+    const keys = Object.keys(cl.seasons || {});
+    const s = c.when?.month ? seasonOfMonth(c.when.month, keys) : null;
+    out.season = { name: s?.key || null, guess: !!s?.guess, text: s && cl.seasons?.[s.key] ? cl.seasons[s.key] : "", climate: cl.climate || "", weather: cl.weather || "" };
+  }
+  // 기념일: 그 날(또는 그 달)에 걸친 것
+  if (c.when?.month) {
+    for (const o of worldObservances()) {
+      if (o.since != null && year != null && year < o.since) continue;
+      if (o.month !== c.when.month) continue;
+      const end = o.day + (o.days || 1) - 1;
+      if (!c.when.day || (c.when.day >= o.day && c.when.day <= end)) out.observances.push(o);
+    }
+  }
+  // 같은 해의 사건(이 장소나 등장인물과 이어진 것을 앞에)
+  if (year != null) {
+    const near = new Set([place?.id, ...people.map((p) => p.id)].filter(Boolean));
+    const evs = liveEntries().filter((e) => isEventType(e.type) && e.when && e.when.start <= year && (e.when.end ?? e.when.start) >= year);
+    const linked = (e) => (e.relations || []).some((r) => near.has(r.to)) || [...near].some((id) => (findEntry(id)?.relations || []).some((r) => r.to === e.id));
+    out.events = evs.sort((a, b) => Number(linked(b)) - Number(linked(a))).slice(0, 8).map((e) => ({ e, linked: linked(e) }));
+  }
+  // 앞 장면 장소에서 오는 길
+  if (work && place) {
+    const order = workOrder(work);
+    const prev = order.slice(0, order.indexOf(m)).reverse().find((x) => x.card?.place);
+    if (prev && prev.card.place !== place.id) {
+      const from = findEntry(prev.card.place);
+      const t = worldTravel();
+      const fastest = t.modes.map((md) => ({ md, res: travelPath(prev.card.place, place.id, md.name) })).filter((x) => x.res).map((x) => ({ mode: x.md.name, days: x.res.dist / x.md.speed, dist: x.res.dist })).sort((a, b) => a.days - b.days)[0] || null;
+      const gap = daysBetween(prev.card.when, c.when);
+      out.travel = { prev, from, fastest, gap };
+      if (fastest && gap != null && gap >= 0 && gap < fastest.days) out.warnings.push(`${from?.name || "앞 장소"}에서 ${place.name}까지 가장 빨라도 ${fmtDays(fastest.days)}(${fastest.mode}) 걸리는데, 앞 장면 「${prev.title}」과 ${gap}일 차이입니다.`);
+      if (gap != null && gap < 0) out.warnings.push(`앞 장면 「${prev.title}」(${cardWhenText(prev.card)})보다 이 장면의 때가 앞섭니다.`);
+    }
+  }
+  return out;
+}
+function sceneStatusText(m) {
+  const d = sceneStatusData(m);
+  const lines = [];
+  if (d.year == null) lines.push("때가 정해지지 않아 나이·관계·사건은 지금 시점 기준입니다.");
+  for (const p of d.people) lines.push(`- ${p.e.name}: ${p.age ? p.age.text : p.note || "나이 모름"}${p.items.length ? ` · 지닌 것 ${p.items.map((x) => x.name).join(", ")}` : ""}`);
+  if (d.factions.length) lines.push(`세력 관계: ${d.factions.map((f) => `${f.a.name}–${f.b.name} ${f.label}`).join(", ")}`);
+  if (d.season) lines.push(`곳의 날씨: ${[d.season.name ? `${d.season.name}${d.season.guess ? "(달로 어림)" : ""}${d.season.text ? ` — ${d.season.text}` : ""}` : "", d.season.climate, d.season.weather].filter(Boolean).join(" · ") || "기후 정보 없음"}`);
+  if (d.observances.length) lines.push(`그날의 기념일: ${d.observances.map((o) => `${o.name}(${o.kind})`).join(", ")}`);
+  if (d.events.length) lines.push(`같은 해의 사건: ${d.events.map((x) => x.e.name).join(", ")}`);
+  if (d.travel?.fastest) lines.push(`앞 장소에서 오는 길: ${fmtDays(d.travel.fastest.days)}(${d.travel.fastest.mode})${d.travel.gap != null ? ` · 앞 장면과 ${d.travel.gap}일 차이` : ""}`);
+  if (d.warnings.length) lines.push(`주의: ${d.warnings.join(" / ")}`);
+  return lines.join("\n");
+}
 // 본문 속 설정 인식: 이름·별칭(두 글자 이상)을 긴 것부터 찾고 겹치는 자리는 한 번만 센다
 function entityTerms() {
   const terms = [];
@@ -3842,6 +4272,7 @@ function saveManuscript(d, by) {
   if (d.id) {
     const m = state.manuscripts.find((x) => x.id === d.id);
     if (!m) throw new Error(`${d.id} 원고가 없습니다.`);
+    if (String(d.body || "") !== String(m.body || "")) m.bodyAt = now;
     Object.assign(m, { title: String(d.title).trim(), kind: d.kind, body: String(d.body || ""), refs, updatedAt: now, by });
     if (d.status) m.status = d.status;
     place(m);
@@ -3849,7 +4280,7 @@ function saveManuscript(d, by) {
     logChange(by, "manuscript", null, `원고 수정: ${m.title}`);
     return m;
   }
-  const m = { id: `ms-${uid().slice(-6)}`, title: String(d.title).trim(), kind: d.kind, body: String(d.body || ""), refs, createdAt: now, updatedAt: now, by, ...(d.status ? { status: d.status } : work ? { status: "초고" } : {}) };
+  const m = { id: `ms-${uid().slice(-6)}`, title: String(d.title).trim(), kind: d.kind, body: String(d.body || ""), refs, createdAt: now, updatedAt: now, by, ...(String(d.body || "").trim() ? { bodyAt: now } : {}), ...(d.status ? { status: d.status } : work ? { status: "초고" } : {}) };
   state.manuscripts.push(m);
   place(m);
   m.refs = autoRefs(m);
@@ -4223,12 +4654,12 @@ const TOOL_IMPL = {
       if (works.some((x) => x !== work && x.title === String(title).trim())) throw new Error(`같은 제목의 작품이 있습니다: ${title}`);
       work.title = String(title).trim();
     }
-    if (logline !== undefined) { const t = String(logline || "").trim(); if (t) work.logline = t; else delete work.logline; }
+    if (logline !== undefined && String(logline || "").trim() !== (work.logline || "")) setPlanText(work, "logline", logline);
     if (style) { const st = mergeStrMap(work.style, style, STYLE_IDS); if (hasKeys(st)) work.style = st; else delete work.style; }
     let dropped = 0;
     if (chapters !== undefined) {
       const old = work.chapters || [];
-      const next = chapters.map((c) => { const t = String(c.title || "").trim(); const prev = c.id && old.find((x) => x.id === c.id); return prev ? { id: prev.id, title: t || prev.title } : { id: `ch-${uid().slice(-6)}`, title: t || "새 장" }; });
+      const next = chapters.map((c) => { const t = String(c.title || "").trim(); const prev = c.id && old.find((x) => x.id === c.id); return prev ? { ...prev, title: t || prev.title } : { id: `ch-${uid().slice(-6)}`, title: t || "새 장" }; });
       const keep = new Set(next.map((c) => c.id));
       dropped = state.manuscripts.filter((m) => m.workId === work.id && !keep.has(m.chapterId)).length;
       releaseScenes((m) => m.workId === work.id && !keep.has(m.chapterId));
@@ -4239,6 +4670,75 @@ const TOOL_IMPL = {
     w.updatedAt = Date.now();
     logChange("claude", "manuscript", null, `작품: ${work.title}`);
     return { content: `작품 저장: 「${work.title}」(${work.id}) · 장 ${(work.chapters || []).map((c) => `${c.title}(${c.id})`).join(", ") || "없음"}${work.style ? `\n문체 가이드: ${styleText(work.style, " / ")}` : ""}${dropped ? `\n장이 빠져 작품 밖으로 옮긴 장면 ${dropped}개` : ""}`, action: { kind: "world", text: `작품 · ${work.title}` }, changed: true };
+  },
+  get_plan({ work_id, scene_id }) {
+    if (scene_id) {
+      const m = state.manuscripts.find((x) => x.id === scene_id);
+      if (!m) throw new Error(`${scene_id} 원고가 없습니다.`);
+      return { content: sceneContextText(m), action: { kind: "read", text: `장면 카드 · ${m.title}` } };
+    }
+    const work = findWork(work_id) || (!work_id && worldWorks().length === 1 ? worldWorks()[0] : null);
+    if (!work) throw new Error(work_id ? `작품 '${work_id}'가 없습니다.` : `work_id가 필요합니다. 작품: ${worldWorks().map((x) => `${x.title}(${x.id})`).join(", ") || "없음"}`);
+    return { content: planText(work), action: { kind: "read", text: `계획 · ${work.title}` } };
+  },
+  set_plan({ work_id, logline, paragraph, synopsis, chapters }) {
+    const w = currentWorld();
+    const work = findWork(work_id);
+    if (!work) throw new Error(`작품 '${work_id}'가 없습니다. set_work로 먼저 만드세요.`);
+    // 바꾸기 전에 장 목록을 검사한다
+    const items = (chapters || []).map((c) => ({ id: String(c.id || "").trim(), title: String(c.title || "").trim(), summary: c.summary }));
+    for (const c of items) {
+      if (!c.id && !c.title) throw new Error("chapters의 각 장에는 id나 title이 필요합니다.");
+      if (c.id && !chapterOf(work, c.id)) throw new Error(`장 '${c.id}'가 이 작품에 없습니다.`);
+    }
+    const now = Date.now();
+    const done = [];
+    if (logline !== undefined) { setPlanText(work, "logline", logline, now); done.push("한 줄 소개"); }
+    if (paragraph !== undefined) { setPlanText(work, "paragraph", paragraph, now); done.push("한 문단"); }
+    if (synopsis !== undefined) { setPlanText(work, "synopsis", synopsis, now); done.push("시놉시스"); }
+    let added = 0;
+    for (const c of items) {
+      let ch = c.id ? chapterOf(work, c.id) : (work.chapters || []).find((x) => x.title === c.title);
+      if (!ch) { ch = addChapter(work, c.title); added++; }
+      else if (c.id && c.title) ch.title = c.title;
+      if (c.summary !== undefined) setChapterSummary(work, ch, c.summary, now);
+    }
+    if (items.length) done.push(`장 요약 ${items.length}개${added ? `(새 장 ${added})` : ""}`);
+    if (!done.length) throw new Error("바꿀 칸이 없습니다.");
+    work.updatedAt = now;
+    w.updatedAt = now;
+    logChange("claude", "manuscript", null, `계획: ${work.title} · ${done.join(", ")}`);
+    const stale = planStaleList(work);
+    return { content: `계획 저장: 「${work.title}」 ${done.join(", ")}${stale.length ? `\n다시 볼 곳: ${stale.map((x) => x.text).join(", ")}` : ""}`, action: { kind: "world", text: `계획 · ${work.title}` }, changed: true };
+  },
+  set_scene_card(input) {
+    const { id, work_id, chapter, after_id, remove } = input;
+    let m = id ? state.manuscripts.find((x) => x.id === id) : null;
+    if (id && !m) throw new Error(`${id} 원고가 없습니다.`);
+    if (remove) {
+      if (!m) throw new Error("지울 카드의 장면 id가 필요합니다.");
+      if (!m.card) throw new Error(`${m.title}에는 카드가 없습니다.`);
+      delete m.card;
+      m.updatedAt = Date.now();
+      logChange("claude", "manuscript", null, `카드 삭제: ${m.title}`);
+      return { content: `카드 삭제: ${m.id} ${m.title} (본문은 그대로)`, action: { kind: "update", text: `카드 삭제 · ${m.title}`, ms: m.id }, changed: true };
+    }
+    const card = mergeCard(m?.card, input); // 잘못된 값이면 여기서 멈춘다(아무것도 바뀌지 않음)
+    let work = m ? findWork(m.workId) : findWork(work_id);
+    if (!m) {
+      if (!work) throw new Error(work_id ? `작품 '${work_id}'가 없습니다.` : "새 장면 카드에는 work_id가 필요합니다.");
+      if (!String(input.title || "").trim()) throw new Error("새 장면 카드에는 title이 필요합니다.");
+      if (after_id && !workScenes(work).some((x) => x.id === after_id)) throw new Error(`after_id '${after_id}'는 이 작품의 장면이 아닙니다.`);
+      m = saveManuscript({ title: input.title, kind: "장면", body: "", work_id: work.id, chapter, status: "구상", after_id }, "claude");
+    } else if (String(input.title || "").trim()) m.title = String(input.title).trim();
+    const now = Date.now();
+    m.card = { ...card, ...lvRec(work ? chapterSummaryAt(work, m.chapterId) : 0, false, now) };
+    m.updatedAt = now;
+    if (work) work.updatedAt = now;
+    currentWorld().updatedAt = now;
+    logChange("claude", "manuscript", null, `카드: ${m.title}`);
+    const ch = work && chapterOf(work, m.chapterId);
+    return { content: `장면 카드 ${id ? "고침" : "만듦"}: ${m.id} 「${m.title}」${ch ? ` · ${work.title} › ${chapterLabel(work, ch)}` : ""}\n${cardText(m)}`, action: { kind: id ? "update" : "create", text: `카드 · ${m.title}`, ms: m.id }, changed: true };
   },
   set_rumor({ id, text, truth, note, remove }) {
     const e = findEntry(id);
@@ -4587,6 +5087,10 @@ function contextNoteFor(thread) {
       if (v >= 12) {
         const works = worldWorks(w);
         if (works.length) lines.push(`작품:\n${works.slice(0, 8).map((wk) => { const sc = workOrder(wk); const n = sc.reduce((a, m) => a + textStats(m.body).withSpace, 0); return `- 「${wk.title}」(${wk.id}) 장 ${(wk.chapters || []).length} · 장면 ${sc.length} · ${n}자${wk.logline ? ` · ${wk.logline}` : ""}${styleText(wk.style) ? `\n  문체: ${cut(styleText(wk.style, " / "), 300)}` : ""}`; }).join("\n")}`);
+        if (v >= 13) {
+          const planned = works.filter((wk) => planOf(wk).paragraph || planOf(wk).synopsis || (wk.chapters || []).some((c) => c.summary) || workOrder(wk).some(hasCard));
+          if (planned.length) lines.push(`이야기 계획(장면 본문은 카드 범위 안에서 쓴다. 자세한 것은 get_plan):\n${planned.slice(0, 4).map(planBriefText).join("\n")}`);
+        }
       }
       if (v >= 11) {
         lines.push(`달: ${worldMonths(w).map((m) => `${m.name}(${m.days}일)`).join(", ")}${hasOwnMonths(w) ? "" : " (기본값)"}`);
@@ -5967,6 +6471,7 @@ function renderWorks(box) {
   }
   const cur = works.find((x) => x.id === state.workId) || works[0];
   state.workId = cur.id;
+  const tab = WORK_TABS.some(([k]) => k === state.workTab) ? state.workTab : "scenes";
   const scenes = workOrder(cur);
   const total = scenes.reduce((a, m) => a + textStats(m.body).withSpace, 0);
   const known = new Set((cur.chapters || []).map((c) => c.id));
@@ -5974,7 +6479,7 @@ function renderWorks(box) {
   const chapterHTML = (ch) => {
     const list = workScenes(cur, ch.id);
     const n = list.reduce((a, m) => a + textStats(m.body).withSpace, 0);
-    return `<section class="ch-sec"><div class="ch-head"><b>${esc(ch.title)}</b><span class="meta">장면 ${list.length} · ${fmtCount(n)}자</span><span class="sp"></span><button class="icon-btn" type="button" data-ch-edit="${ch.id}" aria-label="${esc(ch.title)} 고치기">✎</button></div>
+    return `<section class="ch-sec"><div class="ch-head"><b>${esc(chapterLabel(cur, ch))}</b><span class="meta">장면 ${list.length} · ${fmtCount(n)}자</span><span class="sp"></span><button class="icon-btn" type="button" data-ch-edit="${ch.id}" aria-label="${esc(ch.title)} 고치기">✎</button></div>
       <div class="sc-list" data-ch="${ch.id}">${list.map(sceneRow).join("")}</div>
       <button class="btn btn-ghost btn-small" type="button" data-sc-add="${ch.id}">장면 추가</button></section>`;
   };
@@ -5982,13 +6487,440 @@ function renderWorks(box) {
     <section class="work-head">
       <h2>${esc(cur.title)}</h2>${cur.logline ? `<p class="meta" style="margin:2px 0 6px">${esc(cur.logline)}</p>` : ""}
       <p class="work-stats">장 ${(cur.chapters || []).length} · 장면 ${scenes.length} · ${fmtCount(total)}자 · 원고지 약 ${fmtSheets(total / 200)}매</p>
-      <div class="st-pills">${MS_STATUS.map((k) => `<span class="pill st-${k}">${k} ${scenes.filter((m) => (m.status || "초고") === k).length}</span>`).join("")}</div>
-      <p class="meta style-sum">${cur.style ? `문체: ${esc(cut(styleText(cur.style, " · "), 140))}` : "문체 가이드가 없습니다. 작품 설정에서 정하면 Claude가 이 작품을 쓰고 다듬을 때 따릅니다."}</p>
+      ${tab === "scenes" ? `<div class="st-pills">${MS_STATUS.map((k) => `<span class="pill st-${k}">${k} ${scenes.filter((m) => (m.status || "초고") === k).length}</span>`).join("")}</div>` : ""}
+      <p class="meta style-sum"${tab === "scenes" ? "" : " hidden"}>${cur.style ? `문체: ${esc(cut(styleText(cur.style, " · "), 140))}` : "문체 가이드가 없습니다. 작품 설정에서 정하면 Claude가 이 작품을 쓰고 다듬을 때 따릅니다."}</p>
       <div class="row"><button class="btn btn-small" type="button" data-act="work-edit">작품 설정</button><button class="btn btn-small" type="button" data-act="ch-add">장 추가</button><button class="btn btn-small btn-primary" type="button" data-act="work-ask">Claude와 구성 짜기</button></div>
     </section>
-    ${(cur.chapters || []).length ? (cur.chapters || []).map(chapterHTML).join("") : `<p class="meta" style="margin-top:12px">'장 추가'로 첫 장을 만드세요.</p>`}
-    ${lost.length ? `<section class="ch-sec"><div class="ch-head"><b>장 없음</b><span class="meta">장면 ${lost.length}</span></div><div class="sc-list" data-ch="">${lost.map(sceneRow).join("")}</div></section>` : ""}
+    <div class="seg-tabs wk-tabs" role="tablist" aria-label="작품 보기">${WORK_TABS.map(([k, l]) => `<button type="button" role="tab" data-wtab="${k}" aria-selected="${tab === k}">${l}</button>`).join("")}</div>
+    ${tab === "plan" ? ladderHTML(cur) : tab === "board" ? boardHTML(cur) : `${(cur.chapters || []).length ? (cur.chapters || []).map(chapterHTML).join("") : `<p class="meta" style="margin-top:12px">'장 추가'로 첫 장을 만드세요.</p>`}
+    ${lost.length ? `<section class="ch-sec"><div class="ch-head"><b>장 없음</b><span class="meta">장면 ${lost.length}</span></div><div class="sc-list" data-ch="">${lost.map(sceneRow).join("")}</div></section>` : ""}`}
     ${outside ? `<p class="meta" style="margin-top:14px">작품 밖 원고 ${outside}개는 '모든 원고'에 있습니다. 원고 화면의 '작품에 넣기'로 옮길 수 있습니다.</p>` : ""}`;
+}
+/* ---- 작품 › 계획(구조 사다리) · 카드판 ---- */
+const WORK_TABS = [["scenes", "구성"], ["plan", "계획"], ["board", "카드판"]];
+const lvBadge = (s) => `<span class="lv-badge lv-${s}">${PLAN_STATUS[s]}</span>`;
+function ladderHTML(work) {
+  const p = planOf(work);
+  const pr = planProgress(work);
+  const ser = serialOf(work);
+  const stale = planStaleList(work);
+  const rung = (no, key, title, status, body, actions) => `<section class="rung" data-rung="${key}"><div class="rung-head"><span class="rung-no">${no}</span><b>${title}</b>${status ? lvBadge(status) : ""}</div>${body}${actions ? `<div class="row rung-act">${actions}</div>` : ""}</section>`;
+  const okBtn = (s, act) => (s === "draft" ? `<button class="btn btn-small" type="button" data-plan="${act}">확정</button>` : s === "stale" ? `<button class="btn btn-small" type="button" data-plan="${act}">그대로 두기</button>` : "");
+  const text = (t, hint) => (t ? `<p class="rung-text">${esc(t)}</p>` : `<p class="meta rung-hint">${hint}</p>`);
+  const ps = paragraphStatus(work);
+  const ss = synopsisStatus(work);
+  const chs = work.chapters || [];
+  const chRows = chs.map((ch) => {
+    const s = chapterStatus(work, ch);
+    const scenes = workScenes(work, ch.id);
+    const n = scenes.reduce((a, m) => a + textStats(m.body).withSpace, 0);
+    const bar = ser ? `<span class="ep-bar" title="${n}자 / ${ser.target}자"><i style="width:${Math.min(100, Math.round((n / ser.target) * 100))}%" class="${n > ser.target * 1.4 ? "over" : n >= ser.target * 0.7 ? "ok" : ""}"></i></span>` : "";
+    return `<div class="ch-plan" data-chp="${ch.id}"><div class="ch-plan-head"><b>${esc(chapterLabel(work, ch))}</b>${s !== "empty" ? lvBadge(s) : ""}<span class="meta">카드 ${scenes.filter(hasCard).length}/${scenes.length} · ${fmtCount(n)}자</span>${bar}<span class="sp"></span>${s === "draft" || s === "stale" ? `<button class="btn btn-small btn-ghost" type="button" data-ch-ok="${ch.id}">${s === "stale" ? "그대로 두기" : "확정"}</button>` : ""}<button class="icon-btn" type="button" data-ch-edit="${ch.id}" aria-label="${esc(ch.title)} 요약 고치기">✎</button></div>
+      ${ch.summary ? `<p class="rung-text small">${esc(ch.summary)}</p>` : `<p class="meta rung-hint">요약 없음: 이 장에서 일어나는 일과 장이 끝나는 지점</p>`}
+      <div class="row"><button class="btn btn-small btn-ghost" type="button" data-card-expand="${ch.id}">${scenes.some(hasCard) ? "카드 다시 펼치기" : "Claude로 카드 펼치기"}</button><button class="btn btn-small btn-ghost" type="button" data-card-add="${ch.id}">카드 추가</button></div></div>`;
+  }).join("");
+  const next = pr.next;
+  const lastCheck = work.check;
+  return `<div class="ladder">
+    <div class="plan-progress"><span>장 요약 <b>${pr.summarized}/${pr.chapters}</b></span><span>카드 <b>${pr.carded}/${pr.scenes}</b></span><span>본문 <b>${pr.written}/${pr.scenes}</b></span>${ser ? `<span>연재 · 회차 ${fmtCount(ser.target)}자</span>` : ""}</div>
+    ${stale.length ? `<p class="plan-stale">다시 볼 곳 ${stale.length}: ${esc(stale.slice(0, 4).map((x) => x.text).join(", "))}${stale.length > 4 ? " 외" : ""}</p>` : ""}
+    ${rung(1, "logline", "한 줄", work.logline ? "done" : "empty", text(work.logline, "이 이야기를 한 문장으로: 누가, 무엇을 원하고, 무엇이 막는지"), `<button class="btn btn-small" type="button" data-plan="edit-logline">고치기</button>`)}
+    ${rung(2, "paragraph", "한 문단", ps, text(p.paragraph, "시작 · 위기 1 · 위기 2 · 위기 3 · 결말을 한 줄씩. 결말이 정해져야 이야기가 끝납니다."), `<button class="btn btn-small btn-primary" type="button" data-plan="expand-paragraph">Claude로 펼치기</button><button class="btn btn-small" type="button" data-plan="edit-paragraph">고치기</button>${okBtn(ps, "ok-paragraph")}`)}
+    ${rung(3, "synopsis", "시놉시스", ss, p.synopsis ? `<details class="rung-more"${p.synopsis.length < 400 ? " open" : ""}><summary>${esc(cut(p.synopsis.replace(/\n+/g, " "), 90))}</summary><p class="rung-text">${esc(p.synopsis)}</p></details>` : text("", "한 문단의 다섯 줄을 한 단락씩 늘린 1쪽 줄거리"), `<button class="btn btn-small btn-primary" type="button" data-plan="expand-synopsis"${p.paragraph ? "" : " disabled"}>Claude로 펼치기</button><button class="btn btn-small" type="button" data-plan="edit-synopsis">고치기</button>${okBtn(ss, "ok-synopsis")}`)}
+    ${rung(4, "chapters", "장 요약", null, chRows || `<p class="meta rung-hint">아직 장이 없습니다.</p>`, `<button class="btn btn-small btn-primary" type="button" data-plan="expand-chapters"${p.synopsis || p.paragraph ? "" : " disabled"}>Claude로 장 펼치기</button><button class="btn btn-small" type="button" data-act="ch-add">장 추가</button>`)}
+    ${rung(5, "cards", "장면 카드", null, `<p class="meta">장마다 '카드 펼치기'로 장면 카드를 만들고, 카드판에서 순서와 내용을 다듬습니다. 카드에는 목표 → 갈등 → 결과가 들어가고, 본문은 결과에서 끝납니다.</p>`, `<button class="btn btn-small" type="button" data-wtab="board">카드판 열기</button>`)}
+    ${rung(6, "body", "본문", null, next ? `<div class="next-card"><span class="meta">다음에 쓸 장면</span><b>${esc(next.title)}</b>${next.card.summary ? `<p class="small">${esc(cut(next.card.summary, 120))}</p>` : ""}</div>` : `<p class="meta">${pr.carded && pr.carded === pr.written ? "카드가 있는 장면은 모두 본문이 있습니다." : "본문을 기다리는 카드가 없습니다."}</p>`, next ? `<button class="btn btn-small btn-primary" type="button" data-card-write="${next.id}">이 카드로 쓰기</button><button class="btn btn-small" type="button" data-card-pen="${next.id}">직접 쓰기</button>` : "")}
+    <section class="rung check-rung"><div class="rung-head"><b>점검</b></div><p class="meta">${lastCheck ? `지난 ${lastCheck.mode === "serial" ? "연재" : "구조"} 점검: ${new Date(lastCheck.at).toLocaleString("ko-KR")} · 문제 ${lastCheck.issues.length + (lastCheck.local?.length || 0)}개` : "계획과 카드, 본문이 서로 맞는지, 결말로 이어지는지, 세계관과 어긋나지 않는지 봅니다."}</p>
+      <div class="row">${lastCheck ? `<button class="btn btn-small" type="button" data-plan="check-last">지난 결과</button>` : ""}<button class="btn btn-small btn-primary" type="button" data-plan="check">구조 점검</button>${ser ? `<button class="btn btn-small" type="button" data-plan="check-serial">연재 점검</button>` : ""}</div></section>
+  </div>`;
+}
+function cardRowHTML(work, m) {
+  const c = m.card || {};
+  const cs = cardStatus(work, m);
+  const bs = bodyStatus(m);
+  const n = textStats(m.body).withSpace;
+  const dots = c.tension ? `<span class="tension" title="긴장도 ${c.tension}/5">${"●".repeat(c.tension)}${"○".repeat(5 - c.tension)}</span>` : "";
+  return `<div class="sc-row card-row" data-sc="${m.id}"><span class="sc-handle" role="button" tabindex="-1" aria-label="${esc(m.title)} 끌어서 옮기기">≡</span>
+    <button class="card-main" type="button" data-card-open="${m.id}"><span class="card-title"><b>${esc(m.title)}</b>${lvBadge(cs)}${n ? `<span class="pill">${bs === "stale" ? "본문 다시 볼 것" : `본문 ${fmtCount(n)}자`}</span>` : ""}</span>
+      ${c.summary ? `<span class="card-sum">${esc(cut(c.summary, 110))}</span>` : hasCard(m) ? "" : `<span class="card-sum meta">카드가 비어 있습니다</span>`}
+      ${c.goal || c.outcome ? `<span class="card-arc">${esc(cut(c.goal || "?", 40))} → ${esc(cut(c.outcome || "?", 50))}</span>` : ""}
+      <span class="card-meta">${[c.pov ? nameOf(c.pov) : "", c.place ? nameOf(c.place) : "", cardWhenText(c)].filter(Boolean).map(esc).join(" · ")}${c.value ? ` · ${esc(c.value)} ${esc(c.turn || "")}` : ""}${dots}</span></button>
+    <span class="card-acts"><button class="btn btn-small btn-ghost" type="button" data-card-write="${m.id}">쓰기</button><button class="btn btn-small btn-ghost" type="button" data-card-status="${m.id}">현황</button></span></div>`;
+}
+function boardHTML(work) {
+  const chs = work.chapters || [];
+  if (!chs.length) return `<p class="meta" style="margin-top:12px">'장 추가'로 첫 장을 만드세요.</p>`;
+  return chs.map((ch) => {
+    const list = workScenes(work, ch.id);
+    return `<section class="ch-sec"><div class="ch-head"><b>${esc(chapterLabel(work, ch))}</b><span class="meta">카드 ${list.filter(hasCard).length}/${list.length}</span><span class="sp"></span><button class="icon-btn" type="button" data-ch-edit="${ch.id}" aria-label="${esc(ch.title)} 고치기">✎</button></div>
+      ${ch.summary ? `<p class="meta ch-sum">${esc(cut(ch.summary, 160))}</p>` : ""}
+      <div class="sc-list" data-ch="${ch.id}">${list.map((m) => cardRowHTML(work, m)).join("")}</div>
+      <div class="row"><button class="btn btn-ghost btn-small" type="button" data-card-add="${ch.id}">카드 추가</button><button class="btn btn-ghost btn-small" type="button" data-card-expand="${ch.id}">Claude로 카드 펼치기</button></div></section>`;
+  }).join("");
+}
+// 카드 편집
+function openCardEditor(work, m, chId = null) {
+  if (!work) return;
+  const c = m?.card || {};
+  const chars = liveEntries().filter((x) => isCharacterType(x.type));
+  const months = worldMonths();
+  const txt = (k, l, rows = 2, hint = "") => `<label>${l}${hint ? ` <small>${hint}</small>` : ""}<textarea data-ck="${k}" rows="${rows}">${esc(c[k] || "")}</textarea></label>`;
+  openSheet(`<h2 class="sheet-title">${m ? "장면 카드" : "새 장면 카드"}</h2>
+    <form class="form" id="cardForm">
+      <label>제목<input id="cd-title" value="${esc(m?.title || "")}" placeholder="예: 꺼진 등대"></label>
+      ${m ? "" : `<label>장<select id="cd-ch">${(work.chapters || []).map((x) => `<option value="${x.id}"${x.id === chId ? " selected" : ""}>${esc(chapterLabel(work, x))}</option>`).join("")}</select></label>`}
+      ${txt("summary", "요약", 2, "이 장면에서 일어나는 일")}
+      <div class="time-row"><label>시점 인물<select id="cd-pov"><option value="">없음</option>${entryOptions((x) => isCharacterType(x.type), c.pov || "")}</select></label><label>장소<select id="cd-place"><option value="">없음</option>${entryOptions((x) => isPlaceType(x.type), c.place || "")}</select></label></div>
+      <div class="time-row"><label>해<input id="cd-year" inputmode="decimal" value="${c.when?.year ?? ""}"></label><label>달<select id="cd-month"><option value="">모름</option>${months.map((mo, i) => `<option value="${i + 1}"${c.when?.month === i + 1 ? " selected" : ""}>${esc(mo.name)}</option>`).join("")}</select></label><label>날<input id="cd-day" inputmode="numeric" value="${c.when?.day ?? ""}"></label></div>
+      ${chars.length ? `<fieldset><legend>함께 나오는 인물</legend><div class="pick-box">${chars.map((x) => `<label class="pick"><input type="checkbox" data-cast="${x.id}"${(c.cast || []).includes(x.id) ? " checked" : ""}> ${esc(x.name)}</label>`).join("")}</div></fieldset>` : ""}
+      <fieldset><legend>장면: 목표 → 갈등 → 결과</legend>${txt("goal", "목표", 2, "시점 인물이 얻으려는 것")}${txt("conflict", "갈등", 2, "그것을 막는 것")}${txt("outcome", "결과", 2, "장면이 끝나는 지점. 본문은 여기서 끝납니다")}</fieldset>
+      <details${c.reaction || c.dilemma || c.decision ? " open" : ""}><summary>후속: 반응 → 딜레마 → 결정</summary>${txt("reaction", "반응")}${txt("dilemma", "딜레마")}${txt("decision", "결정", 2, "다음 장면의 목표가 됩니다")}</details>
+      <div class="time-row"><label>바뀌는 가치<input data-ck="value" value="${esc(c.value || "")}" placeholder="예: 신뢰"></label><label>전환<select id="cd-turn"><option value="">모름</option>${CARD_TURNS.map((t) => `<option${c.turn === t ? " selected" : ""}>${t}</option>`).join("")}</select></label></div>
+      <fieldset><legend>긴장도</legend><div class="seg">${["", 1, 2, 3, 4, 5].map((n) => `<label><input type="radio" name="cd-ten" value="${n}"${String(c.tension ?? "") === String(n) ? " checked" : ""}><span>${n || "없음"}</span></label>`).join("")}</div></fieldset>
+      <div class="sheet-actions">${m && m.card ? `<button class="btn btn-danger" type="button" data-act="cd-del">카드 지우기</button>` : ""}${m ? `<button class="btn" type="button" data-act="cd-status">현황판</button>` : ""}<button class="btn" type="button" data-act="cancel">취소</button><button class="btn" type="submit" data-ok="0">저장</button><button class="btn btn-primary" type="submit" data-ok="1">저장하고 확정</button></div>
+    </form>`, (root) => {
+    let okFlag = false;
+    root.onclick = async (ev) => {
+      const sb = ev.target.closest("[data-ok]");
+      if (sb) okFlag = sb.dataset.ok === "1";
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "cancel") closeSheet();
+      else if (act === "cd-status") openSceneStatus(m);
+      else if (act === "cd-del") {
+        if (!(await confirmBox(`'${m.title}'의 카드를 지울까요? 본문은 그대로 둡니다.`, "지우기", true))) return;
+        delete m.card;
+        m.updatedAt = Date.now();
+        await saveWorkChange(`카드 삭제: ${m.title}`);
+        closeSheet();
+        renderCodexTabResults();
+      }
+    };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      const title = $("#cd-title", root).value.trim();
+      if (!title) { toast("제목을 넣어 주세요"); return; }
+      const p = {};
+      for (const el of $$("[data-ck]", root)) p[el.dataset.ck] = el.value;
+      p.pov = $("#cd-pov", root).value;
+      p.place = $("#cd-place", root).value;
+      p.cast = $$("[data-cast]", root).filter((x) => x.checked).map((x) => x.dataset.cast);
+      p.year = $("#cd-year", root).value.trim();
+      p.month = $("#cd-month", root).value;
+      p.day = $("#cd-day", root).value.trim();
+      p.turn = $("#cd-turn", root).value;
+      p.tension = $$('[name="cd-ten"]', root).find((x) => x.checked)?.value ?? "";
+      let card;
+      try { card = mergeCard(m?.card, p); } catch (err) { toast(err.message); return; }
+      let target = m;
+      if (!target) target = saveManuscript({ title, kind: "장면", body: "", work_id: work.id, chapter: $("#cd-ch", root).value, status: "구상" }, "user");
+      else target.title = title;
+      const upper = chapterSummaryAt(work, target.chapterId);
+      target.card = { ...card, ...lvRec(upper, okFlag) };
+      target.updatedAt = Date.now();
+      work.updatedAt = Date.now();
+      await saveWorkChange(`카드: ${title}`);
+      closeSheet();
+      renderCodexTabResults();
+      toast(okFlag ? "저장하고 확정했습니다" : "저장했습니다");
+    };
+  });
+}
+// 장면 현황판
+function openSceneStatus(m) {
+  if (!m) return;
+  const d = sceneStatusData(m);
+  const c = m.card || {};
+  const place = c.place ? findEntry(c.place) : null;
+  const ref = (e) => `<button type="button" class="ref" data-ref="${e.id}">${esc(e.name)}</button>`;
+  openSheet(`<h2 class="sheet-title">현황판 · ${esc(m.title)}</h2>
+    <p class="meta" style="margin:0 0 8px">${esc([cardWhenText(c) || "때 모름", place ? place.name : "곳 모름"].join(" · "))}${d.year == null ? " · 때가 없어 지금 시점 기준으로 봅니다" : ""}</p>
+    ${d.warnings.length ? `<section class="check-group"><h3 class="sev-warn">주의 <span class="n">${d.warnings.length}</span></h3>${d.warnings.map((w) => `<div class="check-item"><span class="txt">${esc(w)}</span></div>`).join("")}</section>` : ""}
+    <section class="check-group"><h3>인물</h3>${d.people.length ? d.people.map((p) => `<div class="check-item">${ref(p.e)}<span class="txt">${p.age ? esc(p.age.text) : p.note ? `<span class="sev-warn">${esc(p.note)}</span>` : "나이 모름"}${p.items.length ? ` · 지닌 것 ${p.items.map((x) => esc(x.name)).join(", ")}` : ""}</span></div>`).join("") : `<p class="meta">카드에 시점 인물이나 등장인물이 없습니다.</p>`}</section>
+    ${d.factions.length || d.factionList?.length ? `<section class="check-group"><h3>세력</h3>${d.factions.length ? d.factions.map((f) => `<div class="check-item"><span class="txt">${esc(f.a.name)} – ${esc(f.b.name)}: ${esc(f.label)}${f.years ? ` (${esc(f.years)})` : ""}</span></div>`).join("") : `<p class="meta">관련 세력: ${d.factionList.map((x) => esc(x.name)).join(", ")} · 그해 세력끼리의 관계 기록은 없습니다.</p>`}</section>` : ""}
+    ${d.season ? `<section class="check-group"><h3>날씨와 계절</h3><p class="small">${esc([d.season.name ? `${d.season.name}${d.season.guess ? "(달로 어림)" : ""}${d.season.text ? `: ${d.season.text}` : ""}` : "", d.season.climate, d.season.weather].filter(Boolean).join(" · ") || "이 장소의 기후 정보가 없습니다.")}</p></section>` : ""}
+    ${d.observances.length ? `<section class="check-group"><h3>그날의 기념일</h3>${d.observances.map((o) => `<div class="check-item"><span class="txt">${esc(o.name)} (${esc(o.kind)}) · ${esc(dayText(o))}${o.desc ? ` — ${esc(cut(o.desc, 80))}` : ""}</span></div>`).join("")}</section>` : ""}
+    ${d.events.length ? `<section class="check-group"><h3>같은 해의 사건</h3>${d.events.map((x) => `<div class="check-item">${ref(x.e)}<span class="txt">${esc(rangeText(x.e.when))}${x.linked ? " · 이 장면의 인물·장소와 이어짐" : ""}</span></div>`).join("")}</section>` : ""}
+    ${d.travel ? `<section class="check-group"><h3>앞 장면에서 오는 길</h3><p class="small">「${esc(d.travel.prev.title)}」의 ${esc(d.travel.from?.name || "?")} → ${esc(place.name)}: ${d.travel.fastest ? `가장 빨리 ${fmtDays(d.travel.fastest.days)}(${esc(d.travel.fastest.mode)}, ${Math.round(d.travel.fastest.dist * 10) / 10}${esc(worldTravel().unit)})` : "이어진 길 기록 없음"}${d.travel.gap != null ? ` · 두 장면 사이 ${d.travel.gap}일` : ""}</p></section>` : ""}`, (root) => {
+    root.onclick = (ev) => { const r = ev.target.closest("[data-ref]"); if (r) openEntry(r.dataset.ref); };
+  });
+}
+/* ---- 계획 단계 고치기 · Claude로 펼치기 · 구조 점검 ---- */
+const PLAN_KEYS = { logline: "한 줄", paragraph: "한 문단", synopsis: "시놉시스" };
+function openPlanTextEditor(work, key) {
+  const cur = key === "logline" ? work.logline || "" : planOf(work)[key] || "";
+  const hint = { logline: "누가, 무엇을 원하고, 무엇이 막는지 한 문장으로", paragraph: "시작 · 위기 1 · 위기 2 · 위기 3 · 결말을 한 줄씩", synopsis: "한 문단의 각 줄을 한 단락으로 늘린 1쪽 줄거리" }[key];
+  openSheet(`<h2 class="sheet-title">${PLAN_KEYS[key]} 고치기</h2>
+    <form class="form" id="planTextForm"><label>${PLAN_KEYS[key]} <small>${hint}</small>${key === "logline" ? `<input id="pt-text" value="${esc(cur)}">` : `<textarea id="pt-text" rows="${key === "synopsis" ? 14 : 7}">${esc(cur)}</textarea>`}</label>
+      ${key !== "logline" ? `<p class="meta">고치면 '초안'이 되고, 아래 단계(${key === "paragraph" ? "시놉시스" : "장 요약"})에 '다시 볼 것'이 붙습니다.</p>` : `<p class="meta">고치면 한 문단에 '다시 볼 것'이 붙습니다.</p>`}
+      <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">취소</button>${key !== "logline" ? `<button class="btn" type="submit" data-ok="0">저장</button><button class="btn btn-primary" type="submit" data-ok="1">저장하고 확정</button>` : `<button class="btn btn-primary" type="submit" data-ok="0">저장</button>`}</div></form>`, (root) => {
+    let ok = false;
+    root.onclick = (ev) => { const b = ev.target.closest("[data-ok]"); if (b) ok = b.dataset.ok === "1"; if (ev.target.closest('[data-act="cancel"]')) closeSheet(); };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      const t = $("#pt-text", root).value;
+      if (t.trim() !== cur.trim()) setPlanText(work, key, t);
+      if (ok) confirmPlanText(work, key);
+      await saveWorkChange(`계획 ${PLAN_KEYS[key]}: ${work.title}`);
+      closeSheet();
+      renderCodexTabResults();
+      toast(ok ? "저장하고 확정했습니다" : "저장했습니다");
+    };
+  });
+}
+const PLAN_SYS = "너는 장편 소설의 구조 편집자다. 작가의 세계관 설정집과 지금까지 정한 계획을 바탕으로 계획의 다음 단계를 구체화한다. 바로 위 단계에서 벗어나지 않게 하고, 설정집과 모순되지 않게 한다. 설정집에 없는 큰 설정(새 나라, 새 마법 규칙 등)을 단정하지 말고 이야기에 꼭 필요한 만큼만 쓴다. 이야기는 반드시 결말까지 닫힌 구조로 짠다. 한국어로 쓴다.";
+function planWorldBrief(work) {
+  const w = currentWorld();
+  const list = liveEntries();
+  const lines = [worldOverviewText(w)];
+  if (work.style) lines.push(`문체 가이드:\n${styleText(work.style)}`);
+  lines.push(`설정집 색인(${list.length}개${list.length > 250 ? ", 앞 250개" : ""}):\n${list.slice(0, 250).map(indexLine).join("\n")}`);
+  const open = worldForeshadows(w).filter((f) => f.status === "깔림");
+  if (open.length) lines.push(`회수되지 않은 복선: ${open.slice(0, 12).map((f) => cut(f.text, 60)).join(" / ")}`);
+  return lines.join("\n\n");
+}
+const S_STR = { type: "string" };
+async function planAsk(user, schema, btn, maxTokens = 16000) {
+  if (state.busy) { toast("Claude가 작업 중입니다"); return null; }
+  const label = btn?.textContent;
+  if (btn) { btn.disabled = true; btn.textContent = "만드는 중…"; }
+  try {
+    const out = await quickAsk(PLAN_SYS, user, maxTokens, { schema, strong: true, effort: "medium" });
+    return out ? JSON.parse(out) : null;
+  } catch (err) {
+    toast(apiMessage(err));
+    return null;
+  } finally {
+    if (btn && btn.isConnected) { btn.disabled = false; btn.textContent = label; }
+  }
+}
+async function expandParagraph(work, btn) {
+  const p = planOf(work);
+  const r = await planAsk(`${planWorldBrief(work)}\n\n작품: 「${work.title}」\n한 줄 소개: ${work.logline || "(없음: 제목과 설정집에서 출발한다)"}${p.paragraph ? `\n지금의 한 문단(더 낫게 다시 쓴다):\n${p.paragraph}` : ""}\n\n한 줄 소개를 다섯 문장으로 펼쳐라.\n- 시작: 주인공, 그가 원하는 것, 그가 사는 세계\n- 위기 1: 이야기를 움직이기 시작하는 첫 큰 사건\n- 위기 2: 중간의 큰 반전\n- 위기 3: 가장 큰 위기\n- 결말: 이야기가 어떻게 끝나는지 분명히(열린 결말이라도 무엇이 닫히는지)`, { type: "object", properties: { setup: S_STR, crisis1: S_STR, crisis2: S_STR, crisis3: S_STR, ending: S_STR }, required: ["setup", "crisis1", "crisis2", "crisis3", "ending"], additionalProperties: false }, btn);
+  if (!r) return;
+  openPlanProposal(work, "paragraph", [r.setup, r.crisis1, r.crisis2, r.crisis3, r.ending].map((x) => String(x || "").trim()).join("\n"));
+}
+async function expandSynopsis(work, btn) {
+  const p = planOf(work);
+  const r = await planAsk(`${planWorldBrief(work)}\n\n작품: 「${work.title}」\n한 줄 소개: ${work.logline || "(없음)"}\n한 문단:\n${p.paragraph}${p.synopsis ? `\n\n지금의 시놉시스(더 낫게 다시 쓴다):\n${p.synopsis}` : ""}\n\n한 문단의 다섯 줄을 각각 한 단락(3~6문장)으로 늘려 1쪽 시놉시스를 써라. 주요 인물의 동기와 변화, 사건의 원인과 결과가 드러나게 하고, 결말까지 쓴다.`, { type: "object", properties: { paragraphs: { type: "array", items: S_STR } }, required: ["paragraphs"], additionalProperties: false }, btn);
+  if (!r?.paragraphs?.length) return;
+  openPlanProposal(work, "synopsis", r.paragraphs.map((x) => String(x).trim()).filter(Boolean).join("\n\n"));
+}
+function openPlanProposal(work, key, text) {
+  openSheet(`<h2 class="sheet-title">${PLAN_KEYS[key]} 제안</h2>
+    <form class="form" id="planPropForm"><label>고쳐서 받아들일 수 있습니다<textarea id="pp-text" rows="${key === "synopsis" ? 16 : 8}">${esc(text)}</textarea></label>
+      <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">버리기</button><button class="btn" type="button" data-act="again">다시 만들기</button><button class="btn btn-primary" type="submit">받아들이기</button></div></form>`, (root) => {
+    root.onclick = async (ev) => {
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "cancel") closeSheet();
+      else if (act === "again") { const b = ev.target.closest("[data-act]"); if (key === "paragraph") await expandParagraph(work, b); else await expandSynopsis(work, b); }
+    };
+    root.onsubmit = async (ev) => {
+      ev.preventDefault();
+      setPlanText(work, key, $("#pp-text", root).value);
+      await saveWorkChange(`계획 ${PLAN_KEYS[key]}(Claude 제안): ${work.title}`);
+      closeSheet();
+      renderCodexTabResults();
+      toast("받아들였습니다. 확인한 뒤 '확정'을 누르세요");
+    };
+  });
+}
+async function expandChapters(work, btn, count = null) {
+  const p = planOf(work);
+  const ser = serialOf(work);
+  const chs = work.chapters || [];
+  const cur = chs.map((c) => `- ${c.id} 「${c.title}」 장면 ${workScenes(work, c.id).length}개${c.summary ? ` · 요약: ${c.summary}` : ""}`).join("\n");
+  const r = await planAsk(`${planWorldBrief(work)}\n\n작품: 「${work.title}」\n한 줄 소개: ${work.logline || "(없음)"}\n한 문단:\n${p.paragraph || "(없음)"}\n\n시놉시스:\n${p.synopsis || "(없음: 한 문단에서 바로 나눈다)"}\n\n지금 있는 장:\n${cur || "(없음)"}\n\n시놉시스를 이야기 순서대로 장으로 나눠라.${count ? ` 장은 ${count}개 안팎으로.` : ""}${ser ? ` 연재 작품이라 장 하나가 한 회차(목표 ${ser.target}자 안팎)이며, 회차마다 끝이 다음 화를 궁금하게 끊겨야 한다.` : ""}\n- 각 장의 summary는 그 장에서 일어나는 일과 장이 끝나는 지점을 2~3문장으로.\n- 이미 있는 장은 id를 그대로 쓰고 제목은 필요할 때만 다듬는다. 이미 있는 장을 빼지 않는다.\n- 새 장은 id를 빈 문자열로 둔다.\n- 마지막 장은 한 문단의 결말로 끝난다.`, { type: "object", properties: { chapters: { type: "array", items: { type: "object", properties: { id: S_STR, title: S_STR, summary: S_STR }, required: ["id", "title", "summary"], additionalProperties: false } } }, required: ["chapters"], additionalProperties: false }, btn);
+  if (!r?.chapters?.length) return;
+  openChapterProposal(work, r.chapters);
+}
+function openChapterProposal(work, items) {
+  const known = new Map((work.chapters || []).map((c) => [c.id, c]));
+  const rows = items.map((it, i) => {
+    const ex = known.get(String(it.id || "").trim());
+    const changed = ex && (String(ex.summary || "").trim() !== String(it.summary || "").trim() || ex.title !== String(it.title || "").trim());
+    return `<label class="prop-row"><input type="checkbox" data-pi="${i}"${!ex || changed ? " checked" : ""}><span><b>${esc(it.title)}</b> ${ex ? `<span class="pill">${changed ? "있는 장 · 바뀜" : "있는 장 · 그대로"}</span>` : `<span class="pill pill-new">새 장</span>`}<br><span class="small">${esc(it.summary)}</span></span></label>`;
+  }).join("");
+  const missing = (work.chapters || []).filter((c) => !items.some((it) => it.id === c.id));
+  openSheet(`<h2 class="sheet-title">장 목록 제안</h2>
+    <p class="meta" style="margin:0 0 8px">고른 장만 반영합니다. 순서는 제안대로 맞추고, 제안에 없는 장은 지우지 않고 맨 뒤에 둡니다.${missing.length ? ` (제안에 없는 장: ${missing.map((c) => esc(c.title)).join(", ")})` : ""}</p>
+    <div class="prop-list">${rows}</div>
+    <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">버리기</button><button class="btn" type="button" data-act="again">다시 만들기</button><button class="btn btn-primary" type="button" data-act="accept">고른 것 받아들이기</button></div>`, (root) => {
+    root.onclick = async (ev) => {
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "cancel") closeSheet();
+      else if (act === "again") await expandChapters(work, ev.target.closest("[data-act]"));
+      else if (act === "accept") {
+        const picked = new Set($$("[data-pi]", root).filter((x) => x.checked).map((x) => Number(x.dataset.pi)));
+        const now = Date.now();
+        const order = [];
+        items.forEach((it, i) => {
+          let ch = known.get(String(it.id || "").trim());
+          if (!ch && !picked.has(i)) return;
+          if (!ch) { ch = { id: `ch-${uid().slice(-6)}`, title: String(it.title).trim() || "새 장" }; }
+          if (picked.has(i)) { if (String(it.title || "").trim()) ch.title = String(it.title).trim(); setChapterSummary(work, ch, it.summary, now); }
+          order.push(ch);
+        });
+        for (const c of work.chapters || []) if (!order.includes(c)) order.push(c);
+        work.chapters = order;
+        work.updatedAt = now;
+        await saveWorkChange(`장 목록(Claude 제안): ${work.title}`);
+        closeSheet();
+        renderCodexTabResults();
+        toast(`${picked.size}개를 반영했습니다`);
+      }
+    };
+  });
+}
+async function expandCards(work, chId, btn) {
+  const p = planOf(work);
+  const chs = work.chapters || [];
+  const i = chs.findIndex((c) => c.id === chId);
+  const ch = chs[i];
+  if (!ch) return;
+  if (!ch.summary) { toast("먼저 이 장의 요약을 정하세요"); openChapterEditor(work, ch); return; }
+  const prevCh = chs[i - 1];
+  const nextCh = chs[i + 1];
+  const prevLast = prevCh ? workScenes(work, prevCh.id).filter(hasCard).at(-1) : null;
+  const scenes = workScenes(work, ch.id);
+  const ser = serialOf(work);
+  const cur = scenes.map((m) => `- ${m.id} 「${m.title}」${hasCard(m) ? `\n${cardText(m, false).split("\n").map((x) => `  ${x}`).join("\n")}` : " (카드 없음)"}${String(m.body || "").trim() ? `\n  본문 앞부분: ${cut(m.body.replace(/\s+/g, " "), 160)}` : ""}`).join("\n");
+  const r = await planAsk(`${planWorldBrief(work)}\n\n작품: 「${work.title}」\n한 문단:\n${p.paragraph || "(없음)"}\n\n시놉시스:\n${p.synopsis || "(없음)"}\n\n${prevCh ? `앞 장 ${chapterLabel(work, prevCh)}: ${prevCh.summary || "(요약 없음)"}${prevLast ? `\n앞 장 마지막 장면의 결과: ${prevLast.card.outcome || prevLast.card.summary || ""}` : ""}\n` : "이 장이 첫 장이다.\n"}이번 장 ${chapterLabel(work, ch)}: ${ch.summary}\n${nextCh ? `다음 장 ${chapterLabel(work, nextCh)}: ${nextCh.summary || "(요약 없음)"}` : "이 장이 마지막 장이다(한 문단의 결말로 끝난다)."}\n\n이 장에 지금 있는 장면:\n${cur || "(없음)"}\n\n이 장을 장면 카드 2~6장으로 나눠라.\n- 이미 있는 장면은 scene_id를 그대로 쓰고, 새 장면은 scene_id를 빈 문자열로 둔다.\n- 각 카드: title, summary(일어나는 일), pov(시점 인물 이름), place(장소 이름), goal(시점 인물이 얻으려는 것), conflict(막는 것), outcome(장면이 끝나는 지점), decision(다음 장면으로 이어지는 선택), value(바뀌는 가치), turn(전환), tension(1~5).\n- 인물과 장소 이름은 설정집 색인에 있는 이름을 그대로 쓰고, 없으면 빈 문자열로 둔다.\n- 앞 장면의 decision이 다음 장면의 goal로 이어지게 한다.\n- 이 장의 마지막 카드의 outcome은 장 요약이 끝나는 지점과 같아야 한다.${ser ? `\n- 이 장은 한 회차(목표 ${ser.target}자 안팎)다. 마지막 카드는 다음 화가 궁금해지는 지점에서 끊는다.` : ""}`, { type: "object", properties: { cards: { type: "array", items: { type: "object", properties: { scene_id: S_STR, title: S_STR, summary: S_STR, pov: S_STR, place: S_STR, goal: S_STR, conflict: S_STR, outcome: S_STR, decision: S_STR, value: S_STR, turn: { type: "string", enum: [...CARD_TURNS, ""] }, tension: { type: "integer" } }, required: ["scene_id", "title", "summary", "pov", "place", "goal", "conflict", "outcome", "decision", "value", "turn", "tension"], additionalProperties: false } } }, required: ["cards"], additionalProperties: false }, btn, 20000);
+  if (!r?.cards?.length) return;
+  openCardProposal(work, ch, r.cards);
+}
+function openCardProposal(work, ch, items) {
+  const scenes = new Map(workScenes(work, ch.id).map((m) => [m.id, m]));
+  const resolve = (name, pred) => { const x = String(name || "").trim() && findEntry(name); return x && !x.deleted && pred(x.type) ? x.id : ""; };
+  const prepared = items.map((it) => ({ it, ex: scenes.get(String(it.scene_id || "").trim()) || null, pov: resolve(it.pov, isCharacterType), place: resolve(it.place, isPlaceType) }));
+  const rows = prepared.map(({ it, ex, pov, place }, i) => `<label class="prop-row"><input type="checkbox" data-pi="${i}" checked><span><b>${esc(it.title)}</b> ${ex ? `<span class="pill">${hasCard(ex) ? "있는 장면 · 카드 바꿈" : "있는 장면 · 카드 넣음"}</span>` : `<span class="pill pill-new">새 장면</span>`}<br><span class="small">${esc(it.summary)}</span><br><span class="small meta">${esc(cut(it.goal, 40))} → ${esc(cut(it.outcome, 50))}${it.tension ? ` · 긴장 ${it.tension}` : ""}</span>${(it.pov && !pov) || (it.place && !place) ? `<br><span class="small sev-warn">설정집에 없는 이름: ${esc([it.pov && !pov ? it.pov : "", it.place && !place ? it.place : ""].filter(Boolean).join(", "))}</span>` : ""}</span></label>`).join("");
+  openSheet(`<h2 class="sheet-title">${esc(chapterLabel(work, ch))} · 카드 제안</h2>
+    <p class="meta" style="margin:0 0 8px">고른 카드만 반영하고 순서도 제안대로 맞춥니다. 본문은 건드리지 않고, 제안에 없는 장면은 그대로 둡니다.</p>
+    <div class="prop-list">${rows}</div>
+    <div class="sheet-actions"><button class="btn" type="button" data-act="cancel">버리기</button><button class="btn" type="button" data-act="again">다시 만들기</button><button class="btn btn-primary" type="button" data-act="accept">고른 것 받아들이기</button></div>`, (root) => {
+    root.onclick = async (ev) => {
+      const act = ev.target.closest("[data-act]")?.dataset.act;
+      if (act === "cancel") closeSheet();
+      else if (act === "again") await expandCards(work, ch.id, ev.target.closest("[data-act]"));
+      else if (act === "accept") {
+        const picked = prepared.filter((_, i) => $(`[data-pi="${i}"]`, root).checked);
+        const now = Date.now();
+        const upper = chapterSummaryAt(work, ch.id);
+        const placed = [];
+        for (const { it, ex, pov, place } of picked) {
+          const m = ex || saveManuscript({ title: it.title, kind: "장면", body: "", work_id: work.id, chapter: ch.id, status: "구상" }, "user");
+          if (ex && String(it.title || "").trim()) m.title = String(it.title).trim();
+          const card = mergeCard(ex?.card ? { when: ex.card.when, cast: ex.card.cast, reaction: ex.card.reaction, dilemma: ex.card.dilemma } : {}, { summary: it.summary, goal: it.goal, conflict: it.conflict, outcome: it.outcome, decision: it.decision, value: it.value, turn: CARD_TURNS.includes(it.turn) ? it.turn : "", tension: it.tension >= 1 && it.tension <= 5 ? it.tension : "", pov, place });
+          m.card = { ...card, ...lvRec(upper, false, now) };
+          m.updatedAt = now;
+          placed.push(m);
+        }
+        // 순서: 제안 순서대로, 제안에 없던 장면은 뒤에
+        const rest = workScenes(work, ch.id).filter((m) => !placed.includes(m));
+        [...placed, ...rest].forEach((m, k) => { m.order = k; });
+        work.updatedAt = now;
+        await saveWorkChange(`카드(Claude 제안): ${ch.title} ${picked.length}장`);
+        closeSheet();
+        state.workTab = "board";
+        renderCodexTabResults();
+        toast(`카드 ${picked.length}장을 반영했습니다`);
+      }
+    };
+  });
+}
+function cardWritePrompt(m) {
+  const work = findWork(m.workId);
+  return `작품 「${work?.title || ""}」(${work?.id || ""})의 장면 ${m.id} 「${m.title}」 본문을 써 줘. get_plan의 scene_id로 카드와 앞뒤 장면을 먼저 확인하고, 카드의 결과에서 끝내. 다 쓰면 save_manuscript로 이 장면(id ${m.id})에 저장해 줘. `;
+}
+/* ---- 구조 점검 ---- */
+function localPlanIssues(work, serial = false) {
+  const out = [];
+  const add = (ref, kind, text) => out.push({ ref, kind, severity: "앱", problem: text });
+  const p = planOf(work);
+  if (!p.paragraph) add("plan", "계획", "한 문단(결말 포함)이 없습니다.");
+  for (const ch of work.chapters || []) if (!String(ch.summary || "").trim()) add(ch.id, "계획", `${chapterLabel(work, ch)}: 장 요약이 없습니다.`);
+  for (const s of planStaleList(work)) add(s.id || s.kind, "다시 볼 것", s.text);
+  for (const m of workOrder(work)) {
+    if (!hasCard(m)) { if (String(m.body || "").trim()) add(m.id, "카드", `「${m.title}」: 본문은 있는데 카드가 없습니다.`); continue; }
+    const c = m.card;
+    const miss = [["goal", "목표"], ["conflict", "갈등"], ["outcome", "결과"]].filter(([k]) => !String(c[k] || "").trim()).map(([, l]) => l);
+    if (miss.length) add(m.id, "카드", `「${m.title}」: ${miss.join("·")}이(가) 비어 있습니다.`);
+    if (c.turn === "＋→＋" || c.turn === "－→－") add(m.id, "카드", `「${m.title}」: ${c.value ? `가치(${c.value})가` : "가치가"} 바뀌지 않습니다(${c.turn}). 장면이 이야기를 움직이는지 보세요.`);
+    for (const w of sceneStatusData(m).warnings) add(m.id, "세계관", `「${m.title}」: ${w}`);
+  }
+  const ser = serialOf(work);
+  if (serial && ser) {
+    for (const ch of work.chapters || []) {
+      const n = workScenes(work, ch.id).reduce((a, m) => a + textStats(m.body).withSpace, 0);
+      if (n && n < ser.target * 0.7) add(ch.id, "연재", `${chapterLabel(work, ch)}: ${fmtCount(n)}자로 목표(${fmtCount(ser.target)}자)보다 짧습니다.`);
+      else if (n > ser.target * 1.4) add(ch.id, "연재", `${chapterLabel(work, ch)}: ${fmtCount(n)}자로 목표(${fmtCount(ser.target)}자)보다 깁니다. 회차를 나눌 수 있는지 보세요.`);
+    }
+  }
+  return out;
+}
+const CHECK_KINDS = ["결말로 안 이어짐", "위 단계와 어긋남", "목표·갈등·전환 없음", "인과 끊김", "계획 밖 전개", "인물 동기", "설정 모순", "속도", "회차 끝", "초반 몰입", "기타"];
+async function runStructureCheck(work, mode, btn) {
+  const serial = mode === "serial";
+  const local = localPlanIssues(work, serial);
+  const ser = serialOf(work);
+  const scenes = workOrder(work).filter((m) => String(m.body || "").trim());
+  const ex = (t, n) => { const s = String(t || "").replace(/\s+/g, " ").trim(); return s.length <= n * 2 ? s : `${s.slice(0, n)} … ${s.slice(-n)}`; };
+  const bodies = scenes.slice(0, 80).map((m) => `### ${m.id} 「${m.title}」 (${textStats(m.body).withSpace}자)\n${ex(m.body, 260)}`).join("\n\n");
+  const serialPart = serial && ser ? `\n\n연재 정보: 장 하나가 한 회차, 목표 ${ser.target}자.\n${(work.chapters || []).map((ch, i) => { const sc = workScenes(work, ch.id); const all = sc.map((m) => m.body || "").join("\n"); return `- ${i + 1}화 「${ch.title}」 ${textStats(all).withSpace}자${all.trim() ? `\n  끝부분: …${all.trim().slice(-350).replace(/\s+/g, " ")}${i < 3 ? `\n  앞부분: ${all.trim().slice(0, 500).replace(/\s+/g, " ")}…` : ""}` : ""}`; }).join("\n")}` : "";
+  const r = await planAsk(`${planWorldBrief(work)}\n\n${planText(work)}\n\n본문(앞뒤 발췌):\n${bodies || "(본문 없음)"}${serialPart}\n\n앱이 이미 찾은 것(다시 쓰지 않는다):\n${local.map((x) => `- ${x.problem}`).join("\n") || "(없음)"}\n\n${serial ? "연재 점검: 회차마다 끝이 다음 화를 궁금하게 끊기는지, 초반 3화 안에 사건이 시작되고 주인공의 목표가 드러나는지, 회차 분량과 속도가 맞는지 본다. 구조 문제도 크면 함께 적는다." : "구조 점검: 계획이 결말로 이어지는지, 아래 단계(장 요약·카드·본문)가 위 단계에서 벗어나지 않는지, 장면마다 목표·갈등·결과와 가치 전환이 있는지, 장면 사이 인과가 이어지는지(앞 장면의 결정이 다음 장면의 목표로), 계획에 없는 전개가 본문에 새어 들었는지, 인물 동기와 설정이 맞는지, 속도가 고른지 본다."}\n- ref에는 문제가 있는 장면 id(ms-…), 장 id(ch-…), 계획 전체면 plan을 넣는다.\n- 실제로 고칠 만한 문제만, 중요한 것부터 많아야 15개. 문제가 없으면 issues를 비운다.\n- suggestion은 바로 해 볼 수 있는 고칠 방법 하나.`, { type: "object", properties: { summary: S_STR, issues: { type: "array", items: { type: "object", properties: { ref: S_STR, kind: { type: "string", enum: CHECK_KINDS }, severity: { type: "string", enum: ["높음", "중간", "낮음"] }, problem: S_STR, suggestion: S_STR }, required: ["ref", "kind", "severity", "problem", "suggestion"], additionalProperties: false } } }, required: ["summary", "issues"], additionalProperties: false }, btn, 20000);
+  if (!r) return;
+  const order = { 높음: 0, 중간: 1, 낮음: 2 };
+  work.check = { at: Date.now(), mode, summary: String(r.summary || ""), issues: (r.issues || []).sort((a, b) => order[a.severity] - order[b.severity]).slice(0, 15), local };
+  await saveWorkChange(`${serial ? "연재" : "구조"} 점검: ${work.title}`);
+  renderCodexTabResults();
+  openCheckResult(work);
+}
+function checkRefLabel(work, ref) {
+  if (ref === "plan" || ref === "paragraph" || ref === "synopsis") return "계획";
+  const ch = chapterOf(work, ref);
+  if (ch) return chapterLabel(work, ch);
+  const m = state.manuscripts.find((x) => x.id === ref);
+  return m ? m.title : "";
+}
+function openCheckResult(work) {
+  const c = work.check;
+  if (!c) return;
+  const item = (x, i, src) => `<div class="check-item check-issue"><span class="txt">${x.severity !== "앱" ? `<span class="pill sev-${x.severity === "높음" ? "high" : x.severity === "중간" ? "mid" : "low"}">${esc(x.severity)}</span> ` : ""}<b>${esc(x.kind)}</b>${checkRefLabel(work, x.ref) ? ` · ${esc(checkRefLabel(work, x.ref))}` : ""}<br>${esc(x.problem)}${x.suggestion ? `<br><span class="meta">→ ${esc(x.suggestion)}</span>` : ""}</span><span class="row">${x.ref && checkRefLabel(work, x.ref) ? `<button class="btn btn-small btn-ghost" type="button" data-chk-open="${esc(x.ref)}">열기</button>` : ""}<button class="btn btn-small btn-ghost" type="button" data-fix="${src}${i}">Claude와 고치기</button></span></div>`;
+  openSheet(`<h2 class="sheet-title">${c.mode === "serial" ? "연재" : "구조"} 점검 · ${esc(work.title)}</h2>
+    <p class="meta" style="margin:0 0 8px">${new Date(c.at).toLocaleString("ko-KR")}</p>
+    ${c.summary ? `<p>${esc(c.summary)}</p>` : ""}
+    <section class="check-group"><h3>Claude가 찾은 것 <span class="n">${c.issues.length}</span></h3>${c.issues.map((x, i) => item(x, i, "c")).join("") || `<p class="meta">큰 문제를 찾지 못했습니다.</p>`}</section>
+    <section class="check-group"><h3>앱이 찾은 것 <span class="n">${c.local.length}</span></h3>${c.local.slice(0, 40).map((x, i) => item(x, i, "l")).join("") || `<p class="meta">없습니다.</p>`}${c.local.length > 40 ? `<p class="meta">외 ${c.local.length - 40}개</p>` : ""}</section>`, (root) => {
+    root.onclick = (ev) => {
+      const g = ev.target.closest("[data-chk-open]");
+      if (g) { gotoPlanRef(work, g.dataset.chkOpen); return; }
+      const f = ev.target.closest("[data-fix]");
+      if (f) {
+        const src = f.dataset.fix[0];
+        const x = (src === "c" ? c.issues : c.local)[Number(f.dataset.fix.slice(1))];
+        closeSheet();
+        startInNewThread(`작품 「${work.title}」(${work.id})의 ${c.mode === "serial" ? "연재" : "구조"} 점검에서 나온 문제야.\n[${x.kind}] ${checkRefLabel(work, x.ref) ? `${checkRefLabel(work, x.ref)}(${x.ref}): ` : ""}${x.problem}${x.suggestion ? `\n점검의 제안: ${x.suggestion}` : ""}\nget_plan으로 계획을 보고 고칠 방법을 2~3가지 제안해 줘. 내가 고르면 set_plan·set_scene_card로 계획부터 고쳐 줘. `);
+      }
+    };
+  });
+}
+function gotoPlanRef(work, ref) {
+  if (ref === "plan" || ref === "paragraph") { openPlanTextEditor(work, "paragraph"); return; }
+  if (ref === "synopsis") { openPlanTextEditor(work, "synopsis"); return; }
+  const ch = chapterOf(work, ref);
+  if (ch) { openChapterEditor(work, ch); return; }
+  const m = state.manuscripts.find((x) => x.id === ref);
+  if (m) openCardEditor(work, m);
+}
+async function planAction(work, act, btn) {
+  if (!work) return;
+  if (act.startsWith("edit-")) openPlanTextEditor(work, act.slice(5));
+  else if (act === "ok-paragraph" || act === "ok-synopsis") { confirmPlanText(work, act.slice(3)); await saveWorkChange(`계획 확정: ${PLAN_KEYS[act.slice(3)]}`); renderCodexTabResults(); }
+  else if (act === "expand-paragraph") await expandParagraph(work, btn);
+  else if (act === "expand-synopsis") await expandSynopsis(work, btn);
+  else if (act === "expand-chapters") await expandChapters(work, btn);
+  else if (act === "check") await runStructureCheck(work, "structure", btn);
+  else if (act === "check-serial") await runStructureCheck(work, "serial", btn);
+  else if (act === "check-last") openCheckResult(work);
 }
 function bindSceneDrag() {
   const root = $("#codex");
@@ -6057,7 +6989,7 @@ function openSceneMenu(m) {
   const wk = m && findWork(m.workId);
   if (!wk) return;
   openSheet(`<h2 class="sheet-title">${esc(m.title)}</h2>
-    <div class="row"><button class="btn btn-primary" type="button" data-act="sm-write">집필 화면</button><button class="btn" type="button" data-act="sm-open">원고 보기</button></div>
+    <div class="row"><button class="btn btn-primary" type="button" data-act="sm-write">집필 화면</button><button class="btn" type="button" data-act="sm-open">원고 보기</button><button class="btn" type="button" data-act="sm-card">장면 카드</button></div>
     <fieldset style="margin-top:12px"><legend>상태</legend><div class="seg">${MS_STATUS.map((k) => `<label><input type="radio" name="sm-st" value="${k}"${(m.status || "초고") === k ? " checked" : ""}><span>${k}</span></label>`).join("")}</div></fieldset>
     <label class="form" style="margin-top:12px">장<select id="sm-ch">${(wk.chapters || []).map((c) => `<option value="${c.id}"${c.id === m.chapterId ? " selected" : ""}>${esc(c.title)}</option>`).join("")}</select></label>
     <div class="sheet-actions"><button class="btn" type="button" data-act="sm-up">위로</button><button class="btn" type="button" data-act="sm-down">아래로</button><button class="btn btn-danger" type="button" data-act="sm-out">작품에서 빼기</button></div>`, (root) => {
@@ -6069,6 +7001,7 @@ function openSceneMenu(m) {
       const act = ev.target.closest("[data-act]")?.dataset.act;
       if (act === "sm-write") openWriter(m.id, () => { state.codexTab = "ms"; renderCodex(); });
       else if (act === "sm-open") openManuscript(m.id);
+      else if (act === "sm-card") openCardEditor(wk, m);
       else if (act === "sm-up" || act === "sm-down") {
         const list = workScenes(wk, m.chapterId);
         const i = list.indexOf(m);
@@ -6101,6 +7034,7 @@ function openWorkEditor(work) {
       <datalist id="povChars">${liveEntries().filter((x) => isCharacterType(x.type)).map((x) => `<option value="${esc(x.name)}">`).join("")}</datalist>
       <label>제목<input id="wk-title" value="${esc(cur.title)}" placeholder="예: 등대지기의 딸"></label>
       <label>한 줄 소개 <small>선택</small><input id="wk-logline" value="${esc(cur.logline || "")}"></label>
+      <label>연재 회차 목표 분량 <small>공백 포함 글자 수. 비우면 연재가 아닙니다. 연재면 장 하나가 한 회차입니다</small><input id="wk-serial" inputmode="numeric" value="${cur.serial?.target || ""}" placeholder="예: 5000"></label>
       <fieldset><legend>문체 가이드 <small>Claude가 이 작품을 쓰고 다듬을 때 따릅니다</small></legend>
         <div class="time-row">${field("pov", "시점", 1, "povList")}${field("pov_char", "시점 인물", 1, "povChars")}</div>
         <div class="time-row">${field("tense", "시제", 1, "tenseList")}${field("sentence", "문장 길이", 1)}</div>
@@ -6134,7 +7068,10 @@ function openWorkEditor(work) {
       const merged = mergeStrMap({}, style, STYLE_IDS);
       const logline = $("#wk-logline", root).value.trim();
       const next = { ...(work || { id: `wk-${uid().slice(-6)}`, chapters: [], createdAt: Date.now() }), title, updatedAt: Date.now() };
+      if (logline !== (work?.logline || "")) next.plan = { ...(next.plan || {}), lv: { ...(next.plan?.lv || {}), logline: { at: Date.now() } } };
       if (logline) next.logline = logline; else delete next.logline;
+      const sn = Math.round(Number(String($("#wk-serial", root).value).replace(/[,\s]/g, "")));
+      if (sn > 0) next.serial = { target: sn }; else delete next.serial;
       if (hasKeys(merged)) next.style = merged; else delete next.style;
       if (!work && !next.chapters.length) next.chapters = [{ id: `ch-${uid().slice(-6)}`, title: "1장" }];
       w.works = work ? worldWorks(w).map((x) => (x.id === work.id ? next : x)) : [...worldWorks(w), next];
@@ -6154,6 +7091,7 @@ function openChapterEditor(work, ch) {
   const list = work.chapters || [];
   openSheet(`<h2 class="sheet-title">${ch ? "장 고치기" : "장 추가"}</h2>
     <form class="form" id="chForm"><label>장 제목<input id="ch-title" value="${esc(ch?.title || `${list.length + 1}장`)}"></label>
+      <label>요약 <small>이 장에서 일어나는 일과 장이 끝나는 지점</small><textarea id="ch-sum" rows="4">${esc(ch?.summary || "")}</textarea></label>
       <div class="sheet-actions">${ch ? `<button class="btn btn-danger" type="button" data-act="ch-del">장 지우기</button>${list.indexOf(ch) > 0 ? `<button class="btn" type="button" data-act="ch-up">앞으로</button>` : ""}` : ""}<button class="btn" type="button" data-act="cancel">취소</button><button class="btn btn-primary" type="submit">저장</button></div></form>`, (root) => {
     const done = async (note) => { work.updatedAt = Date.now(); await saveWorkChange(note); closeSheet(); renderCodexTabResults(); };
     root.onclick = async (ev) => {
@@ -6172,8 +7110,11 @@ function openChapterEditor(work, ch) {
       ev.preventDefault();
       const title = $("#ch-title", root).value.trim();
       if (!title) { toast("장 제목을 넣어 주세요"); return; }
-      if (ch) ch.title = title; else addChapter(work, title);
-      await done(ch ? `장 이름: ${title}` : `장 추가: ${title}`);
+      const sum = $("#ch-sum", root).value;
+      const target = ch || addChapter(work, title);
+      if (ch) ch.title = title;
+      if (sum.trim() !== String(target.summary || "").trim()) setChapterSummary(work, target, sum);
+      await done(ch ? `장: ${title}` : `장 추가: ${title}`);
     };
   });
 }
@@ -6301,6 +7242,7 @@ function openWriter(id, back = null) {
   const el = $("#writer");
   el.innerHTML = `<div class="w-top"><button class="icon-btn" type="button" data-w="close" aria-label="닫기">←</button><input id="w-title" class="w-title" value="${esc(m.title)}" aria-label="제목">${wk ? `<select id="w-status" aria-label="상태">${MS_STATUS.map((k) => `<option${(m.status || "초고") === k ? " selected" : ""}>${k}</option>`).join("")}</select>` : ""}</div>
     ${wk ? `<p class="w-crumb">「${esc(wk.title)}」${ch ? ` › ${esc(ch.title)}` : ""} · <span id="w-totals"></span>${wk.style ? ` · <button type="button" class="link-btn" data-w="style">문체 가이드</button>` : ""}</p>` : ""}
+    ${hasCard(m) ? `<details class="w-card"><summary>카드 · ${esc(cut(m.card.goal || m.card.summary || "", 36))} → ${esc(cut(m.card.outcome || "?", 36))}</summary><p>${esc(cardText(m)).replace(/\n/g, "<br>")}</p></details>` : ""}
     <textarea id="w-body" class="w-body" placeholder="쓰기 시작하세요" spellcheck="false">${esc(m.body)}</textarea>
     <div id="w-preview" class="md w-preview" hidden></div>
     <div id="w-peek" class="w-peek" hidden></div>
@@ -6347,7 +7289,9 @@ async function saveWriter() {
   const m = state.manuscripts.find((x) => x.id === writer.id);
   if (!m || !writer.dirty || !$("#w-body")) return;
   m.title = $("#w-title").value.trim() || m.title;
-  m.body = $("#w-body").value;
+  const body = $("#w-body").value;
+  if (body !== m.body) m.bodyAt = Date.now();
+  m.body = body;
   m.updatedAt = Date.now();
   m.by = "user";
   m.refs = autoRefs(m);
@@ -6814,6 +7758,25 @@ function bindCodexTabs() {
     const scm = e.target.closest("[data-sc-menu]");
     if (scm) { openSceneMenu(state.manuscripts.find((m) => m.id === scm.dataset.scMenu)); return; }
     if (e.target.closest(".sc-handle")) return;
+    const wt = e.target.closest("[data-wtab]");
+    if (wt) { state.workTab = wt.dataset.wtab; LS.set("lk.worktab", state.workTab); renderCodexTabResults(); return; }
+    const pl = e.target.closest("[data-plan]");
+    if (pl) { await planAction(findWork(state.workId), pl.dataset.plan, pl); return; }
+    const cok = e.target.closest("[data-ch-ok]");
+    if (cok) { const wk = findWork(state.workId); const ch = chapterOf(wk, cok.dataset.chOk); if (ch) { confirmChapter(wk, ch); await saveWorkChange(`장 요약 확정: ${ch.title}`); renderCodexTabResults(); } return; }
+    const cex = e.target.closest("[data-card-expand]");
+    if (cex) { await expandCards(findWork(state.workId), cex.dataset.cardExpand, cex); return; }
+    const cad = e.target.closest("[data-card-add]");
+    if (cad) { openCardEditor(findWork(state.workId), null, cad.dataset.cardAdd); return; }
+    const msOf = (id) => state.manuscripts.find((x) => x.id === id);
+    const cop = e.target.closest("[data-card-open]");
+    if (cop) { openCardEditor(findWork(state.workId), msOf(cop.dataset.cardOpen)); return; }
+    const cwr = e.target.closest("[data-card-write]");
+    if (cwr) { const m = msOf(cwr.dataset.cardWrite); if (!hasCard(m)) { toast("카드를 먼저 채우세요"); openCardEditor(findWork(m.workId), m); return; } startInNewThread(cardWritePrompt(m)); return; }
+    const cpe = e.target.closest("[data-card-pen]");
+    if (cpe) { openWriter(cpe.dataset.cardPen, () => { state.codexTab = "ms"; renderCodex(); }); return; }
+    const cst = e.target.closest("[data-card-status]");
+    if (cst) { openSceneStatus(msOf(cst.dataset.cardStatus)); return; }
     const ms = e.target.closest("[data-ms]");
     if (ms) { openManuscript(ms.dataset.ms); return; }
     const sc = e.target.closest("[data-sense-copy]");
@@ -13472,6 +14435,11 @@ function exportMarkdown() {
   if (rules.length) {
     parts.push("", "## 이름 규칙");
     for (const r of rules) parts.push("", `### ${r.name}`, r.applies?.length ? `*적용: ${r.applies.join(", ")}*` : "", "", r.rules || "", r.examples?.length ? `\n예: ${r.examples.join(", ")}` : "");
+  }
+  const planned = worldWorks(w).filter((wk) => planOf(wk).paragraph || planOf(wk).synopsis || (wk.chapters || []).some((c) => c.summary) || workOrder(wk).some(hasCard));
+  if (planned.length) {
+    parts.push("", "## 이야기 계획");
+    for (const wk of planned) parts.push("", planText(wk).replace(/^## /gm, "#### ").replace(/^# /gm, "### "));
   }
   if (state.manuscripts.length) {
     parts.push("", "## 원고함");
